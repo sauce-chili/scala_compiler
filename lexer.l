@@ -34,12 +34,15 @@ notZeroDigit [1-9]
 binDigit [01]
 hexDigit [0-9a-fA-F]
 
-decimalLiteral 0|({notZeroDigit}(_*{digit})*)
+number {digit}("_"*{digit})*
+exponent [eE][+-]?{number}
+floatSuffix [fFdD]
+
+doubleLiteral {number}\.{number}?{exponent}?{floatSuffix}?|\.{number}{exponent}?{floatSuffix}?|{number}{exponent}{floatSuffix}?|{number}{exponent}?{floatSuffix}
+decimalLiteral {number}
 hexLiteral 0(x|X)(_*{hexDigit})*
 binLiteral 0(b|B)(_*{binDigit})*
 
-floatSuffix [fFdD]
-doubleLiteral ({digit}({digit}|_)*(.{digit}*)?e{digit}({digit}|_)*)|({digit}({digit}|_)*(\.{digit}({digit}|_)*)){floatSuffix}?
 UnicodeEscape \\u+{hexDigit}{4}
 latinLetter [a-zA-Z]
 
