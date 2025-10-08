@@ -14,31 +14,6 @@
 	#include <stack>
 	#include <algorithm>
 
-	std::string buff = "";
-	std::string literal = "";
-%}
-
-ID [A-Za-z0-9_$]*_\?|[A-Za-z0-9_$]+
-
-digit [0-9]
-notZeroDigit [1-9]
-binDigit [01]
-hexDigit [0-9a-fA-F]
-
-decimalLiteral 0|{notZeroDigit}({digit}|"_")*
-hexLiteral 0(x|X){hexDigit}({hexDigit}|"_")*
-binLiteral 0(b|B){binDigit}({binDigit}|"_")*
-
-exponentPart [eE][+-]?{digit}+
-floatSuffix [fFdD]
-doubleLiteral ({digit}+\.{digit}+({exponentPart})?({floatSuffix})?)|(\.{digit}+({exponentPart})?({floatSuffix})?)|({digit}+{exponentPart}({floatSuffix})?)|({digit}+{floatSuffix})
-
-UnicodeEscape \\u+{hexDigit}{4}
-latinLetter [a-zA-Z]
-
-%%
-
-%{
     void printTypeDefinitionKeyword(char* keyword);
     void printModificatorKeyword(char* keyword);
     void printMembersDeclarationKeyword(char* keyword);
@@ -52,6 +27,28 @@ latinLetter [a-zA-Z]
     std::string remove_underscore(const char* text);
     long long to_int(const char* text, int base = 10);
     double to_double(const char* text);
+%}
+
+digit [0-9]
+notZeroDigit [1-9]
+binDigit [01]
+hexDigit [0-9a-fA-F]
+
+decimalLiteral 0|({notZeroDigit}(_*{digit})*)
+hexLiteral 0(x|X)(_*{hexDigit})*
+binLiteral 0(b|B)(_*{binDigit})*
+
+floatSuffix [fFdD]
+doubleLiteral ({digit}({digit}|_)*(.{digit}*)?e{digit}({digit}|_)*)|({digit}({digit}|_)*(\.{digit}({digit}|_)*)){floatSuffix}?
+UnicodeEscape \\u+{hexDigit}{4}
+latinLetter [a-zA-Z]
+
+ID [a-zA-Z_$]+[a-zA-Z0-9_$]*
+%%
+
+%{
+    std::string buff = "";
+    std::string literal = "";
 %}
 
 "//".* { printf("Oneline comment: %s\n", yytext + 2); }
@@ -220,16 +217,20 @@ null        { printConstantKeyword(yytext); }
 "until" { printOperator(yytext); }
 
 
-\" { literal = ""; BEGIN(STRING); }
-<STRING>[^\\\n\"]+ literal.append(yytext);
-<STRING,CHARACTER>\\n { literal.append("\n"); }
+\"                     { literal = ""; BEGIN(STRING); }
+<STRING>[^\\\n\"]+     { literal.append(yytext); };
+<STRING,CHARACTER>\\n  { literal.append("\n"); }
 <STRING,CHARACTER>\\\\ { literal.append("\\"); }
-<STRING,CHARACTER>\\b { literal.append("\b"); }
-<STRING,CHARACTER>\\t { literal.append("\t"); }
-<STRING,CHARACTER>\\f {literal.append("\f"); }
-<STRING,CHARACTER>\\r { literal.append("\r"); }
+<STRING,CHARACTER>\\b  { literal.append("\b"); }
+<STRING,CHARACTER>\\t  { literal.append("\t"); }
+<STRING,CHARACTER>\\f  { literal.append("\f"); }
+<STRING,CHARACTER>\\r  { literal.append("\r"); }
 <STRING,CHARACTER>\\\" { literal.append("\""); }
 <STRING,CHARACTER>\\\' { literal.append("\'"); }
+<STRING,CHARACTER>\\. {
+    std::cerr << "Unknown escape sequence: " << yytext << "\n" << std::endl;
+    BEGIN(INITIAL);
+}
 <STRING,CHARACTER>{UnicodeEscape} {
     char ch = (char)strtol(yytext + strlen(yytext) - 4, NULL, 16);
     literal.append(1, ch);
@@ -248,9 +249,7 @@ null        { printConstantKeyword(yytext); }
 }
 
 \' { literal = ""; BEGIN(CHARACTER); }
-<CHARACTER>[^\'\\\n]+ {
-    literal.append(yytext);
-}
+<CHARACTER>[^\'\\\n]+ { literal.append(yytext); }
 <CHARACTER>\' {
     if(literal.length() == 0){
         std::cerr << "error: empty character\n" << std::endl;
@@ -271,7 +270,7 @@ null        { printConstantKeyword(yytext); }
 " "  { std::cout << "+++Whitespace+++" << std::endl; }
 "\n" { std::cout << "------------------Newline------------------" << std::endl; }
 
-<*>.     { std::cerr << "Unexpected char " << yytext[0] << "encountered at line\n"; BEGIN(INITIAL);}
+<*>.     { std::cerr << "Unexpected char \'" << yytext[0] << "\'"; BEGIN(INITIAL);}
 
 %%
 
@@ -293,15 +292,15 @@ int main(int argc, char **argv)
     return 0;
 }
 
+long long to_int(const char* text, int base) {
+    std::string s = remove_underscore(text);
+    return strtoll(s.c_str(), NULL, base);
+}
+
 std::string remove_underscore(const char* text) {
     std::string s(text);
     s.erase(std::remove(s.begin(), s.end(), '_'), s.end());
     return s;
-}
-
-long long to_int(const char* text, int base = 10) {
-    std::string s = remove_underscore(text);
-    return strtoll(s.c_str(), NULL, base);
 }
 
 double to_double(const char* text) {

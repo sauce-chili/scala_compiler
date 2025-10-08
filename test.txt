@@ -1,3 +1,22 @@
+1___2_
+
+0x10
+
+05___.23123
+1
+1f
+1___.5f
+3_____2.5____f
+
+0x_1_2
+0x1_2
+0x_1_2_
+
+1e5
+1_e5_5
+1_e5_5_
+7.5e5
+
 // single line comment
 
 /* aaaa
@@ -83,9 +102,6 @@ val result2 = number match {
 val str: String = "Hello, Scala"
 val i: Int = 42
 
-val singleQuotedString = 'Scala'
-val tripleQuotedString = """This is a multi-line
-string in Scala."""
 val interpolatedString = s"Hello, $name!"
 val formattedString = f"Pi is approximately %.2f"
 val rawString = raw"This is a raw\nstring"
@@ -160,6 +176,9 @@ val result3 = (for {
 to
 until
 
-'\ta'
 
-"err expected
+
+
+val stringLiteral = 'dhasbdabsubasu'
+
+"err expec\ited"
