@@ -34,6 +34,8 @@
 
 // single line comment
 
+a lot   of identifiers   with whitespaces
+
 /* aaaa
   multiline comment
 aaaa */

@@ -44,6 +44,8 @@ UnicodeEscape \\u+{hexDigit}{4}
 latinLetter [a-zA-Z]
 
 ID [a-zA-Z_$]+[a-zA-Z0-9_$]*
+
+whitespace [ \t\f\u000B]
 %%
 
 %{
@@ -267,7 +269,7 @@ null        { printConstantKeyword(yytext); }
 }
 
 
-" "  { std::cout << "+++Whitespace+++" << std::endl; }
+{whitespace}  { std::cout << "+++Whitespace+++" << std::endl; }
 "\n" { std::cout << "------------------Newline------------------" << std::endl; }
 
 <*>.     { std::cerr << "Unexpected char \'" << yytext[0] << "\'"; BEGIN(INITIAL);}
