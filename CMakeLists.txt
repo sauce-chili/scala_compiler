@@ -6,11 +6,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(FLEX REQUIRED)
 
-FLEX_TARGET(MyScanner lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp)
+FLEX_TARGET(MyScanner scala_lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp)
 
 add_executable(lexer
         ${FLEX_MyScanner_OUTPUTS}
-        lexer.l
+        scala_lexer.l
 )
 
 # Отключаем предупреждения про "register" только для lexer.cpp
