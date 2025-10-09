@@ -74,7 +74,6 @@ Double  { printf("Double type: %s\n", yytext); }
 
 
 class       { printTypeDefinitionKeyword(yytext); }
-trait       { printTypeDefinitionKeyword(yytext); }
 object      { printTypeDefinitionKeyword(yytext); }
 enum        { printTypeDefinitionKeyword(yytext); }
 given       { printTypeDefinitionKeyword(yytext); }
