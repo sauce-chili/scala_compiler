@@ -16,6 +16,7 @@
 %token CHAR
 %token BOOLEAN
 %token UNIT
+%token VOID
 %token MATCH
 %token NEW
 %token CASE
@@ -35,8 +36,7 @@
 %token CHAR_LITERAL
 %token DOUBLE_LITERAL
 %token STRING_LITERAL
-%token TRUE_LITERAL
-%token FALSE_LITERAL
+%token BOOLEAN_LITERAL
 %token NULL_LITERAL
 
 %right '=' PLUS_ASSIGNMENT MINUS_ASSIGNMENT MUL_ASSIGNMENT DIV_ASSIGNMENT MOD_ASSIGNMENT
@@ -53,18 +53,59 @@
 
 %%
 
-While_Stmt: WHILE '(' expr ')' stmt
+expr: LITERAL
+    | ID
+    |
+
+simple_expression: LITERAL
+                 | ID
+                 | '(' simple_expression ')'
+                 | simple_expression '.' ID
+                 | simple_expression '.' ID '('
+
+arithmetical_expression:
+
+
+while_expr: WHILE '(' expr ')' stmt
           ;
 
-If_Expr: IF '(' expr ')' stmt
+if_expr: IF '(' expr ')' stmt
        | IF '(' expr ')' stmt ELSE stmt
        ;
 
-Literal: DECIMAL_LITERAL
+/* Может использоваться в for */
+if_without_stmt_expr: IF '(' expr ')'
+                    | IF expr
+                    ;
+
+var_decl: var_decl_kw ID ':' type '=' _
+        | var_decl_kw ID ':' type '=' expr
+        ;
+
+
+var_decl_kw: VAR
+           | VAL
+           ;
+
+type: default_type
+    | ID
+    ;
+
+default_type: INT
+            | STRING
+            | CHAR
+            | BOOLEAN
+            | UNIT
+            | VOID
+
+literal: DECIMAL_LITERAL
        | CHAR_LITERAL
        | DOUBLE_LITERAL
        | STRING_LITERAL
-       | TRUE_LITERAL
-       | FALSE_LITERAL
+       | BOOLEAN_LITERAL
        | NULL_LITERAL
        ;
+
+nl: NL
+	| nl NL
+	;
