@@ -6,9 +6,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(FLEX REQUIRED)
 
-FLEX_TARGET(MyScanner scala_lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp)
+FLEX_TARGET(MyScanner scala_lexer.l ${CMAKE_CURRENT_BINARY_DIR}/scala_lexer.cpp)
 
-add_executable(lexer
+add_executable(scala_lexer
         ${FLEX_MyScanner_OUTPUTS}
         scala_lexer.l
 )
