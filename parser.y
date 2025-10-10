@@ -41,45 +41,67 @@
 
 %right '=' PLUS_ASSIGNMENT MINUS_ASSIGNMENT MUL_ASSIGNMENT DIV_ASSIGNMENT MOD_ASSIGNMENT
 %left EQUAL NOT_EQUAL
-%left '>' '<' GREATER_EQUAL LESS_EQUAL
-%left IN
-%left RANGE
+%left '>' '<' GREATER_OR_EQUAL LESS_OR_EQUAL
 %left '+' '-'
 %left '*' '/' '%'
 %left UMINUS UPLUS
-%right PREF_INCREMENT PREF_DECREMENT
-%left POST_INCREMENT POST_DECREMENT '.'
+%left '.'
 %nonassoc '(' ')'
 
 %%
 
-expr: LITERAL
+expr_list_empty: /* empty */
+               | expr_list
+               ;
+
+expr_list: expr
+         | expr_list expr
+         | expr_list ';' expr
+         ;
+
+expr: nl_optional expr nl_optional
+    | '(' expr ')'
+    | literal
     | ID
-    |
+    | expr '.' nl_optional ID
+    | expr '.' nl_optional ID nl_optional '(' expr_list_empty ')'
+    | arithmetical_expr
 
-simple_expression: LITERAL
-                 | ID
-                 | '(' simple_expression ')'
-                 | simple_expression '.' ID
-                 | simple_expression '.' ID '('
+arithmetical_expr: expr '+' expr
+                 | expr '-' nl_optional expr
+                 | expr '*' nl_optional expr
+                 | expr '/' nl_optional expr
+                 | expr '%' nl_optional expr
+                 | expr '<' nl_optional expr
+                 | expr '>' nl_optional expr
+                 | expr GREATER_OR_EQUAL expr
+                 | expr LESS_OR_EQUAL expr
+                 | expr PLUS_ASSIGNMENT expr
+                 | expr MINUS_ASSIGNMENT expr
+                 | expr MUL_ASSIGNMENT expr
+                 | expr DIV_ASSIGNMENT expr
+                 | expr MOD_ASSIGNMENT expr
+                 | expr '=' nl_optional expr
+                 | expr MUL_ASSIGNMENT expr
+                 | expr MUL_ASSIGNMENT expr
+                 | '-' nl_optional %prec UMINUS
+                 | '-' nl_optional %prec UPLUS
+                 ;
 
-arithmetical_expression:
-
-
-while_expr: WHILE '(' expr ')' stmt
+while_expr: WHILE nl_optional '(' expr ')' nl_optional stmt
           ;
 
-if_expr: IF '(' expr ')' stmt
-       | IF '(' expr ')' stmt ELSE stmt
+if_expr: IF nl_optional '(' expr ')' nl_optional stmt
+       | IF nl_optional '(' expr ')' nl_optional stmt nl_optional ELSE nl_optional stmt
        ;
 
 /* Может использоваться в for */
-if_without_stmt_expr: IF '(' expr ')'
+if_without_stmt_expr: IF nl_optional '(' expr ')'
                     | IF expr
                     ;
 
-var_decl: var_decl_kw ID ':' type '=' _
-        | var_decl_kw ID ':' type '=' expr
+var_decl: var_decl_kw nl_optional ID nl_optional ':' nl_optional type nl_optional '=' nl_optional _
+        | var_decl_kw nl_optional ID nl_optional ':' nl_optional type nl_optional '=' expr
         ;
 
 
@@ -105,6 +127,10 @@ literal: DECIMAL_LITERAL
        | BOOLEAN_LITERAL
        | NULL_LITERAL
        ;
+
+nl_optional: /* empty */
+           | nl
+           ;
 
 nl: NL
 	| nl NL
