@@ -14,6 +14,8 @@
 	#include <stack>
 	#include <algorithm>
 
+	#define NL 9999
+
     void printTypeDefinitionKeyword(char* keyword);
     void printModificatorKeyword(char* keyword);
     void printMembersDeclarationKeyword(char* keyword);
@@ -27,6 +29,17 @@
     std::string remove_underscore(const char* text);
     long long to_int(const char* text, int base = 10);
     double to_double(const char* text);
+    std::string peek_next_word();
+    int peek_nonspace_char();
+
+    /* --- State variables --- */
+    int parenDepth = 0;
+    int bracketDepth = 0;
+    int braceDepth = 0;
+    bool last_token_can_end_stmt = false;
+    std::stack<int> case_stack;
+
+    #define NL 9999
 %}
 
 digit [0-9]
@@ -73,15 +86,15 @@ Array   { printf("Array type: %s\n", yytext); }
 Double  { printf("Double type: %s\n", yytext); }
 
 
-class       { printTypeDefinitionKeyword(yytext); }
-trait       { printTypeDefinitionKeyword(yytext); }
-object      { printTypeDefinitionKeyword(yytext); }
-enum        { printTypeDefinitionKeyword(yytext); }
-given       { printTypeDefinitionKeyword(yytext); }
-type        { printTypeDefinitionKeyword(yytext); }
-opaque      { printTypeDefinitionKeyword(yytext); }
-open        { printTypeDefinitionKeyword(yytext); }
-extension   { printTypeDefinitionKeyword(yytext); }
+class       { printTypeDefinitionKeyword(yytext); last_token_can_end_stmt = false;}
+trait       { printTypeDefinitionKeyword(yytext); last_token_can_end_stmt = false;}
+object      { printTypeDefinitionKeyword(yytext); last_token_can_end_stmt = false;}
+enum        { printTypeDefinitionKeyword(yytext); last_token_can_end_stmt = false;}
+given       { printTypeDefinitionKeyword(yytext); last_token_can_end_stmt = false;}
+type        { printTypeDefinitionKeyword(yytext); last_token_can_end_stmt = false;}
+opaque      { printTypeDefinitionKeyword(yytext); last_token_can_end_stmt = false;}
+open        { printTypeDefinitionKeyword(yytext); last_token_can_end_stmt = false;}
+extension   { printTypeDefinitionKeyword(yytext); last_token_can_end_stmt = false;}
 
 abstract    { printModificatorKeyword(yytext); }
 final       { printModificatorKeyword(yytext); }
@@ -95,53 +108,55 @@ private     { printModificatorKeyword(yytext); }
 protected   { printModificatorKeyword(yytext); }
 derives     { printModificatorKeyword(yytext); }
 
-def         { printMembersDeclarationKeyword(yytext); }
-val         { printMembersDeclarationKeyword(yytext); }
-var         { printMembersDeclarationKeyword(yytext); }
-package     { printMembersDeclarationKeyword(yytext); }
-import      { printMembersDeclarationKeyword(yytext); }
-export      { printMembersDeclarationKeyword(yytext); }
-as          { printMembersDeclarationKeyword(yytext); }
-using       { printMembersDeclarationKeyword(yytext); }
+def         { printMembersDeclarationKeyword(yytext); last_token_can_end_stmt = false;}
+val         { printMembersDeclarationKeyword(yytext); last_token_can_end_stmt = false;}
+var         { printMembersDeclarationKeyword(yytext); last_token_can_end_stmt = false;}
+package     { printMembersDeclarationKeyword(yytext); last_token_can_end_stmt = false;}
+import      { printMembersDeclarationKeyword(yytext); last_token_can_end_stmt = false;}
+export      { printMembersDeclarationKeyword(yytext); last_token_can_end_stmt = false;}
+as          { printMembersDeclarationKeyword(yytext); last_token_can_end_stmt = false;}
+using       { printMembersDeclarationKeyword(yytext); last_token_can_end_stmt = false;}
 
-if          { printControlStructureKeyword(yytext); }
-then        { printControlStructureKeyword(yytext); }
-else        { printControlStructureKeyword(yytext); }
-while       { printControlStructureKeyword(yytext); }
-do          { printControlStructureKeyword(yytext); }
-for         { printControlStructureKeyword(yytext); }
-yield       { printControlStructureKeyword(yytext); }
-match       { printControlStructureKeyword(yytext); }
-case        { printControlStructureKeyword(yytext); }
-try         { printControlStructureKeyword(yytext); }
-catch       { printControlStructureKeyword(yytext); }
-finally     { printControlStructureKeyword(yytext); }
-throw       { printControlStructureKeyword(yytext); }
-return      { printControlStructureKeyword(yytext); }
+if          { printControlStructureKeyword(yytext); last_token_can_end_stmt = false;}
+then        { printControlStructureKeyword(yytext); last_token_can_end_stmt = false;}
+else        { printControlStructureKeyword(yytext); last_token_can_end_stmt = false;}
+while       { printControlStructureKeyword(yytext); last_token_can_end_stmt = false;}
+do          { printControlStructureKeyword(yytext); last_token_can_end_stmt = false;}
+for         { printControlStructureKeyword(yytext); last_token_can_end_stmt = false;}
+yield       { printControlStructureKeyword(yytext); last_token_can_end_stmt = false;}
+match       { printControlStructureKeyword(yytext); last_token_can_end_stmt = false;}
+case        { printControlStructureKeyword(yytext); case_stack.push(1); last_token_can_end_stmt = false;}
+try         { printControlStructureKeyword(yytext); last_token_can_end_stmt = false;}
+catch       { printControlStructureKeyword(yytext); last_token_can_end_stmt = false;}
+finally     { printControlStructureKeyword(yytext); last_token_can_end_stmt = false;}
+throw       { printControlStructureKeyword(yytext); last_token_can_end_stmt = false;}
+return      { printControlStructureKeyword(yytext); last_token_can_end_stmt = true;}
 
-extends     { printInheritKeyword(yytext); }
-with        { printInheritKeyword(yytext); }
+extends     { printInheritKeyword(yytext); last_token_can_end_stmt = false;}
+with        { printInheritKeyword(yytext); last_token_can_end_stmt = false;}
 
-new         { printObjectDefinitionKeyword(yytext); }
-super       { printObjectDefinitionKeyword(yytext); }
-this        { printObjectDefinitionKeyword(yytext); }
+new         { printObjectDefinitionKeyword(yytext); last_token_can_end_stmt = false;}
+super       { printObjectDefinitionKeyword(yytext); last_token_can_end_stmt = false;}
+this        { printObjectDefinitionKeyword(yytext); last_token_can_end_stmt = true;}
 
-end         { printContextKeyword(yytext); }
-infix       { printContextKeyword(yytext); }
+end         { printContextKeyword(yytext); last_token_can_end_stmt = false;}
+infix       { printContextKeyword(yytext); last_token_can_end_stmt = false;}
 
-true        { printConstantKeyword(yytext); }
-false       { printConstantKeyword(yytext); }
-null        { printConstantKeyword(yytext); }
+true        { printConstantKeyword(yytext); last_token_can_end_stmt = true;}
+false       { printConstantKeyword(yytext); last_token_can_end_stmt = true;}
+null        { printConstantKeyword(yytext); last_token_can_end_stmt = true;}
 
 
 {decimalLiteral} {
     long long val = to_int(yytext, 10);
     std::cout << "Decimal literal: " << yytext << " -> " << val << std::endl;
+    last_token_can_end_stmt = true;
 }
 
 {hexLiteral} {
     long long val = to_int(yytext, 16);
     std::cout << "Hex literal: " << yytext << " -> " << val << std::endl;
+    last_token_can_end_stmt = true;
 }
 
 {binLiteral} {
@@ -154,72 +169,78 @@ null        { printConstantKeyword(yytext); }
         val = (val << 1) | (c - '0');
     }
     std::cout << "Binary literal: " << yytext << " -> " << val << std::endl;
+    last_token_can_end_stmt = true;
 }
 
 {doubleLiteral} {
     double val = to_double(yytext);
     std::cout << "Double literal: " << yytext << " -> " << val << std::endl;
+    last_token_can_end_stmt = true;
 }
 
 
-{ID} { std::cout << "Identifier: " << yytext << std::endl; }
+{ID} { std::cout << "Identifier: " << yytext << std::endl; last_token_can_end_stmt = true;}
 
-"."     { printSyntaxToken(yytext); }
+"."     { printSyntaxToken(yytext); last_token_can_end_stmt = false;}
 
-","     { printSyntaxToken(yytext); }
+","     { printSyntaxToken(yytext); last_token_can_end_stmt = false;}
 
-":"     { printSyntaxToken(yytext); }
+":"     { printSyntaxToken(yytext); last_token_can_end_stmt = false;}
 
-";"     { printSyntaxToken(yytext); }
+";"     { printSyntaxToken(yytext); last_token_can_end_stmt = true;}
 
-"("     { printOperator(yytext); }
-")"     { printOperator(yytext); }
+"("     { parenDepth++; last_token_can_end_stmt = false; printOperator(yytext); }
+")"     { if(parenDepth>0) parenDepth--; last_token_can_end_stmt = true; printOperator(yytext); }
 
-"}"     { printOperator(yytext); }
-"{"     { printOperator(yytext); }
+"["     { bracketDepth++; last_token_can_end_stmt = false; printOperator(yytext); }
+"]"     { if(bracketDepth>0) bracketDepth--; last_token_can_end_stmt = true; printOperator(yytext); }
 
-"["     { printOperator(yytext); }
-"]"     { printOperator(yytext); }
+"{"     { braceDepth++; last_token_can_end_stmt = false; printOperator(yytext); }
+"}"     { if(braceDepth>0) braceDepth--; last_token_can_end_stmt = true; printOperator(yytext); }
 
-"+"     { printOperator(yytext); }
-"-"     { printOperator(yytext); }
-"*"     { printOperator(yytext); }
-"/"     { printOperator(yytext); }
-"%"     { printOperator(yytext); }
 
-"=="    { printOperator(yytext); }
-"!="    { printOperator(yytext); }
-">"     { printOperator(yytext); }
-"<"     { printOperator(yytext); }
-">="    { printOperator(yytext); }
-"<="    { printOperator(yytext); }
+"=>"    { if (!case_stack.empty()) case_stack.pop(); last_token_can_end_stmt = false; printOperator(yytext); }
+"<-"    { last_token_can_end_stmt = false; printOperator(yytext); }
 
-"&&"    { printOperator(yytext); }
-"||"    { printOperator(yytext); }
-"!"     { printOperator(yytext); }
+"+"     { printOperator(yytext); last_token_can_end_stmt = false;}
+"-"     { printOperator(yytext); last_token_can_end_stmt = false;}
+"*"     { printOperator(yytext); last_token_can_end_stmt = false;}
+"/"     { printOperator(yytext); last_token_can_end_stmt = false;}
+"%"     { printOperator(yytext); last_token_can_end_stmt = false;}
 
-"&"     { printOperator(yytext); }
-"|"     { printOperator(yytext); }
-"^"     { printOperator(yytext); }
-"~"     { printOperator(yytext); }
-"<<"    { printOperator(yytext); }
-">>"    { printOperator(yytext); }
-">>>"   { printOperator(yytext); }
+"=="    { printOperator(yytext); last_token_can_end_stmt = false;}
+"!="    { printOperator(yytext); last_token_can_end_stmt = false;}
+">"     { printOperator(yytext); last_token_can_end_stmt = false;}
+"<"     { printOperator(yytext); last_token_can_end_stmt = false;}
+">="    { printOperator(yytext); last_token_can_end_stmt = false;}
+"<="    { printOperator(yytext); last_token_can_end_stmt = false;}
 
-"="     { printOperator(yytext); }
-"+="    { printOperator(yytext); }
-"-="    { printOperator(yytext); }
-"*="    { printOperator(yytext); }
-"/="    { printOperator(yytext); }
-"%="    { printOperator(yytext); }
-"<<="   { printOperator(yytext); }
-">>="   { printOperator(yytext); }
-"&="    { printOperator(yytext); }
-"^="    { printOperator(yytext); }
-"|="    { printOperator(yytext); }
+"&&"    { printOperator(yytext); last_token_can_end_stmt = false;}
+"||"    { printOperator(yytext); last_token_can_end_stmt = false;}
+"!"     { printOperator(yytext); last_token_can_end_stmt = false;}
 
-"to"    { printOperator(yytext); }
-"until" { printOperator(yytext); }
+"&"     { printOperator(yytext); last_token_can_end_stmt = false;}
+"|"     { printOperator(yytext); last_token_can_end_stmt = false;}
+"^"     { printOperator(yytext); last_token_can_end_stmt = false;}
+"~"     { printOperator(yytext); last_token_can_end_stmt = false;}
+"<<"    { printOperator(yytext); last_token_can_end_stmt = false;}
+">>"    { printOperator(yytext); last_token_can_end_stmt = false;}
+">>>"   { printOperator(yytext); last_token_can_end_stmt = false;}
+
+"="     { printOperator(yytext); last_token_can_end_stmt = false;}
+"+="    { printOperator(yytext); last_token_can_end_stmt = false;}
+"-="    { printOperator(yytext); last_token_can_end_stmt = false;}
+"*="    { printOperator(yytext); last_token_can_end_stmt = false;}
+"/="    { printOperator(yytext); last_token_can_end_stmt = false;}
+"%="    { printOperator(yytext); last_token_can_end_stmt = false;}
+"<<="   { printOperator(yytext); last_token_can_end_stmt = false;}
+">>="   { printOperator(yytext); last_token_can_end_stmt = false;}
+"&="    { printOperator(yytext); last_token_can_end_stmt = false;}
+"^="    { printOperator(yytext); last_token_can_end_stmt = false;}
+"|="    { printOperator(yytext); last_token_can_end_stmt = false;}
+
+"to"    { printOperator(yytext); last_token_can_end_stmt = false;}
+"until" { printOperator(yytext); last_token_can_end_stmt = false;}
 
 
 \"                     { literal = ""; BEGIN(STRING); }
@@ -242,6 +263,7 @@ null        { printConstantKeyword(yytext); }
 }
 <STRING>\" {
     std::cout << "String literal: " << literal << "\n" << std::endl;
+    last_token_can_end_stmt = true;
     BEGIN(INITIAL);
 }
 <STRING,CHARACTER>\n {
@@ -264,6 +286,7 @@ null        { printConstantKeyword(yytext); }
     } else {
         std::cerr << "error: more than one character in string literal: " << literal << std::endl;
     }
+    last_token_can_end_stmt = true;
     BEGIN(INITIAL);
 }
 <CHARACTER><<EOF>> {
@@ -273,7 +296,39 @@ null        { printConstantKeyword(yytext); }
 
 
 {whitespace}  { std::cout << "+++Whitespace+++" << std::endl; }
-"\n" { std::cout << "------------------Newline------------------" << std::endl; }
+"\n" {
+    int nextch = peek_nonspace_char();
+    bool blank_line_after = (nextch == '\n');
+    bool cond1 = last_token_can_end_stmt;
+    std::string nextWord = peek_next_word();
+    bool cond2 = true;
+    if (!nextWord.empty()) {
+        if ( nextWord == "catch" || nextWord == "else" || nextWord == "extends" || nextWord == "finally" ||
+             nextWord == "forSome" || nextWord == "match" || nextWord == "with" || nextWord == "yield" ||
+             nextWord == "," || nextWord == "." || nextWord == ";" || nextWord == ":" || nextWord == "=" ||
+             nextWord == "=>" || nextWord == "<-" || nextWord == "<:" || nextWord == "<%" || nextWord == ">:" ||
+             nextWord == "#" || nextWord == "[" || nextWord == ")" || nextWord == "]" || nextWord == "}" )
+            cond2 = false;
+        if (nextWord == "case") {
+            std::string afterCase = peek_next_word();
+            if (!(afterCase == "class" || afterCase == "object")) cond2 = false;
+        }
+    } else cond2 = false;
+
+    bool newlines_enabled = (parenDepth == 0 && bracketDepth == 0 && case_stack.empty());
+
+    if (cond1 && cond2 && newlines_enabled) {
+        std::cout << "NL token emitted" << std::endl;
+        last_token_can_end_stmt = false;
+        //return NL;
+    } else if (blank_line_after && cond1 && newlines_enabled) {
+        std::cout << "NL token (blank-line) emitted" << std::endl;
+        last_token_can_end_stmt = false;
+        //return NL;
+    } else {
+        /* skip */
+    }
+}
 
 <*>.     { std::cerr << "Unexpected char \'" << yytext[0] << "\'"; BEGIN(INITIAL);}
 
@@ -295,6 +350,86 @@ int main(int argc, char **argv)
     yylex();
     fclose(yyin);
     return 0;
+}
+
+std::string peek_next_word() {
+    std::string word = "";
+    int c;
+    while ((c = yyinput()) != EOF) {
+        if (c == ' ' || c == '\t' || c == '\r') continue;
+        if (c == '/') {
+            int c2 = yyinput();
+            if (c2 == '/') {
+                int cc;
+                while ((cc = yyinput()) != EOF && cc != '\n') {}
+                if (cc == '\n') { unput(cc); continue; }
+                return word;
+            } else if (c2 == '*') {
+                int cc, prev = 0;
+                while ((cc = yyinput()) != EOF) {
+                    if (prev == '*' && cc == '/') break;
+                    prev = cc;
+                }
+                continue;
+            } else {
+                unput(c2);
+                unput(c);
+                break;
+            }
+        }
+        break;
+    }
+    if (c == EOF) return word;
+
+    if (isalpha(c) || c == '_') {
+        word.push_back((char)c);
+        while ((c = yyinput()) != EOF && (isalnum(c) || c == '_')) {
+            word.push_back((char)c);
+        }
+        if (c != EOF) unput(c);
+        return word;
+    } else {
+        word.push_back((char)c);
+        int c2 = yyinput();
+        if (c2 != EOF) {
+            std::string two = word + (char)c2;
+            if (two == "=>" || two == "<-" || two == "<:" || two == "<%" || two == ">:" )
+                word = two;
+            else
+                unput(c2);
+        }
+        return word;
+    }
+}
+
+int peek_nonspace_char() {
+    int c;
+    while ((c = yyinput()) != EOF) {
+        if (c == ' ' || c == '\t' || c == '\r') continue;
+
+        if (c == '/') {
+            int c2 = yyinput();
+            if (c2 == '/') {
+                int cc;
+                while ((cc = yyinput()) != EOF && cc != '\n') {}
+                if (cc == '\n') { unput(cc); continue; }
+            } else if (c2 == '*') {
+                int cc, prev = 0;
+                while ((cc = yyinput()) != EOF) {
+                    if (prev == '*' && cc == '/') break;
+                    prev = cc;
+                }
+                continue;
+            } else {
+                unput(c2);
+                unput(c);
+                return c;
+            }
+        }
+        unput(c);
+        return c;
+    }
+    return EOF;
 }
 
 long long to_int(const char* text, int base) {
