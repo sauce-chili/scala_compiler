@@ -65,28 +65,26 @@ expr: nl_optional expr nl_optional
     | ID
     | expr '.' nl_optional ID
     | expr '.' nl_optional ID nl_optional '(' expr_list_empty ')'
-    | arithmetical_expr
-
-arithmetical_expr: expr '+' expr
-                 | expr '-' nl_optional expr
-                 | expr '*' nl_optional expr
-                 | expr '/' nl_optional expr
-                 | expr '%' nl_optional expr
-                 | expr '<' nl_optional expr
-                 | expr '>' nl_optional expr
-                 | expr GREATER_OR_EQUAL expr
-                 | expr LESS_OR_EQUAL expr
-                 | expr PLUS_ASSIGNMENT expr
-                 | expr MINUS_ASSIGNMENT expr
-                 | expr MUL_ASSIGNMENT expr
-                 | expr DIV_ASSIGNMENT expr
-                 | expr MOD_ASSIGNMENT expr
-                 | expr '=' nl_optional expr
-                 | expr MUL_ASSIGNMENT expr
-                 | expr MUL_ASSIGNMENT expr
-                 | '-' nl_optional %prec UMINUS
-                 | '-' nl_optional %prec UPLUS
-                 ;
+    | expr '+' expr
+    | expr '-' expr
+    | expr '*' expr
+    | expr '/' expr
+    | expr '%' expr
+    | expr '<' expr
+    | expr '>' expr
+    | expr GREATER_OR_EQUAL expr
+    | expr LESS_OR_EQUAL expr
+    | expr PLUS_ASSIGNMENT expr
+    | expr MINUS_ASSIGNMENT expr
+    | expr MUL_ASSIGNMENT expr
+    | expr DIV_ASSIGNMENT expr
+    | expr MOD_ASSIGNMENT expr
+    | expr '=' nl_optional expr
+    | expr MUL_ASSIGNMENT expr
+    | expr MUL_ASSIGNMENT expr
+    | '-' nl_optional %prec UMINUS
+    | '-' nl_optional %prec UPLUS
+    ;
 
 while_expr: WHILE nl_optional '(' expr ')' nl_optional stmt
           ;
