@@ -364,7 +364,7 @@ null        { std::string cur(yytext); handle_pending_newlines(cur, cur_token_ca
         char ch = literal[0];
         printf("Char literal: %c\n", ch);
     } else {
-        std::cerr << "error: more than one character in string literal: " << literal << std::endl;
+        std::cerr << "\nerror: more than one character in string literal: " << literal << std::endl;
     }
     last_token_can_end_stmt = true;
     BEGIN(INITIAL);
