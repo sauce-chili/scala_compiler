@@ -42,6 +42,7 @@
 0x_1_2_
 1___2_
 10.
+-10
 
 // single line comment
 
@@ -51,9 +52,16 @@ a lot   of identifiers   with whitespaces
   multiline comment
 aaaa */
 
+// Data types
 val x: Int = 42
 val name: String = "Scala"
 var isActive: Boolean = true
+
+val character: Char = 'a'
+
+val boolean: Boolean = false
+
+val arr: Array[Char] = Array('1', '2', '3', '4', '5')
 
 val sum = 5 + 3
 val product = 6 * 7_5
@@ -200,3 +208,15 @@ until
 val stringLiteral = 'dhasbdabsubasu'
 
 "err expec\ited"
+
+val x = 5
+val a = 2
++ 3
+
+if (x > 0)
+  println("positive")
+
+List<Int> a = Array((1, 2), (3, 4), 5, ("a", "c"))
+if (case (x, y) <- a) {
+
+}
