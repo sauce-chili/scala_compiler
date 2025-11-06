@@ -85,6 +85,14 @@ whitespace [ \t\f\u000B]
 <MULTILINE_COMMENT>\*+[^/] { buff += yytext; }
 <MULTILINE_COMMENT>\*+\/ { /* std::cout << "Multiline comment: " << buff << std::endl; */ BEGIN(INITIAL); }
 
+Int     { printf("Integer type: %s\n",   yytext); }
+Char    { printf("Character type: %s\n", yytext); }
+String  { printf("String type: %s\n",    yytext); }
+Boolean { printf("Boolean type: %s\n",   yytext); }
+Unit    { printf("Unit type: %s\n",      yytext); }
+Array   { printf("Array type: %s\n",     yytext); }
+Double  { printf("Double type: %s\n",    yytext); }
+
 class       { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printTypeDefinitionKeyword(yytext); last_token_can_end_stmt = false; }
 trait       { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printTypeDefinitionKeyword(yytext); last_token_can_end_stmt = false; }
 object      { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printTypeDefinitionKeyword(yytext); last_token_can_end_stmt = false; }
