@@ -393,6 +393,8 @@ null        { std::string cur(yytext); handle_pending_newlines(cur, cur_token_ca
 }
 
 <*>.     { std::cerr << "Unexpected char \'" << yytext[0] << "\'"; BEGIN(INITIAL);}
+<*>" "   { std::cout << "Space \n";}
+<*>.     { std::cerr << "Unexpected char \'" << yytext[0] << "\'\n"; BEGIN(INITIAL);}
 
 %%
 
