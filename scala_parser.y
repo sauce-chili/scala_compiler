@@ -5,6 +5,7 @@
 %}
 
 %token IF
+%token IMPORT
 %token ELSE
 %token VAL
 %token VAR
@@ -55,14 +56,64 @@
 %left '*' '/' '%'
 %left UMINUS UPLUS
 %left '.'
+%left '|' '^' '&'
 %nonassoc '(' ')'
 
 %%
 
+stmtList: stmt
+        | stmtList stmt
+        ;
+
+blockStmt: '{' nl_optional stmtList '}'
+         ;
+
+stmt: IMPORT
+    | expr NL
+    ;
+
+exprList: expr
+        | exprList expr
+        ;
+
 expr: '(' expr ')'
     | literal
     | ID
+    | expr '.' nl_optional ID
+    | expr '+' expr
+    | expr '-' expr
+    | expr '*' expr
+    | expr '/' expr
+    | expr '%' expr
+    | expr '<' expr
+    | expr '>' expr
+    | expr GREATER_OR_EQUAL expr
+    | expr LESS_OR_EQUAL expr
+    | expr PLUS_ASSIGNMENT expr
+    | expr MINUS_ASSIGNMENT expr
+    | expr MUL_ASSIGNMENT expr
+    | expr DIV_ASSIGNMENT expr
+    | expr MOD_ASSIGNMENT expr
+    | expr '=' nl_optional expr
+    | whileExpr
+    | '-' expr %prec UMINUS
+    | '+' expr %prec UPLUS
     ;
+
+exprList: expr
+        | exprList expr
+        ;
+
+blockExpr: '{' nl_optional exprList nl_optional '}'
+         ;
+
+ifExpr: IF nl_optional '(' nl_optional expr nl_optional ')' nl_optional expr
+      | IF nl_optional '(' nl_optional expr nl_optional ')' nl_optional blockExpr nl_optional ELSE nl_optional blockExpr
+      ;
+
+whileExpr: WHILE nl_optional '(' nl_optional expr nl_optional ')' nl_optional stmt
+         | WHILE nl_optional '(' nl_optional expr nl_optional ')' nl_optional blockStmt
+         ;
 
 var_decl_kw: VAR
            | VAL
@@ -82,9 +133,7 @@ default_type: INT
             ;
 
 literal: DECIMAL_LITERAL
-       | '-' DECIMAL_LITERAL
        | DOUBLE_LITERAL
-       | '-' DOUBLE_LITERAL
        | CHAR_LITERAL
        | STRING_LITERAL
        | BOOLEAN_LITERAL
