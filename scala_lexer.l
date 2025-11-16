@@ -35,8 +35,6 @@
     bool last_token_can_end_stmt = false;
 
     std::vector<bool> nl_enabled_stack;
-    // indices in nl_enabled_stack that correspond to 'case' pushes (to be removed when => encountered)
-    std::vector<int> case_marker_stack;
 
     // pending newlines: 0 (none), 1 (one newline), 2 (blank-line detected -> treated as blank)
     int pending_nl = 0;
@@ -83,7 +81,7 @@ whitespace [ \t\f\u000B]
 "/*" { BEGIN(MULTILINE_COMMENT); buff = ""; }
 <MULTILINE_COMMENT>[^*]+ { buff += yytext; }
 <MULTILINE_COMMENT>\*+[^/] { buff += yytext; }
-<MULTILINE_COMMENT>\*+\/ { /* std::cout << "Multiline comment: " << buff << std::endl; */ BEGIN(INITIAL); }
+<MULTILINE_COMMENT>\*+\/ { std::cout << "Multiline comment: " << buff << std::endl;  BEGIN(INITIAL); }
 
 Int     { printf("Integer type: %s\n",   yytext); }
 Char    { printf("Character type: %s\n", yytext); }
@@ -136,9 +134,8 @@ case        {
                 std::string cur(yytext);
                 handle_pending_newlines(cur, cur_token_can_begin_statement(cur));
                 printControlStructureKeyword(yytext);
-                // push a case-disabled region (nl disabled) and register marker
+                // enter a region where newlines are disabled
                 nl_enabled_stack.push_back(false);
-                case_marker_stack.push_back((int)nl_enabled_stack.size()-1);
                 last_token_can_end_stmt = false;
             }
 try         { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printControlStructureKeyword(yytext); last_token_can_end_stmt = false;}
@@ -264,15 +261,8 @@ null        { std::string cur(yytext); handle_pending_newlines(cur, cur_token_ca
 "=>"    {
             std::string cur(yytext);
             handle_pending_newlines(cur, cur_token_can_begin_statement(cur));
-            // pop the nearest 'case' region if present
-            if (!case_marker_stack.empty()) {
-                int caseIdx = case_marker_stack.back();
-                case_marker_stack.pop_back();
-                // pop nl_enabled_stack frames until its size is caseIdx (i.e., remove case marker and any nested)
-                while ((int)nl_enabled_stack.size() > caseIdx) {
-                    nl_enabled_stack.pop_back();
-                }
-            }
+            // exit region: pop one frame if present
+            if (!nl_enabled_stack.empty()) nl_enabled_stack.pop_back();
             last_token_can_end_stmt = false;
             printOperator(yytext);
         }
