@@ -220,3 +220,6 @@ List<Int> a = Array((1, 2), (3, 4), 5, ("a", "c"))
 if (case (x, y) <- a) {
 
 }
+
+
+var ++ = 5

@@ -63,7 +63,7 @@ binLiteral 0(b|B)(_*{binDigit})*
 UnicodeEscape \\u+{hexDigit}{4}
 latinLetter [a-zA-Z]
 
-ID [a-zA-Z_$]+[a-zA-Z0-9_$]*
+ID ([a-zA-Z_$](_*[a-zA-Z0-9$]+)*(_[\!\#\%\&\*\+\-\:\/\<\=\>\?\@\\\^\|\~]*)*)|[\!\#\%\&\*\+\-\:\/\<\=\>\?\@\\\^\|\~]*
 
 whitespace [ \t\f\u000B]
 %%
@@ -200,13 +200,6 @@ null        { std::string cur(yytext); handle_pending_newlines(cur, cur_token_ca
     last_token_can_end_stmt = true;
 }
 
-{ID} {
-    std::string cur(yytext);
-    handle_pending_newlines(cur, cur_token_can_begin_statement(cur));
-    std::cout << "Identifier: " << yytext << std::endl;
-    last_token_can_end_stmt = true;
-}
-
 "."     { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printSyntaxToken(yytext); last_token_can_end_stmt = false; }
 ","     { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printSyntaxToken(yytext); last_token_can_end_stmt = false; }
 ":"     { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printSyntaxToken(yytext); last_token_can_end_stmt = false; }
@@ -318,6 +311,13 @@ null        { std::string cur(yytext); handle_pending_newlines(cur, cur_token_ca
 
 "to"    { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printOperator(yytext); last_token_can_end_stmt = false;}
 "until" { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printOperator(yytext); last_token_can_end_stmt = false;}
+
+{ID} {
+    std::string cur(yytext);
+    handle_pending_newlines(cur, cur_token_can_begin_statement(cur));
+    std::cout << "Identifier: " << yytext << std::endl;
+    last_token_can_end_stmt = true;
+}
 
 \"                     { literal = ""; BEGIN(STRING); }
 <STRING>[^\\\n\"]+     { literal.append(yytext); };
