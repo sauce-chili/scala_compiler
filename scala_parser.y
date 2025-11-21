@@ -85,8 +85,6 @@ expr: nlo expr nlo
     | expr DIV_ASSIGNMENT expr
     | expr MOD_ASSIGNMENT expr
     | expr '=' nlo expr
-    | expr MUL_ASSIGNMENT expr
-    | expr MUL_ASSIGNMENT expr
     | '-' nlo %prec UMINUS
     | '-' nlo %prec UPLUS
     ;
@@ -106,7 +104,7 @@ if_expr: IF nlo '(' expr ')' nlo expr
        | IF nlo '(' expr ')' nlo expr semi ELSE nlo expr
        ;
 
-var_decl: var_decl_kw nlo ID nlo ':' nlo type nlo '=' expr
+var_decl: var_decl_kw nlo ID nlo ':' nlo type nlo '=' nlo expr
         ;
 
 var_decl_kw: VAR
@@ -134,13 +132,22 @@ literal: DECIMAL_LITERAL
        ;
 
 nlo: /* empty */
-           | nl
+           | NL
            ;
 
-nl: NL
-	| nl NL
+nls: /*empty*/
+	| nls NL
 	;
 
+nl: NL
+    | nl NL
+
 semi: SEMICOLON
-    | nl nlo
+    | nl NL
     ;
+
+%%
+
+void yyerror(const char* s) {
+    cerr << "Parser error: " << s << endl;
+}
