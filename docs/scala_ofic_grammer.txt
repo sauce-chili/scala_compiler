@@ -16,12 +16,10 @@
                       |  [id ‘.’] ‘super’ ‘.’ id
 
   InfixType         ::=  CompoundType {id [nl] CompoundType}
-  CompoundType      ::=  SimpleType {‘with’ SimpleType} [Refinement]
-                      |  Refinement
+  CompoundType      ::=  SimpleType {‘with’ SimpleType}
   SimpleType        ::=  StableId
                       |  ‘(’ Types ‘)’
   Types             ::=  InfixType {‘,’ InfixType}
-  Refinement        ::=  [nl] ‘{’ Dcl {semi Dcl} ‘}’
 
   Expr             ::=  ‘if’ ‘(’ Expr ‘)’ {nl} Expr [[semi] ‘else’ Expr]
                       |  ‘while’ ‘(’ Expr ‘)’ {nl} Expr
@@ -51,13 +49,8 @@
   Exprs             ::=  Expr {‘,’ Expr}
   ArgumentExprs     ::=  ‘(’ [Exprs] ‘)’
                       |  [nl] BlockExpr
-  BlockExpr         ::=  ‘{’ CaseClauses ‘}’
-                      |  ‘{’ Block ‘}’
-  Block             ::=  BlockStat {semi BlockStat} [Expr]
-  BlockStat         ::=  Def
-                      |  {LocalModifier} TmplDef
-                      |  Expr
-                      |
+  BlockExpr         ::=  ‘{’ Block ‘}’
+  Block             ::=  Expr {semi Expr}
 
   Enumerators       ::=  Generator {semi Generator}
   Generator         ::=  Pattern1 ‘<-’ Expr {[semi] Guard | semi Pattern1 ‘=’ Expr}
