@@ -34,7 +34,7 @@
   PostfixExpr       ::=  InfixExpr [id [nl]]
   InfixExpr         ::=  PrefixExpr
                       |  InfixExpr id [nl] InfixExpr
-					  |	 InfixExpr ‘match’ ‘{’ CaseClauses ‘}’
+
   PrefixExpr        ::=  [PrefixOperator] SimpleExpr
   PrefixOperator    ::=  ‘-’ | ‘+’ | ‘~’ | ‘!’
   SimpleExpr        ::=  ‘new’ Constr
@@ -54,24 +54,7 @@
 
   Enumerators       ::=  Generator {semi Generator}
   Generator         ::=  id [‘:’ InfixType] ‘<-’ Expr {[semi] Guard | semi id [‘:’ InfixType] ‘=’ Expr}
-
-  CaseClauses       ::=  CaseClause { CaseClause }
-  CaseClause        ::=  ‘case’ Pattern [Guard] ‘=>’ Block
   Guard             ::=  ‘if’ PostfixExpr
-
-  Pattern           ::=  Pattern1 { ‘|’ Pattern1 }
-  Pattern1          ::=  varid ‘:’ InfixType
-                      |  Pattern2
-  Pattern2          ::=  id
-                      |  Pattern3
-  Pattern3          ::=  SimplePattern
-                      |  SimplePattern { id [nl] SimplePattern }
-  SimplePattern     ::=  varid
-                      |  Literal
-                      |  StableId
-                      |  StableId ‘(’ [Patterns] ‘)’
-                      |  ‘(’ [Patterns] ‘)’
-  Patterns          ::=  Pattern [‘,’ Patterns]
 
   FuncParamClause       ::=  [nl] ‘(’ [FuncParams] ‘)’
   FuncParams            ::=  FuncParam {‘,’ FuncParam}
