@@ -18,8 +18,7 @@
   InfixType         ::=  CompoundType {id [nl] CompoundType}
   CompoundType      ::=  SimpleType {‘with’ SimpleType}
   SimpleType        ::=  StableId
-                      |  ‘(’ Types ‘)’
-  Types             ::=  InfixType {‘,’ InfixType}
+                      |  ‘Array’ ‘[’InfixType‘]’
 
   Expr             ::=  ‘if’ ‘(’ Expr ‘)’ {nl} Expr [[semi] ‘else’ Expr]
                       |  ‘while’ ‘(’ Expr ‘)’ {nl} Expr
