@@ -74,9 +74,9 @@
                       |  ‘(’ [Patterns] ‘)’
   Patterns          ::=  Pattern [‘,’ Patterns]
 
-  ParamClause       ::=  [nl] ‘(’ [Params] ‘)’
-  Params            ::=  Param {‘,’ Param}
-  Param             ::=  id [‘:’ InfixType] [‘=’ Expr]
+  FuncParamClause       ::=  [nl] ‘(’ [FuncParams] ‘)’
+  FuncParams            ::=  FuncParam {‘,’ FuncParam}
+  FuncParam             ::=  id [‘:’ InfixType] [‘=’ Expr]
 
   ClassParamClause  ::=  [nl] ‘(’ [ClassParams] ‘)’
   ClassParams       ::=  ClassParam {‘,’ ClassParam}
