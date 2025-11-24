@@ -46,7 +46,6 @@
                       |  SimpleExpr1 ArgumentExprs -- вызов метод
   Exprs             ::=  Expr {‘,’ Expr}
   ArgumentExprs     ::=  ‘(’ [Exprs] ‘)’
-                      |  [nl] BlockExpr
   BlockExpr         ::=  ‘{’ Block ‘}’
   Block             ::=  BlockStat {semi BlockStat} [Expr]
   BlockStat         ::=  VarDefs
