@@ -29,6 +29,7 @@
                       |  ‘return’ [Expr]
                       |  [SimpleExpr ‘.’] id ‘=’ Expr
                       |  SimpleExpr1 ArgumentExprs ‘=’ Expr -- всегда преобразование к вызову update метода
+                      |  InfixExpr
 
   PostfixExpr       ::=  InfixExpr [id [nl]]
   InfixExpr         ::=  PrefixExpr
