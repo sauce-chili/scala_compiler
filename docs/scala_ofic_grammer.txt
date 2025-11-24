@@ -29,7 +29,7 @@
                       |  ‘return’ [Expr]
                       |  [SimpleExpr ‘.’] id ‘=’ Expr
                       |  SimpleExpr1 ArgumentExprs ‘=’ Expr
-                      |  PostfixExpr
+
   PostfixExpr       ::=  InfixExpr [id [nl]]
   InfixExpr         ::=  PrefixExpr
                       |  InfixExpr id [nl] InfixExpr
