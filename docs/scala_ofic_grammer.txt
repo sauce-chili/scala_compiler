@@ -53,7 +53,7 @@
                       |  Expr
 
   Enumerators       ::=  Generator {semi Generator}
-  Generator         ::=  Pattern1 ‘<-’ Expr {[semi] Guard | semi Pattern1 ‘=’ Expr}
+  Generator         ::=  id [‘:’ InfixType] ‘<-’ Expr {[semi] Guard | semi id [‘:’ InfixType] ‘=’ Expr}
 
   CaseClauses       ::=  CaseClause { CaseClause }
   CaseClause        ::=  ‘case’ Pattern [Guard] ‘=>’ Block
