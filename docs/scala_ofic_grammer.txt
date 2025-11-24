@@ -50,7 +50,9 @@
   ArgumentExprs     ::=  ‘(’ [Exprs] ‘)’
                       |  [nl] BlockExpr
   BlockExpr         ::=  ‘{’ Block ‘}’
-  Block             ::=  Expr {semi Expr}
+  Block             ::=  BlockStat {semi BlockStat} [Expr]
+  BlockStat         ::=  VarDefs
+                      |  Expr
 
   Enumerators       ::=  Generator {semi Generator}
   Generator         ::=  Pattern1 ‘<-’ Expr {[semi] Guard | semi Pattern1 ‘=’ Expr}
