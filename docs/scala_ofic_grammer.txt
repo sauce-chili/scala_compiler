@@ -36,7 +36,7 @@
 					  |	 InfixExpr ‘match’ ‘{’ CaseClauses ‘}’
   PrefixExpr        ::=  [PrefixOperator] SimpleExpr
   PrefixOperator    ::=  ‘-’ | ‘+’ | ‘~’ | ‘!’
-  SimpleExpr        ::=  ‘new’ (ClassTemplate | TemplateBody)
+  SimpleExpr        ::=  ‘new’ Constr
                       |  BlockExpr
                       |  SimpleExpr1
   SimpleExpr1       ::=  Literal
