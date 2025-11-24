@@ -29,6 +29,9 @@
                       |  ‘return’ [Expr]
                       |  [SimpleExpr ‘.’] id ‘=’ Expr
                       |  SimpleExpr1 ArgumentExprs ‘=’ Expr -- всегда преобразование к вызову update метода
+                      |  Path ArgumentExprs ‘=’ Expr -- всегда преобразование к вызову update метода
+                      |  ‘(’ [Expr] ‘)’ ArgumentExprs ‘=’ Expr -- всегда преобразование к вызову update метода
+                      |  SimpleExpr ‘.’ id ArgumentExprs ‘=’ Expr -- всегда преобразование к вызову update метода
                       |  InfixExpr
 
   PostfixExpr       ::=  InfixExpr [id [nl]]
@@ -41,10 +44,11 @@
                       |  BlockExpr
                       |  SimpleExpr1
   SimpleExpr1       ::=  Literal
+                      |  Path ArgumentExprs -- вызов метод
+                      |  SimpleExpr ‘.’ id ArgumentExprs -- вызов метод
                       |  Path
                       |  ‘(’ [Expr] ‘)’
                       |  SimpleExpr ‘.’ id
-                      |  SimpleExpr1 ArgumentExprs -- вызов метод
   Exprs             ::=  Expr {‘,’ Expr}
   ArgumentExprs     ::=  ‘(’ [Exprs] ‘)’
   BlockExpr         ::=  ‘{’ Block ‘}’
