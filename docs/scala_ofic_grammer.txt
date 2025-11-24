@@ -28,7 +28,6 @@
                       |  ‘throw’ Expr
                       |  ‘return’ [Expr]
                       |  [SimpleExpr ‘.’] id ‘=’ Expr
-                      |  PrefixOperator SimpleExpr ‘=’ Expr
                       |  SimpleExpr1 ArgumentExprs ‘=’ Expr
                       |  PostfixExpr
   PostfixExpr       ::=  InfixExpr [id [nl]]
