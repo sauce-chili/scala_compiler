@@ -104,8 +104,8 @@
   FunDcl            ::=  FunSig [‘:’ InfixType]
   FunSig            ::=  id FuncParamClause
 
-  VarDefs         	::=  ‘val’ Pattern2 {‘,’ Pattern2} [‘:’ InfixType] ‘=’ Expr
-                      |  ‘var’ Pattern2 {‘,’ Pattern2} [‘:’ InfixType] ‘=’ Expr
+  VarDefs         	::=  ‘val’ id {‘,’ id} [‘:’ InfixType] ‘=’ Expr
+                      |  ‘var’ id {‘,’ id} [‘:’ InfixType] ‘=’ Expr
 
   Def               ::=  VarDefs
                       |  ‘def’ FunDef
