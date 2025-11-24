@@ -81,8 +81,6 @@
   ClassParams       ::=  ClassParam {‘,’ ClassParam}
   ClassParam        ::=  {Modifier} [(‘val’ | ‘var’)]
                          id ‘:’ InfixType [‘=’ Expr]
-  Bindings          ::=  ‘(’ Binding {‘,’ Binding} ‘)’
-  Binding           ::=  id [‘:’ InfixType]
 
   Modifier          ::=  LocalModifier
                       |  ‘private’
