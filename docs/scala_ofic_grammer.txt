@@ -42,7 +42,7 @@
                       |  SimpleExpr1
   SimpleExpr1       ::=  Literal
                       |  Path
-                      |  ‘(’ [Exprs] ‘)’
+                      |  ‘(’ [Expr] ‘)’
                       |  SimpleExpr ‘.’ id
                       |  SimpleExpr1 ArgumentExprs -- вызов метод
   Exprs             ::=  Expr {‘,’ Expr}
