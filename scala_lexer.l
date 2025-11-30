@@ -416,7 +416,9 @@ bool cur_token_can_begin_statement(const std::string &tok) {
 void handle_pending_newlines(const std::string &curTok, bool curTokCanBegin) {
     if (pending_nl == 0) return;
     bool newlines_enabled = nl_enabled_stack.empty() ? true : nl_enabled_stack.back();
-
+    //std::cout << curTok << ":" << std::endl;
+    //std::cout << "last_token_can_end_stmt" << "curTokCanBegin" << "newlines_enabled" << std::endl;
+    //std::cout << last_token_can_end_stmt << curTokCanBegin << newlines_enabled << std::endl;
     if (last_token_can_end_stmt && curTokCanBegin && newlines_enabled) {
         if (pending_nl >= 2) {
             std::cout << "NL token (blank-line) emitted" << std::endl;
