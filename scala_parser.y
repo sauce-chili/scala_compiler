@@ -19,7 +19,7 @@ void yyerror(const char* s);
 %token CLASS OBJECT DEF
 %token THIS SUPER
 %token ARRAY
-%token NL
+%token nl
 %token SEMICOLON
 %token ID
 
@@ -47,7 +47,7 @@ void yyerror(const char* s);
 %left '*' '/' '%'
 %nonassoc ':'
 %right UMINUS UPLUS INCREMENT DECREMENT '!'
-%left '.' '[' ']' '(' ')'
+%left '.' '(' ')'
 
 //%start scala_file
 
@@ -64,12 +64,30 @@ expr_list: expr
          | expr_list ';' expr
          ;
 
-expr: nlo expr nlo
-    | '(' expr ')'
-    | literal
+expr: literal
     | ID
-    | expr '.' nlo ID
-    | expr '.' nlo ID nlo '(' exp_list_opt ')'
+    | if_expr
+    | while_expr
+    | try_expr
+    | do_while_expr
+    | THROW expr
+    | return_expr
+    | THIS
+    | SUPER
+    | expr '.' ID
+    | expr '.' ID '(' ')' // вызов функции
+    | expr '.' ID '(' expr_seq ')' '=' expr // запись в массив
+    | expr '.' ID '(' expr_seq ')' // вызов функции или обращение у массиву
+    | expr OR expr
+    | expr AND expr
+    | '!' expr
+    | '-' ele expr %prec UMINUS
+    | '+' ele expr %prec UPLUS
+    | '(' expr ')'
+    | ID '(' ')' // вызов функции
+    | ID '(' expr_seq ')' '=' expr // запись в массив
+    | ID '(' expr_seq ')' // вызов функции или обращение у массиву
+    | expr '=' expr
     | expr '+' expr
     | expr '-' expr
     | expr '*' expr
@@ -79,32 +97,50 @@ expr: nlo expr nlo
     | expr '>' expr
     | expr GREATER_OR_EQUAL expr
     | expr LESS_OR_EQUAL expr
+    | expr EQUAL expr
+    | expr NOT_EQUAL expr
     | expr PLUS_ASSIGNMENT expr
     | expr MINUS_ASSIGNMENT expr
     | expr MUL_ASSIGNMENT expr
     | expr DIV_ASSIGNMENT expr
     | expr MOD_ASSIGNMENT expr
-    | expr '=' nlo expr
-    | '-' nlo %prec UMINUS
-    | '-' nlo %prec UPLUS
+    | INCREMENT ele expr
+    | DECREMENT ele expr
+    | expr INCREMENT %prec POST_INCREMENT
+    | expr DECREMENT %prec POST_DECREMENT
+    | ARRAY '[' type ']' '(' expr_seq_opt ')'
+    | ARRAY '(' expr_seq_opt ')'
     ;
 
-while_expr: WHILE nlo '(' expr ')' nlo expr
+expr_seq_opt: /*empty*/
+            | expr_seq
+            ;
+
+expr_seq: expr
+    | expr_seq ',' expr
+    ;
+
+
+while_expr: WHILE '(' expr ')' nls expr
           ;
 
-try_expr: TRY nlo expr
-        | TRY nlo expr nlo CATCH nlo expr
-        | TRY nlo expr nlo CATCH nlo expr nlo FINALLY nlo expr
+try_expr: TRY expr CATCH expr FINALLY expr
+        | TRY expr CATCH expr
+        | TRY expr
+        ;
 
-do_while_expr: DO nlo expr nlo WHILE nlo '(' expr ')'
-             | DO nlo expr semi WHILE nlo '(' expr ')'
+do_while_expr: DO expr semio WHILE '(' expr ')'
+             ;
 
-if_expr: IF nlo '(' expr ')' nlo expr
-       | IF nlo '(' expr ')' nlo expr nlo ELSE nlo expr
-       | IF nlo '(' expr ')' nlo expr semi ELSE nlo expr
+if_expr: IF '(' expr ')' nls expr semio ELSE expr
+       | IF '(' expr ')' nls expr
        ;
 
-var_decl: var_decl_kw nlo ID nlo ':' nlo type nlo '=' nlo expr
+return_expr: RETURN expr
+           | RETURN
+           ;
+
+var_decl: var_decl_kw ID ':' nlo type nlo '=' nlo expr
         ;
 
 var_decl_kw: VAR
@@ -113,6 +149,7 @@ var_decl_kw: VAR
 
 type: default_type
     | ID
+    | ARRAY '[' type ']'
     ;
 
 default_type: INT
@@ -132,19 +169,20 @@ literal: DECIMAL_LITERAL
        ;
 
 nlo: /* empty */
-           | NL
+           | nl
            ;
 
 nls: /*empty*/
-	| nls NL
+	| nls nl
 	;
 
-nl: NL
-    | nl NL
-
 semi: SEMICOLON
-    | nl NL
+    | nl nls
     ;
+
+semio: /*empty*/
+     | semi
+     ;
 
 %%
 
