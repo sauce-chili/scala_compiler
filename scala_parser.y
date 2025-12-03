@@ -127,14 +127,20 @@ expr_seq: expr
 while_expr: WHILE '(' expr ')' nls expr
           ;
 
-tryExpr: TRY expr try_clauses
-        ;
+/* --------------------- TRY --------------------- */
 
-try_clauses: CATCH expr FINALLY expr
-           | CATCH expr
-           | FINALLY expr
-           | /* empty */ %prec TRY_CLAUSE_EMPTY
-           ;
+tryExpr: TRY expr catchPart finallyPart
+       ;
+
+catchPart: /* empty */
+          | CATCH expr
+          ;
+
+finallyPart: /* empty */
+            | FINALLY expr
+            ;
+
+/* --------------------- TRY --------------------- */
 
 do_while_expr: DO expr semio WHILE '(' expr ')'
              ;
