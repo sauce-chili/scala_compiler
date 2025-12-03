@@ -13,7 +13,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # Генерация парсера через Bison
 BISON_TARGET(MyParser scala_parser.y ${CMAKE_CURRENT_BINARY_DIR}/scala_parser.cpp
-        COMPILE_FLAGS "-v"
+        COMPILE_FLAGS "-v --report=solved --report-file=${CMAKE_CURRENT_BINARY_DIR}/bison.report"
 )
 # Генерация лексера через Flex (указываем заголовок Bison для токенов)
 FLEX_TARGET(MyScanner scala_lexer.l ${CMAKE_CURRENT_BINARY_DIR}/scala_lexer.cpp)

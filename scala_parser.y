@@ -13,15 +13,16 @@ void yyerror(const char* s);
 %token TRY
 %token CATCH
 %token FINALLY
+%token THROW
 %token VAL VAR
 %token NEW
 %token RETURN
 %token CLASS OBJECT DEF
 %token THIS SUPER
 %token ARRAY
-%token nl
-%token SEMICOLON
+%token NL
 %token ID
+%token WITH
 
 %token PRIVATE PROTECTED OVERRIDE ABSTRACT
 %token INT STRING CHAR BOOLEAN UNIT
@@ -36,6 +37,9 @@ void yyerror(const char* s);
 %token TRUE_LITERAL FALSE_LITERAL
 %token NULL_LITERAL
 
+%nonassoc RETURN IF FOR NL
+%left '(' '['
+%right UMINUS UPLUS '!'
 %right '=' PLUS_ASSIGNMENT MINUS_ASSIGNMENT MUL_ASSIGNMENT DIV_ASSIGNMENT MOD_ASSIGNMENT
 %left OR
 %left AND
@@ -46,8 +50,10 @@ void yyerror(const char* s);
 %left '+' '-'
 %left '*' '/' '%'
 %nonassoc ':'
-%right UMINUS UPLUS INCREMENT DECREMENT '!'
-%left '.' '(' ')'
+%left '.'
+
+%left CATCH FINALLY
+%nonassoc TRY_CLAUSE_EMPTY
 
 //%start scala_file
 
@@ -55,62 +61,59 @@ void yyerror(const char* s);
 
 //scala_file: top_stat_seq
 
-exp_list_opt: /* empty */
-               | expr_list
-               ;
-
 expr_list: expr
          | expr_list expr
          | expr_list ';' expr
          ;
 
 expr: literal
-    | ID
-    | if_expr
+    | fullID
     | while_expr
-    | try_expr
-    | do_while_expr
-    | THROW expr
-    | return_expr
-    | THIS
-    | SUPER
-    | expr '.' ID
-    | expr '.' ID '(' ')' // вызов функции
-    | expr '.' ID '(' expr_seq ')' '=' expr // запись в массив
-    | expr '.' ID '(' expr_seq ')' // вызов функции или обращение у массиву
-    | expr OR expr
-    | expr AND expr
-    | '!' expr
-    | '-' ele expr %prec UMINUS
-    | '+' ele expr %prec UPLUS
-    | '(' expr ')'
-    | ID '(' ')' // вызов функции
-    | ID '(' expr_seq ')' '=' expr // запись в массив
-    | ID '(' expr_seq ')' // вызов функции или обращение у массиву
-    | expr '=' expr
-    | expr '+' expr
-    | expr '-' expr
-    | expr '*' expr
-    | expr '/' expr
-    | expr '%' expr
-    | expr '<' expr
-    | expr '>' expr
-    | expr GREATER_OR_EQUAL expr
-    | expr LESS_OR_EQUAL expr
-    | expr EQUAL expr
-    | expr NOT_EQUAL expr
-    | expr PLUS_ASSIGNMENT expr
-    | expr MINUS_ASSIGNMENT expr
-    | expr MUL_ASSIGNMENT expr
-    | expr DIV_ASSIGNMENT expr
-    | expr MOD_ASSIGNMENT expr
-    | INCREMENT ele expr
-    | DECREMENT ele expr
-    | expr INCREMENT %prec POST_INCREMENT
-    | expr DECREMENT %prec POST_DECREMENT
-    | ARRAY '[' type ']' '(' expr_seq_opt ')'
-    | ARRAY '(' expr_seq_opt ')'
+    | tryExpr
     ;
+
+path: stableId
+    | fullID '.' THIS
+    | THIS
+    ;
+
+stableId: fullID
+        | path '.' fullID
+        | fullID '.' SUPER '.' fullID
+        | SUPER '.' fullID
+        ;
+
+infixType: compoundType
+         | infixType fullID compoundType
+         ;
+
+compoundType: simpleType
+            | compoundType WITH simpleType
+            ;
+
+simpleType: stableId
+          | ARRAY '[' infixType ']'
+          ;
+
+block: blockStat
+     | blockStat ';' blockStat
+     | blockStat ';' block
+     | blockStat ';' blockStat expr
+     ;
+
+blockStat: varDefs
+         | expr
+         ;
+
+varDefs: VAL ids '=' expr
+       | VAR ids '=' expr
+       | VAL ids ':' infixType '=' expr
+       | VAR ids ':' infixType '=' expr
+       ;
+
+ids: fullID
+   | ids ',' fullID
+   ;
 
 expr_seq_opt: /*empty*/
             | expr_seq
@@ -124,10 +127,14 @@ expr_seq: expr
 while_expr: WHILE '(' expr ')' nls expr
           ;
 
-try_expr: TRY expr CATCH expr FINALLY expr
-        | TRY expr CATCH expr
-        | TRY expr
+tryExpr: TRY expr try_clauses
         ;
+
+try_clauses: CATCH expr FINALLY expr
+           | CATCH expr
+           | FINALLY expr
+           | /* empty */ %prec TRY_CLAUSE_EMPTY
+           ;
 
 do_while_expr: DO expr semio WHILE '(' expr ')'
              ;
@@ -135,17 +142,6 @@ do_while_expr: DO expr semio WHILE '(' expr ')'
 if_expr: IF '(' expr ')' nls expr semio ELSE expr
        | IF '(' expr ')' nls expr
        ;
-
-return_expr: RETURN expr
-           | RETURN
-           ;
-
-var_decl: var_decl_kw ID ':' nlo type nlo '=' nlo expr
-        ;
-
-var_decl_kw: VAR
-           | VAL
-           ;
 
 type: default_type
     | ID
@@ -168,21 +164,48 @@ literal: DECIMAL_LITERAL
        | NULL_LITERAL
        ;
 
-nlo: /* empty */
-           | nl
-           ;
-
 nls: /*empty*/
-	| nls nl
+	| nls NL
 	;
 
-semi: SEMICOLON
-    | nl nls
+semi: ';'
     ;
 
 semio: /*empty*/
      | semi
      ;
+
+fullID: '+'
+      | '_'
+      | '!'
+      | '#'
+      | '%'
+      | '&'
+      | '*'
+      | '-'
+      | '/'
+      | ':'
+      | '<'
+      | '='
+      | '>'
+      | '?'
+      | '@'
+      | '\\'
+      | '^'
+      | '~'
+      | PLUS_ASSIGNMENT
+      | MINUS_ASSIGNMENT
+      | MUL_ASSIGNMENT
+      | DIV_ASSIGNMENT
+      | MOD_ASSIGNMENT
+      | EQUAL
+      | NOT_EQUAL
+      | LESS_EQUAL
+      | GREATER_EQUAL
+      | GREATER_OR_EQUAL
+      | LESS_OR_EQUAL
+      | ID
+      ;
 
 %%
 
