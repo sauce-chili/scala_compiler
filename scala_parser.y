@@ -23,6 +23,7 @@ void yyerror(const char* s);
 %token NL
 %token ID
 %token WITH
+%token LEFT_ARROW
 
 %token PRIVATE PROTECTED OVERRIDE ABSTRACT
 %token INT STRING CHAR BOOLEAN UNIT
@@ -48,19 +49,30 @@ void yyerror(const char* s);
 %left TO UNTIL
 %left '+' '-'
 %left '*' '/' '%'
-%right UMINUS UPLUS '!'
+%right UMINUS UPLUS '!' '~'
 %nonassoc ':'
 %left '.'
+%left LEFT_ARROW
+%left '|'
+%left '^'
+%left '&'
 
 %nonassoc LOWEST
 %nonassoc CATCH
 %nonassoc FINALLY
+%nonassoc HIGHEST
 
-//%start scala_file
+%nonassoc POSTFIX_OP
+%nonassoc INFIX_OP
+
+%nonassoc RETURN_EMPTY
+%nonassoc RETURN_EXPR
+
+%start scala_file
 
 %%
 
-//scala_file: top_stat_seq
+scala_file: expr_list
 
 expr_list: expr
          | expr_list expr
@@ -69,10 +81,86 @@ expr_list: expr
 
 expr: literal
     | fullID
+    | if_expr
     | while_expr
     | tryExpr
-    | if_expr
+    | do_while_expr
+    | THROW expr
+    | RETURN                                   %prec RETURN_EMPTY
+    | RETURN expr                              %prec RETURN_EXPR
+    | FOR '(' enumerators ')' nls yieldO expr
+    | FOR '{' enumerators '}' nls yieldO expr
     ;
+
+forExpr: FOR '(' enumerators ')' nls yieldO expr
+       | FOR '{' enumerators '}' nls yieldO expr
+       ;
+
+yieldO: /* empty */
+      | YIELD
+      ;
+
+enumerators: generator
+           | enumerators ';' generator
+           ;
+
+generator: fullID generatorTypeO LEFT_ARROW expr generatorTailO
+         ;
+
+generatorTypeO: /* empty */
+                | ':' infixType
+                ;
+
+generatorTailO: /* empty */
+              | generatorTail
+              ;
+
+generatorTail: semio guard
+             | generatorTail semio guard
+             | generatorTail semi fullID generatorTypeO '=' expr
+             ;
+
+guard: IF postfixExpr
+     ;
+
+postfixExpr: infixExpr
+           | infixExpr fullID nls %prec POSTFIX_OP
+           ;
+
+infixExpr: prefixExpr
+         | infixExpr fullID nls infixExpr %prec INFIX_OP
+         ;
+
+prefixExpr: simpleExpr
+          | UMINUS simpleExpr
+          | UPLUS simpleExpr
+          | '~' simpleExpr
+          | '!' simpleExpr
+          ;
+
+simpleExpr: NEW constr
+          | blockExpr
+          | simpleExpr1
+          ;
+
+simpleExpr1: literal
+           | path argumentExprs
+           |
+
+argumentExprs: '(' exprs ')'
+             ;
+
+exprs: /* empty */
+     | expr
+     | exprs ',' expr
+     ;
+
+blockExpr: '{' block '}'
+         ;
+
+constr: simpleType
+      | simpleType argumentExprs
+      ;
 
 path: stableId
     | fullID '.' THIS
@@ -97,11 +185,13 @@ simpleType: stableId
           | ARRAY '[' infixType ']'
           ;
 
-block: blockStat
-     | blockStat ';' blockStat
-     | blockStat ';' block
-     | blockStat ';' blockStat expr
+block: blockStat blockRecursive
+     | blockStat blockRecursive expr
      ;
+
+blockRecursive: /* empty */
+              | blockRecursive semi blockStat
+              ;
 
 blockStat: varDefs
          | expr
@@ -116,15 +206,6 @@ varDefs: VAL ids '=' expr
 ids: fullID
    | ids ',' fullID
    ;
-
-expr_seq_opt: /*empty*/
-            | expr_seq
-            ;
-
-expr_seq: expr
-    | expr_seq ',' expr
-    ;
-
 
 while_expr: WHILE '(' expr ')' nls expr
           ;
