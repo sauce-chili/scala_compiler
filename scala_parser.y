@@ -39,7 +39,6 @@ void yyerror(const char* s);
 
 %nonassoc RETURN IF FOR NL
 %left '(' '['
-%right UMINUS UPLUS '!'
 %right '=' PLUS_ASSIGNMENT MINUS_ASSIGNMENT MUL_ASSIGNMENT DIV_ASSIGNMENT MOD_ASSIGNMENT
 %left OR
 %left AND
@@ -49,11 +48,13 @@ void yyerror(const char* s);
 %left TO UNTIL
 %left '+' '-'
 %left '*' '/' '%'
+%right UMINUS UPLUS '!'
 %nonassoc ':'
 %left '.'
 
-%left CATCH FINALLY
-%nonassoc TRY_CLAUSE_EMPTY
+%nonassoc LOWEST
+%nonassoc CATCH
+%nonassoc FINALLY
 
 //%start scala_file
 
@@ -70,6 +71,7 @@ expr: literal
     | fullID
     | while_expr
     | tryExpr
+    | if_expr
     ;
 
 path: stableId
@@ -129,15 +131,16 @@ while_expr: WHILE '(' expr ')' nls expr
 
 /* --------------------- TRY --------------------- */
 
-tryExpr: TRY expr catchPart finallyPart
+tryExpr: TRY expr tryTail
        ;
 
-catchPart: /* empty */
-          | CATCH expr
-          ;
+tryTail: /* empty */ %prec LOWEST
+       | CATCH expr finallyPart %prec CATCH
+       | FINALLY expr %prec FINALLY
+       ;
 
-finallyPart: /* empty */
-            | FINALLY expr
+finallyPart: /* empty */ %prec LOWEST
+            | FINALLY expr %prec FINALLY
             ;
 
 /* --------------------- TRY --------------------- */
