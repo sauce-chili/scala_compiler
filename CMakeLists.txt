@@ -3,6 +3,8 @@ project(scala_lexer LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(FLEX_EXECUTABLE "D:/soft/win_flex_bison/win_flex.exe")
+set(BISON_EXECUTABLE "D:/soft/win_flex_bison/win_bison.exe")
 
 # Поиск Flex и Bison
 find_package(FLEX REQUIRED)
@@ -13,7 +15,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # Генерация парсера через Bison
 BISON_TARGET(MyParser scala_parser.y ${CMAKE_CURRENT_BINARY_DIR}/scala_parser.cpp
-        COMPILE_FLAGS "-v --report=solved --report-file=${CMAKE_CURRENT_BINARY_DIR}/bison.report"
+        COMPILE_FLAGS "-v -Wcounterexamples --report=solved --report-file=${CMAKE_CURRENT_BINARY_DIR}/bison.report"
 )
 # Генерация лексера через Flex (указываем заголовок Bison для токенов)
 FLEX_TARGET(MyScanner scala_lexer.l ${CMAKE_CURRENT_BINARY_DIR}/scala_lexer.cpp)
