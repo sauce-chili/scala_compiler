@@ -315,8 +315,36 @@ null        { std::string cur(yytext); handle_pending_newlines(cur, cur_token_ca
 {ID} {
     std::string cur(yytext);
     handle_pending_newlines(cur, cur_token_can_begin_statement(cur));
-    std::cout << "Identifier: " << yytext << std::endl;
     last_token_can_end_stmt = true;
+    if (yytext[0] == '*') {
+        std::cout << "Asterisk-start identifier: " << yytext << std::endl;
+    } else if (yytext[0] == '/') {
+        std::cout << "Slash-start identifier: " << yytext << std::endl;
+    } else if (yytext[0] == '%') {
+        std::cout << "Percent-start identifier: " << yytext << std::endl;
+    } else if (yytext[0] == '+') {
+        std::cout << "Plus-start identifier: " << yytext << std::endl;
+    } else if (yytext[0] == '-') {
+       std::cout << "Minus-start identifier: " << yytext << std::endl;
+    } else if (yytext[0] == ':') {
+       std::cout << "Colon-start identifier: " << yytext << std::endl;
+    } else if (yytext[0] == '<') {
+       std::cout << "Left-arrow-start identifier: " << yytext << std::endl;
+    } else if (yytext[0] == '>') {
+       std::cout << "Right-arrow-start identifier: " << yytext << std::endl;
+    } else if (yytext[0] == '=') {
+       std::cout << "Equality-start identifier: " << yytext << std::endl;
+    } else if (yytext[0] == '!') {
+       std::cout << "Exclamation-start identifier: " << yytext << std::endl;
+    } else if (yytext[0] == '&') {
+       std::cout << "Ampersand-start identifier: " << yytext << std::endl;
+    } else if (yytext[0] == '^') {
+       std::cout << "Upper-arrow-start identifier: " << yytext << std::endl;
+    } else if (yytext[0] == '|') {
+       std::cout << "Vertical-sign-start identifier: " << yytext << std::endl;
+    } else {
+       std::cout << "Identifier: " << yytext << std::endl;
+    }
 }
 
 \"                     { literal = ""; BEGIN(STRING); }

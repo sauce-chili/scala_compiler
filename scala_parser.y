@@ -6,6 +6,7 @@ int yylex();
 void yyerror(const char* s);
 %}
 
+
 %token NON
 
 %token IF ELSE
@@ -40,27 +41,25 @@ void yyerror(const char* s);
 
 %nonassoc RETURN IF FOR NL
 %nonassoc ELSE WHILE DO TRY THROW VAL VAR NEW YIELD MATCH CASE
-%right '=' LEFT_ARROW PLUS_ASSIGNMENT MINUS_ASSIGNMENT MUL_ASSIGNMENT DIV_ASSIGNMENT MOD_ASSIGNMENT
-%left OR '|'
-%left AND '&'
-%left '^'
+%right '=' LEFT_ARROW PLUS_ASSIGNMENT MINUS_ASSIGNMENT MUL_ASSIGNMENT DIV_ASSIGNMENT MOD_ASSIGNMENT ID_EQUALITY
+%left OR '|' ID_VERTICAL_SIGN
+%left AND '&' ID_AMPERSAND
+%left '^' ID_UPPER_ARROW
 %left EQUAL NOT_EQUAL
-%left '<' '>' LESS_EQUAL GREATER_EQUAL GREATER_OR_EQUAL LESS_OR_EQUAL
+%left '<' '>' LESS_EQUAL GREATER_EQUAL GREATER_OR_EQUAL LESS_OR_EQUAL ID_LEFT_ARROW ID_RIGHT_ARROW
 %left TO UNTIL
-%left '+' '-'
-%left '*' '/' '%'
-%right UMINUS UPLUS '!' '~'
+%left '+' '-' ID_MINUS ID_PLUS
+%left '*' '/' '%' ID_ASTERISK ID_SLASH ID_PERCENT
+%right UMINUS UPLUS '!' '~' ID_EXCLAMATION
 %left '.'
-%nonassoc ':'
+%nonassoc ':' ID_COLON
 %nonassoc '(' '['
 %nonassoc POSTFIX_OP
 %nonassoc INFIX_OP
 %nonassoc RETURN_EMPTY
 %nonassoc RETURN_EXPR
-%nonassoc LOWEST
 %nonassoc CATCH
 %nonassoc FINALLY
-%nonassoc HIGHEST
 
 %start scala_file
 
@@ -140,6 +139,11 @@ simpleExpr: NEW constr
 
 simpleExpr1: literal
            | path argumentExprs
+           | simpleExpr '.' fullID argumentExprs
+           | path
+           | '(' expr ')'
+           | '(' ')'
+           | simpleExpr '.' fullID
            ;
 
 argumentExprs: '(' exprs ')'
@@ -180,11 +184,10 @@ simpleType: stableId
           | ARRAY '[' infixType ']'
           ;
 
-block: blockStat blockStats
-     | blockStat blockStats expr
+block: blockStats
      ;
 
-blockStats: /* empty */
+blockStats: blockStat
           | blockStats semi blockStat
           ;
 
@@ -201,7 +204,7 @@ ids: fullID
 tryExpr: TRY expr tryTail
        ;
 
-tryTail: /* empty */ %prec LOWEST
+tryTail: /* empty */
        | CATCH expr finallyPart %prec CATCH
        | FINALLY expr %prec FINALLY
        ;
@@ -414,6 +417,19 @@ fullID: '+'
       | GREATER_OR_EQUAL
       | LESS_OR_EQUAL
       | ID
+      | ID_EQUALITY
+      | ID_VERTICAL_SIGN
+      | ID_AMPERSAND
+      | ID_UPPER_ARROW
+      | ID_LEFT_ARROW
+      | ID_RIGHT_ARROW
+      | ID_MINUS
+      | ID_PLUS
+      | ID_ASTERISK
+      | ID_SLASH
+      | ID_PERCENT
+      | ID_EXCLAMATION
+      | ID_COLON
       ;
 
 %%
