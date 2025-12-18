@@ -6,24 +6,22 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(FLEX_EXECUTABLE "D:/soft/win_flex_bison/win_flex.exe")
 set(BISON_EXECUTABLE "D:/soft/win_flex_bison/win_bison.exe")
 
-# Поиск Flex и Bison
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-# Генерация парсера через Bison
+#BISON_TARGET(MyParser scala_parser.y ${CMAKE_CURRENT_BINARY_DIR}/scala_parser.cpp
+#        COMPILE_FLAGS "-v -Wcounterexamples -Wno-conflicts-sr --report=solved --report-file=${CMAKE_CURRENT_BINARY_DIR}/bison.report"
+#)
 BISON_TARGET(MyParser scala_parser.y ${CMAKE_CURRENT_BINARY_DIR}/scala_parser.cpp
-        COMPILE_FLAGS "-v -Wcounterexamples --report=solved --report-file=${CMAKE_CURRENT_BINARY_DIR}/bison.report"
+        COMPILE_FLAGS "-v --report=solved --report-file=${CMAKE_CURRENT_BINARY_DIR}/bison.report"
 )
-# Генерация лексера через Flex (указываем заголовок Bison для токенов)
 FLEX_TARGET(MyScanner scala_lexer.l ${CMAKE_CURRENT_BINARY_DIR}/scala_lexer.cpp)
 
-# Объявляем зависимости между лексером и парсером
 ADD_FLEX_BISON_DEPENDENCY(MyScanner MyParser)
 
-# Создаем исполняемый файл
 add_executable(scala_lexer
         ${FLEX_MyScanner_OUTPUTS}
         ${BISON_MyParser_OUTPUTS}
@@ -32,7 +30,6 @@ add_executable(scala_lexer
 message(STATUS "Flex output: ${FLEX_MyScanner_OUTPUTS}")
 message(STATUS "Bison output: ${BISON_MyParser_OUTPUTS}")
 
-# Отключаем предупреждения для сгенерированных файлов
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set_source_files_properties(
             ${FLEX_MyScanner_OUTPUTS}

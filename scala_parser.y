@@ -68,9 +68,7 @@ void yyerror(const char* s);
 scala_file: topStatSeq
           ;
 
-expr: literal
-    | fullID
-    | IF '(' expr ')' nls expr semio ELSE expr
+expr: IF '(' expr ')' nls expr semio ELSE expr
     | IF '(' expr ')' nls expr
     | WHILE '(' expr ')' nls expr
     | tryExpr
