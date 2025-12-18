@@ -106,20 +106,8 @@ generatorTypeO: /* empty */
                 ;
 
 generatorTailO: /* empty */
-              | generatorTail
+              | generatorTailO semi fullID generatorTypeO '=' expr
               ;
-
-generatorTail: semio guard
-             | generatorTail semio guard
-             | generatorTail semi fullID generatorTypeO '=' expr
-             ;
-
-guard: IF postfixExpr
-     ;
-
-postfixExpr: infixExpr
-           | infixExpr fullID nls %prec POSTFIX_OP
-           ;
 
 infixExpr: prefixExpr
          | infixExpr fullID nls infixExpr %prec INFIX_OP
@@ -201,17 +189,11 @@ ids: fullID
 
 /* --------------------- TRY --------------------- */
 
-tryExpr: TRY expr tryTail
+tryExpr: TRY expr
+       | TRY expr CATCH expr
+       | TRY expr CATCH expr FINALLY expr
+       | TRY expr FINALLY expr
        ;
-
-tryTail: /* empty */
-       | CATCH expr finallyPart %prec CATCH
-       | FINALLY expr %prec FINALLY
-       ;
-
-finallyPart: /* empty */ %prec LOWEST
-            | FINALLY expr %prec FINALLY
-            ;
 
 /* --------------------- TRY --------------------- */
 
@@ -255,16 +237,13 @@ modifiers: /* empty */
          | modifiers modifier
          ;
 
-modifier: localModifier
+modifier: ABSTRACT
+        | FINAL
+        | SEALED
         | PRIVATE
         | PROTECTED
         | OVERRIDE
         ;
-
-localModifier: ABSTRACT
-             | FINAL
-             | SEALED
-             ;
 
 /* --------------------- CLASS --------------------- */
 
