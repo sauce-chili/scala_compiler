@@ -28,8 +28,6 @@ void yyerror(const char* s);
 
 %token PRIVATE PROTECTED OVERRIDE ABSTRACT FINAL SEALED EXTENDS
 %token INT STRING CHAR BOOLEAN UNIT
-%token MATCH
-%token CASE
 %token YIELD
 
 %token DECIMAL_LITERAL
