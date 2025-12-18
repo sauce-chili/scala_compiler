@@ -81,10 +81,9 @@ expr: IF '(' expr ')' nls expr semio ELSE expr
     | simpleExpr '.' fullID '=' expr
     | fullID '=' expr
     | simpleExpr1 argumentExprs '=' expr
-    | path argumentExprs '=' expr
-    | '(' ')' argumentExprs '=' expr
-    | '(' expr ')' argumentExprs '=' expr
-    | simpleExpr '.' fullID argumentExprs '=' expr
+    //| path argumentExprs '=' expr
+    //| '(' expr ')' argumentExprs '=' expr
+    //| simpleExpr '.' fullID argumentExprs '=' expr
     | infixExpr
     ;
 
@@ -107,9 +106,14 @@ generatorTailO: /* empty */
               | generatorTailO semi fullID generatorTypeO '=' expr
               ;
 
-infixExpr: prefixExpr
-         | infixExpr fullID nls infixExpr %prec INFIX_OP
-         ;
+infixExpr:
+      prefixExpr infixTail
+;
+
+infixTail: /* empty */
+    | infixTail fullID nls prefixExpr
+;
+
 
 prefixExpr: simpleExpr
           | UMINUS simpleExpr
@@ -124,12 +128,13 @@ simpleExpr: NEW constr
           ;
 
 simpleExpr1: literal
-           | path argumentExprs
-           | simpleExpr '.' fullID argumentExprs
+           //| path argumentExprs
+           //| simpleExpr '.' fullID argumentExprs
            | path
            | '(' expr ')'
            | '(' ')'
            | simpleExpr '.' fullID
+           | simpleExpr1 argumentExprs // вызов метода
            ;
 
 argumentExprs: '(' exprs ')'
