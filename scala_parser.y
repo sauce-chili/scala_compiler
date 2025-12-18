@@ -149,16 +149,26 @@ constr: simpleType
       | simpleType argumentExprs
       ;
 
+
+
 path: stableId
     | fullID '.' THIS
     | THIS
     ;
 
 stableId: fullID
-        | path '.' fullID
         | fullID '.' SUPER '.' fullID
         | SUPER '.' fullID
+        | fullID '.' THIS chaining
+        | THIS chaining
+        | stableId chaining
         ;
+
+chaining: '.' fullID
+        | chaining '.' fullID
+        ;
+
+
 
 infixType: compoundType
          | infixType fullID compoundType
