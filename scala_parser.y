@@ -94,16 +94,18 @@ enumerators: generator
            | enumerators ';' generator
            ;
 
-generator: fullID generatorTypeO LEFT_ARROW expr generatorTailO
+
+generator: fullID generatorTypeO LEFT_ARROW expr generatorTail
          ;
 
 generatorTypeO: /* empty */
-                | ':' infixType
-                ;
-
-generatorTailO: /* empty */
-              | generatorTailO semi fullID generatorTypeO '=' expr
+              | ':' infixType
               ;
+
+generatorTail: /* empty */
+             | generatorTail semi fullID generatorTypeO '=' expr
+             ;
+
 
 infixExpr: prefixExpr
          | infixExpr fullID nls infixExpr %prec INFIX_OP
