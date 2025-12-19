@@ -75,7 +75,6 @@ expr: IF '(' expr ')' nls expr semio ELSE expr
     | RETURN                                   %prec RETURN_EMPTY
     | RETURN expr                              %prec RETURN_EXPR
     | FOR '(' enumerators ')' nls yieldO expr
-    | FOR '{' enumerators '}' nls yieldO expr
     | simpleExpr '.' fullID '=' expr
     | fullID '=' expr
     | simpleExpr1 argumentExprs '=' expr
