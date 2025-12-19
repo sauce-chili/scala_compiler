@@ -92,7 +92,6 @@ enumerators: generator
            | enumerators ';' generator
            ;
 
-
 generator: fullID generatorTypeO LEFT_ARROW expr generatorTail
          ;
 
@@ -104,7 +103,6 @@ generatorTail: /* empty */
              | generatorTail semi fullID generatorTypeO '=' expr
              ;
 
-
 infixExpr:
       prefixExpr infixTail
 ;
@@ -112,7 +110,6 @@ infixExpr:
 infixTail: /* empty */
     | infixTail fullID nls prefixExpr
 ;
-
 
 prefixExpr: simpleExpr
           | UMINUS simpleExpr
@@ -151,8 +148,6 @@ constr: simpleType
       | simpleType argumentExprs
       ;
 
-
-
 path: stableId
     | fullID '.' THIS
     | THIS
@@ -169,8 +164,6 @@ stableId: fullID
 chaining: '.' fullID
         | chaining '.' fullID
         ;
-
-
 
 infixType: compoundType
          | infixType fullID compoundType
