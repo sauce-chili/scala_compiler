@@ -260,7 +260,7 @@ modifier: ABSTRACT
 
 /* --------------------- CLASS --------------------- */
 
-templateBody: nls '{' templateStat templateStats
+templateBody: nls '{' templateStat templateStats '}'
             ;
 
 templateStats: /* empty */
@@ -270,7 +270,6 @@ templateStats: /* empty */
 templateStat: /* empty */
             | modifiers def
             | modifiers dcl
-            | expr
             ;
 
 /* --------------------- DECL --------------------- */
