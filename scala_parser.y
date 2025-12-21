@@ -105,7 +105,7 @@ infixExpr: prefixExpr infixTail
 
 infixTail: /* empty */
          | infixTail fullID nls prefixExpr
-          ;
+         ;
 
 prefixExpr: simpleExpr
           | UMINUS simpleExpr
@@ -120,12 +120,20 @@ simpleExpr: NEW constr
           ;
 
 simpleExpr1: literal
-           | path
+           | fullID
+           | SUPER '.' fullID
+           | THIS '.' fullID
            | '(' expr ')'
            | '(' ')'
            | simpleExpr '.' fullID
            | simpleExpr1 argumentExprs // вызов метода
            ;
+
+stableId: fullID
+        | SUPER '.' fullID
+        | THIS '.' fullID
+        | stableId '.' fullID
+        ;
 
 argumentExprs: '(' exprs ')'
              ;
@@ -141,17 +149,6 @@ blockExpr: '{' block '}'
 constr: simpleType
       | simpleType argumentExprs
       ;
-
-path: stableId
-    | fullID '.' THIS
-    | THIS
-    ;
-
-stableId: fullID
-        | SUPER '.' fullID
-        | THIS '.' fullID
-        | stableId '.' fullID
-        ;
 
 infixType: compoundType
          | infixType fullID compoundType
