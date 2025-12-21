@@ -100,13 +100,12 @@ generatorTail: /* empty */
              | generatorTail semi fullID generatorTypeO '=' expr
              ;
 
-infixExpr:
-      prefixExpr infixTail
-;
+infixExpr: prefixExpr infixTail
+         ;
 
 infixTail: /* empty */
-    | infixTail fullID nls prefixExpr
-;
+         | infixTail fullID nls prefixExpr
+          ;
 
 prefixExpr: simpleExpr
           | UMINUS simpleExpr
