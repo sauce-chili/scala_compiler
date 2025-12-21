@@ -247,7 +247,7 @@ modifier: ABSTRACT
 
 /* --------------------- CLASS --------------------- */
 
-templateBody: nls '{' templateStat templateStats
+templateBody: nls '{' templateStat templateStats '}'
             ;
 
 templateStats: /* empty */
