@@ -78,9 +78,6 @@ expr: IF '(' expr ')' nls expr semio ELSE expr
     | simpleExpr '.' fullID '=' expr
     | fullID '=' expr
     | simpleExpr1 argumentExprs '=' expr
-    //| path argumentExprs '=' expr
-    //| '(' expr ')' argumentExprs '=' expr
-    //| simpleExpr '.' fullID argumentExprs '=' expr
     | infixExpr
     ;
 
@@ -124,8 +121,6 @@ simpleExpr: NEW constr
           ;
 
 simpleExpr1: literal
-           //| path argumentExprs
-           //| simpleExpr '.' fullID argumentExprs
            | path
            | '(' expr ')'
            | '(' ')'
