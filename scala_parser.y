@@ -129,12 +129,6 @@ simpleExpr1: literal
            | simpleExpr1 argumentExprs // вызов метода
            ;
 
-stableId: fullID
-        | SUPER '.' fullID
-        | THIS '.' fullID
-        | stableId '.' fullID
-        ;
-
 argumentExprs: '(' exprs ')'
              ;
 
@@ -146,8 +140,7 @@ exprs: /* empty */
 blockExpr: '{' block '}'
          ;
 
-constr: simpleType
-      | simpleType argumentExprs
+constr: simpleType argumentExprs
       ;
 
 infixType: compoundType
@@ -161,6 +154,12 @@ compoundType: simpleType
 simpleType: stableId
           | ARRAY '[' infixType ']'
           ;
+
+stableId: fullID
+        | SUPER '.' fullID
+        | THIS '.' fullID
+        | stableId '.' fullID
+        ;
 
 block: blockStats
      ;
