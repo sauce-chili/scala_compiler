@@ -149,15 +149,9 @@ path: stableId
     ;
 
 stableId: fullID
-        | fullID '.' SUPER '.' fullID
         | SUPER '.' fullID
-        | fullID '.' THIS chaining
-        | THIS chaining
-        | stableId chaining
-        ;
-
-chaining: '.' fullID
-        | chaining '.' fullID
+        | THIS '.' fullID
+        | stableId '.' fullID
         ;
 
 infixType: compoundType
