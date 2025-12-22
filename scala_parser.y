@@ -250,7 +250,6 @@ templateStats: /* empty */
 templateStat: /* empty */
             | modifiers def
             | modifiers dcl
-            | expr
             ;
 
 /* --------------------- DECL --------------------- */
