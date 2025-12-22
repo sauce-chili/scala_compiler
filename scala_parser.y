@@ -72,8 +72,8 @@ expr: IF '(' expr ')' nls expr semio ELSE expr
     | tryExpr
     | DO expr semio WHILE '(' expr ')'
     | THROW expr
-    | RETURN                                   %prec RETURN_EMPTY
-    | RETURN expr                              %prec RETURN_EXPR
+    | RETURN
+    | RETURN expr
     | FOR '(' enumerators ')' nls yieldO expr
     | simpleExpr '.' fullID '=' expr
     | fullID '=' expr
