@@ -48,16 +48,14 @@ void yyerror(const char* s);
 %left TO UNTIL
 %left '+' '-' ID_MINUS ID_PLUS
 %left '*' '/' '%' ID_ASTERISK ID_SLASH ID_PERCENT
-%right UMINUS UPLUS '!' '~' ID_EXCLAMATION
+%left UMINUS UPLUS ID '#' '?' '@' '\\' '!' '~' ID_EXCLAMATION
 %left '.'
 %nonassoc ':' ID_COLON
 %nonassoc '(' '['
 %nonassoc POSTFIX_OP
-%nonassoc INFIX_OP
-%nonassoc RETURN_EMPTY
-%nonassoc RETURN_EXPR
 %nonassoc CATCH
 %nonassoc FINALLY
+
 
 %start scala_file
 
@@ -75,11 +73,14 @@ expr: IF '(' expr ')' nls expr semio ELSE expr
     | RETURN
     | RETURN expr
     | FOR '(' enumerators ')' nls yieldO expr
-    | simpleExpr '.' fullID '=' expr
-    | fullID '=' expr
-    | simpleExpr1 argumentExprs '=' expr
-    | infixExpr
+    | assignment
     ;
+
+assignment: fullID '=' expr
+          | simpleExpr '.' fullID '=' expr
+          | simpleExpr1 argumentExprs '=' expr
+          | infixExpr
+          ;
 
 yieldO: /* empty */
       | YIELD
@@ -106,11 +107,8 @@ generatorTypeO: /* empty */
               | ':' infixType
               ;
 
-infixExpr: prefixExpr infixTail
-         ;
-
-infixTail: /* empty */
-         | infixTail fullID nls prefixExpr
+infixExpr: prefixExpr
+         | infixExpr fullID nls prefixExpr
          ;
 
 prefixExpr: simpleExpr
