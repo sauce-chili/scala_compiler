@@ -85,20 +85,26 @@ yieldO: /* empty */
       | YIELD
       ;
 
-enumerators: generator
-           | enumerators ';' generator
+enumerators: first_generator
+           | enumerators ';' enumerator_part
            ;
 
-generator: fullID generatorTypeO LEFT_ARROW expr generatorTail
+first_generator: fullID generatorTypeO LEFT_ARROW expr
+               ;
+
+enumerator_part: generator
+               | definition
+               ;
+
+generator: fullID generatorTypeO LEFT_ARROW expr
          ;
+
+definition: fullID generatorTypeO '=' expr
+          ;
 
 generatorTypeO: /* empty */
               | ':' infixType
               ;
-
-generatorTail: /* empty */
-             | generatorTail semi fullID generatorTypeO '=' expr
-             ;
 
 infixExpr: prefixExpr infixTail
          ;
