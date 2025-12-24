@@ -72,13 +72,13 @@ expr: IF '(' expr ')' nls expr semio ELSE expr
     | RETURN
     | RETURN expr
     | FOR '(' enumerators ')' nls yieldO expr
+    | infixExpr
     | assignment
     ;
 
 assignment: fullID '=' expr
           | simpleExpr '.' fullID '=' expr
           | simpleExpr1 argumentExprs '=' expr
-          | infixExpr
           ;
 
 yieldO: /* empty */
