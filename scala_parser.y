@@ -52,7 +52,6 @@ void yyerror(const char* s);
 %left '.'
 %nonassoc ':' ID_COLON
 %nonassoc '(' '['
-%nonassoc POSTFIX_OP
 %nonassoc CATCH
 %nonassoc FINALLY
 
@@ -108,7 +107,47 @@ generatorTypeO: /* empty */
               ;
 
 infixExpr: prefixExpr
-         | infixExpr fullID nls prefixExpr
+         | infixExpr '+' nls infixExpr
+         | infixExpr '!' nls infixExpr
+	 | infixExpr '#' nls infixExpr
+         | infixExpr '%' nls infixExpr
+	 | infixExpr '&' nls infixExpr
+	 | infixExpr '*' nls infixExpr
+	 | infixExpr '-' nls infixExpr
+	 | infixExpr '/' nls infixExpr
+	 | infixExpr ':' nls infixExpr
+	 | infixExpr '<' nls infixExpr
+	 | infixExpr '>' nls infixExpr
+	 | infixExpr '?' nls infixExpr
+	 | infixExpr '@' nls infixExpr
+	 | infixExpr '\\' nls infixExpr
+	 | infixExpr '^' nls infixExpr
+	 | infixExpr '~' nls infixExpr
+	 | infixExpr PLUS_ASSIGNMENT nls infixExpr
+	 | infixExpr MINUS_ASSIGNMENT nls infixExpr
+	 | infixExpr MUL_ASSIGNMENT nls infixExpr
+	 | infixExpr DIV_ASSIGNMENT nls infixExpr
+	 | infixExpr MOD_ASSIGNMENT nls infixExpr
+	 | infixExpr EQUAL nls infixExpr
+	 | infixExpr NOT_EQUAL nls infixExpr
+	 | infixExpr LESS_EQUAL nls infixExpr
+	 | infixExpr GREATER_EQUAL nls infixExpr
+	 | infixExpr GREATER_OR_EQUAL nls infixExpr
+	 | infixExpr LESS_OR_EQUAL nls infixExpr
+	 | infixExpr ID nls infixExpr
+	 | infixExpr ID_EQUALITY nls infixExpr
+	 | infixExpr ID_VERTICAL_SIGN nls infixExpr
+	 | infixExpr ID_AMPERSAND nls infixExpr
+	 | infixExpr ID_UPPER_ARROW nls infixExpr
+	 | infixExpr ID_LEFT_ARROW nls infixExpr
+	 | infixExpr ID_RIGHT_ARROW nls infixExpr
+	 | infixExpr ID_MINUS nls infixExpr
+	 | infixExpr ID_PLUS nls infixExpr
+	 | infixExpr ID_ASTERISK nls infixExpr
+	 | infixExpr ID_SLASH nls infixExpr
+	 | infixExpr ID_PERCENT nls infixExpr
+	 | infixExpr ID_EXCLAMATION nls infixExpr
+	 | infixExpr ID_COLON nls infixExpr
          ;
 
 prefixExpr: simpleExpr
