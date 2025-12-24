@@ -256,10 +256,10 @@ classParams: classParam
           | classParams ',' classParam
           ;
 
-classParam: modifiers VAL
-          | modifiers VAR
-          | fullID semi infixType
-          | fullID semi infixType '=' expr
+classParam: modifiers VAL fullID ':' infixType '=' expr
+          | modifiers VAR fullID ':' infixType '=' expr
+          | modifiers VAL fullID ':' infixType
+          | modifiers VAR fullID ':' infixType
           ;
 
 modifiers: /* empty */
