@@ -107,47 +107,47 @@ generatorTypeO: /* empty */
               ;
 
 infixExpr: prefixExpr
-         | infixExpr '+' nls infixExpr
-         | infixExpr '!' nls infixExpr
-	 | infixExpr '#' nls infixExpr
-         | infixExpr '%' nls infixExpr
-	 | infixExpr '&' nls infixExpr
-	 | infixExpr '*' nls infixExpr
-	 | infixExpr '-' nls infixExpr
-	 | infixExpr '/' nls infixExpr
-	 | infixExpr ':' nls infixExpr
-	 | infixExpr '<' nls infixExpr
-	 | infixExpr '>' nls infixExpr
-	 | infixExpr '?' nls infixExpr
-	 | infixExpr '@' nls infixExpr
-	 | infixExpr '\\' nls infixExpr
-	 | infixExpr '^' nls infixExpr
-	 | infixExpr '~' nls infixExpr
-	 | infixExpr PLUS_ASSIGNMENT nls infixExpr
-	 | infixExpr MINUS_ASSIGNMENT nls infixExpr
-	 | infixExpr MUL_ASSIGNMENT nls infixExpr
-	 | infixExpr DIV_ASSIGNMENT nls infixExpr
-	 | infixExpr MOD_ASSIGNMENT nls infixExpr
-	 | infixExpr EQUAL nls infixExpr
-	 | infixExpr NOT_EQUAL nls infixExpr
-	 | infixExpr LESS_EQUAL nls infixExpr
-	 | infixExpr GREATER_EQUAL nls infixExpr
-	 | infixExpr GREATER_OR_EQUAL nls infixExpr
-	 | infixExpr LESS_OR_EQUAL nls infixExpr
-	 | infixExpr ID nls infixExpr
-	 | infixExpr ID_EQUALITY nls infixExpr
-	 | infixExpr ID_VERTICAL_SIGN nls infixExpr
-	 | infixExpr ID_AMPERSAND nls infixExpr
-	 | infixExpr ID_UPPER_ARROW nls infixExpr
-	 | infixExpr ID_LEFT_ARROW nls infixExpr
-	 | infixExpr ID_RIGHT_ARROW nls infixExpr
-	 | infixExpr ID_MINUS nls infixExpr
-	 | infixExpr ID_PLUS nls infixExpr
-	 | infixExpr ID_ASTERISK nls infixExpr
-	 | infixExpr ID_SLASH nls infixExpr
-	 | infixExpr ID_PERCENT nls infixExpr
-	 | infixExpr ID_EXCLAMATION nls infixExpr
-	 | infixExpr ID_COLON nls infixExpr
+         | infixExpr '+' nlo infixExpr
+         | infixExpr '!' nlo infixExpr
+	 | infixExpr '#' nlo infixExpr
+         | infixExpr '%' nlo infixExpr
+	 | infixExpr '&' nlo infixExpr
+	 | infixExpr '*' nlo infixExpr
+	 | infixExpr '-' nlo infixExpr
+	 | infixExpr '/' nlo infixExpr
+	 | infixExpr ':' nlo infixExpr
+	 | infixExpr '<' nlo infixExpr
+	 | infixExpr '>' nlo infixExpr
+	 | infixExpr '?' nlo infixExpr
+	 | infixExpr '@' nlo infixExpr
+	 | infixExpr '\\' nlo infixExpr
+	 | infixExpr '^' nlo infixExpr
+	 | infixExpr '~' nlo infixExpr
+	 | infixExpr PLUS_ASSIGNMENT nlo infixExpr
+	 | infixExpr MINUS_ASSIGNMENT nlo infixExpr
+	 | infixExpr MUL_ASSIGNMENT nlo infixExpr
+	 | infixExpr DIV_ASSIGNMENT nlo infixExpr
+	 | infixExpr MOD_ASSIGNMENT nlo infixExpr
+	 | infixExpr EQUAL nlo infixExpr
+	 | infixExpr NOT_EQUAL nlo infixExpr
+	 | infixExpr LESS_EQUAL nlo infixExpr
+	 | infixExpr GREATER_EQUAL nlo infixExpr
+	 | infixExpr GREATER_OR_EQUAL nlo infixExpr
+	 | infixExpr LESS_OR_EQUAL nlo infixExpr
+	 | infixExpr ID nlo infixExpr
+	 | infixExpr ID_EQUALITY nlo infixExpr
+	 | infixExpr ID_VERTICAL_SIGN nlo infixExpr
+	 | infixExpr ID_AMPERSAND nlo infixExpr
+	 | infixExpr ID_UPPER_ARROW nlo infixExpr
+	 | infixExpr ID_LEFT_ARROW nlo infixExpr
+	 | infixExpr ID_RIGHT_ARROW nlo infixExpr
+	 | infixExpr ID_MINUS nlo infixExpr
+	 | infixExpr ID_PLUS nlo infixExpr
+	 | infixExpr ID_ASTERISK nlo infixExpr
+	 | infixExpr ID_SLASH nlo infixExpr
+	 | infixExpr ID_PERCENT nlo infixExpr
+	 | infixExpr ID_EXCLAMATION nlo infixExpr
+	 | infixExpr ID_COLON nlo infixExpr
          ;
 
 prefixExpr: simpleExpr
@@ -187,7 +187,7 @@ constr: simpleType argumentExprs
       ;
 
 infixType: compoundType
-         | infixType fullID compoundType
+         | infixType fullID nlo compoundType
          ;
 
 compoundType: simpleType
@@ -229,8 +229,8 @@ tryExpr: TRY expr
 
 /* --------------------- FUNC --------------------- */
 
-funcParamClause: nls '(' ')'
-               | nls '(' funcParams ')'
+funcParamClause: nlo '(' ')'
+               | nlo '(' funcParams ')'
                ;
 
 funcParams: funcParam
@@ -248,8 +248,8 @@ assignExprO: /* empty */
 
 /* --------------------- CLASS --------------------- */
 
-classParamClause: nls '(' ')'
-               | nls '(' classParams ')'
+classParamClause: nlo '(' ')'
+               | nlo '(' classParams ')'
                ;
 
 classParams: classParam
@@ -276,7 +276,7 @@ modifier: ABSTRACT
 
 /* --------------------- CLASS --------------------- */
 
-templateBody: nls '{' templateStat templateStats '}'
+templateBody: nlo '{' templateStat templateStats '}'
             ;
 
 templateStats: /* empty */
@@ -317,9 +317,9 @@ def: varDefs
    ;
 
 funDef: funSig generatorTypeO '=' expr
-      | funSig nls '{' blockStats '}'
+      | funSig nlo '{' blockStats '}'
       | THIS funcParamClause '=' constrExpr
-      | THIS funcParamClause nls constrBlock
+      | THIS funcParamClause nlo constrBlock
       ;
 
 tmplDef: CLASS fullID classParamClause classTemplateOpt
@@ -381,8 +381,12 @@ literal: DECIMAL_LITERAL
        ;
 
 nls: /*empty*/
-	| nls NL
-	;
+   | nls NL
+   ;
+
+nlo: /*empty*/
+   | NL
+   ;
 
 semi: ';'
     ;
