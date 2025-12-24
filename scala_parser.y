@@ -180,7 +180,7 @@ exprs: /* empty */
      | exprs ',' expr
      ;
 
-blockExpr: '{' block '}'
+blockExpr: '{' blockStats '}'
          ;
 
 constr: simpleType argumentExprs
@@ -203,9 +203,6 @@ stableId: fullID
         | THIS '.' fullID
         | stableId '.' fullID
         ;
-
-block: blockStats
-     ;
 
 blockStats: blockStat
           | blockStats semi blockStat
@@ -320,7 +317,7 @@ def: varDefs
    ;
 
 funDef: funSig generatorTypeO '=' expr
-      | funSig nls '{' block '}'
+      | funSig nls '{' blockStats '}'
       | THIS funcParamClause '=' constrExpr
       | THIS funcParamClause nls constrBlock
       ;
