@@ -358,12 +358,9 @@ constrBlock: '{' selfInvocation blockStats '}'
 selfInvocation: THIS argumentExprs
               ;
 
-topStatSeq: topStat topStats
+topStatSeq: topStat
+	  | topStatSeq semi topStat
           ;
-
-topStats: /* empty */
-        | topStats semi topStat
-        ;
 
 topStat: modifiers tmplDef
        ;
