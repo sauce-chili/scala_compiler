@@ -324,7 +324,7 @@ funDef: funSig generatorTypeO '=' expr
 
 tmplDef: CLASS fullID classParamClause classTemplateOpt
        | CLASS fullID classTemplateOpt
-       | OBJECT classTemplateOpt
+       | OBJECT fullID classTemplateOpt
        | TRAIT fullID traitTemplateOpt
        ;
 
