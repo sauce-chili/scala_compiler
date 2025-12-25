@@ -86,7 +86,7 @@ yieldO: /* empty */
       ;
 
 enumerators: first_generator
-           | enumerators ';' enumerator_part
+           | enumerators semi enumerator_part
            ;
 
 first_generator: fullID generatorTypeO LEFT_ARROW expr
