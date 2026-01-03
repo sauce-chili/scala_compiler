@@ -248,8 +248,8 @@ assignExprO: /* empty */
 
 /* --------------------- CLASS --------------------- */
 
-classParamClause: nlo '(' ')'
-               | nlo '(' classParams ')'
+classParamClause: '(' ')'
+               | '(' classParams ')'
                ;
 
 classParams: classParam
@@ -276,7 +276,7 @@ modifier: ABSTRACT
 
 /* --------------------- CLASS --------------------- */
 
-templateBody: nlo '{' templateStat templateStats '}'
+templateBody: '{' templateStat templateStats '}'
             ;
 
 templateStats: /* empty */
@@ -317,34 +317,39 @@ def: varDefs
    ;
 
 funDef: funSig generatorTypeO '=' expr
-      | funSig nlo '{' blockStats '}'
       | THIS funcParamClause '=' constrExpr
-      | THIS funcParamClause nlo constrBlock
       ;
 
-tmplDef: CLASS fullID classParamClause classTemplateOpt
-       | CLASS fullID classTemplateOpt
-       | OBJECT fullID classTemplateOpt
-       | TRAIT fullID traitTemplateOpt
+tmplDefWithNL: CLASS fullID NL
+             ;
+
+traitObjectDefWithNL: TRAIT fullID NL
+                    | OBJECT fullID NL
+                    ;
+
+
+tmplDef: tmplDefWithNL classParamClause classTemplateOpt
+       | traitObjectDefWithNL traitTemplateOpt
        ;
 
 classTemplateOpt: /* empty */
-              | EXTENDS classTemplate
-              | EXTENDS templateBody
-              | templateBody
+	      | EXTENDS classTemplate
+              | EXTENDS nlo templateBody
+              | nlo templateBody
+              | NL templateBody
               ;
 
 traitTemplateOpt: /* empty */
                 | EXTENDS traitTemplate
-                | EXTENDS templateBody
+                | EXTENDS nlo templateBody
                 | templateBody
                 ;
 
-classTemplate: constr simpleTypes templateBody
+classTemplate: constr simpleTypes nlo templateBody
              | constr simpleTypes
              ;
 
-traitTemplate: simpleType simpleTypes templateBody
+traitTemplate: simpleType simpleTypes nlo templateBody
              | simpleType simpleTypes
              ;
 
@@ -358,12 +363,13 @@ constrBlock: '{' selfInvocation blockStats '}'
 selfInvocation: THIS argumentExprs
               ;
 
-topStatSeq: topStat
-	  | topStatSeq semi topStat
+topStatSeq: modifiers tmplDef semi
+	  | modifiers tmplDefWithNL ';'
+	  | modifiers tmplDefWithNL nls
+	  | topStatSeq modifiers tmplDef semi
+	  | topStatSeq modifiers tmplDefWithNL ';'
+	  | topStatSeq modifiers tmplDefWithNL nls
           ;
-
-topStat: modifiers tmplDef
-       ;
 
 simpleTypes: /* empty */
            | simpleTypes WITH simpleType
@@ -389,6 +395,7 @@ nlo: /*empty*/
    ;
 
 semi: ';'
+    | NL nls
     ;
 
 semio: /*empty*/
