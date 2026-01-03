@@ -271,10 +271,11 @@ modifiers: /* empty */
 modifier: ABSTRACT
         | FINAL
         | SEALED
-        | PRIVATE
-        | PROTECTED
+        | accessModifier
         | OVERRIDE
         ;
+
+accessModifier: PRIVATE | PROTECTED
 
 /* --------------------- CLASS --------------------- */
 
