@@ -331,13 +331,11 @@ tmplDef: CLASS fullID classParamClause classTemplateOpt
 
 classTemplateOpt: /* empty */ %prec LOW_PREC
               | EXTENDS classTemplate
-              | EXTENDS templateBody
               | templateBody
               ;
 
 traitTemplateOpt: /* empty */ %prec LOW_PREC
                 | EXTENDS traitTemplate
-                | EXTENDS templateBody
                 | templateBody
                 ;
 
