@@ -35,8 +35,6 @@
     bool last_token_can_end_stmt = false;
 
     std::vector<bool> nl_enabled_stack;
-    // indices in nl_enabled_stack that correspond to 'case' pushes (to be removed when => encountered)
-    std::vector<int> case_marker_stack;
 
     // pending newlines: 0 (none), 1 (one newline), 2 (blank-line detected -> treated as blank)
     int pending_nl = 0;
@@ -131,16 +129,7 @@ while       { std::string cur(yytext); handle_pending_newlines(cur, cur_token_ca
 do          { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printControlStructureKeyword(yytext); last_token_can_end_stmt = false;}
 for         { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printControlStructureKeyword(yytext); last_token_can_end_stmt = false;}
 yield       { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printControlStructureKeyword(yytext); last_token_can_end_stmt = false;}
-match       { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printControlStructureKeyword(yytext); last_token_can_end_stmt = false;}
-case        {
-                std::string cur(yytext);
-                handle_pending_newlines(cur, cur_token_can_begin_statement(cur));
-                printControlStructureKeyword(yytext);
-                // push a case-disabled region (nl disabled) and register marker
-                nl_enabled_stack.push_back(false);
-                case_marker_stack.push_back((int)nl_enabled_stack.size()-1);
-                last_token_can_end_stmt = false;
-            }
+case        { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printControlStructureKeyword(yytext); last_token_can_end_stmt = false;}
 try         { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printControlStructureKeyword(yytext); last_token_can_end_stmt = false;}
 catch       { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printControlStructureKeyword(yytext); last_token_can_end_stmt = false;}
 finally     { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printControlStructureKeyword(yytext); last_token_can_end_stmt = false;}
@@ -251,22 +240,6 @@ null        { std::string cur(yytext); handle_pending_newlines(cur, cur_token_ca
             handle_pending_newlines(cur, cur_token_can_begin_statement(cur));
             if (!nl_enabled_stack.empty()) nl_enabled_stack.pop_back();
             last_token_can_end_stmt = true;
-            printOperator(yytext);
-        }
-
-"=>"    {
-            std::string cur(yytext);
-            handle_pending_newlines(cur, cur_token_can_begin_statement(cur));
-            // pop the nearest 'case' region if present
-            if (!case_marker_stack.empty()) {
-                int caseIdx = case_marker_stack.back();
-                case_marker_stack.pop_back();
-                // pop nl_enabled_stack frames until its size is caseIdx (i.e., remove case marker and any nested)
-                while ((int)nl_enabled_stack.size() > caseIdx) {
-                    nl_enabled_stack.pop_back();
-                }
-            }
-            last_token_can_end_stmt = false;
             printOperator(yytext);
         }
 
@@ -430,14 +403,12 @@ bool cur_token_can_begin_statement(const std::string &tok) {
     if (tok.empty()) return false;
 
     static const std::set<std::string> cannotBegin = {
-        "catch","else","extends","finally","forSome","match",
-        "with","yield",",",".",";",":","=","=>","<-","<:","<%",">:","#",
+        "catch","else","extends","finally","forSome",
+        "with","yield",",",".",";",":","=","<-","<:","<%",">:","#",
         "[",")","]","}",
     };
 
     if (cannotBegin.count(tok)) return false;
-    if (tok == "case") return false; // explicitly disable case-as-begin
-    // numeric literal or identifier or '(' or string etc. may begin
     return true;
 }
 
@@ -456,7 +427,7 @@ void handle_pending_newlines(const std::string &curTok, bool curTokCanBegin) {
         // after consuming newline as separator, previous token is not considered "can end" any more
         last_token_can_end_stmt = false;
     }
-    // consume pending newlines in any case
+    // consume pending newlines in any suit
     pending_nl = 0;
 }
 
