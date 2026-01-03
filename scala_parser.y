@@ -376,7 +376,8 @@ enumStat: templateStat
 
 enumCase: CASE fullID classParamClause EXTENDS classParents
 	| CASE fullID classParamClause
-	| CASE ids
+	| CASE fullID %prec END_TEMPLATE
+        | CASE ids ',' fullID // Решает rr
 	;
 
 constrExpr: selfInvocation
