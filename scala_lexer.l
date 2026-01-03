@@ -403,9 +403,27 @@ bool cur_token_can_begin_statement(const std::string &tok) {
     if (tok.empty()) return false;
 
     static const std::set<std::string> cannotBegin = {
-        "catch","else","extends","finally","forSome",
-        "with","yield",",",".",";",":","=","<-","<:","<%",">:","#",
-        "[",")","]","}",
+        "catch",
+        "else",
+        "extends",
+        "finally",
+        "forSome",
+        "with",
+        "yield",
+        ",",
+        ".",
+        ";",
+        ":",
+        "=",
+        "<-",
+        "<:",
+        "<%",
+        ">:",
+        "#",
+        "[",
+        ")",
+        "]",
+        "}",
     };
 
     if (cannotBegin.count(tok)) return false;
