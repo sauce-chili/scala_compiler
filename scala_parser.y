@@ -37,6 +37,7 @@ void yyerror(const char* s);
 %token TRUE_LITERAL FALSE_LITERAL
 %token NULL_LITERAL
 
+%nonassoc LOW_PREC
 %nonassoc RETURN IF FOR NL
 %nonassoc ELSE WHILE DO TRY THROW VAL VAR NEW YIELD MATCH CASE
 %right '=' LEFT_ARROW PLUS_ASSIGNMENT MINUS_ASSIGNMENT MUL_ASSIGNMENT DIV_ASSIGNMENT MOD_ASSIGNMENT ID_EQUALITY
@@ -54,6 +55,7 @@ void yyerror(const char* s);
 %nonassoc '(' '['
 %nonassoc CATCH
 %nonassoc FINALLY
+%nonassoc END_TEMPLATE
 
 
 %start scala_file
@@ -102,7 +104,7 @@ generator: fullID generatorTypeO LEFT_ARROW expr
 definition: fullID generatorTypeO '=' expr
           ;
 
-generatorTypeO: /* empty */
+generatorTypeO: /* empty */ %prec LOW_PREC
               | ':' infixType
               ;
 
@@ -328,24 +330,24 @@ tmplDef: CLASS fullID classParamClause classTemplateOpt
        | TRAIT fullID traitTemplateOpt
        ;
 
-classTemplateOpt: /* empty */
+classTemplateOpt: /* empty */ %prec LOW_PREC
               | EXTENDS classTemplate
               | EXTENDS templateBody
               | templateBody
               ;
 
-traitTemplateOpt: /* empty */
+traitTemplateOpt: /* empty */ %prec LOW_PREC
                 | EXTENDS traitTemplate
                 | EXTENDS templateBody
                 | templateBody
                 ;
 
 classTemplate: constr simpleTypes templateBody
-             | constr simpleTypes
+             | constr simpleTypes %prec END_TEMPLATE
              ;
 
 traitTemplate: simpleType simpleTypes templateBody
-             | simpleType simpleTypes
+             | simpleType simpleTypes %prec END_TEMPLATE
              ;
 
 constrExpr: selfInvocation
@@ -389,6 +391,7 @@ nlo: /*empty*/
    ;
 
 semi: ';'
+    | NL nls
     ;
 
 semio: /*empty*/
