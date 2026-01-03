@@ -323,11 +323,15 @@ funDef: funSig generatorTypeO '=' expr
       | THIS funcParamClause '=' constrExpr
       ;
 
-tmplDef: CLASS fullID classParamClause classTemplateOpt
-       | CLASS fullID classTemplateOpt
+tmplDef: CLASS classDef
        | OBJECT fullID classTemplateOpt
        | TRAIT fullID traitTemplateOpt
        ;
+
+classDef: fullID accessModifier classParamClause classTemplateOpt
+        | fullID classParamClause classTemplateOpt
+        | fullID classTemplateOpt
+        ;
 
 classTemplateOpt: /* empty */ %prec LOW_PREC
               | EXTENDS classTemplate
@@ -341,7 +345,11 @@ traitTemplateOpt: /* empty */ %prec LOW_PREC
 
 classTemplate: constr simpleTypes templateBody
              | constr simpleTypes %prec END_TEMPLATE
+classTemplate: classParents templateBody
+             | classParents %prec END_TEMPLATE
              ;
+
+classParents: constr simpleTypes;
 
 traitTemplate: simpleType simpleTypes templateBody
              | simpleType simpleTypes %prec END_TEMPLATE
