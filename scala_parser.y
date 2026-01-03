@@ -319,9 +319,7 @@ def: varDefs
    ;
 
 funDef: funSig generatorTypeO '=' expr
-      | funSig nlo '{' blockStats '}'
       | THIS funcParamClause '=' constrExpr
-      | THIS funcParamClause nlo constrBlock
       ;
 
 tmplDef: CLASS fullID classParamClause classTemplateOpt
