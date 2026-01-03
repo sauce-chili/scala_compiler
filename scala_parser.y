@@ -18,7 +18,7 @@ void yyerror(const char* s);
 %token VAL VAR
 %token NEW
 %token RETURN
-%token CLASS OBJECT DEF TRAIT
+%token CLASS OBJECT DEF TRAIT ENUM
 %token THIS SUPER
 %token ARRAY
 %token NL
@@ -326,12 +326,18 @@ funDef: funSig generatorTypeO '=' expr
 tmplDef: CLASS classDef
        | OBJECT fullID classTemplateOpt
        | TRAIT fullID traitTemplateOpt
+       | ENUM enumDef
        ;
 
 classDef: fullID accessModifier classParamClause classTemplateOpt
         | fullID classParamClause classTemplateOpt
         | fullID classTemplateOpt
         ;
+
+enumDef: fullID accessModifier classParamClause enumTemplate
+       | fullID classParamClause enumTemplate
+       | fullID enumTemplate
+       ;
 
 classTemplateOpt: /* empty */ %prec LOW_PREC
               | EXTENDS classTemplate
@@ -343,8 +349,10 @@ traitTemplateOpt: /* empty */ %prec LOW_PREC
                 | templateBody
                 ;
 
-classTemplate: constr simpleTypes templateBody
-             | constr simpleTypes %prec END_TEMPLATE
+enumTemplate: EXTENDS classParents enumBody
+            | enumBody
+             ;
+
 classTemplate: classParents templateBody
              | classParents %prec END_TEMPLATE
              ;
@@ -354,6 +362,23 @@ classParents: constr simpleTypes;
 traitTemplate: simpleType simpleTypes templateBody
              | simpleType simpleTypes %prec END_TEMPLATE
              ;
+
+enumBody: '{' enumStats '}';
+
+enumStats: enumStat
+	 | enumStats semi enumStat
+	 ;
+
+enumStat: templateStat
+	| enumCase
+	| accessModifier enumCase
+	;
+
+
+enumCase: CASE fullID classParamClause EXTENDS classParents
+	| CASE fullID classParamClause
+	| CASE ids
+	;
 
 constrExpr: selfInvocation
           | constrBlock
