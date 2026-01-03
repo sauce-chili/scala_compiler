@@ -351,7 +351,7 @@ traitTemplateOpt: /* empty */ %prec LOW_PREC
 
 enumTemplate: EXTENDS classParents enumBody
             | enumBody
-             ;
+            ;
 
 classTemplate: classParents templateBody
              | classParents %prec END_TEMPLATE
@@ -363,15 +363,14 @@ traitTemplate: simpleType simpleTypes templateBody
              | simpleType simpleTypes %prec END_TEMPLATE
              ;
 
-enumBody: '{' enumStats '}';
+enumBody: nlo '{' enumStats '}';
 
 enumStats: enumStat
 	 | enumStats semi enumStat
 	 ;
 
 enumStat: templateStat
-	| enumCase
-	| accessModifier enumCase
+	| modifiers enumCase
 	;
 
 
