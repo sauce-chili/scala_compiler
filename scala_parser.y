@@ -389,6 +389,7 @@ nlo: /*empty*/
    ;
 
 semi: ';'
+    | NL nls
     ;
 
 semio: /*empty*/
