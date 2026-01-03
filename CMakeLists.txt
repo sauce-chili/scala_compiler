@@ -25,6 +25,16 @@ ADD_FLEX_BISON_DEPENDENCY(MyScanner MyParser)
 add_executable(scala_lexer
         ${FLEX_MyScanner_OUTPUTS}
         ${BISON_MyParser_OUTPUTS}
+        nodes/Node.cpp
+        nodes/Node.h
+        nodes/Types.cpp
+        nodes/Types.h
+        nodes/modifier/ModifierNode.cpp
+        nodes/modifier/ModifierNode.h
+        nodes/modifier/ModifiersNode.cpp
+        nodes/modifier/ModifiersNode.h
+        nodes/id/IdNode.cpp
+        nodes/id/IdNode.h
 )
 
 message(STATUS "Flex output: ${FLEX_MyScanner_OUTPUTS}")

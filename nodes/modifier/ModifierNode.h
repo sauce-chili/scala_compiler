@@ -1,0 +1,18 @@
+#ifndef SCALA_COMPILER_MODIFIERLIST_H
+#define SCALA_COMPILER_MODIFIERLIST_H
+
+#include "../Node.h"
+#include "../types.h"
+
+class ModifierNode : public Node {
+public:
+    ModifierType modifier;
+
+    static ModifierNode* createModifier(ModifierType m);
+
+    string toDot() const override;
+    string getDotLabel() const override;
+};
+
+
+#endif 

@@ -1,10 +1,31 @@
-%{
-#include <iostream>
-using namespace std;
+%code requires {
+    #include "nodes/modifiers/ModifierNode.h"
+    #include "nodes/modifiers/ModifiersNode.h"
+}
 
-int yylex();
-void yyerror(const char* s);
-%}
+%code {
+    #include <iostream>
+    using namespace std;
+
+    int yylex();
+    void yyerror(const char* s);
+}
+
+%parse-param { ScalaFileNode** out_root }
+
+%union {
+    int intLiteral;
+    char charLiteral;
+    double doubleLiteral;
+    char* stringLiteral;
+    bool boolLiteral;
+    char* identifier;
+    char* unitLiteral;
+
+    ModifierNode* modifier;
+    ModifiersNode* modifiers;
+
+}
 
 
 %token NON
@@ -264,18 +285,20 @@ classParam: modifiers VAL fullID ':' infixType '=' expr
           | modifiers VAR fullID ':' infixType
           ;
 
-modifiers: /* empty */
-         | modifiers modifier
+modifiers: /* empty */        { $$ = ModifiersNode::addModifierToList(nullptr, nullptr); }
+         | modifiers modifier { $$ = ModifiersNode::addModifierToList($1, $2); }
          ;
 
-modifier: ABSTRACT
-        | FINAL
-        | SEALED
-        | accessModifier
-        | OVERRIDE
+modifier: ABSTRACT       { $$ = ModifierNode::createModifier($1); }
+        | FINAL          { $$ = ModifierNode::createModifier($1); }
+        | SEALED         { $$ = ModifierNode::createModifier($1); }
+        | accessModifier { $$ = ModifierNode::createModifier($1); }
+        | OVERRIDE       { $$ = ModifierNode::createModifier($1); }
         ;
 
-accessModifier: PRIVATE | PROTECTED
+accessModifier: PRIVATE   { $$ = ModifierNode::createModifier($1); }
+	      | PROTECTED { $$ = ModifierNode::createModifier($1); }
+	      ;
 
 /* --------------------- CLASS --------------------- */
 
@@ -428,47 +451,47 @@ semio: /*empty*/
      | semi
      ;
 
-fullID: '+'
-      | '!'
-      | '#'
-      | '%'
-      | '&'
-      | '*'
-      | '-'
-      | '/'
-      | ':'
-      | '<'
-      | '>'
-      | '?'
-      | '@'
-      | '\\'
-      | '^'
-      | '~'
-      | PLUS_ASSIGNMENT
-      | MINUS_ASSIGNMENT
-      | MUL_ASSIGNMENT
-      | DIV_ASSIGNMENT
-      | MOD_ASSIGNMENT
-      | EQUAL
-      | NOT_EQUAL
-      | LESS_EQUAL
-      | GREATER_EQUAL
-      | GREATER_OR_EQUAL
-      | LESS_OR_EQUAL
-      | ID
-      | ID_EQUALITY
-      | ID_VERTICAL_SIGN
-      | ID_AMPERSAND
-      | ID_UPPER_ARROW
-      | ID_LEFT_ARROW
-      | ID_RIGHT_ARROW
-      | ID_MINUS
-      | ID_PLUS
-      | ID_ASTERISK
-      | ID_SLASH
-      | ID_PERCENT
-      | ID_EXCLAMATION
-      | ID_COLON
+fullID: '+'              { $$ = IdNode::createId($1); }
+      | '!'              { $$ = IdNode::createId($1); }
+      | '#'              { $$ = IdNode::createId($1); }
+      | '%'              { $$ = IdNode::createId($1); }
+      | '&'              { $$ = IdNode::createId($1); }
+      | '*'              { $$ = IdNode::createId($1); }
+      | '-'              { $$ = IdNode::createId($1); }
+      | '/'              { $$ = IdNode::createId($1); }
+      | ':'              { $$ = IdNode::createId($1); }
+      | '<'              { $$ = IdNode::createId($1); }
+      | '>'              { $$ = IdNode::createId($1); }
+      | '?'              { $$ = IdNode::createId($1); }
+      | '@'              { $$ = IdNode::createId($1); }
+      | '\\'             { $$ = IdNode::createId($1); }
+      | '^'              { $$ = IdNode::createId($1); }
+      | '~'              { $$ = IdNode::createId($1); }
+      | PLUS_ASSIGNMENT  { $$ = IdNode::createId($1); }
+      | MINUS_ASSIGNMENT { $$ = IdNode::createId($1); }
+      | MUL_ASSIGNMENT   { $$ = IdNode::createId($1); }
+      | DIV_ASSIGNMENT   { $$ = IdNode::createId($1); }
+      | MOD_ASSIGNMENT   { $$ = IdNode::createId($1); }
+      | EQUAL            { $$ = IdNode::createId($1); }
+      | NOT_EQUAL        { $$ = IdNode::createId($1); }
+      | LESS_EQUAL       { $$ = IdNode::createId($1); }
+      | GREATER_EQUAL    { $$ = IdNode::createId($1); }
+      | GREATER_OR_EQUAL { $$ = IdNode::createId($1); }
+      | LESS_OR_EQUAL    { $$ = IdNode::createId($1); }
+      | ID               { $$ = IdNode::createId($1); }
+      | ID_EQUALITY      { $$ = IdNode::createId($1); }
+      | ID_VERTICAL_SIGN { $$ = IdNode::createId($1); }
+      | ID_AMPERSAND     { $$ = IdNode::createId($1); }
+      | ID_UPPER_ARROW   { $$ = IdNode::createId($1); }
+      | ID_LEFT_ARROW    { $$ = IdNode::createId($1); }
+      | ID_RIGHT_ARROW   { $$ = IdNode::createId($1); }
+      | ID_MINUS         { $$ = IdNode::createId($1); }
+      | ID_PLUS          { $$ = IdNode::createId($1); }
+      | ID_ASTERISK      { $$ = IdNode::createId($1); }
+      | ID_SLASH         { $$ = IdNode::createId($1); }
+      | ID_PERCENT       { $$ = IdNode::createId($1); }
+      | ID_EXCLAMATION   { $$ = IdNode::createId($1); }
+      | ID_COLON         { $$ = IdNode::createId($1); }
       ;
 
 %%
