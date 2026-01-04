@@ -55,11 +55,11 @@ void yyerror(const char* s);
 %nonassoc END_TEMPLATE
 
 
-%start scala_file
+%start scalaFile
 
 %%
 
-scala_file: topStatSeq
+scalaFile: topStatSeq
           ;
 
 expr: IF '(' expr ')' nls expr semio ELSE expr
