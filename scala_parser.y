@@ -151,7 +151,7 @@ prefixExpr: simpleExpr
           ;
 
 simpleExpr: NEW constrInvoke
-          | blockExpr
+          | '{' blockStats '}' // бывший blockExpr
           | simpleExpr1
           ;
 
@@ -172,9 +172,6 @@ exprs: /* empty */
      | expr
      | exprs ',' expr
      ;
-
-blockExpr: '{' blockStats '}'
-         ;
 
 constrInvoke: simpleType argumentExprs // бывший constr
       	    ;
