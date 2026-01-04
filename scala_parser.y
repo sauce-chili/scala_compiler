@@ -119,7 +119,7 @@ infixExpr: prefixExpr
 	 | infixExpr '>' nlo infixExpr
 	 | infixExpr '?' nlo infixExpr
 	 | infixExpr '@' nlo infixExpr
-	 | infixExpr '\\' nlo infixExpr
+	 | infixExpr '\\' nlo infixExpr // точно ли можно указывать 2 uni-char в ''?
 	 | infixExpr '^' nlo infixExpr
 	 | infixExpr '~' nlo infixExpr
 	 | infixExpr PLUS_ASSIGNMENT nlo infixExpr
