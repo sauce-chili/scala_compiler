@@ -242,12 +242,12 @@ assignExprO: /* empty */
 /* --------------------- CLASS --------------------- */
 
 classParamClause: nlo '(' ')'
-               | nlo '(' classParams ')'
-               ;
+                | nlo '(' classParams ')'
+                ;
 
 classParams: classParam
-          | classParams ',' classParam
-          ;
+           | classParams ',' classParam
+           ;
 
 classParam: modifiers VAL fullID ':' infixType '=' expr
           | modifiers VAR fullID ':' infixType '=' expr
@@ -331,9 +331,9 @@ enumDef: fullID accessModifier classParamClause enumTemplate
        ;
 
 classTemplateOpt: /* empty */ %prec LOW_PREC
-              | EXTENDS classTemplate
-              | templateBody
-              ;
+                | EXTENDS classTemplate
+                | templateBody
+                ;
 
 traitTemplateOpt: /* empty */ %prec LOW_PREC
                 | EXTENDS traitTemplate
