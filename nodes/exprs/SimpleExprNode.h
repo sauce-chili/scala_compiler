@@ -1,0 +1,10 @@
+#ifndef SCALA_LEXER_SIMPLEEXPRNODE_H
+#define SCALA_LEXER_SIMPLEEXPRNODE_H
+
+
+class SimpleExprNode {
+
+};
+
+
+#endif //SCALA_LEXER_SIMPLEEXPRNODE_H

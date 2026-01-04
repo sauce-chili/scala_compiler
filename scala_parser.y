@@ -172,7 +172,7 @@ prefixExpr: simpleExpr
           ;
 
 simpleExpr: NEW constrInvoke
-          | blockExpr
+          | '{' blockStats '}'
           | simpleExpr1
           ;
 
@@ -180,9 +180,9 @@ simpleExpr1: literal
            | fullID
            | SUPER '.' fullID
            | THIS '.' fullID
+           | simpleExpr '.' fullID
            | '(' expr ')'
            | '(' ')'
-           | simpleExpr '.' fullID
            | simpleExpr1 argumentExprs // вызов метода
            ;
 
@@ -193,9 +193,6 @@ exprs: /* empty */
      | expr
      | exprs ',' expr
      ;
-
-blockExpr: '{' blockStats '}'
-         ;
 
 constrInvoke: simpleType argumentExprs // бывший constr
       	    ;

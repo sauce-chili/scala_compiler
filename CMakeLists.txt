@@ -35,6 +35,12 @@ add_executable(scala_lexer
         nodes/modifier/ModifiersNode.h
         nodes/id/IdNode.cpp
         nodes/id/IdNode.h
+        nodes/exprs/SimpleExpr1Node.cpp
+        nodes/exprs/SimpleExpr1Node.h
+        nodes/exprs/ArgumentExprsNode.cpp
+        nodes/exprs/ArgumentExprsNode.h
+        nodes/exprs/SimpleExprNode.cpp
+        nodes/exprs/SimpleExprNode.h
 )
 
 message(STATUS "Flex output: ${FLEX_MyScanner_OUTPUTS}")
