@@ -150,7 +150,7 @@ prefixExpr: simpleExpr
           | '!' simpleExpr
           ;
 
-simpleExpr: NEW constr
+simpleExpr: NEW constrInvoke
           | blockExpr
           | simpleExpr1
           ;
@@ -176,8 +176,8 @@ exprs: /* empty */
 blockExpr: '{' blockStats '}'
          ;
 
-constr: simpleType argumentExprs
-      ;
+constrInvoke: simpleType argumentExprs // бывший constr
+      	    ;
 
 infixType: compoundType
          | infixType fullID nlo compoundType
@@ -348,7 +348,7 @@ classTemplate: classParents templateBody
              | classParents %prec END_TEMPLATE
              ;
 
-classParents: constr simpleTypes;
+classParents: constrInvoke simpleTypes;
 
 traitTemplate: simpleType simpleTypes templateBody
              | simpleType simpleTypes %prec END_TEMPLATE
