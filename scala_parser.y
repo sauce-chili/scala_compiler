@@ -11,24 +11,19 @@ void yyerror(const char* s);
 
 %token IF ELSE
 %token FOR WHILE DO
-%token TRY
-%token CATCH
-%token FINALLY
+%token TRY CATCH FINALLY LEFT_ARROW
+%token YIELD
 %token THROW
 %token VAL VAR
 %token NEW
 %token RETURN
 %token CLASS OBJECT DEF TRAIT ENUM
-%token THIS SUPER
-%token ARRAY
-%token NL
-%token ID
 %token WITH
-%token LEFT_ARROW
+%token THIS SUPER
+%token ID
 
 %token PRIVATE PROTECTED OVERRIDE ABSTRACT FINAL SEALED EXTENDS
-%token INT STRING CHAR BOOLEAN UNIT
-%token YIELD
+%token INT STRING CHAR BOOLEAN UNIT ARRAY
 
 %token DECIMAL_LITERAL
 %token CHAR_LITERAL
@@ -36,6 +31,8 @@ void yyerror(const char* s);
 %token STRING_LITERAL
 %token TRUE_LITERAL FALSE_LITERAL
 %token NULL_LITERAL
+
+%token NL
 
 %nonassoc LOW_PREC
 %nonassoc RETURN IF FOR NL
