@@ -172,7 +172,7 @@ prefixExpr: simpleExpr
           ;
 
 simpleExpr: NEW constrInvoke
-          | '{' blockStats '}'
+          | '{' blockStats '}' // бывший blockExpr
           | simpleExpr1
           ;
 
@@ -324,6 +324,10 @@ funDef: funSig compoundTypeO '=' expr
       | THIS funcParamClause '=' constrExpr
       ;
 
+constrExpr: THIS argumentExprs // вызов первичного конструктора, бывший selfInvocation
+          | '{' THIS argumentExprs semi blockStats '}'
+          ;
+
 tmplDef: CLASS classDef
        | OBJECT fullID classTemplateOpt
        | TRAIT fullID traitTemplateOpt
@@ -374,22 +378,11 @@ enumStat: templateStat
 	| modifiers enumCase
 	;
 
-
 enumCase: CASE fullID classParamClause EXTENDS classParents
 	| CASE fullID classParamClause
 	| CASE fullID %prec END_TEMPLATE
         | CASE ids ',' fullID // Решает rr
 	;
-
-constrExpr: selfInvocation
-          | constrBlock
-          ;
-
-constrBlock: '{' selfInvocation blockStats '}'
-           ;
-
-selfInvocation: THIS argumentExprs
-              ;
 
 topStatSeq: topStat
 	  | topStatSeq semi topStat
