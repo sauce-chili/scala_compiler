@@ -101,9 +101,9 @@ generator: fullID generatorTypeO LEFT_ARROW expr
 definition: fullID generatorTypeO '=' expr
           ;
 
-generatorTypeO: /* empty */ %prec LOW_PREC
-              | ':' infixType
-              ;
+infixTypeO: /* empty */ %prec LOW_PREC
+          | ':' infixType
+          ;
 
 infixExpr: prefixExpr
          | infixExpr '+' nlo infixExpr
