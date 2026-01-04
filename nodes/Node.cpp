@@ -1,6 +1,6 @@
 #include "Node.h"
 
-unsigned int Node::maxId = 0;
+unsigned int Node::seqId = 0;
 
 void Node::addDotNode(string &dot) const {
     dot += "\t" + to_string(id) + " [label=\"" + getDotLabel() + "\"];\n";

@@ -8,17 +8,22 @@ class StmtNode;
 using namespace std;
 
 class Node {
-protected:
-    static unsigned int maxId;
+private:
+    static unsigned int seqId;
 
+protected:
     void addDotNode(string &dot) const;
-    void addDotChild(string &dot, const Node* child, const string &arrowLabel) const;
+
+    void addDotChild(string &dot, const Node *child, const string &arrowLabel) const;
 
 public:
-    unsigned int id;
-    Node() {id = ++maxId;};
+    const unsigned int id;
+
+    Node() : id(++seqId) {
+    }
 
     virtual string toDot() const = 0;
+
     virtual string getDotLabel() const = 0;
 };
 
