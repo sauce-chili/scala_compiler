@@ -77,7 +77,7 @@ expr: IF '(' expr ')' nls expr semio ELSE expr
 
 assignment: fullID '=' expr
           | simpleExpr '.' fullID '=' expr
-          | simpleExpr1 argumentExprs '=' expr
+          | simpleExpr1 argumentExprs '=' expr // запись в массив
           ;
 
 yieldO: /* empty */
