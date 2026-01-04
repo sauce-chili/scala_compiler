@@ -32,24 +32,19 @@
 
 %token IF ELSE
 %token FOR WHILE DO
-%token TRY
-%token CATCH
-%token FINALLY
+%token TRY CATCH FINALLY LEFT_ARROW
+%token YIELD
 %token THROW
 %token VAL VAR
 %token NEW
 %token RETURN
 %token CLASS OBJECT DEF TRAIT ENUM
-%token THIS SUPER
-%token ARRAY
-%token NL
-%token ID
 %token WITH
-%token LEFT_ARROW
+%token THIS SUPER
+%token ID
 
 %token PRIVATE PROTECTED OVERRIDE ABSTRACT FINAL SEALED EXTENDS
-%token INT STRING CHAR BOOLEAN UNIT
-%token YIELD
+%token INT DOUBLE STRING CHAR BOOLEAN UNIT ARRAY
 
 %token DECIMAL_LITERAL
 %token CHAR_LITERAL
@@ -57,6 +52,8 @@
 %token STRING_LITERAL
 %token TRUE_LITERAL FALSE_LITERAL
 %token NULL_LITERAL
+
+%token NL
 
 %nonassoc LOW_PREC
 %nonassoc RETURN IF FOR NL
@@ -79,11 +76,11 @@
 %nonassoc END_TEMPLATE
 
 
-%start scala_file
+%start scalaFile
 
 %%
 
-scala_file: topStatSeq
+scalaFile: topStatSeq
           ;
 
 expr: IF '(' expr ')' nls expr semio ELSE expr
@@ -101,33 +98,27 @@ expr: IF '(' expr ')' nls expr semio ELSE expr
 
 assignment: fullID '=' expr
           | simpleExpr '.' fullID '=' expr
-          | simpleExpr1 argumentExprs '=' expr
+          | simpleExpr1 argumentExprs '=' expr // запись в массив
           ;
 
 yieldO: /* empty */
       | YIELD
       ;
 
-enumerators: first_generator
-           | enumerators semi enumerator_part
+enumerators: generator
+           | enumerators semi enumeratorPart
            ;
 
-first_generator: fullID generatorTypeO LEFT_ARROW expr
-               ;
+enumeratorPart: generator
+              | fullID compoundTypeO '=' expr // определение переменной
+              ;
 
-enumerator_part: generator
-               | definition
-               ;
-
-generator: fullID generatorTypeO LEFT_ARROW expr
+generator: fullID compoundTypeO LEFT_ARROW expr
          ;
 
-definition: fullID generatorTypeO '=' expr
+compoundTypeO: /* empty */ %prec LOW_PREC
+          | ':' compoundType
           ;
-
-generatorTypeO: /* empty */ %prec LOW_PREC
-              | ':' infixType
-              ;
 
 infixExpr: prefixExpr
          | infixExpr '+' nlo infixExpr
@@ -180,7 +171,7 @@ prefixExpr: simpleExpr
           | '!' simpleExpr
           ;
 
-simpleExpr: NEW constr
+simpleExpr: NEW constrInvoke
           | blockExpr
           | simpleExpr1
           ;
@@ -206,19 +197,15 @@ exprs: /* empty */
 blockExpr: '{' blockStats '}'
          ;
 
-constr: simpleType argumentExprs
-      ;
-
-infixType: compoundType
-         | infixType fullID nlo compoundType
-         ;
+constrInvoke: simpleType argumentExprs // бывший constr
+      	    ;
 
 compoundType: simpleType
             | compoundType WITH simpleType
             ;
 
 simpleType: stableId
-          | ARRAY '[' infixType ']'
+          | ARRAY '[' compoundType ']'
           ;
 
 stableId: fullID
@@ -260,7 +247,7 @@ funcParams: funcParam
           | funcParams ',' funcParam
           ;
 
-funcParam: fullID generatorTypeO assignExprO
+funcParam: fullID compoundTypeO assignExprO
          ;
 
 assignExprO: /* empty */
@@ -272,17 +259,16 @@ assignExprO: /* empty */
 /* --------------------- CLASS --------------------- */
 
 classParamClause: nlo '(' ')'
-               | nlo '(' classParams ')'
-               ;
+                | nlo '(' classParams ')'
+                ;
 
 classParams: classParam
-          | classParams ',' classParam
-          ;
+           | classParams ',' classParam
+           ;
 
-classParam: modifiers VAL fullID ':' infixType '=' expr
-          | modifiers VAR fullID ':' infixType '=' expr
-          | modifiers VAL fullID ':' infixType
-          | modifiers VAR fullID ':' infixType
+classParam: modifiers VAL fullID ':' compoundType assignExprO
+          | modifiers VAR fullID ':' compoundType assignExprO
+          | modifiers fullID ':' compoundType assignExprO
           ;
 
 modifiers: /* empty */        { $$ = ModifiersNode::addModifierToList(nullptr, nullptr); }
@@ -316,13 +302,10 @@ templateStat: /* empty */
 
 /* --------------------- DECL --------------------- */
 
-dcl: VAL ids ':' infixType
-   | VAR ids ':' infixType
-   | DEF funDcl
+dcl: VAL ids ':' compoundType
+   | VAR ids ':' compoundType
+   | DEF funSig compoundTypeO
    ;
-
-funDcl: funSig generatorTypeO
-      ;
 
 funSig: fullID funcParamClause
       ;
@@ -331,10 +314,8 @@ funSig: fullID funcParamClause
 
 /* --------------------- DEFS --------------------- */
 
-varDefs: VAL ids '=' expr
-       | VAR ids '=' expr
-       | VAL ids ':' infixType '=' expr
-       | VAR ids ':' infixType '=' expr
+varDefs: VAL ids compoundTypeO '=' expr
+       | VAR ids compoundTypeO '=' expr
        ;
 
 def: varDefs
@@ -342,7 +323,7 @@ def: varDefs
    | tmplDef
    ;
 
-funDef: funSig generatorTypeO '=' expr
+funDef: funSig compoundTypeO '=' expr
       | THIS funcParamClause '=' constrExpr
       ;
 
@@ -363,9 +344,9 @@ enumDef: fullID accessModifier classParamClause enumTemplate
        ;
 
 classTemplateOpt: /* empty */ %prec LOW_PREC
-              | EXTENDS classTemplate
-              | templateBody
-              ;
+                | EXTENDS classTemplate
+                | templateBody
+                ;
 
 traitTemplateOpt: /* empty */ %prec LOW_PREC
                 | EXTENDS traitTemplate
@@ -380,7 +361,7 @@ classTemplate: classParents templateBody
              | classParents %prec END_TEMPLATE
              ;
 
-classParents: constr simpleTypes;
+classParents: constrInvoke simpleTypes;
 
 traitTemplate: simpleType simpleTypes templateBody
              | simpleType simpleTypes %prec END_TEMPLATE
@@ -435,11 +416,11 @@ literal: DECIMAL_LITERAL
        | NULL_LITERAL
        ;
 
-nls: /*empty*/
+nls: /* empty */
    | nls NL
    ;
 
-nlo: /*empty*/
+nlo: /* empty */
    | NL
    ;
 
@@ -447,7 +428,7 @@ semi: ';'
     | NL nls
     ;
 
-semio: /*empty*/
+semio: /* empty */
      | semi
      ;
 
