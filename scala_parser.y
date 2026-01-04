@@ -230,7 +230,7 @@ funcParams: funcParam
           | funcParams ',' funcParam
           ;
 
-funcParam: fullID generatorTypeO assignExprO
+funcParam: fullID infixTypeO assignExprO
          ;
 
 assignExprO: /* empty */
@@ -249,10 +249,9 @@ classParams: classParam
            | classParams ',' classParam
            ;
 
-classParam: modifiers VAL fullID ':' infixType '=' expr
-          | modifiers VAR fullID ':' infixType '=' expr
-          | modifiers VAL fullID ':' infixType
-          | modifiers VAR fullID ':' infixType
+classParam: modifiers VAL fullID ':' infixType assignExprO
+          | modifiers VAR fullID ':' infixType assignExprO
+          | modifiers fullID ':' infixType assignExprO
           ;
 
 modifiers: /* empty */
@@ -299,10 +298,8 @@ funSig: fullID funcParamClause
 
 /* --------------------- DEFS --------------------- */
 
-varDefs: VAL ids '=' expr
-       | VAR ids '=' expr
-       | VAL ids ':' infixType '=' expr
-       | VAR ids ':' infixType '=' expr
+varDefs: VAL ids infixTypeO '=' expr
+       | VAR ids infixTypeO '=' expr
        ;
 
 def: varDefs
@@ -310,7 +307,7 @@ def: varDefs
    | tmplDef
    ;
 
-funDef: funSig generatorTypeO '=' expr
+funDef: funSig infixTypeO '=' expr
       | THIS funcParamClause '=' constrExpr
       ;
 
