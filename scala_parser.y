@@ -89,14 +89,14 @@ enumerators: generator
            ;
 
 enumeratorPart: generator
-               | fullID infixTypeO '=' expr // определение переменной
-               ;
+              | fullID compoundTypeO '=' expr // определение переменной
+              ;
 
-generator: fullID infixTypeO LEFT_ARROW expr
+generator: fullID compoundTypeO LEFT_ARROW expr
          ;
 
-infixTypeO: /* empty */ %prec LOW_PREC
-          | ':' infixType
+compoundTypeO: /* empty */ %prec LOW_PREC
+          | ':' compoundType
           ;
 
 infixExpr: prefixExpr
@@ -179,16 +179,12 @@ blockExpr: '{' blockStats '}'
 constrInvoke: simpleType argumentExprs // бывший constr
       	    ;
 
-infixType: compoundType
-         | infixType fullID nlo compoundType
-         ;
-
 compoundType: simpleType
             | compoundType WITH simpleType
             ;
 
 simpleType: stableId
-          | ARRAY '[' infixType ']'
+          | ARRAY '[' compoundType ']'
           ;
 
 stableId: fullID
@@ -230,7 +226,7 @@ funcParams: funcParam
           | funcParams ',' funcParam
           ;
 
-funcParam: fullID infixTypeO assignExprO
+funcParam: fullID compoundTypeO assignExprO
          ;
 
 assignExprO: /* empty */
@@ -249,9 +245,9 @@ classParams: classParam
            | classParams ',' classParam
            ;
 
-classParam: modifiers VAL fullID ':' infixType assignExprO
-          | modifiers VAR fullID ':' infixType assignExprO
-          | modifiers fullID ':' infixType assignExprO
+classParam: modifiers VAL fullID ':' compoundType assignExprO
+          | modifiers VAR fullID ':' compoundType assignExprO
+          | modifiers fullID ':' compoundType assignExprO
           ;
 
 modifiers: /* empty */
@@ -283,9 +279,9 @@ templateStat: /* empty */
 
 /* --------------------- DECL --------------------- */
 
-dcl: VAL ids ':' infixType
-   | VAR ids ':' infixType
-   | DEF funSig infixTypeO
+dcl: VAL ids ':' compoundType
+   | VAR ids ':' compoundType
+   | DEF funSig compoundTypeO
    ;
 
 funSig: fullID funcParamClause
@@ -295,8 +291,8 @@ funSig: fullID funcParamClause
 
 /* --------------------- DEFS --------------------- */
 
-varDefs: VAL ids infixTypeO '=' expr
-       | VAR ids infixTypeO '=' expr
+varDefs: VAL ids compoundTypeO '=' expr
+       | VAR ids compoundTypeO '=' expr
        ;
 
 def: varDefs
@@ -304,7 +300,7 @@ def: varDefs
    | tmplDef
    ;
 
-funDef: funSig infixTypeO '=' expr
+funDef: funSig compoundTypeO '=' expr
       | THIS funcParamClause '=' constrExpr
       ;
 
