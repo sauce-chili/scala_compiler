@@ -403,11 +403,11 @@ literal: DECIMAL_LITERAL
        | NULL_LITERAL
        ;
 
-nls: /*empty*/
+nls: /* empty */
    | nls NL
    ;
 
-nlo: /*empty*/
+nlo: /* empty */
    | NL
    ;
 
@@ -415,7 +415,7 @@ semi: ';'
     | NL nls
     ;
 
-semio: /*empty*/
+semio: /* empty */
      | semi
      ;
 
