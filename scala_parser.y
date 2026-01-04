@@ -84,22 +84,16 @@ yieldO: /* empty */
       | YIELD
       ;
 
-enumerators: first_generator
-           | enumerators semi enumerator_part
+enumerators: generator
+           | enumerators semi enumeratorPart
            ;
 
-first_generator: fullID generatorTypeO LEFT_ARROW expr
+enumeratorPart: generator
+               | fullID infixTypeO '=' expr // определение переменной
                ;
 
-enumerator_part: generator
-               | definition
-               ;
-
-generator: fullID generatorTypeO LEFT_ARROW expr
+generator: fullID infixTypeO LEFT_ARROW expr
          ;
-
-definition: fullID generatorTypeO '=' expr
-          ;
 
 infixTypeO: /* empty */ %prec LOW_PREC
           | ':' infixType
