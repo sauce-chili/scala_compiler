@@ -285,11 +285,8 @@ templateStat: /* empty */
 
 dcl: VAL ids ':' infixType
    | VAR ids ':' infixType
-   | DEF funDcl
+   | DEF funSig infixTypeO
    ;
-
-funDcl: funSig generatorTypeO
-      ;
 
 funSig: fullID funcParamClause
       ;
