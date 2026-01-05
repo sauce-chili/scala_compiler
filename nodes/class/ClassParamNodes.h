@@ -12,7 +12,7 @@ public:
     ClassParamNodes();
     ClassParamNodes(ClassParamNode *first);
 
-    static ClassParamNodes* addExprToList(ClassParamNodes *list, ClassParamNode *classParam);
+    static ClassParamNodes* addClassParamToList(ClassParamNodes *list, ClassParamNode *classParam);
 
     string toDot() const override;
     string getDotLabel() const override;

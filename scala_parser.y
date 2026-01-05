@@ -236,15 +236,15 @@ tryExpr: TRY expr                         { $$ = TryExprNode::createExceptionBlo
 
 /* --------------------- FUNC --------------------- */
 
-funcParamClause: nlo '(' ')'
-               | nlo '(' funcParams ')'
+funcParamClause: nlo '(' ')'            { $$ = nullptr }
+               | nlo '(' funcParams ')' { $$ = $3 }
                ;
 
-funcParams: funcParam
-          | funcParams ',' funcParam
+funcParams: funcParam                { $$ = FuncParamsNode::addFuncParamToList(nullptr, $1); }
+          | funcParams ',' funcParam { $$ = FuncParamsNode::addFuncParamToList($1, $3); }
           ;
 
-funcParam: fullID compoundTypeO assignExprO
+funcParam: fullID compoundTypeO assignExprO { $$ = FuncParamNode::createClassParam($1, $2, $3); }
          ;
 
 assignExprO: /* empty */ { $$ = nullptr }
@@ -255,12 +255,12 @@ assignExprO: /* empty */ { $$ = nullptr }
 
 /* --------------------- CLASS --------------------- */
 
-classParamClause: nlo '(' ')'
-                | nlo '(' classParams ')'
+classParamClause: nlo '(' ')'             { $$ = nullptr }
+                | nlo '(' classParams ')' { $$ = $3 }
                 ;
 
-classParams: classParam                 { $$ = ClassParamNodes::addExprToList(nullptr, $1); }
-           | classParams ',' classParam { $$ = ClassParamNodes::addExprToList($1, $3); }
+classParams: classParam                 { $$ = ClassParamNodes::addClassParamToList(nullptr, $1); }
+           | classParams ',' classParam { $$ = ClassParamNodes::addClassParamToList($1, $3); }
            ;
 
 classParam: modifiers VAL fullID ':' compoundType assignExprO { $$ = ClassParamNode::createClassParam(VAL_CLASS_PARAM, $1, $3, $5, $6); }

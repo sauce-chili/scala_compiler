@@ -9,7 +9,7 @@ ClassParamNodes::ClassParamNodes() {
     classParams = new std::list<ClassParamNode*>();
 }
 
-ClassParamNodes *ClassParamNodes::addExprToList(ClassParamNodes *list, ClassParamNode *classParam) {
+ClassParamNodes *ClassParamNodes::addClassParamToList(ClassParamNodes *list, ClassParamNode *classParam) {
     if (list == nullptr) {
         return new ClassParamNodes(classParam);
     }
