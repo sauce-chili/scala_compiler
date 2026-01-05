@@ -225,10 +225,10 @@ ids: fullID         { $$ = IdsNode::addIdToList(nullptr, $1); }
 
 /* --------------------- TRY --------------------- */
 
-tryExpr: TRY expr
-       | TRY expr CATCH expr
-       | TRY expr CATCH expr FINALLY expr
-       | TRY expr FINALLY expr
+tryExpr: TRY expr                         { $$ = TryExprNode::createExceptionBlock($1); }
+       | TRY expr CATCH expr              { $$ = TryExprNode::createExceptionBlock($1, $2); }
+       | TRY expr CATCH expr FINALLY expr { $$ = TryExprNode::createExceptionBlock($1, $2, $3); }
+       | TRY expr FINALLY expr            { $$ = TryExprNode::createExceptionBlock($1, $3); }
        ;
 
 /* --------------------- TRY --------------------- */
