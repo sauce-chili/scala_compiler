@@ -3,8 +3,8 @@
 
 #include <string>
 
-class ExprNode;
-class StmtNode;
+#include "Types.h"
+
 using namespace std;
 
 class Node {

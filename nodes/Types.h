@@ -45,7 +45,7 @@ enum ExprType {
 enum SimpleExprType {
     OBJECT_CREATING,
     BLOCK_STATS,
-    SIMPLE_EXPR1
+    SIMPLE_EXPR_1,
 };
 
 enum SimpleExpr1Type {
@@ -62,6 +62,12 @@ enum SimpleExpr1Type {
     ARGUMENT_CALL,
     EMPTY_CALL,
     METHOD_CALL,
+};
+
+enum StableIdType {
+    STABLE_ID_IDENTIFIER,
+    STABLE_ID_SUPER_FIELD_ACCESS,
+    STABLE_ID_THIS_FIELD_ACCESS,
 };
 
 enum StatType {
@@ -83,6 +89,11 @@ enum Type {
 
 
 std::string modifierToString(ModifierType m);
+std::string simpleExpr1ToString(SimpleExpr1Type t);
+std::string simpleExprToString(SimpleExprType t);
+std::string stableIdTypeToString(StableIdType t);
+
+
 std::string exprTypeToString(ExprType t);
 std::string exprStatToString(StatType t);
 std::string typeToString(Type t);

@@ -1,9 +1,21 @@
 #ifndef SCALA_LEXER_ARGUMENTEXPRSNODE_H
 #define SCALA_LEXER_ARGUMENTEXPRSNODE_H
 
+#include "../Node.h"
+#include "ExprNode.h"
+#include "ExprsNode.h"
+#include <list>
 
-class ArgumentExprsNode {
+class ArgumentExprsNode: public Node {
+public:
+    ExprsNode* exprs;
 
+    ArgumentExprsNode* clone() const;
+
+    ArgumentExprsNode(ExprsNode* exprs);
+
+    string toDot() const override;
+    string getDotLabel() const override;
 };
 
 

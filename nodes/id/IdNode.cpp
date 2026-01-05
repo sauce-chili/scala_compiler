@@ -21,3 +21,9 @@ string IdNode::getDotLabel() const {
 
     return dot;
 }
+
+IdNode *IdNode::clone() const {
+    IdNode* clone = new IdNode();
+    clone->name = this->name;
+    return clone;
+}

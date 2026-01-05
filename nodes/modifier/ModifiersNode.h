@@ -1,5 +1,6 @@
 #ifndef SCALA_LEXER_MODIFIERSNODE_H
 #define SCALA_LEXER_MODIFIERSNODE_H
+
 #include <list>
 
 #include "../Node.h"

@@ -171,44 +171,44 @@ prefixExpr: simpleExpr
           | '!' simpleExpr
           ;
 
-simpleExpr: NEW constrInvoke
-          | '{' blockStats '}' // бывший blockExpr
-          | simpleExpr1
+simpleExpr: NEW constrInvoke   { $$ = SimpleExprNode::createConstrInvokeNode($2); }
+          | '{' blockStats '}' { $$ = SimpleExprNode::createBlockStatsNode($2); } // бывший blockExpr
+          | simpleExpr1        { $$ = SimpleExprNode::createSimpleExpr1Node($1); }
           ;
 
-simpleExpr1: literal
-           | fullID
-           | SUPER '.' fullID
-           | THIS '.' fullID
-           | simpleExpr '.' fullID
-           | '(' expr ')'
-           | '(' ')'
-           | simpleExpr1 argumentExprs // вызов метода
+simpleExpr1: literal                   { $$ = $1 }
+           | fullID                    { $$ = SimpleExpr1Node::createIdNode($1); }
+           | SUPER '.' fullID          { $$ = SimpleExpr1Node::createSuperFieldAccessNode($3); }
+           | THIS '.' fullID           { $$ = SimpleExpr1Node::createThisFieldAccessNode($3); }
+           | simpleExpr '.' fullID     { $$ = SimpleExpr1Node::createSimpleExprFieldAccessNode($3, $1); }
+           | '(' expr ')'              { $$ = SimpleExpr1Node::createArgumentCallNode($2); }
+           | '(' ')'                   { $$ = SimpleExpr1Node::createEmptyCallNode(); }
+           | simpleExpr1 argumentExprs { $$ = SimpleExpr1Node::createMethodCallNode($1, $2); } // вызов метода
            ;
 
-argumentExprs: '(' exprs ')'
+argumentExprs: '(' exprs ')' { $$ = ArgumentExprsNode::ArgumentExprsNode($2); }
              ;
 
-exprs: /* empty */
-     | expr
-     | exprs ',' expr
+exprs: /* empty */    { $$ = new ExprsNode::ExprsNode(); } // TODO проверить второе null
+     | expr           { $$ = ExprsNode::addExprToList(nullptr, $1); }
+     | exprs ',' expr { $$ = ExprsNode::addExprToList($1, $3); }
      ;
 
-constrInvoke: simpleType argumentExprs // бывший constr
+constrInvoke: simpleType argumentExprs { $$ = ConstrInvokeNode::createWithArgumentsNode($1, $2); } // бывший constr
       	    ;
 
-compoundType: simpleType
-            | compoundType WITH simpleType
+compoundType: simpleType                   { $$ = CompoundTypeNode::addStableId($1); }
+            | compoundType WITH simpleType { $$ = CompoundTypeNode::addStableId($3); }
             ;
 
-simpleType: stableId
-          | ARRAY '[' compoundType ']'
+simpleType: stableId                   { $$ = SimpleTypeNode::createStableIdNode($1); }
+          | ARRAY '[' compoundType ']' { $$ = SimpleTypeNode::createArrayWithCompoundTypeNode($3); }
           ;
 
-stableId: fullID
-        | SUPER '.' fullID
-        | THIS '.' fullID
-        | stableId '.' fullID
+stableId: fullID              { $$ = StableIdNode::addStableId(nullptr, SingleStableIdNode::createStableIdByFullId($1)); }
+        | SUPER '.' fullID    { $$ = StableIdNode::addStableId(nullptr, SingleStableIdNode::createSuperCallStableId($3)); }
+        | THIS '.' fullID     { $$ = StableIdNode::addStableId(nullptr, SingleStableIdNode::createThisCallStableIdBy($3)); }
+        | stableId '.' fullID { $$ = StableIdNode::addStableId($1, $3); }
         ;
 
 blockStats: blockStat
@@ -397,13 +397,13 @@ simpleTypes: /* empty */
 
 /* --------------------- DEFS --------------------- */
 
-literal: DECIMAL_LITERAL
-       | CHAR_LITERAL
-       | DOUBLE_LITERAL
-       | STRING_LITERAL
-       | TRUE_LITERAL
-       | FALSE_LITERAL
-       | NULL_LITERAL
+literal: DECIMAL_LITERAL { $$ = SimpleExpr1Node::createIntNode($1); }
+       | CHAR_LITERAL    { $$ = SimpleExpr1Node::createCharNode($1); }
+       | DOUBLE_LITERAL  { $$ = SimpleExpr1Node::createDoubleNode($1); }
+       | STRING_LITERAL  { $$ = SimpleExpr1Node::createStringNode($1); }
+       | TRUE_LITERAL    { $$ = SimpleExpr1Node::createBoolNode($1); }
+       | FALSE_LITERAL   { $$ = SimpleExpr1Node::createBoolNode($1); }
+       | NULL_LITERAL    { $$ = SimpleExpr1Node::createNullNode($1); }
        ;
 
 nls: /* empty */
