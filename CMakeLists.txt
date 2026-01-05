@@ -65,6 +65,8 @@ add_executable(scala_lexer
         nodes/id/IdsNode.h
         nodes/try/TryExprNode.cpp
         nodes/try/TryExprNode.h
+        nodes/exprs/PrefixExprNode.cpp
+        nodes/exprs/PrefixExprNode.h
 )
 
 message(STATUS "Flex output: ${FLEX_MyScanner_OUTPUTS}")

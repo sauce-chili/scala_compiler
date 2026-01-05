@@ -46,3 +46,14 @@ std::string statTypeToString(StatType t) {
         case VAL_DECL: return "Val declaration";
     }
 }
+
+std::string prefixExprToString(PrefixExprType t) {
+    switch (t) {
+        case UNARY_PLUS:  return "Unary plus";
+        case UNARY_MINUS: return "Unary minus";
+        case NOT:         return "Not";
+        case BIT_NOT:     return "Bit not";
+
+        default: return "No unary operator";
+    }
+}

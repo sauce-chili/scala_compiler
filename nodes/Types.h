@@ -25,9 +25,6 @@ enum ExprType {
     ASSIGNMENT,
     THIS,
     SUPER,
-    UNARY_PLUS,
-    UNARY_MINUS,
-    NOT,
     OR,
     AND,
     FUNC_CALL,
@@ -64,6 +61,14 @@ enum SimpleExpr1Type {
     METHOD_CALL,
 };
 
+enum PrefixExprType {
+    UNARY_PLUS,
+    UNARY_MINUS,
+    NOT,
+    BIT_NOT,
+    NO_UNARY_OPERATOR,
+};
+
 enum StableIdType {
     STABLE_ID_IDENTIFIER,
     STABLE_ID_SUPER_FIELD_ACCESS,
@@ -95,6 +100,7 @@ std::string simpleExpr1ToString(SimpleExpr1Type t);
 std::string simpleExprToString(SimpleExprType t);
 std::string stableIdTypeToString(StableIdType t);
 std::string statTypeToString(StatType t);
+std::string prefixExprToString(PrefixExprType t);
 
 
 std::string exprTypeToString(ExprType t);

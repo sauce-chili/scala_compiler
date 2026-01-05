@@ -164,11 +164,11 @@ infixExpr: prefixExpr
 	 | infixExpr ID_COLON nlo infixExpr
          ;
 
-prefixExpr: simpleExpr
-          | UMINUS simpleExpr
-          | UPLUS simpleExpr
-          | '~' simpleExpr
-          | '!' simpleExpr
+prefixExpr: simpleExpr        { $$ = PrefixExprNode::createPrefixExprNode($1, NO_UNARY_OPERATOR); }
+          | UMINUS simpleExpr { $$ = PrefixExprNode::createPrefixExprNode($1, UNARY_MINUS); }
+          | UPLUS simpleExpr  { $$ = PrefixExprNode::createPrefixExprNode($1, UNARY_PLUS); }
+          | '~' simpleExpr    { $$ = PrefixExprNode::createPrefixExprNode($1, BIT_NOT); }
+          | '!' simpleExpr    { $$ = PrefixExprNode::createPrefixExprNode($1, NOT); }
           ;
 
 simpleExpr: NEW constrInvoke   { $$ = SimpleExprNode::createConstrInvokeNode($2); }
