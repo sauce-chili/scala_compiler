@@ -37,3 +37,12 @@ std::string stableIdTypeToString(StableIdType t) {
         case STABLE_ID_THIS_FIELD_ACCESS:      return "Stable id This field access";
     }
 }
+
+std::string statTypeToString(StatType t) {
+    switch (t) {
+        case TEMPLATE: return "Template";
+        case ENUM:     return "Enum";
+        case VAR_DECL: return "Var declaration";
+        case VAL_DECL: return "Val declaration";
+    }
+}

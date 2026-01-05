@@ -57,6 +57,12 @@ add_executable(scala_lexer
         nodes/type/CompoundTypeNode.h
         nodes/id/SingleStableIdNode.cpp
         nodes/id/SingleStableIdNode.h
+        nodes/stats/BlockStatNode.cpp
+        nodes/stats/BlockStatNode.h
+        nodes/var/VarDefsNode.cpp
+        nodes/var/VarDefsNode.h
+        nodes/id/IdsNode.cpp
+        nodes/id/IdsNode.h
 )
 
 message(STATUS "Flex output: ${FLEX_MyScanner_OUTPUTS}")

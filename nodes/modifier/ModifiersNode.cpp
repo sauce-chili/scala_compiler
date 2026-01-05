@@ -19,10 +19,6 @@ ModifiersNode *ModifiersNode::addModifierToList(ModifiersNode *list, ModifierNod
 }
 
 string ModifiersNode::toDot() const {
-    return "Modifiers";
-}
-
-string ModifiersNode::getDotLabel() const {
     string dot;
 
     addDotNode(dot);
@@ -33,4 +29,8 @@ string ModifiersNode::getDotLabel() const {
     }
 
     return dot;
+}
+
+string ModifiersNode::getDotLabel() const {
+    return "Modifiers";
 }

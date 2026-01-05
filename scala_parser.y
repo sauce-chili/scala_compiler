@@ -116,8 +116,8 @@ enumeratorPart: generator
 generator: fullID compoundTypeO LEFT_ARROW expr
          ;
 
-compoundTypeO: /* empty */ %prec LOW_PREC
-          | ':' compoundType
+compoundTypeO: /* empty */ %prec LOW_PREC { $$ = nullptr; }
+          | ':' compoundType              { $$ = $2; }
           ;
 
 infixExpr: prefixExpr
@@ -211,16 +211,16 @@ stableId: fullID              { $$ = StableIdNode::addStableId(nullptr, SingleSt
         | stableId '.' fullID { $$ = StableIdNode::addStableId($1, $3); }
         ;
 
-blockStats: blockStat
-          | blockStats semi blockStat
+blockStats: blockStat                 { $$ = BlockStatsNode::addBlockStatToList(nullptr, $1); }
+          | blockStats semi blockStat { $$ = BlockStatsNode::addBlockStatToList($1, $3); }
           ;
 
-blockStat: varDefs
-         | expr
+blockStat: varDefs { $$ = BlockStatNode::createVarDefsNode($1); }
+         | expr    { $$ = BlockStatNode::createExprNode($1); }
          ;
 
-ids: fullID
-   | ids ',' fullID
+ids: fullID         { $$ = IdsNode::addIdToList(nullptr, $1); }
+   | ids ',' fullID { $$ = IdsNode::addIdToList($1, $3); }
    ;
 
 /* --------------------- TRY --------------------- */
@@ -311,8 +311,8 @@ funSig: fullID funcParamClause
 
 /* --------------------- DEFS --------------------- */
 
-varDefs: VAL ids compoundTypeO '=' expr
-       | VAR ids compoundTypeO '=' expr
+varDefs: VAL ids compoundTypeO '=' expr { $$ = VarDefsNode::createVal($2, $3, $5); }
+       | VAR ids compoundTypeO '=' expr { $$ = VarDefsNode::createVar($2, $3, $5); }
        ;
 
 def: varDefs

@@ -73,6 +73,8 @@ enum StableIdType {
 enum StatType {
     TEMPLATE,
     ENUM,
+    VAR_DECL,
+    VAL_DECL,
 };
 
 enum Type {
@@ -92,6 +94,7 @@ std::string modifierToString(ModifierType m);
 std::string simpleExpr1ToString(SimpleExpr1Type t);
 std::string simpleExprToString(SimpleExprType t);
 std::string stableIdTypeToString(StableIdType t);
+std::string statTypeToString(StatType t);
 
 
 std::string exprTypeToString(ExprType t);
