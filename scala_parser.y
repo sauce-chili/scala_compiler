@@ -247,8 +247,8 @@ funcParams: funcParam
 funcParam: fullID compoundTypeO assignExprO
          ;
 
-assignExprO: /* empty */
-           | '=' expr
+assignExprO: /* empty */ { $$ = nullptr }
+           | '=' expr    { $$ = AssignExprNode::createAssignExprNode($2); }
            ;
 
 /* --------------------- FUNC --------------------- */
@@ -259,13 +259,13 @@ classParamClause: nlo '(' ')'
                 | nlo '(' classParams ')'
                 ;
 
-classParams: classParam
-           | classParams ',' classParam
+classParams: classParam                 { $$ = ClassParamNodes::addExprToList(nullptr, $1); }
+           | classParams ',' classParam { $$ = ClassParamNodes::addExprToList($1, $3); }
            ;
 
-classParam: modifiers VAL fullID ':' compoundType assignExprO
-          | modifiers VAR fullID ':' compoundType assignExprO
-          | modifiers fullID ':' compoundType assignExprO
+classParam: modifiers VAL fullID ':' compoundType assignExprO { $$ = ClassParamNode::createClassParam(VAL_CLASS_PARAM, $1, $3, $5, $6); }
+          | modifiers VAR fullID ':' compoundType assignExprO { $$ = ClassParamNode::createClassParam(VAR_CLASS_PARAM, $1, $3, $5, $6); }
+          | modifiers fullID ':' compoundType assignExprO     { $$ = ClassParamNode::createClassParam(UNMARKED_CLASS_PARAM, $1, $2, $4, $5); }
           ;
 
 modifiers: /* empty */        { $$ = ModifiersNode::addModifierToList(nullptr, nullptr); }

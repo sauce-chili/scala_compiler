@@ -57,3 +57,11 @@ std::string prefixExprToString(PrefixExprType t) {
         default: return "No unary operator";
     }
 }
+
+std::string classParamTypeToString(ClassParamType t) {
+    switch (t) {
+        case VAL_CLASS_PARAM:      return "Val class param";
+        case VAR_CLASS_PARAM:      return "Var class param";
+        case UNMARKED_CLASS_PARAM: return "Unmarked class param";
+    }
+}

@@ -82,6 +82,12 @@ enum StatType {
     VAL_DECL,
 };
 
+enum ClassParamType {
+    VAL_CLASS_PARAM,
+    VAR_CLASS_PARAM,
+    UNMARKED_CLASS_PARAM,
+};
+
 enum Type {
     INT,
     CHAR,
@@ -101,6 +107,7 @@ std::string simpleExprToString(SimpleExprType t);
 std::string stableIdTypeToString(StableIdType t);
 std::string statTypeToString(StatType t);
 std::string prefixExprToString(PrefixExprType t);
+std::string classParamTypeToString(ClassParamType t);
 
 
 std::string exprTypeToString(ExprType t);
