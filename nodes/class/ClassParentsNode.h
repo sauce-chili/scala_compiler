@@ -1,0 +1,23 @@
+#ifndef SCALA_LEXER_CLASSPARENTSNODE_H
+#define SCALA_LEXER_CLASSPARENTSNODE_H
+
+
+#include "../Node.h"
+#include "ConstrInvokeNode.h"
+#include "../type/SimpleTypesNode.h"
+
+class ClassParentsNode: public Node {
+public:
+    ConstrInvokeNode* constr;
+    SimpleTypesNode* simpleTypes;
+
+    ClassParentsNode();
+
+    static ClassParentsNode* createClassParents(ConstrInvokeNode* constr, SimpleTypesNode* simpleTypes);
+
+    string toDot() const override;
+    string getDotLabel() const override;
+};
+
+
+#endif //SCALA_LEXER_CLASSPARENTSNODE_H

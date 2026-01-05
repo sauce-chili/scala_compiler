@@ -81,6 +81,10 @@ add_executable(scala_lexer
         nodes/func/FuncParamNode.h
         nodes/func/FuncParamsNode.cpp
         nodes/func/FuncParamsNode.h
+        nodes/class/ClassParentsNode.cpp
+        nodes/class/ClassParentsNode.h
+        nodes/type/SimpleTypesNode.cpp
+        nodes/type/SimpleTypesNode.h
 )
 
 message(STATUS "Flex output: ${FLEX_MyScanner_OUTPUTS}")

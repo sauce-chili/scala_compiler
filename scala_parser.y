@@ -362,7 +362,8 @@ classTemplate: classParents templateBody
              | classParents %prec END_TEMPLATE
              ;
 
-classParents: constrInvoke simpleTypes;
+classParents: constrInvoke simpleTypes { $$ = ClassParentsNode::createClassParents($1, $2); }
+	    ;
 
 traitTemplate: simpleType simpleTypes templateBody
              | simpleType simpleTypes %prec END_TEMPLATE
@@ -391,8 +392,8 @@ topStatSeq: topStat
 topStat: modifiers tmplDef
        ;
 
-simpleTypes: /* empty */
-           | simpleTypes WITH simpleType
+simpleTypes: /* empty */                 { $$ = nullptr }
+           | simpleTypes WITH simpleType { $$ = SimpleTypesNode::addSimpleTypeToList($1, $3); }
            ;
 
 /* --------------------- DEFS --------------------- */
