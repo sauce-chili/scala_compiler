@@ -299,12 +299,12 @@ templateStat: /* empty */
 
 /* --------------------- DECL --------------------- */
 
-dcl: VAL ids ':' compoundType
-   | VAR ids ':' compoundType
-   | DEF funSig compoundTypeO
+dcl: VAL ids ':' compoundType { $$ = DclNode::createValDcl($2, $4); }
+   | VAR ids ':' compoundType { $$ = DclNode::createVarDcl($2, $4); }
+   | DEF funSig compoundTypeO { $$ = DclNode::createDefDcl($2, $3); }
    ;
 
-funSig: fullID funcParamClause
+funSig: fullID funcParamClause { $$ = FunSigNode::createFunSig($1, $2); }
       ;
 
 /* --------------------- DECL --------------------- */
@@ -320,12 +320,12 @@ def: varDefs
    | tmplDef
    ;
 
-funDef: funSig compoundTypeO '=' expr
-      | THIS funcParamClause '=' constrExpr
+funDef: funSig compoundTypeO '=' expr       { $$ = FunDefNode::createFunSigFunDef($1, $2, $4); }
+      | THIS funcParamClause '=' constrExpr { $$ = FunDefNode::createThisConstrCallFunDef($2, $4); }
       ;
 
-constrExpr: THIS argumentExprs // вызов первичного конструктора, бывший selfInvocation
-          | '{' THIS argumentExprs semi blockStats '}'
+constrExpr: THIS argumentExprs { $$ = ConstrExprNode::createConstrExpr($3, nullptr); } // вызов первичного конструктора, бывший selfInvocation
+          | '{' THIS argumentExprs semi blockStats '}' { $$ = ConstrExprNode::createConstrExpr($3, $5); }
           ;
 
 tmplDef: CLASS classDef

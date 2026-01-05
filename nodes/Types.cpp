@@ -44,6 +44,7 @@ std::string statTypeToString(StatType t) {
         case ENUM:     return "Enum";
         case VAR_DECL: return "Var declaration";
         case VAL_DECL: return "Val declaration";
+        case FUN_DEF:  return "Function definition";
     }
 }
 

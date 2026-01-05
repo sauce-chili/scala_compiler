@@ -1,0 +1,10 @@
+#ifndef SCALA_LEXER_TEMPLATESTATNODE_H
+#define SCALA_LEXER_TEMPLATESTATNODE_H
+
+
+class TemplateStatNode {
+
+};
+
+
+#endif //SCALA_LEXER_TEMPLATESTATNODE_H

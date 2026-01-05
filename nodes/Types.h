@@ -80,6 +80,7 @@ enum StatType {
     ENUM,
     VAR_DECL,
     VAL_DECL,
+    FUN_DEF,
 };
 
 enum ClassParamType {
@@ -93,6 +94,7 @@ enum EnumCaseType {
     CASE_WITH_PARAMS,
     CASE_WITH_IDS,
 };
+
 
 enum Type {
     INT,
