@@ -97,6 +97,20 @@ add_executable(scala_lexer
         nodes/func/FunDefNode.h
         nodes/exprs/ConstrExprNode.cpp
         nodes/exprs/ConstrExprNode.h
+        nodes/templates/TemplateStatNode.cpp
+        nodes/templates/TemplateStatNode.h
+        nodes/templates/TmplDefNode.cpp
+        nodes/templates/TmplDefNode.h
+        nodes/definitions/DefNode.cpp
+        nodes/definitions/DefNode.h
+        nodes/templates/TemplateStatsNode.cpp
+        nodes/templates/TemplateStatsNode.h
+        nodes/class/ClassTemplateNode.cpp
+        nodes/class/ClassTemplateNode.h
+        nodes/templates/ClassTemplateOptNode.cpp
+        nodes/templates/ClassTemplateOptNode.h
+        nodes/class/ClassDefNode.cpp
+        nodes/class/ClassDefNode.h
 )
 
 message(STATUS "Flex output: ${FLEX_MyScanner_OUTPUTS}")

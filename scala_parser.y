@@ -285,16 +285,16 @@ accessModifier: PRIVATE   { $$ = ModifierNode::createModifier($1); }
 
 /* --------------------- CLASS --------------------- */
 
-templateBody: nlo '{' templateStat templateStats '}'
+templateBody: nlo '{' templateStat templateStats '}' { $$ = TemplateStatsNode::addFuncParamToFrontToList($4, $3); }
             ;
 
-templateStats: /* empty */
-             | templateStats semi templateStat
+templateStats: /* empty */                     { $$ = nullptr; }
+             | templateStats semi templateStat { $$ = TemplateStatsNode::addFuncParamToBackToList($1, $3); }
              ;
 
-templateStat: /* empty */
-            | modifiers def
-            | modifiers dcl
+templateStat: /* empty */   { $$ = nullptr }
+            | modifiers def { $$ = TemplateStatNode::createDefTemplate($1, $2); }
+            | modifiers dcl { $$ = TemplateStatNode::createDclTemplate($1, $2); }
             ;
 
 /* --------------------- DECL --------------------- */
@@ -334,9 +334,9 @@ tmplDef: CLASS classDef
        | ENUM enumDef
        ;
 
-classDef: fullID accessModifier classParamClause classTemplateOpt
-        | fullID classParamClause classTemplateOpt
-        | fullID classTemplateOpt
+classDef: fullID accessModifier classParamClause classTemplateOpt { $$ = ClassDefNode::createClassDef($1, $2, $3, $4); }
+        | fullID classParamClause classTemplateOpt                { $$ = ClassDefNode::createClassDef($1, nullptr, $2, $3); }
+        | fullID classTemplateOpt                                 { $$ = ClassDefNode::createClassDef($1, nullptr, nullptr, $2); }
         ;
 
 enumDef: fullID accessModifier classParamClause enumTemplate
@@ -344,9 +344,9 @@ enumDef: fullID accessModifier classParamClause enumTemplate
        | fullID enumTemplate
        ;
 
-classTemplateOpt: /* empty */ %prec LOW_PREC
-                | EXTENDS classTemplate
-                | templateBody
+classTemplateOpt: /* empty */ %prec LOW_PREC { $$ = nullptr; }
+                | EXTENDS classTemplate      { $$ = ClassTemplateOptNode::addFuncParamToBackToList($1, nullptr); }
+                | templateBody               { $$ = ClassTemplateOptNode::addFuncParamToBackToList(nullptr, $1); }
                 ;
 
 traitTemplateOpt: /* empty */ %prec LOW_PREC
@@ -358,8 +358,8 @@ enumTemplate: EXTENDS classParents enumBody
             | enumBody
             ;
 
-classTemplate: classParents templateBody
-             | classParents %prec END_TEMPLATE
+classTemplate: classParents templateBody       { $$ = ClassTemplateNode::createClassTemplate($1, $2); }
+             | classParents %prec END_TEMPLATE { $$ = ClassTemplateNode::createClassTemplate($1); }
              ;
 
 classParents: constrInvoke simpleTypes { $$ = ClassParentsNode::createClassParents($1, $2); }
