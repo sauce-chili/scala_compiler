@@ -88,6 +88,12 @@ enum ClassParamType {
     UNMARKED_CLASS_PARAM,
 };
 
+enum EnumCaseType {
+    CASE_WITH_EXTENDS,
+    CASE_WITH_PARAMS,
+    CASE_WITH_IDS,
+};
+
 enum Type {
     INT,
     CHAR,
@@ -108,6 +114,7 @@ std::string stableIdTypeToString(StableIdType t);
 std::string statTypeToString(StatType t);
 std::string prefixExprToString(PrefixExprType t);
 std::string classParamTypeToString(ClassParamType t);
+std::string classEnumCaseTypeToString(EnumCaseType t);
 
 
 std::string exprTypeToString(ExprType t);

@@ -1,0 +1,29 @@
+#include "EnumCaseNode.h"
+
+EnumCaseNode::EnumCaseNode() {
+
+}
+
+EnumCaseNode* EnumCaseNode::createClassParents(EnumCaseType type, IdsNode *ids, ClassParamNodes *classParams, ClassParentsNode *classParents) {
+    EnumCaseNode* node = new EnumCaseNode();
+    node->type = type;
+    node->ids = ids;
+    node->classParams = classParams;
+    node->classParents = classParents;
+    return node;
+}
+
+string EnumCaseNode::toDot() const {
+    string dot;
+
+    addDotNode(dot);
+    addDotChild(dot, ids, "Ids");
+    addDotChild(dot, classParams, "Class params");
+    addDotChild(dot, classParents, "Class parents");
+
+    return dot;
+}
+
+string EnumCaseNode::getDotLabel() const {
+    return classEnumCaseTypeToString(type);
+}

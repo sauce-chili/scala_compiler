@@ -379,10 +379,10 @@ enumStat: templateStat
 	| modifiers enumCase
 	;
 
-enumCase: CASE fullID classParamClause EXTENDS classParents
-	| CASE fullID classParamClause
-	| CASE fullID %prec END_TEMPLATE
-        | CASE ids ',' fullID // Решает rr
+enumCase: CASE fullID classParamClause EXTENDS classParents { $$ = EnumCaseNode::createClassParents(CASE_WITH_EXTENDS, IdsNode::addIdToList(nullptr, $2), $3, $5); }
+	| CASE fullID classParamClause                      { $$ = EnumCaseNode::createClassParents(CASE_WITH_PARAMS, IdsNode::addIdToList(nullptr, $2), $3); }
+	| CASE fullID %prec END_TEMPLATE                    { $$ = EnumCaseNode::createClassParents(CASE_WITH_IDS, IdsNode::addIdToList(nullptr, $2)); }
+        | CASE ids ',' fullID                               { $$ = EnumCaseNode::createClassParents(CASE_WITH_IDS, IdsNode::addIdToList($2, $4)); } // Решает rr
 	;
 
 topStatSeq: topStat

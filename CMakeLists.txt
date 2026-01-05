@@ -85,6 +85,8 @@ add_executable(scala_lexer
         nodes/class/ClassParentsNode.h
         nodes/type/SimpleTypesNode.cpp
         nodes/type/SimpleTypesNode.h
+        nodes/enum/EnumCaseNode.cpp
+        nodes/enum/EnumCaseNode.h
 )
 
 message(STATUS "Flex output: ${FLEX_MyScanner_OUTPUTS}")

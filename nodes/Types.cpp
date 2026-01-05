@@ -65,3 +65,11 @@ std::string classParamTypeToString(ClassParamType t) {
         case UNMARKED_CLASS_PARAM: return "Unmarked class param";
     }
 }
+
+std::string classEnumCaseTypeToString(EnumCaseType t) {
+    switch (t) {
+        case CASE_WITH_EXTENDS: return "Case with extends";
+        case CASE_WITH_PARAMS:  return "Case with params";
+        case CASE_WITH_IDS:     return "Case with ids list";
+    }
+}
