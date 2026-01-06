@@ -67,10 +67,6 @@ add_executable(scala_lexer
         nodes/try/TryExprNode.h
         nodes/exprs/PrefixExprNode.cpp
         nodes/exprs/PrefixExprNode.h
-        nodes/stats/EnumStats.cpp
-        nodes/stats/EnumStats.h
-        nodes/stats/EnumStat.cpp
-        nodes/stats/EnumStat.h
         nodes/exprs/AssignExprNode.cpp
         nodes/exprs/AssignExprNode.h
         nodes/class/ClassParamNode.cpp
@@ -87,8 +83,6 @@ add_executable(scala_lexer
         nodes/type/SimpleTypesNode.h
         nodes/enum/EnumCaseNode.cpp
         nodes/enum/EnumCaseNode.h
-        nodes/stats/TemplateStatNode.cpp
-        nodes/stats/TemplateStatNode.h
         nodes/func/FunSigNode.cpp
         nodes/func/FunSigNode.h
         nodes/definitions/DclNode.cpp

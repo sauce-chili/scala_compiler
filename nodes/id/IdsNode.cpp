@@ -4,17 +4,17 @@ IdsNode::IdsNode() {
     ids = new std::list<IdNode*>;
 }
 
-IdsNode::IdsNode(IdNode *id) {
+IdsNode::IdsNode(IdNode *fullId) {
     ids = new std::list<IdNode*>;
-    ids->push_back(id);
+    ids->push_back(fullId);
 }
 
-IdsNode *IdsNode::addIdToList(IdsNode *list, IdNode *id) {
+IdsNode *IdsNode::addIdToList(IdsNode *list, IdNode *fullId) {
     if (list == nullptr) {
-        return new IdsNode(id);
+        return new IdsNode(fullId);
     }
 
-    list->ids->push_back(id);
+    list->ids->push_back(fullId);
     return list;
 }
 

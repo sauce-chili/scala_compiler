@@ -5,6 +5,7 @@
 #include "../Node.h"
 #include "../type/SimpleTypesNode.h"
 #include "../templates/TemplateStatsNode.h"
+#include "../templates/TemplateStatsNode.h"
 
 class TraitTemplateNode: public Node {
 public:

@@ -11,18 +11,18 @@ TemplateDefNode *TemplateDefNode::createClassDef(ClassDefNode *classDef) {
     return node;
 }
 
-TemplateDefNode *TemplateDefNode::createObjectDef(IdNode *id, ClassTemplateOptNode *classTemplateOpt) {
+TemplateDefNode *TemplateDefNode::createObjectDef(IdNode *fullId, ClassTemplateOptNode *classTemplateOpt) {
     TemplateDefNode* node = new TemplateDefNode();
     node->type = TRAIT;
-    node->id = id;
+    node->fullId = fullId;
     node->classTemplateOpt = classTemplateOpt;
     return node;
 }
 
-TemplateDefNode *TemplateDefNode::createTraitDef(IdNode *id, TraitTemplateOptNode* traitTemplateOpt) {
+TemplateDefNode *TemplateDefNode::createTraitDef(IdNode *fullId, TraitTemplateOptNode* traitTemplateOpt) {
     TemplateDefNode* node = new TemplateDefNode();
     node->type = TRAIT;
-    node->id = id;
+    node->fullId = fullId;
     node->traitTemplateOpt = traitTemplateOpt;
     return node;
 }
@@ -39,7 +39,7 @@ string TemplateDefNode::toDot() const {
 
     addDotNode(dot);
     addDotChild(dot, classDef, "classDef_");
-    addDotChild(dot, id, "id_");
+    addDotChild(dot, fullId, "fullId_");
     addDotChild(dot, classTemplateOpt, "classTemplateOpt_");
     addDotChild(dot, traitTemplateOpt, "traitTemplateOpt_");
     addDotChild(dot, enumDef, "enumDef_");

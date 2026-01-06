@@ -6,9 +6,6 @@
 #include "../templates/TemplateStatNode.h"
 #include "../enum/EnumCaseNode.h"
 
-//templateStat
-//| modifiers enumCase
-
 class EnumStatNode: public Node {
 public:
     TemplateStatNode* templateStat;

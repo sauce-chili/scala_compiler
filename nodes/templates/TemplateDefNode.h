@@ -10,7 +10,7 @@ class TemplateDefNode: public Node {
 public:
     StatType type;
     ClassDefNode* classDef;
-    IdNode* id;
+    IdNode* fullId;
     ClassTemplateOptNode* classTemplateOpt;
     TraitTemplateOptNode* traitTemplateOpt;
     EnumDefNode* enumDef;
@@ -18,8 +18,8 @@ public:
     TemplateDefNode();
 
     static TemplateDefNode* createClassDef(ClassDefNode* classDef);
-    static TemplateDefNode* createObjectDef(IdNode* id, ClassTemplateOptNode* classTemplateOpt);
-    static TemplateDefNode* createTraitDef(IdNode* id, TraitTemplateOptNode* traitTemplateOpt);
+    static TemplateDefNode* createObjectDef(IdNode* fullId, ClassTemplateOptNode* classTemplateOpt);
+    static TemplateDefNode* createTraitDef(IdNode* fullId, TraitTemplateOptNode* traitTemplateOpt);
     static TemplateDefNode* createEnumDef(EnumDefNode* enumDef);
 
     string toDot() const override;

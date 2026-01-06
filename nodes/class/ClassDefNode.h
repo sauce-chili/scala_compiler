@@ -9,7 +9,7 @@
 
 class ClassDefNode: public Node {
 public:
-    IdNode* id;
+    IdNode* fullId;
     ModifierNode* modifier;
     ClassParamsNode* classParams;
     ClassTemplateOptNode* classTemplateOpt;
@@ -17,7 +17,7 @@ public:
     ClassDefNode();
 
     static ClassDefNode* createClassDef(
-            IdNode* id,
+            IdNode* fullId,
             ModifierNode* modifier,
             ClassParamsNode* classParams,
             ClassTemplateOptNode* classTemplateOpt

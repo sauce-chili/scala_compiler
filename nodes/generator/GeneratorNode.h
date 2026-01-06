@@ -9,13 +9,13 @@
 
 class GeneratorNode: public Node {
 public:
-    IdNode* id;
+    IdNode* fullId;
     CompoundTypeNode* compoundType;
     ExprNode* expr;
 
     GeneratorNode();
 
-    static GeneratorNode* createGenerator(IdNode* id, CompoundTypeNode* compoundType, ExprNode* expr);
+    static GeneratorNode* createGenerator(IdNode* fullId, CompoundTypeNode* compoundType, ExprNode* expr);
 
     string toDot() const override;
     string getDotLabel() const override;

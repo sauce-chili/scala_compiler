@@ -7,12 +7,9 @@
 #include "../class/ClassParamsNode.h"
 #include "../templates/EnumTemplateNode.h"
 
-//fullID accessModifier classParamClause enumTemplate
-//       | fullID classParamClause enumTemplate
-//       | fullID enumTemplate
 class EnumDefNode: public Node {
 public:
-    IdNode* id;
+    IdNode* fullId;
     ModifierNode* modifier;
     ClassParamsNode* classParams;
     EnumTemplateNode* enumTemplate;
@@ -20,20 +17,20 @@ public:
     EnumDefNode();
 
     static EnumDefNode* createWithAccessModifier(
-            IdNode* id,
+            IdNode* fullId,
             ModifierNode* modifier,
             ClassParamsNode* classParams,
             EnumTemplateNode* enumTemplate
             );
 
     static EnumDefNode* createWithClassParams(
-            IdNode* id,
+            IdNode* fullId,
             ClassParamsNode* classParams,
             EnumTemplateNode* enumTemplate
     );
 
     static EnumDefNode* createEnumTemplate(
-            IdNode* id,
+            IdNode* fullId,
             EnumTemplateNode* enumTemplate
     );
 

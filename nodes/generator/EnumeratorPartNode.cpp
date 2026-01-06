@@ -10,7 +10,7 @@ EnumeratorPartNode *EnumeratorPartNode::createGeneratorEnumeratorPart(GeneratorN
     return node;
 }
 
-EnumeratorPartNode *EnumeratorPartNode::createVarDefEnumeratorPart(IdNode *id, CompoundTypeNode *compoundType, ExprNode *expr) {
+EnumeratorPartNode *EnumeratorPartNode::createVarDefEnumeratorPart(IdNode *fullId, CompoundTypeNode *compoundType, ExprNode *expr) {
     EnumeratorPartNode* node = new EnumeratorPartNode();
     node->fullId = fullId;
     node->compoundType = compoundType;

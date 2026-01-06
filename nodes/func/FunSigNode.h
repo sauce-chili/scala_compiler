@@ -8,12 +8,12 @@
 
 class FunSigNode: public Node {
 public:
-    IdNode* id;
+    IdNode* fullId;
     FuncParamsNode* params;
 
     FunSigNode();
 
-    static FunSigNode* createFunSig(IdNode* id, FuncParamsNode* params);
+    static FunSigNode* createFunSig(IdNode* fullId, FuncParamsNode* params);
 
     string toDot() const override;
     string getDotLabel() const override;

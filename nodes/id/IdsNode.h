@@ -11,9 +11,9 @@ public:
     std::list<IdNode*> *ids;
 
     IdsNode();
-    IdsNode(IdNode* id);
+    IdsNode(IdNode* fullId);
 
-    static IdsNode* addIdToList(IdsNode *list, IdNode *id);
+    static IdsNode* addIdToList(IdsNode *list, IdNode *fullId);
 
     string toDot() const override;
     string getDotLabel() const override;

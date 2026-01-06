@@ -9,13 +9,13 @@
 
 class FuncParamNode: public Node {
 public:
-    IdNode* id;
+    IdNode* fullId;
     CompoundTypeNode* compoundType;
     AssignExprNode* assignExpr;
 
     FuncParamNode();
 
-    static FuncParamNode* createClassParam(IdNode* id, CompoundTypeNode* compoundType, AssignExprNode* assignExpr);
+    static FuncParamNode* createClassParam(IdNode* fullId, CompoundTypeNode* compoundType, AssignExprNode* assignExpr);
 
     string toDot() const override;
     string getDotLabel() const override;
