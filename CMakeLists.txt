@@ -127,6 +127,10 @@ add_executable(scala_lexer
         nodes/generator/EnumeratorPartNode.h
         nodes/generator/EnumeratorsNode.cpp
         nodes/generator/EnumeratorsNode.h
+        nodes/exprs/InfixExprNode.cpp
+        nodes/exprs/InfixExprNode.h
+        nodes/exprs/AssignmentNode.cpp
+        nodes/exprs/AssignmentNode.h
 )
 
 message(STATUS "Flex output: ${FLEX_MyScanner_OUTPUTS}")

@@ -12,13 +12,7 @@ enum ModifierType {
 };
 
 enum ExprType {
-    //INTEGER_LITERAL,
-    //CHAR_LITERAL,
-    //DOUBLE_LITERAL,
-    //STRING_LITERAL,
-    //BOOL_LITERAL,
-    //IDENTIFIER,
-    //NULL_LITERAL,
+
     OPERATOR,
     FUNCTION_CALL,
     BRACKETS,
@@ -66,7 +60,6 @@ enum PrefixExprType {
     UNARY_MINUS,
     NOT,
     BIT_NOT,
-    NO_UNARY_OPERATOR,
 };
 
 enum StableIdType {
