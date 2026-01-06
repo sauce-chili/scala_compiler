@@ -119,6 +119,10 @@ add_executable(scala_lexer
         nodes/templates/EnumTemplateNode.h
         nodes/enum/EnumDefNode.cpp
         nodes/enum/EnumDefNode.h
+        nodes/trait/TraitTemplateNode.cpp
+        nodes/trait/TraitTemplateNode.h
+        nodes/trait/TraitTemplateOptNode.cpp
+        nodes/trait/TraitTemplateOptNode.h
 )
 
 message(STATUS "Flex output: ${FLEX_MyScanner_OUTPUTS}")

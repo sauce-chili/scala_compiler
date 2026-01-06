@@ -6,9 +6,6 @@
 #include "../class/ClassParentsNode.h"
 #include "../enum/EnumStatsNode.h"
 
-//EXTENDS classParents enumBody
-//            | enumBody
-
 class EnumTemplateNode: public Node {
 public:
     ClassParentsNode* classParents;

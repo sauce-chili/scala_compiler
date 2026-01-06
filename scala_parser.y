@@ -349,9 +349,9 @@ classTemplateOpt: /* empty */ %prec LOW_PREC { $$ = nullptr; }
                 | templateBody               { $$ = ClassTemplateOptNode::addFuncParamToBackToList(nullptr, $1); }
                 ;
 
-traitTemplateOpt: /* empty */ %prec LOW_PREC
-                | EXTENDS traitTemplate
-                | templateBody
+traitTemplateOpt: /* empty */ %prec LOW_PREC { $$ = nullptr; }
+                | EXTENDS traitTemplate      { $$ = TraitTemplateOptNode::createTraitTemplateOpt($2, nullptr); }
+                | templateBody               { $$ = TraitTemplateOptNode::createTraitTemplateOpt(nullptr, $1); }
                 ;
 
 enumTemplate: EXTENDS classParents enumBody { $$ = EnumTemplateNode::createWithClassParents($2, $3); }
@@ -365,8 +365,8 @@ classTemplate: classParents templateBody       { $$ = ClassTemplateNode::createC
 classParents: constrInvoke simpleTypes { $$ = ClassParentsNode::createClassParents($1, $2); }
 	    ;
 
-traitTemplate: simpleType simpleTypes templateBody
-             | simpleType simpleTypes %prec END_TEMPLATE
+traitTemplate: simpleType simpleTypes templateBody       { $$ = TraitTemplateNode::createTraitTemplate($1, $2, $3); }
+             | simpleType simpleTypes %prec END_TEMPLATE { $$ = TraitTemplateNode::createTraitTemplate($1, $2, nullptr); }
              ;
 
 enumBody: nlo '{' enumStats '}' { $$ = $3; }
