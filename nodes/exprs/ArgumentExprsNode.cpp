@@ -1,9 +1,5 @@
 #include "ArgumentExprsNode.h"
 
-ArgumentExprsNode *ArgumentExprsNode::clone() const {
-    return nullptr;
-}
-
 ArgumentExprsNode::ArgumentExprsNode(ExprsNode* exprs) {
     this->exprs = exprs;
 }

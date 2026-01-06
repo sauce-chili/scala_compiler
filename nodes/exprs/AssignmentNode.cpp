@@ -1,4 +1,8 @@
 #include "AssignmentNode.h"
+#include "ExprNode.h"
+#include "SimpleExprNode.h"
+#include "SimpleExpr1Node.h"
+#include "../exprs/ArgumentExprsNode.h"
 
 AssignmentNode::AssignmentNode() {
 

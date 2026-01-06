@@ -1,10 +1,13 @@
 #ifndef SCALA_LEXER_ASSIGNMENTNODE_H
 #define SCALA_LEXER_ASSIGNMENTNODE_H
 
-#include "ExprNode.h"
-#include "../id/IdNode.h"
-#include "SimpleExprNode.h"
-#include "SimpleExpr1Node.h"
+#include "../Node.h"
+
+class ExprNode;
+class IdNode;
+class SimpleExprNode;
+class SimpleExpr1Node;
+class ArgumentExprsNode;
 
 class AssignmentNode: public Node {
 public:

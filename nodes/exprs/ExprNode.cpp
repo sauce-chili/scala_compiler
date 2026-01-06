@@ -1,4 +1,8 @@
 #include "ExprNode.h"
+#include "../try/TryExprNode.h"
+#include "../generator/EnumeratorsNode.h"
+#include "../exprs/InfixExprNode.h"
+#include "../exprs/AssignmentNode.h"
 
 ExprNode::ExprNode() {
     exprs = new std::list<ExprNode*>;

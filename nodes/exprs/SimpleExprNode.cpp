@@ -1,10 +1,9 @@
 #include "SimpleExprNode.h"
+#include "../class/ConstrInvokeNode.h"
+#include "../stats/BlockStatsNode.h"
+#include "SimpleExpr1Node.h"
 
 SimpleExprNode::SimpleExprNode() {
-
-}
-
-SimpleExprNode* SimpleExprNode::clone() const {
 
 }
 

@@ -3,10 +3,12 @@
 
 #include <list>
 #include "../Node.h"
-#include "../try/TryExprNode.h"
-#include "../generator/EnumeratorsNode.h"
-#include "../exprs/InfixExprNode.h"
-#include "../exprs/AssignmentNode.h"
+
+class ExprNode;
+class TryExprNode;
+class EnumeratorsNode;
+class InfixExprNode;
+class AssignmentNode;
 
 class ExprNode: public Node {
 public:

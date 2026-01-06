@@ -24,5 +24,5 @@ string EnumeratorsNode::toDot() const {
 }
 
 string EnumeratorsNode::getDotLabel() const {
-    return std::string();
+    return "Enumerators";
 }

@@ -1,26 +1,10 @@
 #include "SimpleExpr1Node.h"
+#include "ArgumentExprsNode.h"
+#include "SimpleExprNode.h"
+#include "../id/IdNode.h"
 
 SimpleExpr1Node::SimpleExpr1Node() {
 
-}
-
-SimpleExpr1Node* SimpleExpr1Node::clone() const {
-    SimpleExpr1Node* copy = new SimpleExpr1Node();
-
-    copy->type = this->type;
-    copy->intValue = this->intValue;
-    copy->doubleValue = this->doubleValue;
-    copy->boolValue = this->boolValue;
-    copy->charValue = this->charValue;
-    copy->stringValue = this->stringValue;
-
-    copy->simpleExpr = this->simpleExpr ? this->simpleExpr->clone() : nullptr;
-    copy->simpleExpr1 = this->simpleExpr1 ? this->simpleExpr1->clone() : nullptr;
-    copy->expr = this->expr ? this->expr->clone() : nullptr;
-    //copy->argumentExprs = this->argumentExprs ? this->argumentExprs->clone() : nullptr;
-    //copy->identifier = this->identifier ? this->identifier->clone() : nullptr;
-
-    return copy;
 }
 
 SimpleExpr1Node* SimpleExpr1Node::createIntNode(int value) {

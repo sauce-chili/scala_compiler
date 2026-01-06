@@ -10,8 +10,6 @@ class ArgumentExprsNode: public Node {
 public:
     ExprsNode* exprs;
 
-    ArgumentExprsNode* clone() const;
-
     ArgumentExprsNode(ExprsNode* exprs);
 
     string toDot() const override;
