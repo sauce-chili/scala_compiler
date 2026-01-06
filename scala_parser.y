@@ -109,7 +109,6 @@ infixExpr: prefixExpr
 	 | infixExpr '*' nlo infixExpr
 	 | infixExpr '-' nlo infixExpr
 	 | infixExpr '/' nlo infixExpr
-	 | infixExpr ':' nlo infixExpr
 	 | infixExpr '<' nlo infixExpr
 	 | infixExpr '>' nlo infixExpr
 	 | infixExpr '?' nlo infixExpr
@@ -407,7 +406,6 @@ fullID: '+'
       | '*'
       | '-'
       | '/'
-      | ':'
       | '<'
       | '>'
       | '?'
