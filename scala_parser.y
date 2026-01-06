@@ -49,7 +49,7 @@ void yyerror(const char* s);
 %right UMINUS UPLUS
 %right ULOGNOT UBINNOT
 %left '.'
-%nonassoc ':' ID_COLON
+%nonassoc ':'
 %nonassoc '(' '['
 %nonassoc CATCH
 %nonassoc FINALLY
