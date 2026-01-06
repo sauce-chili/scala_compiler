@@ -105,15 +105,15 @@ yieldO: /* empty */
       | YIELD
       ;
 
-enumerators: generator
-           | enumerators semi enumeratorPart
+enumerators: generator                       { $$ = new EnumeratorsNode::EnumeratorsNode($1); }
+           | enumerators semi enumeratorPart { $$ = EnumeratorsNode::addModifierToList($1, $3); }
            ;
 
-enumeratorPart: generator
-              | fullID compoundTypeO '=' expr // определение переменной
+enumeratorPart: generator                     { $$ = EnumeratorPartNode::createGeneratorEnumeratorPart($1); }
+              | fullID compoundTypeO '=' expr { $$ = EnumeratorPartNode::createVarDefEnumeratorPart($1, $2, $4); } // определение переменной
               ;
 
-generator: fullID compoundTypeO LEFT_ARROW expr
+generator: fullID compoundTypeO LEFT_ARROW expr { $$ = GeneratorNode::createGenerator($1, $2, $3); }
          ;
 
 compoundTypeO: /* empty */ %prec LOW_PREC { $$ = nullptr; }

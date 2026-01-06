@@ -127,6 +127,12 @@ add_executable(scala_lexer
         nodes/stats/TopStatNode.h
         nodes/stats/TopStatSeqNode.cpp
         nodes/stats/TopStatSeqNode.h
+        nodes/generator/GeneratorNode.cpp
+        nodes/generator/GeneratorNode.h
+        nodes/generator/EnumeratorPartNode.cpp
+        nodes/generator/EnumeratorPartNode.h
+        nodes/generator/EnumeratorsNode.cpp
+        nodes/generator/EnumeratorsNode.h
 )
 
 message(STATUS "Flex output: ${FLEX_MyScanner_OUTPUTS}")
