@@ -7,9 +7,8 @@
 class ModifierNode : public Node {
 public:
     ModifierType type;
-    ModifierType modifier;
 
-    static ModifierNode* createModifier(ModifierType type, ModifierType m);
+    static ModifierNode* createModifier(ModifierType type);
 
     string toDot() const override;
     string getDotLabel() const override;

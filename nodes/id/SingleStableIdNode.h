@@ -1,7 +1,3 @@
-//
-// Created by Roman on 1/5/2026.
-//
-
 #ifndef SCALA_LEXER_SINGLESTABLEIDNODE_H
 #define SCALA_LEXER_SINGLESTABLEIDNODE_H
 

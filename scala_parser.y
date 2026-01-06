@@ -109,27 +109,24 @@
 %nonassoc LOW_PREC
 %nonassoc RETURN IF FOR NL
 %nonassoc ELSE WHILE DO TRY THROW VAL VAR NEW YIELD MATCH CASE
-%right '=' PLUS_ASSIGNMENT MINUS_ASSIGNMENT MUL_ASSIGNMENT DIV_ASSIGNMENT MOD_ASSIGNMENT
-%left '|' ID_VERTICAL_SIGN
-%left '^' ID_CIRCUMFLEX
-%left '&' ID_AMPERSAND
-%left EQUAL NOT_EQUAL ID_EQUALITY
-%left '<' '>' GREATER_OR_EQUAL LESS_OR_EQUAL ID_LESS ID_GREAT
-%right ID_COLON
-%left '+' '-' ID_MINUS ID_PLUS
-%left '*' '/' '%' ID_ASTERISK ID_SLASH ID_PERCENT
-%left ID '#' '?' '@' '\\' '!' '~' ID_EXCLAMATION ID_TILDE
-%right UMINUS UPLUS
-%right ULOGNOT UBINNOT
+%right <id> '=' PLUS_ASSIGNMENT MINUS_ASSIGNMENT MUL_ASSIGNMENT DIV_ASSIGNMENT MOD_ASSIGNMENT
+%left <id> '|' ID_VERTICAL_SIGN
+%left <id> '^' ID_CIRCUMFLEX
+%left <id> '&' ID_AMPERSAND
+%left <id> EQUAL NOT_EQUAL ID_EQUALITY
+%left <id> '<' '>' GREATER_OR_EQUAL LESS_OR_EQUAL ID_LESS ID_GREAT
+%right <id> ID_COLON
+%left <id> '+' '-' ID_MINUS ID_PLUS
+%left <id> '*' '/' '%' ID_ASTERISK ID_SLASH ID_PERCENT
+%left <id> ID '#' '?' '@' '\\' '!' '~' ID_EXCLAMATION ID_TILDE
+%right <id> UMINUS UPLUS
+%right <id> ULOGNOT UBINNOT
 %left '.'
 %nonassoc ':'
 %nonassoc '(' '['
 %nonassoc CATCH
 %nonassoc FINALLY
 %nonassoc END_TEMPLATE
-
-
-
 
 %type <topStatSeq> scalaFile topStatSeq
 %type <expr> expr
@@ -153,7 +150,7 @@
 %type <tryExpr> tryExpr
 %type <funcParams> funcParamClause funcParams
 %type <funcParam> funcParam
-%type <assignExpr> assignExpr
+%type <assignExpr> assignExprO
 %type <classParams> classParamClause classParams
 %type <classParam> classParam
 %type <modifiers> modifiers
@@ -218,7 +215,7 @@ enumeratorPart: generator                     { $$ = EnumeratorPartNode::createG
               | fullID compoundTypeO '=' expr { $$ = EnumeratorPartNode::createVarDefEnumeratorPart($1, $2, $4); } // определение переменной
               ;
 
-generator: fullID compoundTypeO LEFT_ARROW expr { $$ = GeneratorNode::createGenerator($1, $2, $3); }
+generator: fullID compoundTypeO LEFT_ARROW expr { $$ = GeneratorNode::createGenerator($1, $2, $4); }
          ;
 
 compoundTypeO: /* empty */ %prec LOW_PREC { $$ = nullptr; }
@@ -328,10 +325,10 @@ ids: fullID         { $$ = IdsNode::addIdToList(nullptr, $1); }
 
 /* --------------------- TRY --------------------- */
 
-tryExpr: TRY expr                         { $$ = TryExprNode::createExceptionBlock($1); }
-       | TRY expr CATCH expr              { $$ = TryExprNode::createExceptionBlock($1, $2); }
-       | TRY expr CATCH expr FINALLY expr { $$ = TryExprNode::createExceptionBlock($1, $2, $3); }
-       | TRY expr FINALLY expr            { $$ = TryExprNode::createExceptionBlock($1, $3); }
+tryExpr: TRY expr                         { $$ = TryExprNode::createExceptionBlock($2); }
+       | TRY expr CATCH expr              { $$ = TryExprNode::createExceptionBlock($2, $4); }
+       | TRY expr CATCH expr FINALLY expr { $$ = TryExprNode::createExceptionBlock($2, $4, $6); }
+       | TRY expr FINALLY expr            { $$ = TryExprNode::createExceptionBlock($2, $4); }
        ;
 
 /* --------------------- TRY --------------------- */
@@ -375,15 +372,15 @@ modifiers: /* empty */        { $$ = ModifiersNode::addModifierToList(nullptr, n
          | modifiers modifier { $$ = ModifiersNode::addModifierToList($1, $2); }
          ;
 
-modifier: ABSTRACT       { $$ = ModifierNode::createModifier(ABSTRACT, $1); }
-        | FINAL          { $$ = ModifierNode::createModifier(FINAL, $1); }
-        | SEALED         { $$ = ModifierNode::createModifier(SEALED, $1); }
-        | accessModifier { $$ = ModifierNode::createModifier($1); }
-        | OVERRIDE       { $$ = ModifierNode::createModifier(OVERRIDE, $1); }
+modifier: ABSTRACT       { $$ = ModifierNode::createModifier(ABSTRACT); }
+        | FINAL          { $$ = ModifierNode::createModifier(FINAL); }
+        | SEALED         { $$ = ModifierNode::createModifier(SEALED); }
+        | accessModifier { $$ = $1; }
+        | OVERRIDE       { $$ = ModifierNode::createModifier(OVERRIDE); }
         ;
 
-accessModifier: PRIVATE   { $$ = ModifierNode::createModifier(PRIVATE, $1); }
-	      | PROTECTED { $$ = ModifierNode::createModifier(PROTECTED, $1); }
+accessModifier: PRIVATE   { $$ = ModifierNode::createModifier(PRIVATE); }
+	      | PROTECTED { $$ = ModifierNode::createModifier(PROTECTED); }
 	      ;
 
 /* --------------------- CLASS --------------------- */
@@ -427,7 +424,7 @@ funDef: funSig compoundTypeO '=' expr       { $$ = FunDefNode::createFunSigFunDe
       | THIS funcParamClause '=' constrExpr { $$ = FunDefNode::createThisConstrCallFunDef($2, $4); }
       ;
 
-constrExpr: THIS argumentExprs { $$ = ConstrExprNode::createConstrExpr($3, nullptr); } // вызов первичного конструктора, бывший selfInvocation
+constrExpr: THIS argumentExprs { $$ = ConstrExprNode::createConstrExpr($2, nullptr); } // вызов первичного конструктора, бывший selfInvocation
           | '{' THIS argumentExprs semi blockStats '}' { $$ = ConstrExprNode::createConstrExpr($3, $5); }
           ;
 
@@ -448,7 +445,7 @@ enumDef: fullID accessModifier classParamClause enumTemplate { $$ = EnumDefNode:
        ;
 
 classTemplateOpt: /* empty */ %prec LOW_PREC { $$ = nullptr; }
-                | EXTENDS classTemplate      { $$ = ClassTemplateOptNode::addFuncParamToBackToList($1, nullptr); }
+                | EXTENDS classTemplate      { $$ = ClassTemplateOptNode::addFuncParamToBackToList($2, nullptr); }
                 | templateBody               { $$ = ClassTemplateOptNode::addFuncParamToBackToList(nullptr, $1); }
                 ;
 
@@ -508,7 +505,7 @@ literal: DECIMAL_LITERAL { $$ = SimpleExpr1Node::createIntNode($1); }
        | STRING_LITERAL  { $$ = SimpleExpr1Node::createStringNode($1); }
        | TRUE_LITERAL    { $$ = SimpleExpr1Node::createBoolNode($1); }
        | FALSE_LITERAL   { $$ = SimpleExpr1Node::createBoolNode($1); }
-       | NULL_LITERAL    { $$ = SimpleExpr1Node::createNullNode($1); }
+       | NULL_LITERAL    { $$ = SimpleExpr1Node::createNullNode(); }
        ;
 
 nls: /* empty */
@@ -555,9 +552,9 @@ fullID: '+'              { $$ = IdNode::createId($1); }
       | ID_EQUALITY      { $$ = IdNode::createId($1); }
       | ID_VERTICAL_SIGN { $$ = IdNode::createId($1); }
       | ID_AMPERSAND     { $$ = IdNode::createId($1); }
-      | ID_CIRCUMFLEX   { $$ = IdNode::createId($1); }
-      | ID_LESS    { $$ = IdNode::createId($1); }
-      | ID_GREAT   { $$ = IdNode::createId($1); }
+      | ID_CIRCUMFLEX    { $$ = IdNode::createId($1); }
+      | ID_LESS          { $$ = IdNode::createId($1); }
+      | ID_GREAT         { $$ = IdNode::createId($1); }
       | ID_MINUS         { $$ = IdNode::createId($1); }
       | ID_PLUS          { $$ = IdNode::createId($1); }
       | ID_ASTERISK      { $$ = IdNode::createId($1); }
