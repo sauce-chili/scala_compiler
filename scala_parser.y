@@ -45,7 +45,9 @@ void yyerror(const char* s);
 %left '<' '>' GREATER_OR_EQUAL LESS_OR_EQUAL ID_LESS ID_GREAT
 %left '+' '-' ID_MINUS ID_PLUS
 %left '*' '/' '%' ID_ASTERISK ID_SLASH ID_PERCENT
-%left UMINUS UPLUS ID '#' '?' '@' '\\' '!' '~' ID_EXCLAMATION
+%left ID '#' '?' '@' '\\' '!' '~' ID_EXCLAMATION ID_TILDE
+%right UMINUS UPLUS
+%right ULOGNOT UBINNOT
 %left '.'
 %nonassoc ':' ID_COLON
 %nonassoc '(' '['
@@ -143,10 +145,10 @@ infixExpr: prefixExpr
          ;
 
 prefixExpr: simpleExpr
-          | UMINUS simpleExpr
-          | UPLUS simpleExpr
-          | '~' simpleExpr
-          | '!' simpleExpr
+          | '+' simpleExpr %prec UPLUS
+          | '-' simpleExpr %prec UMINUS
+          | '~' simpleExpr %prec UBINNOT
+          | '!' simpleExpr %prec ULOGNOT
           ;
 
 simpleExpr: NEW constrInvoke
