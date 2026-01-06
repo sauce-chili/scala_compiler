@@ -6,30 +6,25 @@
 enum ModifierType {
     PRIVATE,
     PROTECTED,
-    OPEN,
+    ABSTRACT,
     FINAL,
+    SEALED,
     OVERRIDE,
 };
 
 enum ExprType {
-
-    OPERATOR,
-    FUNCTION_CALL,
-    BRACKETS,
-    ASSIGNMENT,
-    THIS,
-    SUPER,
-    OR,
-    AND,
-    FUNC_CALL,
-    FIELD_ACCESS,
-    FUNC_ACCESS,
-    ARRAY_EXPR,
-    ARRAY_ACCESS,
-    FOR,
-    WHILE,
-    DO_WHILE,
+    IF_ELSE,
     IF,
+    WHILE,
+    TRY,
+    DO_WHILE,
+    THROW,
+    RETURN_EMPTY,
+    RETURN_EXPR,
+    FOR_WITHOUT_YIELD,
+    FOR_WITH_YIELD,
+    INFIX,
+    ASSIGNMENT,
 };
 
 
@@ -119,11 +114,7 @@ std::string prefixExprToString(PrefixExprType t);
 std::string classParamTypeToString(ClassParamType t);
 std::string classEnumCaseTypeToString(EnumCaseType t);
 std::string definitionTypeToString(DefinitionType t);
-
-
 std::string exprTypeToString(ExprType t);
-std::string exprStatToString(StatType t);
-std::string typeToString(Type t);
 
 
 #endif //SCALA_LEXER_TYPES_H

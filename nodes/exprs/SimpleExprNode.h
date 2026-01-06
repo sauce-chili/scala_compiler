@@ -6,6 +6,8 @@
 #include "../stats/BlockStatsNode.h"
 #include "SimpleExpr1Node.h"
 
+class SimpleExpr1Node;
+
 class SimpleExprNode: public Node {
 public:
     SimpleExprType type;

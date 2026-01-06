@@ -83,18 +83,18 @@
 scalaFile: topStatSeq { $$ = $1; }
           ;
 
-expr: IF '(' expr ')' nls expr semio ELSE expr
-    | IF '(' expr ')' nls expr
-    | WHILE '(' expr ')' nls expr
-    | tryExpr
-    | DO expr semio WHILE '(' expr ')'
-    | THROW expr
-    | RETURN
-    | RETURN expr
-    | FOR '(' enumerators ')' nls expr
-    | FOR '(' enumerators ')' nls YIELD expr
-    | infixExpr
-    | assignment
+expr: IF '(' expr ')' nls expr semio ELSE expr { $$ = new ExprNode::createIfElse($3, $6, $9; }
+    | IF '(' expr ')' nls expr                 { $$ = new ExprNode::createIf($3, $6); }
+    | WHILE '(' expr ')' nls expr              { $$ = new ExprNode::createWhile($3, $6); }
+    | tryExpr                                  { $$ = new ExprNode::createTry($1); }
+    | DO expr semio WHILE '(' expr ')'         { $$ = new ExprNode::createDoWhile($2, $6); }
+    | THROW expr                               { $$ = new ExprNode::createThrow($2); }
+    | RETURN                                   { $$ = new ExprNode::createReturn(); }
+    | RETURN expr                              { $$ = new ExprNode::createReturnExpr($2); }
+    | FOR '(' enumerators ')' nls expr         { $$ = new ExprNode::createFor($3, $6); }
+    | FOR '(' enumerators ')' nls YIELD expr   { $$ = new ExprNode::createForYield($3, $7); }
+    | infixExpr                                { $$ = new ExprNode::createInfix($1); }
+    | assignment                               { $$ = new ExprNode::createAssignment($1); }
     ;
 
 assignment: fullID '=' expr                    { $$ = new AssignmentNode::createIdAssignment($1, $3); }
@@ -269,15 +269,15 @@ modifiers: /* empty */        { $$ = ModifiersNode::addModifierToList(nullptr, n
          | modifiers modifier { $$ = ModifiersNode::addModifierToList($1, $2); }
          ;
 
-modifier: ABSTRACT       { $$ = ModifierNode::createModifier($1); }
-        | FINAL          { $$ = ModifierNode::createModifier($1); }
-        | SEALED         { $$ = ModifierNode::createModifier($1); }
+modifier: ABSTRACT       { $$ = ModifierNode::createModifier(ABSTRACT, $1); }
+        | FINAL          { $$ = ModifierNode::createModifier(FINAL, $1); }
+        | SEALED         { $$ = ModifierNode::createModifier(SEALED, $1); }
         | accessModifier { $$ = ModifierNode::createModifier($1); }
-        | OVERRIDE       { $$ = ModifierNode::createModifier($1); }
+        | OVERRIDE       { $$ = ModifierNode::createModifier(OVERRIDE, $1); }
         ;
 
-accessModifier: PRIVATE   { $$ = ModifierNode::createModifier($1); }
-	      | PROTECTED { $$ = ModifierNode::createModifier($1); }
+accessModifier: PRIVATE   { $$ = ModifierNode::createModifier(PRIVATE, $1); }
+	      | PROTECTED { $$ = ModifierNode::createModifier(PROTECTED, $1); }
 	      ;
 
 /* --------------------- CLASS --------------------- */

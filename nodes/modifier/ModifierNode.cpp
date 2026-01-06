@@ -1,7 +1,8 @@
 #include "ModifierNode.h"
 
-ModifierNode* ModifierNode::createModifier(ModifierType m) {
+ModifierNode* ModifierNode::createModifier(ModifierType type, ModifierType m) {
     ModifierNode* node = new ModifierNode();
+    node->type = type;
     node->modifier = m;
     return node;
 }

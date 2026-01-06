@@ -2,13 +2,12 @@
 #define SCALA_LEXER_SIMPLEEXPR1NODE_H
 
 #include "../Node.h"
-#include "nodes/Types.h"
+#include "../Types.h"
 #include "ArgumentExprsNode.h"
 #include "SimpleExprNode.h"
 #include "../id/IdNode.h"
 
-#include "../Node.h"
-#include "ExprNode.h"
+class SimpleExprNode;
 
 class SimpleExpr1Node: public Node {
 public:

@@ -4,7 +4,8 @@ std::string modifierToString(ModifierType m) {
     switch (m) {
         case PRIVATE:   return "PRIVATE";
         case PROTECTED: return "PROTECTED";
-        case OPEN:      return "OPEN";
+        case ABSTRACT:  return "ABSTRACT";
+        case SEALED:    return "SEALED";
         case FINAL:     return "FINAL";
         case OVERRIDE:  return "OVERRIDE";
     }
@@ -83,5 +84,22 @@ std::string definitionTypeToString(DefinitionType t) {
         case VAR_DEFS:            return "Variables definition";
         case FUN_DEFINITION:      return "Function definition";
         case TEMPLATE_DEFINITION: return "Template definition";
+    }
+}
+
+std::string exprTypeToString(ExprType t) {
+    switch (t) {
+        case IF_ELSE:           return "If Else";
+        case IF:                return "If";
+        case WHILE:             return "While";
+        case TRY:               return "Try";
+        case DO_WHILE:          return "Do While";
+        case THROW:             return "Throw";
+        case RETURN_EMPTY:      return "Return";
+        case RETURN_EXPR:       return "Return expr";
+        case FOR_WITHOUT_YIELD: return "For";
+        case FOR_WITH_YIELD:    return "For Yield";
+        case INFIX:             return "Infix";
+        case ASSIGNMENT:        return "Assignment";
     }
 }
