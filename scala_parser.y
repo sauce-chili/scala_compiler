@@ -91,7 +91,8 @@ expr: IF '(' expr ')' nls expr semio ELSE expr
     | THROW expr
     | RETURN
     | RETURN expr
-    | FOR '(' enumerators ')' nls yieldO expr
+    | FOR '(' enumerators ')' nls expr
+    | FOR '(' enumerators ')' nls YIELD expr
     | infixExpr
     | assignment
     ;
@@ -100,10 +101,6 @@ assignment: fullID '=' expr
           | simpleExpr '.' fullID '=' expr
           | simpleExpr1 argumentExprs '=' expr // запись в массив
           ;
-
-yieldO: /* empty */
-      | YIELD
-      ;
 
 enumerators: generator                       { $$ = new EnumeratorsNode::EnumeratorsNode($1); }
            | enumerators semi enumeratorPart { $$ = EnumeratorsNode::addModifierToList($1, $3); }
