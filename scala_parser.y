@@ -150,62 +150,7 @@
 %type <tryExpr> tryExpr
 %type <funcParams> funcParamClause funcParams
 %type <funcParam> funcParam
-%type <assignExprO> assignExpr
-%type <classParams> classParamClause classParams
-%type <classParam> classParam
-%type <modifiers> modifiers
-%type <modifier> modifier accessModifier
-%type <templateStats> templateStats templateBody
-%type <templateStat> templateStat
-%type <dcl> dcl
-%type <funSig> funSig
-%type <varDefs> varDefs
-%type <def> def
-%type <funDef> funDef
-%type <constrExpr> constrExpr
-%type <tmplDef> tmplDef
-%type <classDef> classDef
-%type <enumDef> enumDef
-%type <classTemplateOpt> classTemplateOpt
-%type <traitTemplateOpt> traitTemplateOpt
-%type <enumTemplate> enumTemplate
-%type <classTemplate> classTemplate
-%type <classParents> classParents
-%type <traitTemplate> traitTemplate
-%type <enumStats> enumStats enumBody
-%type <enumStat> enumStat
-%type <enumCase> enumCase
-%type <topStatSeq> topStatSeq
-%type <topStat> topStat
-%type <simpleTypes> simpleTypes
-%type <id> fullID
-
-
-
-
-%type <topStatSeq> scalaFile topStatSeq
-%type <expr> expr
-%type <assignment> assignment
-%type <enumerators> enumerators
-%type <enumeratorPart> enumeratorPart
-%type <generator> generator
-%type <compoundType> compoundTypeO compoundType
-%type <infixExpr> infixExpr
-%type <prefixExpr> prefixExpr
-%type <simpleExpr> simpleExpr
-%type <simpleExpr1> simpleExpr1 literal
-%type <argumentExprs> argumentExprs
-%type <exprs> exprs
-%type <constrInvoke> constrInvoke
-%type <simpleType> simpleType
-%type <stableId> stableId
-%type <blockStats> blockStats
-%type <blockStat> blockStat
-%type <ids> ids
-%type <tryExpr> tryExpr
-%type <funcParams> funcParamClause funcParams
-%type <funcParam> funcParam
-%type <assignExpr> assignExpr
+%type <assignExpr> assignExprO
 %type <classParams> classParamClause classParams
 %type <classParam> classParam
 %type <modifiers> modifiers
@@ -270,7 +215,7 @@ enumeratorPart: generator                     { $$ = EnumeratorPartNode::createG
               | fullID compoundTypeO '=' expr { $$ = EnumeratorPartNode::createVarDefEnumeratorPart($1, $2, $4); } // определение переменной
               ;
 
-generator: fullID compoundTypeO LEFT_ARROW expr { $$ = GeneratorNode::createGenerator($1, $2, $3); }
+generator: fullID compoundTypeO LEFT_ARROW expr { $$ = GeneratorNode::createGenerator($1, $2, $4); }
          ;
 
 compoundTypeO: /* empty */ %prec LOW_PREC { $$ = nullptr; }
@@ -380,10 +325,10 @@ ids: fullID         { $$ = IdsNode::addIdToList(nullptr, $1); }
 
 /* --------------------- TRY --------------------- */
 
-tryExpr: TRY expr                         { $$ = TryExprNode::createExceptionBlock($1); }
-       | TRY expr CATCH expr              { $$ = TryExprNode::createExceptionBlock($1, $2); }
-       | TRY expr CATCH expr FINALLY expr { $$ = TryExprNode::createExceptionBlock($1, $2, $3); }
-       | TRY expr FINALLY expr            { $$ = TryExprNode::createExceptionBlock($1, $3); }
+tryExpr: TRY expr                         { $$ = TryExprNode::createExceptionBlock($2); }
+       | TRY expr CATCH expr              { $$ = TryExprNode::createExceptionBlock($2, $3); }
+       | TRY expr CATCH expr FINALLY expr { $$ = TryExprNode::createExceptionBlock($2, $4, $6); }
+       | TRY expr FINALLY expr            { $$ = TryExprNode::createExceptionBlock($2, $4); }
        ;
 
 /* --------------------- TRY --------------------- */
@@ -479,7 +424,7 @@ funDef: funSig compoundTypeO '=' expr       { $$ = FunDefNode::createFunSigFunDe
       | THIS funcParamClause '=' constrExpr { $$ = FunDefNode::createThisConstrCallFunDef($2, $4); }
       ;
 
-constrExpr: THIS argumentExprs { $$ = ConstrExprNode::createConstrExpr($3, nullptr); } // вызов первичного конструктора, бывший selfInvocation
+constrExpr: THIS argumentExprs { $$ = ConstrExprNode::createConstrExpr($2, nullptr); } // вызов первичного конструктора, бывший selfInvocation
           | '{' THIS argumentExprs semi blockStats '}' { $$ = ConstrExprNode::createConstrExpr($3, $5); }
           ;
 
@@ -607,9 +552,9 @@ fullID: '+'              { $$ = IdNode::createId($1); }
       | ID_EQUALITY      { $$ = IdNode::createId($1); }
       | ID_VERTICAL_SIGN { $$ = IdNode::createId($1); }
       | ID_AMPERSAND     { $$ = IdNode::createId($1); }
-      | ID_CIRCUMFLEX   { $$ = IdNode::createId($1); }
-      | ID_LESS    { $$ = IdNode::createId($1); }
-      | ID_GREAT   { $$ = IdNode::createId($1); }
+      | ID_CIRCUMFLEX    { $$ = IdNode::createId($1); }
+      | ID_LESS          { $$ = IdNode::createId($1); }
+      | ID_GREAT         { $$ = IdNode::createId($1); }
       | ID_MINUS         { $$ = IdNode::createId($1); }
       | ID_PLUS          { $$ = IdNode::createId($1); }
       | ID_ASTERISK      { $$ = IdNode::createId($1); }
