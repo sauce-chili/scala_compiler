@@ -80,7 +80,7 @@
 
 %%
 
-scalaFile: topStatSeq
+scalaFile: topStatSeq { $$ = $1; }
           ;
 
 expr: IF '(' expr ')' nls expr semio ELSE expr
@@ -386,11 +386,11 @@ enumCase: CASE fullID classParamClause EXTENDS classParents { $$ = EnumCaseNode:
         | CASE ids ',' fullID                               { $$ = EnumCaseNode::createClassParents(CASE_WITH_IDS, IdsNode::addIdToList($2, $4)); } // Решает rr
 	;
 
-topStatSeq: topStat
-	  | topStatSeq semi topStat
+topStatSeq: topStat                 { $$ = TopStatSeqNode::addModifierToList(nullptr, $1); }
+	  | topStatSeq semi topStat { $$ = TopStatSeqNode::addModifierToList($1, $3); }
           ;
 
-topStat: modifiers tmplDef
+topStat: modifiers tmplDef { $$ = TopStatNode::createTopStat($1, $2); }
        ;
 
 simpleTypes: /* empty */                 { $$ = nullptr; }
