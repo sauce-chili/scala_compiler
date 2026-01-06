@@ -75,8 +75,8 @@ add_executable(scala_lexer
         nodes/exprs/AssignExprNode.h
         nodes/class/ClassParamNode.cpp
         nodes/class/ClassParamNode.h
-        nodes/class/ClassParamNodes.cpp
-        nodes/class/ClassParamNodes.h
+        nodes/class/ClassParamsNode.cpp
+        nodes/class/ClassParamsNode.h
         nodes/func/FuncParamNode.cpp
         nodes/func/FuncParamNode.h
         nodes/func/FuncParamsNode.cpp
@@ -115,6 +115,10 @@ add_executable(scala_lexer
         nodes/enum/EnumStatNode.h
         nodes/enum/EnumStatsNode.cpp
         nodes/enum/EnumStatsNode.h
+        nodes/templates/EnumTemplateNode.cpp
+        nodes/templates/EnumTemplateNode.h
+        nodes/enum/EnumDefNode.cpp
+        nodes/enum/EnumDefNode.h
 )
 
 message(STATUS "Flex output: ${FLEX_MyScanner_OUTPUTS}")

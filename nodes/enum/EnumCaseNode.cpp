@@ -4,7 +4,7 @@ EnumCaseNode::EnumCaseNode() {
 
 }
 
-EnumCaseNode* EnumCaseNode::createClassParents(EnumCaseType type, IdsNode *ids, ClassParamNodes *classParams, ClassParentsNode *classParents) {
+EnumCaseNode* EnumCaseNode::createClassParents(EnumCaseType type, IdsNode *ids, ClassParamsNode *classParams, ClassParentsNode *classParents) {
     EnumCaseNode* node = new EnumCaseNode();
     node->type = type;
     node->ids = ids;

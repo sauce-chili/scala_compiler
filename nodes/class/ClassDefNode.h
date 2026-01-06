@@ -4,14 +4,14 @@
 #include "../Node.h"
 #include "../id/IdNode.h"
 #include "../modifier/ModifierNode.h"
-#include "../class/ClassParamNodes.h"
+#include "../class/ClassParamsNode.h"
 #include "../templates/ClassTemplateOptNode.h"
 
 class ClassDefNode: public Node {
 public:
     IdNode* id;
     ModifierNode* modifier;
-    ClassParamNodes* classParams;
+    ClassParamsNode* classParams;
     ClassTemplateOptNode* classTemplateOpt;
 
     ClassDefNode();
@@ -19,7 +19,7 @@ public:
     static ClassDefNode* createClassDef(
             IdNode* id,
             ModifierNode* modifier,
-            ClassParamNodes* classParams,
+            ClassParamsNode* classParams,
             ClassTemplateOptNode* classTemplateOpt
             );
 

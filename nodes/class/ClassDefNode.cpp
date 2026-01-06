@@ -4,7 +4,7 @@ ClassDefNode::ClassDefNode() {
 
 }
 
-ClassDefNode *ClassDefNode::createClassDef(IdNode *id, ModifierNode *modifier, ClassParamNodes *classParams,
+ClassDefNode *ClassDefNode::createClassDef(IdNode *id, ModifierNode *modifier, ClassParamsNode *classParams,
                                            ClassTemplateOptNode *classTemplateOpt) {
     ClassDefNode* node = new ClassDefNode();
     node->id = id;

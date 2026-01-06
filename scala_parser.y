@@ -339,9 +339,9 @@ classDef: fullID accessModifier classParamClause classTemplateOpt { $$ = ClassDe
         | fullID classTemplateOpt                                 { $$ = ClassDefNode::createClassDef($1, nullptr, nullptr, $2); }
         ;
 
-enumDef: fullID accessModifier classParamClause enumTemplate
-       | fullID classParamClause enumTemplate
-       | fullID enumTemplate
+enumDef: fullID accessModifier classParamClause enumTemplate { $$ = EnumDefNode::createWithAccessModifier($1, $2, $3, $4); }
+       | fullID classParamClause enumTemplate                { $$ = EnumDefNode::createWithClassParams($1, $2, $3); }
+       | fullID enumTemplate                                 { $$ = EnumDefNode::createEnumTemplate($1, $2 ); }
        ;
 
 classTemplateOpt: /* empty */ %prec LOW_PREC { $$ = nullptr; }
@@ -354,8 +354,8 @@ traitTemplateOpt: /* empty */ %prec LOW_PREC
                 | templateBody
                 ;
 
-enumTemplate: EXTENDS classParents enumBody
-            | enumBody
+enumTemplate: EXTENDS classParents enumBody { $$ = EnumTemplateNode::createWithClassParents($2, $3); }
+            | enumBody                      { $$ = EnumTemplateNode::createWithClassParents($1); }
             ;
 
 classTemplate: classParents templateBody       { $$ = ClassTemplateNode::createClassTemplate($1, $2); }

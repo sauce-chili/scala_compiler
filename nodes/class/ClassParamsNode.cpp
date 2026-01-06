@@ -1,24 +1,24 @@
-#include "ClassParamNodes.h"
+#include "ClassParamsNode.h"
 
-ClassParamNodes::ClassParamNodes(ClassParamNode *first) {
+ClassParamsNode::ClassParamsNode(ClassParamNode *first) {
     classParams = new std::list<ClassParamNode*>();
     classParams->push_back(first);
 }
 
-ClassParamNodes::ClassParamNodes() {
+ClassParamsNode::ClassParamsNode() {
     classParams = new std::list<ClassParamNode*>();
 }
 
-ClassParamNodes *ClassParamNodes::addClassParamToList(ClassParamNodes *list, ClassParamNode *classParam) {
+ClassParamsNode *ClassParamsNode::addClassParamToList(ClassParamsNode *list, ClassParamNode *classParam) {
     if (list == nullptr) {
-        return new ClassParamNodes(classParam);
+        return new ClassParamsNode(classParam);
     }
 
     list->classParams->push_back(classParam);
     return list;
 }
 
-string ClassParamNodes::toDot() const {
+string ClassParamsNode::toDot() const {
     string dot;
 
     addDotNode(dot);
@@ -33,6 +33,6 @@ string ClassParamNodes::toDot() const {
     return dot;
 }
 
-string ClassParamNodes::getDotLabel() const {
+string ClassParamsNode::getDotLabel() const {
     return "Class params";
 }
