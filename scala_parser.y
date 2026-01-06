@@ -1,6 +1,5 @@
 %code requires {
-    #include "nodes/modifiers/ModifierNode.h"
-    #include "nodes/modifiers/ModifiersNode.h"
+    #include "nodes/nodes.h"
 }
 
 %code {
@@ -10,6 +9,9 @@
     int yylex();
     void yyerror(const char* s);
 }
+
+/* для включения отладки */
+%define parse.trace
 
 %parse-param { ScalaFileNode** out_root }
 
@@ -22,9 +24,57 @@
     char* identifier;
     char* unitLiteral;
 
+    ClassDefNode* classDef;
+    ClassParamNode* classParam;
+    ClassParamsNode* classParams;
+    ClassParentsNode* classParents;
+    ClassTemplateNode* classTemplate;
+    ConstrInvokeNode* constrInvoke;
+    DclNode* dcl;
+    DefNode* def;
+    EnumCaseNode* enumCase;
+    EnumDefNode* enumDef;
+    EnumStatNode* enumStat;
+    EnumStatsNode* enumStats;
+    ArgumentExprsNode* argumentExprs;
+    AssignExprNode* assignExpr;
+    AssignmentNode* assignment;
+    ConstrExprNode* constrExpr;
+    ExprNode* expr;
+    ExprsNode* exprs;
+    InfixExprNode* infixExpr;
+    PrefixExprNode* prefixExpr;
+    SimpleExpr1Node* simpleExpr1;
+    SimpleExprNode* simpleExpr;
+    FuncParamNode* funcParam;
+    FuncParamsNode* funcParams;
+    FunDefNode* funDef;
+    FunSigNode* funSig;
+    EnumeratorPartNode* enumeratorPart;
+    EnumeratorsNode* enumerators;
+    GeneratorNode* generator;
+    IdNode* id;
+    IdsNode* ids;
+    SingleStableIdNode* singleStableId;
+    StableIdNode* stableId;
     ModifierNode* modifier;
     ModifiersNode* modifiers;
-
+    BlockStatNode* blockStat;
+    BlockStatsNode* blockStats;
+    TopStatNode* topStat;
+    TopStatSeqNode* topStatSeq;
+    ClassTemplateOptNode* classTemplateOpt;
+    EnumTemplateNode* enumTemplate;
+    TemplateDefNode* templateDef;
+    TemplateStatNode* templateStat;
+    TemplateStatsNode* templateStats;
+    TraitTemplateNode* traitTemplate;
+    TraitTemplateOptNode* traitTemplateOpt;
+    TryExprNode* tryExpr;
+    CompoundTypeNode* compoundType;
+    SimpleTypeNode* simpleType;
+    SimpleTypesNode* simpleTypes;
+    VarDefsNode* varDefs;
 }
 
 
@@ -46,11 +96,12 @@
 %token PRIVATE PROTECTED OVERRIDE ABSTRACT FINAL SEALED EXTENDS
 %token INT DOUBLE STRING CHAR BOOLEAN UNIT ARRAY
 
-%token DECIMAL_LITERAL
-%token CHAR_LITERAL
-%token DOUBLE_LITERAL
-%token STRING_LITERAL
-%token TRUE_LITERAL FALSE_LITERAL
+%token <intLiteral>DECIMAL_LITERAL
+%token <charLiteral>CHAR_LITERAL
+%token <doubleLiteral>DOUBLE_LITERAL
+%token <stringLiteral>STRING_LITERAL
+%token <boolLiteral>TRUE_LITERAL
+%token <boolLiteral>FALSE_LITERAL
 %token NULL_LITERAL
 
 %token NL
@@ -58,12 +109,13 @@
 %nonassoc LOW_PREC
 %nonassoc RETURN IF FOR NL
 %nonassoc ELSE WHILE DO TRY THROW VAL VAR NEW YIELD MATCH CASE
-%right '=' LEFT_ARROW PLUS_ASSIGNMENT MINUS_ASSIGNMENT MUL_ASSIGNMENT DIV_ASSIGNMENT MOD_ASSIGNMENT ID_EQUALITY ID_COLON
-%left OR '|' ID_VERTICAL_SIGN
-%left AND '&' ID_AMPERSAND
+%right '=' PLUS_ASSIGNMENT MINUS_ASSIGNMENT MUL_ASSIGNMENT DIV_ASSIGNMENT MOD_ASSIGNMENT
+%left '|' ID_VERTICAL_SIGN
 %left '^' ID_CIRCUMFLEX
-%left EQUAL NOT_EQUAL
+%left '&' ID_AMPERSAND
+%left EQUAL NOT_EQUAL ID_EQUALITY
 %left '<' '>' GREATER_OR_EQUAL LESS_OR_EQUAL ID_LESS ID_GREAT
+%right ID_COLON
 %left '+' '-' ID_MINUS ID_PLUS
 %left '*' '/' '%' ID_ASTERISK ID_SLASH ID_PERCENT
 %left ID '#' '?' '@' '\\' '!' '~' ID_EXCLAMATION ID_TILDE
@@ -77,7 +129,62 @@
 %nonassoc END_TEMPLATE
 
 
+
+
+%type <topStatSeq> scalaFile topStatSeq
+%type <expr> expr
+%type <assignment> assignment
+%type <enumerators> enumerators
+%type <enumeratorPart> enumeratorPart
+%type <generator> generator
+%type <compoundType> compoundTypeO compoundType
+%type <infixExpr> infixExpr
+%type <prefixExpr> prefixExpr
+%type <simpleExpr> simpleExpr
+%type <simpleExpr1> simpleExpr1 literal
+%type <argumentExprs> argumentExprs
+%type <exprs> exprs
+%type <constrInvoke> constrInvoke
+%type <simpleType> simpleType
+%type <stableId> stableId
+%type <blockStats> blockStats
+%type <blockStat> blockStat
+%type <ids> ids
+%type <tryExpr> tryExpr
+%type <funcParams> funcParamClause funcParams
+%type <funcParam> funcParam
+%type <assignExpr> assignExpr
+%type <classParams> classParamClause classParams
+%type <classParam> classParam
+%type <modifiers> modifiers
+%type <modifier> modifier accessModifier
+%type <templateStats> templateStats templateBody
+%type <templateStat> templateStat
+%type <dcl> dcl
+%type <funSig> funSig
+%type <varDefs> varDefs
+%type <def> def
+%type <funDef> funDef
+%type <constrExpr> constrExpr
+%type <tmplDef> tmplDef
+%type <classDef> classDef
+%type <enumDef> enumDef
+%type <classTemplateOpt> classTemplateOpt
+%type <traitTemplateOpt> traitTemplateOpt
+%type <enumTemplate> enumTemplate
+%type <classTemplate> classTemplate
+%type <classParents> classParents
+%type <traitTemplate> traitTemplate
+%type <enumStats> enumStats enumBody
+%type <enumStat> enumStat
+%type <enumCase> enumCase
+%type <topStat> topStat
+%type <simpleTypes> simpleTypes
+%type <id> fullID
+
+
 %start scalaFile
+
 
 %%
 
