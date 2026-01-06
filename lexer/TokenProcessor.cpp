@@ -233,6 +233,11 @@ int TokenProcessor::onStringLiteral(const std::string &text) {
     return onToken(yytokentype::STRING_LITERAL);
 }
 
+int TokenProcessor::onChar(char c) {
+    yylval.charLiteral = c;
+    return onToken(yytokentype::CHAR_LITERAL);
+}
+
 int TokenProcessor::onID(const char *text) {
     // 1. Сохраняем текст идентификатора в yylval
     yylval.identifier = strdup(text);
