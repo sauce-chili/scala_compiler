@@ -40,10 +40,9 @@ void yyerror(const char* s);
 %right '=' LEFT_ARROW PLUS_ASSIGNMENT MINUS_ASSIGNMENT MUL_ASSIGNMENT DIV_ASSIGNMENT MOD_ASSIGNMENT ID_EQUALITY
 %left OR '|' ID_VERTICAL_SIGN
 %left AND '&' ID_AMPERSAND
-%left '^' ID_UPPER_ARROW
+%left '^' ID_CIRCUMFLEX
 %left EQUAL NOT_EQUAL
-%left '<' '>' LESS_EQUAL GREATER_EQUAL GREATER_OR_EQUAL LESS_OR_EQUAL ID_LEFT_ARROW ID_RIGHT_ARROW
-%left TO UNTIL
+%left '<' '>' GREATER_OR_EQUAL LESS_OR_EQUAL ID_LESS ID_GREAT
 %left '+' '-' ID_MINUS ID_PLUS
 %left '*' '/' '%' ID_ASTERISK ID_SLASH ID_PERCENT
 %left UMINUS UPLUS ID '#' '?' '@' '\\' '!' '~' ID_EXCLAMATION
@@ -131,9 +130,9 @@ infixExpr: prefixExpr
 	 | infixExpr ID_EQUALITY nlo infixExpr
 	 | infixExpr ID_VERTICAL_SIGN nlo infixExpr
 	 | infixExpr ID_AMPERSAND nlo infixExpr
-	 | infixExpr ID_UPPER_ARROW nlo infixExpr
-	 | infixExpr ID_LEFT_ARROW nlo infixExpr
-	 | infixExpr ID_RIGHT_ARROW nlo infixExpr
+	 | infixExpr ID_CIRCUMFLEX nlo infixExpr
+	 | infixExpr ID_LESS nlo infixExpr
+	 | infixExpr ID_GREAT nlo infixExpr
 	 | infixExpr ID_MINUS nlo infixExpr
 	 | infixExpr ID_PLUS nlo infixExpr
 	 | infixExpr ID_ASTERISK nlo infixExpr
@@ -430,9 +429,9 @@ fullID: '+'
       | ID_EQUALITY
       | ID_VERTICAL_SIGN
       | ID_AMPERSAND
-      | ID_UPPER_ARROW
-      | ID_LEFT_ARROW
-      | ID_RIGHT_ARROW
+      | ID_CIRCUMFLEX
+      | ID_LESS
+      | ID_GREAT
       | ID_MINUS
       | ID_PLUS
       | ID_ASTERISK
