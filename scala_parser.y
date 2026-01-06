@@ -109,18 +109,18 @@
 %nonassoc LOW_PREC
 %nonassoc RETURN IF FOR NL
 %nonassoc ELSE WHILE DO TRY THROW VAL VAR NEW YIELD MATCH CASE
-%right '=' PLUS_ASSIGNMENT MINUS_ASSIGNMENT MUL_ASSIGNMENT DIV_ASSIGNMENT MOD_ASSIGNMENT
-%left '|' ID_VERTICAL_SIGN
-%left '^' ID_CIRCUMFLEX
-%left '&' ID_AMPERSAND
-%left EQUAL NOT_EQUAL ID_EQUALITY
-%left '<' '>' GREATER_OR_EQUAL LESS_OR_EQUAL ID_LESS ID_GREAT
-%right ID_COLON
-%left '+' '-' ID_MINUS ID_PLUS
-%left '*' '/' '%' ID_ASTERISK ID_SLASH ID_PERCENT
-%left ID '#' '?' '@' '\\' '!' '~' ID_EXCLAMATION ID_TILDE
-%right UMINUS UPLUS
-%right ULOGNOT UBINNOT
+%right <id> '=' PLUS_ASSIGNMENT MINUS_ASSIGNMENT MUL_ASSIGNMENT DIV_ASSIGNMENT MOD_ASSIGNMENT
+%left <id> '|' ID_VERTICAL_SIGN
+%left <id> '^' ID_CIRCUMFLEX
+%left <id> '&' ID_AMPERSAND
+%left <id> EQUAL NOT_EQUAL ID_EQUALITY
+%left <id> '<' '>' GREATER_OR_EQUAL LESS_OR_EQUAL ID_LESS ID_GREAT
+%right <id> ID_COLON
+%left <id> '+' '-' ID_MINUS ID_PLUS
+%left <id> '*' '/' '%' ID_ASTERISK ID_SLASH ID_PERCENT
+%left <id> ID '#' '?' '@' '\\' '!' '~' ID_EXCLAMATION ID_TILDE
+%right <id> UMINUS UPLUS
+%right <id> ULOGNOT UBINNOT
 %left '.'
 %nonassoc ':'
 %nonassoc '(' '['
@@ -505,7 +505,7 @@ literal: DECIMAL_LITERAL { $$ = SimpleExpr1Node::createIntNode($1); }
        | STRING_LITERAL  { $$ = SimpleExpr1Node::createStringNode($1); }
        | TRUE_LITERAL    { $$ = SimpleExpr1Node::createBoolNode($1); }
        | FALSE_LITERAL   { $$ = SimpleExpr1Node::createBoolNode($1); }
-       | NULL_LITERAL    { $$ = SimpleExpr1Node::createNullNode($1); }
+       | NULL_LITERAL    { $$ = SimpleExpr1Node::createNullNode(); }
        ;
 
 nls: /* empty */
