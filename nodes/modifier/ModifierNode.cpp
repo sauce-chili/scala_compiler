@@ -1,16 +1,15 @@
 #include "ModifierNode.h"
 
-ModifierNode* ModifierNode::createModifier(ModifierType type, ModifierType m) {
+ModifierNode* ModifierNode::createModifier(ModifierType type) {
     ModifierNode* node = new ModifierNode();
     node->type = type;
-    node->modifier = m;
     return node;
 }
 
 string ModifierNode::getDotLabel() const {
     string dot;
 
-    dot += "modifier: " + modifierToString(modifier);
+    dot += "modifier: " + modifierToString(type);
 
     return dot;
 }

@@ -326,7 +326,7 @@ ids: fullID         { $$ = IdsNode::addIdToList(nullptr, $1); }
 /* --------------------- TRY --------------------- */
 
 tryExpr: TRY expr                         { $$ = TryExprNode::createExceptionBlock($2); }
-       | TRY expr CATCH expr              { $$ = TryExprNode::createExceptionBlock($2, $3); }
+       | TRY expr CATCH expr              { $$ = TryExprNode::createExceptionBlock($2, $4); }
        | TRY expr CATCH expr FINALLY expr { $$ = TryExprNode::createExceptionBlock($2, $4, $6); }
        | TRY expr FINALLY expr            { $$ = TryExprNode::createExceptionBlock($2, $4); }
        ;
@@ -372,15 +372,15 @@ modifiers: /* empty */        { $$ = ModifiersNode::addModifierToList(nullptr, n
          | modifiers modifier { $$ = ModifiersNode::addModifierToList($1, $2); }
          ;
 
-modifier: ABSTRACT       { $$ = ModifierNode::createModifier(ABSTRACT, $1); }
-        | FINAL          { $$ = ModifierNode::createModifier(FINAL, $1); }
-        | SEALED         { $$ = ModifierNode::createModifier(SEALED, $1); }
-        | accessModifier { $$ = ModifierNode::createModifier($1); }
-        | OVERRIDE       { $$ = ModifierNode::createModifier(OVERRIDE, $1); }
+modifier: ABSTRACT       { $$ = ModifierNode::createModifier(ABSTRACT); }
+        | FINAL          { $$ = ModifierNode::createModifier(FINAL); }
+        | SEALED         { $$ = ModifierNode::createModifier(SEALED); }
+        | accessModifier { $$ = $1; }
+        | OVERRIDE       { $$ = ModifierNode::createModifier(OVERRIDE); }
         ;
 
-accessModifier: PRIVATE   { $$ = ModifierNode::createModifier(PRIVATE, $1); }
-	      | PROTECTED { $$ = ModifierNode::createModifier(PROTECTED, $1); }
+accessModifier: PRIVATE   { $$ = ModifierNode::createModifier(PRIVATE); }
+	      | PROTECTED { $$ = ModifierNode::createModifier(PROTECTED); }
 	      ;
 
 /* --------------------- CLASS --------------------- */
@@ -445,7 +445,7 @@ enumDef: fullID accessModifier classParamClause enumTemplate { $$ = EnumDefNode:
        ;
 
 classTemplateOpt: /* empty */ %prec LOW_PREC { $$ = nullptr; }
-                | EXTENDS classTemplate      { $$ = ClassTemplateOptNode::addFuncParamToBackToList($1, nullptr); }
+                | EXTENDS classTemplate      { $$ = ClassTemplateOptNode::addFuncParamToBackToList($2, nullptr); }
                 | templateBody               { $$ = ClassTemplateOptNode::addFuncParamToBackToList(nullptr, $1); }
                 ;
 
