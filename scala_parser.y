@@ -58,18 +58,19 @@
 %nonassoc LOW_PREC
 %nonassoc RETURN IF FOR NL
 %nonassoc ELSE WHILE DO TRY THROW VAL VAR NEW YIELD MATCH CASE
-%right '=' LEFT_ARROW PLUS_ASSIGNMENT MINUS_ASSIGNMENT MUL_ASSIGNMENT DIV_ASSIGNMENT MOD_ASSIGNMENT ID_EQUALITY
+%right '=' LEFT_ARROW PLUS_ASSIGNMENT MINUS_ASSIGNMENT MUL_ASSIGNMENT DIV_ASSIGNMENT MOD_ASSIGNMENT ID_EQUALITY ID_COLON
 %left OR '|' ID_VERTICAL_SIGN
 %left AND '&' ID_AMPERSAND
-%left '^' ID_UPPER_ARROW
+%left '^' ID_CIRCUMFLEX
 %left EQUAL NOT_EQUAL
-%left '<' '>' LESS_EQUAL GREATER_EQUAL GREATER_OR_EQUAL LESS_OR_EQUAL ID_LEFT_ARROW ID_RIGHT_ARROW
-%left TO UNTIL
+%left '<' '>' GREATER_OR_EQUAL LESS_OR_EQUAL ID_LESS ID_GREAT
 %left '+' '-' ID_MINUS ID_PLUS
 %left '*' '/' '%' ID_ASTERISK ID_SLASH ID_PERCENT
-%left UMINUS UPLUS ID '#' '?' '@' '\\' '!' '~' ID_EXCLAMATION
+%left ID '#' '?' '@' '\\' '!' '~' ID_EXCLAMATION ID_TILDE
+%right UMINUS UPLUS
+%right ULOGNOT UBINNOT
 %left '.'
-%nonassoc ':' ID_COLON
+%nonassoc ':'
 %nonassoc '(' '['
 %nonassoc CATCH
 %nonassoc FINALLY
@@ -129,7 +130,6 @@ infixExpr: prefixExpr
 	 | infixExpr '*' nlo infixExpr
 	 | infixExpr '-' nlo infixExpr
 	 | infixExpr '/' nlo infixExpr
-	 | infixExpr ':' nlo infixExpr
 	 | infixExpr '<' nlo infixExpr
 	 | infixExpr '>' nlo infixExpr
 	 | infixExpr '?' nlo infixExpr
@@ -144,31 +144,30 @@ infixExpr: prefixExpr
 	 | infixExpr MOD_ASSIGNMENT nlo infixExpr
 	 | infixExpr EQUAL nlo infixExpr
 	 | infixExpr NOT_EQUAL nlo infixExpr
-	 | infixExpr LESS_EQUAL nlo infixExpr
-	 | infixExpr GREATER_EQUAL nlo infixExpr
 	 | infixExpr GREATER_OR_EQUAL nlo infixExpr
 	 | infixExpr LESS_OR_EQUAL nlo infixExpr
 	 | infixExpr ID nlo infixExpr
 	 | infixExpr ID_EQUALITY nlo infixExpr
 	 | infixExpr ID_VERTICAL_SIGN nlo infixExpr
 	 | infixExpr ID_AMPERSAND nlo infixExpr
-	 | infixExpr ID_UPPER_ARROW nlo infixExpr
-	 | infixExpr ID_LEFT_ARROW nlo infixExpr
-	 | infixExpr ID_RIGHT_ARROW nlo infixExpr
+	 | infixExpr ID_CIRCUMFLEX nlo infixExpr
+	 | infixExpr ID_LESS nlo infixExpr
+	 | infixExpr ID_GREAT nlo infixExpr
 	 | infixExpr ID_MINUS nlo infixExpr
 	 | infixExpr ID_PLUS nlo infixExpr
 	 | infixExpr ID_ASTERISK nlo infixExpr
 	 | infixExpr ID_SLASH nlo infixExpr
 	 | infixExpr ID_PERCENT nlo infixExpr
 	 | infixExpr ID_EXCLAMATION nlo infixExpr
+	 | infixExpr ID_TILDE nlo infixExpr
 	 | infixExpr ID_COLON nlo infixExpr
          ;
 
-prefixExpr: simpleExpr        { $$ = PrefixExprNode::createPrefixExprNode($1, NO_UNARY_OPERATOR); }
-          | UMINUS simpleExpr { $$ = PrefixExprNode::createPrefixExprNode($1, UNARY_MINUS); }
-          | UPLUS simpleExpr  { $$ = PrefixExprNode::createPrefixExprNode($1, UNARY_PLUS); }
-          | '~' simpleExpr    { $$ = PrefixExprNode::createPrefixExprNode($1, BIT_NOT); }
-          | '!' simpleExpr    { $$ = PrefixExprNode::createPrefixExprNode($1, NOT); }
+prefixExpr: simpleExpr { $$ = PrefixExprNode::createPrefixExprNode($1, NO_UNARY_OPERATOR); }
+          | '+' simpleExpr %prec UPLUS { $$ = PrefixExprNode::createPrefixExprNode($1, UNARY_PLUS); }
+          | '-' simpleExpr %prec UMINUS { $$ = PrefixExprNode::createPrefixExprNode($1, UNARY_MINUS); }
+          | '~' simpleExpr %prec UBINNOT { $$ = PrefixExprNode::createPrefixExprNode($1, BIT_NOT); }
+          | '!' simpleExpr %prec ULOGNOT { $$ = PrefixExprNode::createPrefixExprNode($1, NOT); }
           ;
 
 simpleExpr: NEW constrInvoke   { $$ = SimpleExprNode::createConstrInvokeNode($2); }
@@ -423,47 +422,45 @@ semio: /* empty */
      | semi
      ;
 
-fullID: '+'              { $$ = IdNode::createId($1); }
-      | '!'              { $$ = IdNode::createId($1); }
-      | '#'              { $$ = IdNode::createId($1); }
-      | '%'              { $$ = IdNode::createId($1); }
-      | '&'              { $$ = IdNode::createId($1); }
-      | '*'              { $$ = IdNode::createId($1); }
-      | '-'              { $$ = IdNode::createId($1); }
-      | '/'              { $$ = IdNode::createId($1); }
-      | ':'              { $$ = IdNode::createId($1); }
-      | '<'              { $$ = IdNode::createId($1); }
-      | '>'              { $$ = IdNode::createId($1); }
-      | '?'              { $$ = IdNode::createId($1); }
-      | '@'              { $$ = IdNode::createId($1); }
-      | '\\'             { $$ = IdNode::createId($1); }
-      | '^'              { $$ = IdNode::createId($1); }
-      | '~'              { $$ = IdNode::createId($1); }
-      | PLUS_ASSIGNMENT  { $$ = IdNode::createId($1); }
-      | MINUS_ASSIGNMENT { $$ = IdNode::createId($1); }
-      | MUL_ASSIGNMENT   { $$ = IdNode::createId($1); }
-      | DIV_ASSIGNMENT   { $$ = IdNode::createId($1); }
-      | MOD_ASSIGNMENT   { $$ = IdNode::createId($1); }
-      | EQUAL            { $$ = IdNode::createId($1); }
-      | NOT_EQUAL        { $$ = IdNode::createId($1); }
-      | LESS_EQUAL       { $$ = IdNode::createId($1); }
-      | GREATER_EQUAL    { $$ = IdNode::createId($1); }
-      | GREATER_OR_EQUAL { $$ = IdNode::createId($1); }
-      | LESS_OR_EQUAL    { $$ = IdNode::createId($1); }
-      | ID               { $$ = IdNode::createId($1); }
-      | ID_EQUALITY      { $$ = IdNode::createId($1); }
-      | ID_VERTICAL_SIGN { $$ = IdNode::createId($1); }
-      | ID_AMPERSAND     { $$ = IdNode::createId($1); }
-      | ID_UPPER_ARROW   { $$ = IdNode::createId($1); }
-      | ID_LEFT_ARROW    { $$ = IdNode::createId($1); }
-      | ID_RIGHT_ARROW   { $$ = IdNode::createId($1); }
-      | ID_MINUS         { $$ = IdNode::createId($1); }
-      | ID_PLUS          { $$ = IdNode::createId($1); }
-      | ID_ASTERISK      { $$ = IdNode::createId($1); }
-      | ID_SLASH         { $$ = IdNode::createId($1); }
-      | ID_PERCENT       { $$ = IdNode::createId($1); }
-      | ID_EXCLAMATION   { $$ = IdNode::createId($1); }
-      | ID_COLON         { $$ = IdNode::createId($1); }
+fullID: '+'
+      | '!'
+      | '#'
+      | '%'
+      | '&'
+      | '*'
+      | '-'
+      | '/'
+      | '<'
+      | '>'
+      | '?'
+      | '@'
+      | '\\'
+      | '^'
+      | '~'
+      | PLUS_ASSIGNMENT
+      | MINUS_ASSIGNMENT
+      | MUL_ASSIGNMENT
+      | DIV_ASSIGNMENT
+      | MOD_ASSIGNMENT
+      | EQUAL
+      | NOT_EQUAL
+      | GREATER_OR_EQUAL
+      | LESS_OR_EQUAL
+      | ID
+      | ID_EQUALITY
+      | ID_VERTICAL_SIGN
+      | ID_AMPERSAND
+      | ID_CIRCUMFLEX
+      | ID_LESS
+      | ID_GREAT
+      | ID_MINUS
+      | ID_PLUS
+      | ID_ASTERISK
+      | ID_SLASH
+      | ID_PERCENT
+      | ID_EXCLAMATION
+      | ID_TILDE
+      | ID_COLON
       ;
 
 %%
