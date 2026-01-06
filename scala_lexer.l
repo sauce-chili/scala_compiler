@@ -266,9 +266,6 @@ null        { std::string cur(yytext); handle_pending_newlines(cur, cur_token_ca
 "|"     { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printOperator(yytext); last_token_can_end_stmt = false;}
 "^"     { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printOperator(yytext); last_token_can_end_stmt = false;}
 "~"     { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printOperator(yytext); last_token_can_end_stmt = false;}
-"<<"    { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printOperator(yytext); last_token_can_end_stmt = false;}
-">>"    { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printOperator(yytext); last_token_can_end_stmt = false;}
-">>>"   { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printOperator(yytext); last_token_can_end_stmt = false;}
 
 "="     { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printOperator(yytext); last_token_can_end_stmt = false;}
 "+="    { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printOperator(yytext); last_token_can_end_stmt = false;}
@@ -276,14 +273,6 @@ null        { std::string cur(yytext); handle_pending_newlines(cur, cur_token_ca
 "*="    { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printOperator(yytext); last_token_can_end_stmt = false;}
 "/="    { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printOperator(yytext); last_token_can_end_stmt = false;}
 "%="    { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printOperator(yytext); last_token_can_end_stmt = false;}
-"<<="   { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printOperator(yytext); last_token_can_end_stmt = false;}
-">>="   { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printOperator(yytext); last_token_can_end_stmt = false;}
-"&="    { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printOperator(yytext); last_token_can_end_stmt = false;}
-"^="    { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printOperator(yytext); last_token_can_end_stmt = false;}
-"|="    { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printOperator(yytext); last_token_can_end_stmt = false;}
-
-"to"    { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printOperator(yytext); last_token_can_end_stmt = false;}
-"until" { std::string cur(yytext); handle_pending_newlines(cur, cur_token_can_begin_statement(cur)); printOperator(yytext); last_token_can_end_stmt = false;}
 
 {ID} {
     std::string cur(yytext);
