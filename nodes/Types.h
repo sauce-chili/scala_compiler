@@ -6,36 +6,25 @@
 enum ModifierType {
     PRIVATE,
     PROTECTED,
-    OPEN,
+    ABSTRACT,
     FINAL,
+    SEALED,
     OVERRIDE,
 };
 
 enum ExprType {
-    //INTEGER_LITERAL,
-    //CHAR_LITERAL,
-    //DOUBLE_LITERAL,
-    //STRING_LITERAL,
-    //BOOL_LITERAL,
-    //IDENTIFIER,
-    //NULL_LITERAL,
-    OPERATOR,
-    FUNCTION_CALL,
-    BRACKETS,
-    ASSIGNMENT,
-    THIS,
-    SUPER,
-    OR,
-    AND,
-    FUNC_CALL,
-    FIELD_ACCESS,
-    FUNC_ACCESS,
-    ARRAY_EXPR,
-    ARRAY_ACCESS,
-    FOR,
-    WHILE,
-    DO_WHILE,
+    IF_ELSE,
     IF,
+    WHILE,
+    TRY,
+    DO_WHILE,
+    THROW,
+    RETURN_EMPTY,
+    RETURN_EXPR,
+    FOR_WITHOUT_YIELD,
+    FOR_WITH_YIELD,
+    INFIX,
+    ASSIGNMENT,
 };
 
 
@@ -66,7 +55,6 @@ enum PrefixExprType {
     UNARY_MINUS,
     NOT,
     BIT_NOT,
-    NO_UNARY_OPERATOR,
 };
 
 enum StableIdType {
@@ -77,6 +65,9 @@ enum StableIdType {
 
 enum StatType {
     TEMPLATE,
+    CLASS,
+    OBJECT,
+    TRAIT,
     ENUM,
     VAR_DECL,
     VAL_DECL,
@@ -95,6 +86,11 @@ enum EnumCaseType {
     CASE_WITH_IDS,
 };
 
+enum DefinitionType {
+    VAR_DEFS,
+    FUN_DEFINITION,
+    TEMPLATE_DEFINITION,
+};
 
 enum Type {
     INT,
@@ -117,11 +113,8 @@ std::string statTypeToString(StatType t);
 std::string prefixExprToString(PrefixExprType t);
 std::string classParamTypeToString(ClassParamType t);
 std::string classEnumCaseTypeToString(EnumCaseType t);
-
-
+std::string definitionTypeToString(DefinitionType t);
 std::string exprTypeToString(ExprType t);
-std::string exprStatToString(StatType t);
-std::string typeToString(Type t);
 
 
 #endif //SCALA_LEXER_TYPES_H

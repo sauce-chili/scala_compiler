@@ -11,7 +11,6 @@ public:
     ArgumentExprsNode* arguments;
 
     ConstrInvokeNode();
-    ConstrInvokeNode* clone() const;
 
     static ConstrInvokeNode* createWithArgumentsNode(SimpleTypeNode* simpleType, ArgumentExprsNode* arguments);
 

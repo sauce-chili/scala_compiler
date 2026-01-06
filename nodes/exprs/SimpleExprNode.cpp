@@ -1,27 +1,29 @@
 #include "SimpleExprNode.h"
+#include "../class/ConstrInvokeNode.h"
+#include "../stats/BlockStatsNode.h"
+#include "SimpleExpr1Node.h"
 
 SimpleExprNode::SimpleExprNode() {
 
 }
 
-SimpleExprNode* SimpleExprNode::clone() const {
-
-}
-
 SimpleExprNode* SimpleExprNode::createConstrInvokeNode(ConstrInvokeNode* constr) {
     SimpleExprNode* node = new SimpleExprNode();
+    node->type = OBJECT_CREATING;
     node->constr = constr;
     return node;
 }
 
 SimpleExprNode* SimpleExprNode::createBlockStatsNode(BlockStatsNode* blockStats) {
     SimpleExprNode* node = new SimpleExprNode();
+    node->type = BLOCK_STATS;
     node->blockStats = blockStats;
     return node;
 }
 
 SimpleExprNode* SimpleExprNode::createSimpleExpr1Node(SimpleExpr1Node* simpleExpr1) {
     SimpleExprNode* node = new SimpleExprNode();
+    node->type = SIMPLE_EXPR_1;
     node->simpleExpr1 = simpleExpr1;
     return node;
 }

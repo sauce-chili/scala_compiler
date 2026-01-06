@@ -2,13 +2,12 @@
 #define SCALA_LEXER_SIMPLEEXPR1NODE_H
 
 #include "../Node.h"
-#include "nodes/Types.h"
-#include "ArgumentExprsNode.h"
-#include "SimpleExprNode.h"
-#include "../id/IdNode.h"
+#include "../Types.h"
 
-#include "../Node.h"
-#include "ExprNode.h"
+class ArgumentExprsNode;
+class SimpleExprNode;
+class ExprNode;
+class IdNode;
 
 class SimpleExpr1Node: public Node {
 public:
@@ -25,7 +24,6 @@ public:
     IdNode* identifier;
 
     SimpleExpr1Node();
-    SimpleExpr1Node* clone() const;
 
     static SimpleExpr1Node* createIntNode(int value);
     static SimpleExpr1Node* createCharNode(char value);

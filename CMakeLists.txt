@@ -67,16 +67,12 @@ add_executable(scala_lexer
         nodes/try/TryExprNode.h
         nodes/exprs/PrefixExprNode.cpp
         nodes/exprs/PrefixExprNode.h
-        nodes/stats/EnumStats.cpp
-        nodes/stats/EnumStats.h
-        nodes/stats/EnumStat.cpp
-        nodes/stats/EnumStat.h
         nodes/exprs/AssignExprNode.cpp
         nodes/exprs/AssignExprNode.h
         nodes/class/ClassParamNode.cpp
         nodes/class/ClassParamNode.h
-        nodes/class/ClassParamNodes.cpp
-        nodes/class/ClassParamNodes.h
+        nodes/class/ClassParamsNode.cpp
+        nodes/class/ClassParamsNode.h
         nodes/func/FuncParamNode.cpp
         nodes/func/FuncParamNode.h
         nodes/func/FuncParamsNode.cpp
@@ -87,8 +83,6 @@ add_executable(scala_lexer
         nodes/type/SimpleTypesNode.h
         nodes/enum/EnumCaseNode.cpp
         nodes/enum/EnumCaseNode.h
-        nodes/stats/TemplateStatNode.cpp
-        nodes/stats/TemplateStatNode.h
         nodes/func/FunSigNode.cpp
         nodes/func/FunSigNode.h
         nodes/definitions/DclNode.cpp
@@ -99,8 +93,6 @@ add_executable(scala_lexer
         nodes/exprs/ConstrExprNode.h
         nodes/templates/TemplateStatNode.cpp
         nodes/templates/TemplateStatNode.h
-        nodes/templates/TmplDefNode.cpp
-        nodes/templates/TmplDefNode.h
         nodes/definitions/DefNode.cpp
         nodes/definitions/DefNode.h
         nodes/templates/TemplateStatsNode.cpp
@@ -111,6 +103,34 @@ add_executable(scala_lexer
         nodes/templates/ClassTemplateOptNode.h
         nodes/class/ClassDefNode.cpp
         nodes/class/ClassDefNode.h
+        nodes/enum/EnumStatNode.cpp
+        nodes/enum/EnumStatNode.h
+        nodes/enum/EnumStatsNode.cpp
+        nodes/enum/EnumStatsNode.h
+        nodes/templates/EnumTemplateNode.cpp
+        nodes/templates/EnumTemplateNode.h
+        nodes/enum/EnumDefNode.cpp
+        nodes/enum/EnumDefNode.h
+        nodes/trait/TraitTemplateNode.cpp
+        nodes/trait/TraitTemplateNode.h
+        nodes/trait/TraitTemplateOptNode.cpp
+        nodes/trait/TraitTemplateOptNode.h
+        nodes/templates/TemplateDefNode.cpp
+        nodes/templates/TemplateDefNode.h
+        nodes/stats/TopStatNode.cpp
+        nodes/stats/TopStatNode.h
+        nodes/stats/TopStatSeqNode.cpp
+        nodes/stats/TopStatSeqNode.h
+        nodes/generator/GeneratorNode.cpp
+        nodes/generator/GeneratorNode.h
+        nodes/generator/EnumeratorPartNode.cpp
+        nodes/generator/EnumeratorPartNode.h
+        nodes/generator/EnumeratorsNode.cpp
+        nodes/generator/EnumeratorsNode.h
+        nodes/exprs/InfixExprNode.cpp
+        nodes/exprs/InfixExprNode.h
+        nodes/exprs/AssignmentNode.cpp
+        nodes/exprs/AssignmentNode.h
 )
 
 message(STATUS "Flex output: ${FLEX_MyScanner_OUTPUTS}")

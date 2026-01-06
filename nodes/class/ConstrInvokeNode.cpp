@@ -4,10 +4,6 @@ ConstrInvokeNode::ConstrInvokeNode() {
 
 }
 
-ConstrInvokeNode *ConstrInvokeNode::clone() const {
-    return nullptr;
-}
-
 ConstrInvokeNode *ConstrInvokeNode::createWithArgumentsNode(SimpleTypeNode *simpleType, ArgumentExprsNode *arguments) {
     ConstrInvokeNode* node = new ConstrInvokeNode();
     node->simpleType = simpleType;

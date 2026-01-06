@@ -2,9 +2,10 @@
 #define SCALA_LEXER_SIMPLEEXPRNODE_H
 
 #include "../Node.h"
-#include "../class/ConstrInvokeNode.h"
-#include "../stats/BlockStatsNode.h"
-#include "SimpleExpr1Node.h"
+
+class ConstrInvokeNode;
+class SimpleExpr1Node;
+class BlockStatsNode;
 
 class SimpleExprNode: public Node {
 public:
@@ -14,7 +15,6 @@ public:
     SimpleExpr1Node* simpleExpr1;
 
     SimpleExprNode();
-    SimpleExprNode* clone() const;
 
     static SimpleExprNode* createConstrInvokeNode(ConstrInvokeNode* constr);
     static SimpleExprNode* createBlockStatsNode(BlockStatsNode* blockStats);

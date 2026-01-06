@@ -81,86 +81,83 @@
 
 %%
 
-scalaFile: topStatSeq
+scalaFile: topStatSeq { $$ = $1; }
           ;
 
-expr: IF '(' expr ')' nls expr semio ELSE expr
-    | IF '(' expr ')' nls expr
-    | WHILE '(' expr ')' nls expr
-    | tryExpr
-    | DO expr semio WHILE '(' expr ')'
-    | THROW expr
-    | RETURN
-    | RETURN expr
-    | FOR '(' enumerators ')' nls yieldO expr
-    | infixExpr
-    | assignment
+expr: IF '(' expr ')' nls expr semio ELSE expr { $$ = new ExprNode::createIfElse($3, $6, $9; }
+    | IF '(' expr ')' nls expr                 { $$ = new ExprNode::createIf($3, $6); }
+    | WHILE '(' expr ')' nls expr              { $$ = new ExprNode::createWhile($3, $6); }
+    | tryExpr                                  { $$ = new ExprNode::createTry($1); }
+    | DO expr semio WHILE '(' expr ')'         { $$ = new ExprNode::createDoWhile($2, $6); }
+    | THROW expr                               { $$ = new ExprNode::createThrow($2); }
+    | RETURN                                   { $$ = new ExprNode::createReturn(); }
+    | RETURN expr                              { $$ = new ExprNode::createReturnExpr($2); }
+    | FOR '(' enumerators ')' nls expr         { $$ = new ExprNode::createFor($3, $6); }
+    | FOR '(' enumerators ')' nls YIELD expr   { $$ = new ExprNode::createForYield($3, $7); }
+    | infixExpr                                { $$ = new ExprNode::createInfix($1); }
+    | assignment                               { $$ = new ExprNode::createAssignment($1); }
     ;
 
-assignment: fullID '=' expr
-          | simpleExpr '.' fullID '=' expr
-          | simpleExpr1 argumentExprs '=' expr // запись в массив
+assignment: fullID '=' expr                    { $$ = new AssignmentNode::createIdAssignment($1, $3); }
+          | simpleExpr '.' fullID '=' expr     { $$ = new AssignmentNode::createFieldAssignment($1, $3, $5); }
+          | simpleExpr1 argumentExprs '=' expr { $$ = new AssignmentNode::createArrayAssignment($1, $2, $4); } // запись в массив
           ;
 
-yieldO: /* empty */
-      | YIELD
-      ;
-
-enumerators: generator
-           | enumerators semi enumeratorPart
+enumerators: generator                       { $$ = new EnumeratorsNode::EnumeratorsNode($1); }
+           | enumerators semi enumeratorPart { $$ = EnumeratorsNode::addModifierToList($1, $3); }
            ;
 
-enumeratorPart: generator
-              | fullID compoundTypeO '=' expr // определение переменной
+enumeratorPart: generator                     { $$ = EnumeratorPartNode::createGeneratorEnumeratorPart($1); }
+              | fullID compoundTypeO '=' expr { $$ = EnumeratorPartNode::createVarDefEnumeratorPart($1, $2, $4); } // определение переменной
               ;
 
-generator: fullID compoundTypeO LEFT_ARROW expr
+generator: fullID compoundTypeO LEFT_ARROW expr { $$ = GeneratorNode::createGenerator($1, $2, $3); }
          ;
 
 compoundTypeO: /* empty */ %prec LOW_PREC { $$ = nullptr; }
           | ':' compoundType              { $$ = $2; }
           ;
 
-infixExpr: prefixExpr
-         | infixExpr '+' nlo infixExpr
-         | infixExpr '!' nlo infixExpr
-	 | infixExpr '#' nlo infixExpr
-         | infixExpr '%' nlo infixExpr
-	 | infixExpr '&' nlo infixExpr
-	 | infixExpr '*' nlo infixExpr
-	 | infixExpr '-' nlo infixExpr
-	 | infixExpr '/' nlo infixExpr
-	 | infixExpr '<' nlo infixExpr
-	 | infixExpr '>' nlo infixExpr
-	 | infixExpr '?' nlo infixExpr
-	 | infixExpr '@' nlo infixExpr
-	 | infixExpr '\\' nlo infixExpr
-	 | infixExpr '^' nlo infixExpr
-	 | infixExpr '~' nlo infixExpr
-	 | infixExpr PLUS_ASSIGNMENT nlo infixExpr
-	 | infixExpr MINUS_ASSIGNMENT nlo infixExpr
-	 | infixExpr MUL_ASSIGNMENT nlo infixExpr
-	 | infixExpr DIV_ASSIGNMENT nlo infixExpr
-	 | infixExpr MOD_ASSIGNMENT nlo infixExpr
-	 | infixExpr EQUAL nlo infixExpr
-	 | infixExpr NOT_EQUAL nlo infixExpr
-	 | infixExpr GREATER_OR_EQUAL nlo infixExpr
-	 | infixExpr LESS_OR_EQUAL nlo infixExpr
-	 | infixExpr ID nlo infixExpr
-	 | infixExpr ID_EQUALITY nlo infixExpr
-	 | infixExpr ID_VERTICAL_SIGN nlo infixExpr
-	 | infixExpr ID_AMPERSAND nlo infixExpr
-	 | infixExpr ID_CIRCUMFLEX nlo infixExpr
-	 | infixExpr ID_LESS nlo infixExpr
-	 | infixExpr ID_GREAT nlo infixExpr
-	 | infixExpr ID_MINUS nlo infixExpr
-	 | infixExpr ID_PLUS nlo infixExpr
-	 | infixExpr ID_ASTERISK nlo infixExpr
-	 | infixExpr ID_SLASH nlo infixExpr
-	 | infixExpr ID_PERCENT nlo infixExpr
-	 | infixExpr ID_EXCLAMATION nlo infixExpr
-	 | infixExpr ID_TILDE nlo infixExpr
-	 | infixExpr ID_COLON nlo infixExpr
+infixExpr: prefixExpr { $$ = InfixExprNode::createInfixFromPrefix($1); }
+         | infixExpr '+' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+         | infixExpr '!' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr '#' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+         | infixExpr '%' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr '&' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr '*' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr '-' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr '/' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr '<' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr '>' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr '?' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr '@' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr '\\' nlo infixExpr { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr '^' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr '~' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr PLUS_ASSIGNMENT nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr MINUS_ASSIGNMENT nlo infixExpr { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr MUL_ASSIGNMENT nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr DIV_ASSIGNMENT nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr MOD_ASSIGNMENT nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr EQUAL nlo infixExpr            { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr NOT_EQUAL nlo infixExpr        { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr GREATER_OR_EQUAL nlo infixExpr { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr LESS_OR_EQUAL nlo infixExpr    { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr ID nlo infixExpr               { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr ID_EQUALITY nlo infixExpr      { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr ID_VERTICAL_SIGN nlo infixExpr { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr ID_AMPERSAND nlo infixExpr     { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr ID_CIRCUMFLEX nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr ID_LESS nlo infixExpr    { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr ID_GREAT nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr ID_MINUS nlo infixExpr         { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr ID_PLUS nlo infixExpr          { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr ID_ASTERISK nlo infixExpr      { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr ID_SLASH nlo infixExpr         { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr ID_PERCENT nlo infixExpr       { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr ID_EXCLAMATION nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr ID_TILDE nlo infixExpr 	    { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr ID_COLON nlo infixExpr         { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
          ;
 
 prefixExpr: simpleExpr { $$ = PrefixExprNode::createPrefixExprNode($1, NO_UNARY_OPERATOR); }
@@ -246,7 +243,7 @@ funcParams: funcParam                { $$ = FuncParamsNode::addFuncParamToList(n
 funcParam: fullID compoundTypeO assignExprO { $$ = FuncParamNode::createClassParam($1, $2, $3); }
          ;
 
-assignExprO: /* empty */ { $$ = nullptr }
+assignExprO: /* empty */ { $$ = nullptr; }
            | '=' expr    { $$ = AssignExprNode::createAssignExprNode($2); }
            ;
 
@@ -254,8 +251,8 @@ assignExprO: /* empty */ { $$ = nullptr }
 
 /* --------------------- CLASS --------------------- */
 
-classParamClause: nlo '(' ')'             { $$ = nullptr }
-                | nlo '(' classParams ')' { $$ = $3 }
+classParamClause: nlo '(' ')'             { $$ = nullptr; }
+                | nlo '(' classParams ')' { $$ = $3; }
                 ;
 
 classParams: classParam                 { $$ = ClassParamNodes::addClassParamToList(nullptr, $1); }
@@ -271,15 +268,15 @@ modifiers: /* empty */        { $$ = ModifiersNode::addModifierToList(nullptr, n
          | modifiers modifier { $$ = ModifiersNode::addModifierToList($1, $2); }
          ;
 
-modifier: ABSTRACT       { $$ = ModifierNode::createModifier($1); }
-        | FINAL          { $$ = ModifierNode::createModifier($1); }
-        | SEALED         { $$ = ModifierNode::createModifier($1); }
+modifier: ABSTRACT       { $$ = ModifierNode::createModifier(ABSTRACT, $1); }
+        | FINAL          { $$ = ModifierNode::createModifier(FINAL, $1); }
+        | SEALED         { $$ = ModifierNode::createModifier(SEALED, $1); }
         | accessModifier { $$ = ModifierNode::createModifier($1); }
-        | OVERRIDE       { $$ = ModifierNode::createModifier($1); }
+        | OVERRIDE       { $$ = ModifierNode::createModifier(OVERRIDE, $1); }
         ;
 
-accessModifier: PRIVATE   { $$ = ModifierNode::createModifier($1); }
-	      | PROTECTED { $$ = ModifierNode::createModifier($1); }
+accessModifier: PRIVATE   { $$ = ModifierNode::createModifier(PRIVATE, $1); }
+	      | PROTECTED { $$ = ModifierNode::createModifier(PROTECTED, $1); }
 	      ;
 
 /* --------------------- CLASS --------------------- */
@@ -314,9 +311,9 @@ varDefs: VAL ids compoundTypeO '=' expr { $$ = VarDefsNode::createVal($2, $3, $5
        | VAR ids compoundTypeO '=' expr { $$ = VarDefsNode::createVar($2, $3, $5); }
        ;
 
-def: varDefs
-   | DEF funDef
-   | tmplDef
+def: varDefs    { $$ = DefNode::createVarDefs($1); }
+   | DEF funDef { $$ = DefNode::createFunDef($2); }
+   | tmplDef    { $$ = DefNode::createTmplDef($1); }
    ;
 
 funDef: funSig compoundTypeO '=' expr       { $$ = FunDefNode::createFunSigFunDef($1, $2, $4); }
@@ -327,10 +324,10 @@ constrExpr: THIS argumentExprs { $$ = ConstrExprNode::createConstrExpr($3, nullp
           | '{' THIS argumentExprs semi blockStats '}' { $$ = ConstrExprNode::createConstrExpr($3, $5); }
           ;
 
-tmplDef: CLASS classDef
-       | OBJECT fullID classTemplateOpt
-       | TRAIT fullID traitTemplateOpt
-       | ENUM enumDef
+tmplDef: CLASS classDef                 { $$ = TemplateDefNode::createClassDef($2); }
+       | OBJECT fullID classTemplateOpt { $$ = TemplateDefNode::createObjectDef($2, $3); }
+       | TRAIT fullID traitTemplateOpt  { $$ = TemplateDefNode::createTraitDef($2, $3); }
+       | ENUM enumDef                   { $$ = TemplateDefNode::createEnumDef($2); }
        ;
 
 classDef: fullID accessModifier classParamClause classTemplateOpt { $$ = ClassDefNode::createClassDef($1, $2, $3, $4); }
@@ -338,9 +335,9 @@ classDef: fullID accessModifier classParamClause classTemplateOpt { $$ = ClassDe
         | fullID classTemplateOpt                                 { $$ = ClassDefNode::createClassDef($1, nullptr, nullptr, $2); }
         ;
 
-enumDef: fullID accessModifier classParamClause enumTemplate
-       | fullID classParamClause enumTemplate
-       | fullID enumTemplate
+enumDef: fullID accessModifier classParamClause enumTemplate { $$ = EnumDefNode::createWithAccessModifier($1, $2, $3, $4); }
+       | fullID classParamClause enumTemplate                { $$ = EnumDefNode::createWithClassParams($1, $2, $3); }
+       | fullID enumTemplate                                 { $$ = EnumDefNode::createEnumTemplate($1, $2 ); }
        ;
 
 classTemplateOpt: /* empty */ %prec LOW_PREC { $$ = nullptr; }
@@ -348,13 +345,13 @@ classTemplateOpt: /* empty */ %prec LOW_PREC { $$ = nullptr; }
                 | templateBody               { $$ = ClassTemplateOptNode::addFuncParamToBackToList(nullptr, $1); }
                 ;
 
-traitTemplateOpt: /* empty */ %prec LOW_PREC
-                | EXTENDS traitTemplate
-                | templateBody
+traitTemplateOpt: /* empty */ %prec LOW_PREC { $$ = nullptr; }
+                | EXTENDS traitTemplate      { $$ = TraitTemplateOptNode::createTraitTemplateOpt($2, nullptr); }
+                | templateBody               { $$ = TraitTemplateOptNode::createTraitTemplateOpt(nullptr, $1); }
                 ;
 
-enumTemplate: EXTENDS classParents enumBody
-            | enumBody
+enumTemplate: EXTENDS classParents enumBody { $$ = EnumTemplateNode::createWithClassParents($2, $3); }
+            | enumBody                      { $$ = EnumTemplateNode::createWithClassParents($1); }
             ;
 
 classTemplate: classParents templateBody       { $$ = ClassTemplateNode::createClassTemplate($1, $2); }
@@ -364,18 +361,19 @@ classTemplate: classParents templateBody       { $$ = ClassTemplateNode::createC
 classParents: constrInvoke simpleTypes { $$ = ClassParentsNode::createClassParents($1, $2); }
 	    ;
 
-traitTemplate: simpleType simpleTypes templateBody
-             | simpleType simpleTypes %prec END_TEMPLATE
+traitTemplate: simpleType simpleTypes templateBody       { $$ = TraitTemplateNode::createTraitTemplate($1, $2, $3); }
+             | simpleType simpleTypes %prec END_TEMPLATE { $$ = TraitTemplateNode::createTraitTemplate($1, $2, nullptr); }
              ;
 
-enumBody: nlo '{' enumStats '}';
+enumBody: nlo '{' enumStats '}' { $$ = $3; }
+	;
 
-enumStats: enumStat
-	 | enumStats semi enumStat
+enumStats: enumStat                { $$ = EnumStatsNode::addModifierToList(nullptr, $1); }
+	 | enumStats semi enumStat { $$ = EnumStatsNode::addModifierToList($1, $3); }
 	 ;
 
-enumStat: templateStat
-	| modifiers enumCase
+enumStat: templateStat       { $$ = EnumStatNode::createWithTemplateStat($1); }
+	| modifiers enumCase { $$ = EnumStatNode::createWithEnumCase($1, $2); }
 	;
 
 enumCase: CASE fullID classParamClause EXTENDS classParents { $$ = EnumCaseNode::createClassParents(CASE_WITH_EXTENDS, IdsNode::addIdToList(nullptr, $2), $3, $5); }
@@ -384,14 +382,14 @@ enumCase: CASE fullID classParamClause EXTENDS classParents { $$ = EnumCaseNode:
         | CASE ids ',' fullID                               { $$ = EnumCaseNode::createClassParents(CASE_WITH_IDS, IdsNode::addIdToList($2, $4)); } // Решает rr
 	;
 
-topStatSeq: topStat
-	  | topStatSeq semi topStat
+topStatSeq: topStat                 { $$ = TopStatSeqNode::addModifierToList(nullptr, $1); }
+	  | topStatSeq semi topStat { $$ = TopStatSeqNode::addModifierToList($1, $3); }
           ;
 
-topStat: modifiers tmplDef
+topStat: modifiers tmplDef { $$ = TopStatNode::createTopStat($1, $2); }
        ;
 
-simpleTypes: /* empty */                 { $$ = nullptr }
+simpleTypes: /* empty */                 { $$ = nullptr; }
            | simpleTypes WITH simpleType { $$ = SimpleTypesNode::addSimpleTypeToList($1, $3); }
            ;
 
@@ -422,45 +420,45 @@ semio: /* empty */
      | semi
      ;
 
-fullID: '+'
-      | '!'
-      | '#'
-      | '%'
-      | '&'
-      | '*'
-      | '-'
-      | '/'
-      | '<'
-      | '>'
-      | '?'
-      | '@'
-      | '\\'
-      | '^'
-      | '~'
-      | PLUS_ASSIGNMENT
-      | MINUS_ASSIGNMENT
-      | MUL_ASSIGNMENT
-      | DIV_ASSIGNMENT
-      | MOD_ASSIGNMENT
-      | EQUAL
-      | NOT_EQUAL
-      | GREATER_OR_EQUAL
-      | LESS_OR_EQUAL
-      | ID
-      | ID_EQUALITY
-      | ID_VERTICAL_SIGN
-      | ID_AMPERSAND
-      | ID_CIRCUMFLEX
-      | ID_LESS
-      | ID_GREAT
-      | ID_MINUS
-      | ID_PLUS
-      | ID_ASTERISK
-      | ID_SLASH
-      | ID_PERCENT
-      | ID_EXCLAMATION
-      | ID_TILDE
-      | ID_COLON
+fullID: '+'              { $$ = IdNode::createId($1); }
+      | '!'              { $$ = IdNode::createId($1); }
+      | '#'              { $$ = IdNode::createId($1); }
+      | '%'              { $$ = IdNode::createId($1); }
+      | '&'              { $$ = IdNode::createId($1); }
+      | '*'              { $$ = IdNode::createId($1); }
+      | '-'              { $$ = IdNode::createId($1); }
+      | '/'              { $$ = IdNode::createId($1); }
+      | '<'              { $$ = IdNode::createId($1); }
+      | '>'              { $$ = IdNode::createId($1); }
+      | '?'              { $$ = IdNode::createId($1); }
+      | '@'              { $$ = IdNode::createId($1); }
+      | '\\'             { $$ = IdNode::createId($1); }
+      | '^'              { $$ = IdNode::createId($1); }
+      | '~'              { $$ = IdNode::createId($1); }
+      | PLUS_ASSIGNMENT  { $$ = IdNode::createId($1); }
+      | MINUS_ASSIGNMENT { $$ = IdNode::createId($1); }
+      | MUL_ASSIGNMENT   { $$ = IdNode::createId($1); }
+      | DIV_ASSIGNMENT   { $$ = IdNode::createId($1); }
+      | MOD_ASSIGNMENT   { $$ = IdNode::createId($1); }
+      | EQUAL            { $$ = IdNode::createId($1); }
+      | NOT_EQUAL        { $$ = IdNode::createId($1); }
+      | GREATER_OR_EQUAL { $$ = IdNode::createId($1); }
+      | LESS_OR_EQUAL    { $$ = IdNode::createId($1); }
+      | ID               { $$ = IdNode::createId($1); }
+      | ID_EQUALITY      { $$ = IdNode::createId($1); }
+      | ID_VERTICAL_SIGN { $$ = IdNode::createId($1); }
+      | ID_AMPERSAND     { $$ = IdNode::createId($1); }
+      | ID_CIRCUMFLEX   { $$ = IdNode::createId($1); }
+      | ID_LESS    { $$ = IdNode::createId($1); }
+      | ID_GREAT   { $$ = IdNode::createId($1); }
+      | ID_MINUS         { $$ = IdNode::createId($1); }
+      | ID_PLUS          { $$ = IdNode::createId($1); }
+      | ID_ASTERISK      { $$ = IdNode::createId($1); }
+      | ID_SLASH         { $$ = IdNode::createId($1); }
+      | ID_PERCENT       { $$ = IdNode::createId($1); }
+      | ID_EXCLAMATION   { $$ = IdNode::createId($1); }
+      | ID_TILDE   	 { $$ = IdNode::createId($1); }
+      | ID_COLON         { $$ = IdNode::createId($1); }
       ;
 
 %%

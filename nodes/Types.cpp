@@ -4,7 +4,8 @@ std::string modifierToString(ModifierType m) {
     switch (m) {
         case PRIVATE:   return "PRIVATE";
         case PROTECTED: return "PROTECTED";
-        case OPEN:      return "OPEN";
+        case ABSTRACT:  return "ABSTRACT";
+        case SEALED:    return "SEALED";
         case FINAL:     return "FINAL";
         case OVERRIDE:  return "OVERRIDE";
     }
@@ -41,6 +42,9 @@ std::string stableIdTypeToString(StableIdType t) {
 std::string statTypeToString(StatType t) {
     switch (t) {
         case TEMPLATE: return "Template";
+        case CLASS:    return "Class";
+        case OBJECT:   return "Object";
+        case TRAIT:    return "Trait";
         case ENUM:     return "Enum";
         case VAR_DECL: return "Var declaration";
         case VAL_DECL: return "Val declaration";
@@ -72,5 +76,30 @@ std::string classEnumCaseTypeToString(EnumCaseType t) {
         case CASE_WITH_EXTENDS: return "Case with extends";
         case CASE_WITH_PARAMS:  return "Case with params";
         case CASE_WITH_IDS:     return "Case with ids list";
+    }
+}
+
+std::string definitionTypeToString(DefinitionType t) {
+    switch (t) {
+        case VAR_DEFS:            return "Variables definition";
+        case FUN_DEFINITION:      return "Function definition";
+        case TEMPLATE_DEFINITION: return "Template definition";
+    }
+}
+
+std::string exprTypeToString(ExprType t) {
+    switch (t) {
+        case IF_ELSE:           return "If Else";
+        case IF:                return "If";
+        case WHILE:             return "While";
+        case TRY:               return "Try";
+        case DO_WHILE:          return "Do While";
+        case THROW:             return "Throw";
+        case RETURN_EMPTY:      return "Return";
+        case RETURN_EXPR:       return "Return expr";
+        case FOR_WITHOUT_YIELD: return "For";
+        case FOR_WITH_YIELD:    return "For Yield";
+        case INFIX:             return "Infix";
+        case ASSIGNMENT:        return "Assignment";
     }
 }

@@ -12,7 +12,7 @@ class ClassParamNode: public Node {
 public:
     ClassParamType type;
     ModifiersNode* modifiers;
-    IdNode* id;
+    IdNode* fullId;
     CompoundTypeNode* compoundType;
     AssignExprNode* assignExpr;
 
@@ -21,7 +21,7 @@ public:
     static ClassParamNode* createClassParam(
             ClassParamType type,
             ModifiersNode* modifiers,
-            IdNode* id,
+            IdNode* fullId,
             CompoundTypeNode* compoundType,
             AssignExprNode* assignExpr
     );

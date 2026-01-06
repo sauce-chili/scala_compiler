@@ -8,8 +8,6 @@ class IdNode: public Node {
 public:
     string name;
 
-    IdNode* clone() const;
-
     static IdNode* createId(string name);
 
     string toDot() const override;
