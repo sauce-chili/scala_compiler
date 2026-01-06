@@ -247,7 +247,7 @@ funcParams: funcParam                { $$ = FuncParamsNode::addFuncParamToList(n
 funcParam: fullID compoundTypeO assignExprO { $$ = FuncParamNode::createClassParam($1, $2, $3); }
          ;
 
-assignExprO: /* empty */ { $$ = nullptr }
+assignExprO: /* empty */ { $$ = nullptr; }
            | '=' expr    { $$ = AssignExprNode::createAssignExprNode($2); }
            ;
 
@@ -255,8 +255,8 @@ assignExprO: /* empty */ { $$ = nullptr }
 
 /* --------------------- CLASS --------------------- */
 
-classParamClause: nlo '(' ')'             { $$ = nullptr }
-                | nlo '(' classParams ')' { $$ = $3 }
+classParamClause: nlo '(' ')'             { $$ = nullptr; }
+                | nlo '(' classParams ')' { $$ = $3; }
                 ;
 
 classParams: classParam                 { $$ = ClassParamNodes::addClassParamToList(nullptr, $1); }
@@ -369,14 +369,15 @@ traitTemplate: simpleType simpleTypes templateBody
              | simpleType simpleTypes %prec END_TEMPLATE
              ;
 
-enumBody: nlo '{' enumStats '}';
+enumBody: nlo '{' enumStats '}' { $$ = $3; }
+	;
 
-enumStats: enumStat
-	 | enumStats semi enumStat
+enumStats: enumStat                { $$ = EnumStatsNode::addModifierToList(nullptr, $1); }
+	 | enumStats semi enumStat { $$ = EnumStatsNode::addModifierToList($1, $3); }
 	 ;
 
-enumStat: templateStat
-	| modifiers enumCase
+enumStat: templateStat       { $$ = EnumStatNode::createWithTemplateStat($1); }
+	| modifiers enumCase { $$ = EnumStatNode::createWithEnumCase($1, $2); }
 	;
 
 enumCase: CASE fullID classParamClause EXTENDS classParents { $$ = EnumCaseNode::createClassParents(CASE_WITH_EXTENDS, IdsNode::addIdToList(nullptr, $2), $3, $5); }
@@ -392,7 +393,7 @@ topStatSeq: topStat
 topStat: modifiers tmplDef
        ;
 
-simpleTypes: /* empty */                 { $$ = nullptr }
+simpleTypes: /* empty */                 { $$ = nullptr; }
            | simpleTypes WITH simpleType { $$ = SimpleTypesNode::addSimpleTypeToList($1, $3); }
            ;
 
