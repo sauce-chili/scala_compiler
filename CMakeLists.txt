@@ -123,6 +123,8 @@ add_executable(scala_lexer
         nodes/trait/TraitTemplateNode.h
         nodes/trait/TraitTemplateOptNode.cpp
         nodes/trait/TraitTemplateOptNode.h
+        nodes/templates/TemplateDefNode.cpp
+        nodes/templates/TemplateDefNode.h
 )
 
 message(STATUS "Flex output: ${FLEX_MyScanner_OUTPUTS}")

@@ -77,6 +77,9 @@ enum StableIdType {
 
 enum StatType {
     TEMPLATE,
+    CLASS,
+    OBJECT,
+    TRAIT,
     ENUM,
     VAR_DECL,
     VAL_DECL,

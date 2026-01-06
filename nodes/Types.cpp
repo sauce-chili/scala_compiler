@@ -41,6 +41,9 @@ std::string stableIdTypeToString(StableIdType t) {
 std::string statTypeToString(StatType t) {
     switch (t) {
         case TEMPLATE: return "Template";
+        case CLASS:    return "Class";
+        case OBJECT:   return "Object";
+        case TRAIT:    return "Trait";
         case ENUM:     return "Enum";
         case VAR_DECL: return "Var declaration";
         case VAL_DECL: return "Val declaration";

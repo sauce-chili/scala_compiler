@@ -328,10 +328,10 @@ constrExpr: THIS argumentExprs { $$ = ConstrExprNode::createConstrExpr($3, nullp
           | '{' THIS argumentExprs semi blockStats '}' { $$ = ConstrExprNode::createConstrExpr($3, $5); }
           ;
 
-tmplDef: CLASS classDef
-       | OBJECT fullID classTemplateOpt
-       | TRAIT fullID traitTemplateOpt
-       | ENUM enumDef
+tmplDef: CLASS classDef                 { $$ = TemplateDefNode::createClassDef($2); }
+       | OBJECT fullID classTemplateOpt { $$ = TemplateDefNode::createObjectDef($2, $3); }
+       | TRAIT fullID traitTemplateOpt  { $$ = TemplateDefNode::createTraitDef($2, $3); }
+       | ENUM enumDef                   { $$ = TemplateDefNode::createEnumDef($2); }
        ;
 
 classDef: fullID accessModifier classParamClause classTemplateOpt { $$ = ClassDefNode::createClassDef($1, $2, $3, $4); }
