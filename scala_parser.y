@@ -124,8 +124,6 @@ infixExpr: prefixExpr
 	 | infixExpr MOD_ASSIGNMENT nlo infixExpr
 	 | infixExpr EQUAL nlo infixExpr
 	 | infixExpr NOT_EQUAL nlo infixExpr
-	 | infixExpr LESS_EQUAL nlo infixExpr
-	 | infixExpr GREATER_EQUAL nlo infixExpr
 	 | infixExpr GREATER_OR_EQUAL nlo infixExpr
 	 | infixExpr LESS_OR_EQUAL nlo infixExpr
 	 | infixExpr ID nlo infixExpr
@@ -423,8 +421,6 @@ fullID: '+'
       | MOD_ASSIGNMENT
       | EQUAL
       | NOT_EQUAL
-      | LESS_EQUAL
-      | GREATER_EQUAL
       | GREATER_OR_EQUAL
       | LESS_OR_EQUAL
       | ID
