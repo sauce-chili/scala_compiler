@@ -48,5 +48,5 @@ string TemplateDefNode::toDot() const {
 }
 
 string TemplateDefNode::getDotLabel() const {
-    return "Template definition";
+    return "Template definition of " + statTypeToString(type);
 }

@@ -99,8 +99,6 @@ add_executable(scala_lexer
         nodes/exprs/ConstrExprNode.h
         nodes/templates/TemplateStatNode.cpp
         nodes/templates/TemplateStatNode.h
-        nodes/templates/TmplDefNode.cpp
-        nodes/templates/TmplDefNode.h
         nodes/definitions/DefNode.cpp
         nodes/definitions/DefNode.h
         nodes/templates/TemplateStatsNode.cpp

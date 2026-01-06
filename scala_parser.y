@@ -315,9 +315,9 @@ varDefs: VAL ids compoundTypeO '=' expr { $$ = VarDefsNode::createVal($2, $3, $5
        | VAR ids compoundTypeO '=' expr { $$ = VarDefsNode::createVar($2, $3, $5); }
        ;
 
-def: varDefs
-   | DEF funDef
-   | tmplDef
+def: varDefs    { $$ = DefNode::createVarDefs($1); }
+   | DEF funDef { $$ = DefNode::createFunDef($2); }
+   | tmplDef    { $$ = DefNode::createTmplDef($1); }
    ;
 
 funDef: funSig compoundTypeO '=' expr       { $$ = FunDefNode::createFunSigFunDef($1, $2, $4); }

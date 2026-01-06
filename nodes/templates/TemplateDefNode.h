@@ -1,11 +1,6 @@
 #ifndef SCALA_LEXER_TEMPLATEDEFNODE_H
 #define SCALA_LEXER_TEMPLATEDEFNODE_H
 
-// CLASS classDef
-//       | OBJECT fullID classTemplateOpt
-//       | TRAIT fullID traitTemplateOpt
-//       | ENUM enumDef
-
 #include "../Node.h"
 #include "../class/ClassDefNode.h"
 #include "../trait/TraitTemplateOptNode.h"

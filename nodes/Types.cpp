@@ -77,3 +77,11 @@ std::string classEnumCaseTypeToString(EnumCaseType t) {
         case CASE_WITH_IDS:     return "Case with ids list";
     }
 }
+
+std::string definitionTypeToString(DefinitionType t) {
+    switch (t) {
+        case VAR_DEFS:            return "Variables definition";
+        case FUN_DEFINITION:      return "Function definition";
+        case TEMPLATE_DEFINITION: return "Template definition";
+    }
+}

@@ -98,6 +98,11 @@ enum EnumCaseType {
     CASE_WITH_IDS,
 };
 
+enum DefinitionType {
+    VAR_DEFS,
+    FUN_DEFINITION,
+    TEMPLATE_DEFINITION,
+};
 
 enum Type {
     INT,
@@ -120,6 +125,7 @@ std::string statTypeToString(StatType t);
 std::string prefixExprToString(PrefixExprType t);
 std::string classParamTypeToString(ClassParamType t);
 std::string classEnumCaseTypeToString(EnumCaseType t);
+std::string definitionTypeToString(DefinitionType t);
 
 
 std::string exprTypeToString(ExprType t);
