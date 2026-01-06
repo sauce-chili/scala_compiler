@@ -37,7 +37,7 @@ void yyerror(const char* s);
 %nonassoc LOW_PREC
 %nonassoc RETURN IF FOR NL
 %nonassoc ELSE WHILE DO TRY THROW VAL VAR NEW YIELD MATCH CASE
-%right '=' LEFT_ARROW PLUS_ASSIGNMENT MINUS_ASSIGNMENT MUL_ASSIGNMENT DIV_ASSIGNMENT MOD_ASSIGNMENT ID_EQUALITY
+%right '=' LEFT_ARROW PLUS_ASSIGNMENT MINUS_ASSIGNMENT MUL_ASSIGNMENT DIV_ASSIGNMENT MOD_ASSIGNMENT ID_EQUALITY ID_COLON
 %left OR '|' ID_VERTICAL_SIGN
 %left AND '&' ID_AMPERSAND
 %left '^' ID_CIRCUMFLEX
@@ -139,6 +139,7 @@ infixExpr: prefixExpr
 	 | infixExpr ID_SLASH nlo infixExpr
 	 | infixExpr ID_PERCENT nlo infixExpr
 	 | infixExpr ID_EXCLAMATION nlo infixExpr
+	 | infixExpr ID_TILDE nlo infixExpr
 	 | infixExpr ID_COLON nlo infixExpr
          ;
 
@@ -436,6 +437,7 @@ fullID: '+'
       | ID_SLASH
       | ID_PERCENT
       | ID_EXCLAMATION
+      | ID_TILDE
       | ID_COLON
       ;
 
