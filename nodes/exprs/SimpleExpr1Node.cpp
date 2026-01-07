@@ -9,55 +9,55 @@ SimpleExpr1Node::SimpleExpr1Node() {
 
 SimpleExpr1Node* SimpleExpr1Node::createIntNode(int value) {
     SimpleExpr1Node* node = new SimpleExpr1Node();
-    node->type = INTEGER_LITERAL;
+    node->type = _INTEGER_LITERAL;
     node->intValue = value;
     return node;
 }
 
 SimpleExpr1Node* SimpleExpr1Node::createCharNode(char value) {
     SimpleExpr1Node* node = new SimpleExpr1Node();
-    node->type = CHAR_LITERAL;
+    node->type = _CHAR_LITERAL;
     node->charValue = value;
     return node;
 }
 
 SimpleExpr1Node* SimpleExpr1Node::createDoubleNode(double value) {
     SimpleExpr1Node* node = new SimpleExpr1Node();
-    node->type = DOUBLE_LITERAL;
+    node->type = _DOUBLE_LITERAL;
     node->doubleValue = value;
     return node;
 }
 
 SimpleExpr1Node* SimpleExpr1Node::createStringNode(string value) {
     SimpleExpr1Node* node = new SimpleExpr1Node();
-    node->type = STRING_LITERAL;
+    node->type = _STRING_LITERAL;
     node->stringValue = value;
     return node;
 }
 
 SimpleExpr1Node* SimpleExpr1Node::createBoolNode(bool value) {
     SimpleExpr1Node* node = new SimpleExpr1Node();
-    node->type = BOOL_LITERAL;
+    node->type = _BOOL_LITERAL;
     node->boolValue = value;
     return node;
 }
 
 SimpleExpr1Node* SimpleExpr1Node::createNullNode() {
     SimpleExpr1Node* node = new SimpleExpr1Node();
-    node->type = NULL_LITERAL;
+    node->type = _NULL_LITERAL;
     return node;
 }
 
 SimpleExpr1Node *SimpleExpr1Node::createIdNode(IdNode* identifier) {
     SimpleExpr1Node* node = new SimpleExpr1Node();
-    node->type = IDENTIFIER;
+    node->type = _IDENTIFIER;
     node->identifier = identifier;
     return node;
 }
 
 SimpleExpr1Node* SimpleExpr1Node::createMethodCallNode(SimpleExpr1Node* left, ArgumentExprsNode* right) {
     SimpleExpr1Node* node = new SimpleExpr1Node();
-    node->type = METHOD_CALL;
+    node->type = _METHOD_CALL;
     node->simpleExpr1 = left;
     node->argumentExprs = right;
     return node;
@@ -65,21 +65,21 @@ SimpleExpr1Node* SimpleExpr1Node::createMethodCallNode(SimpleExpr1Node* left, Ar
 
 SimpleExpr1Node* SimpleExpr1Node::createSuperFieldAccessNode(IdNode* identifier) {
     SimpleExpr1Node* node = new SimpleExpr1Node();
-    node->type = SUPER_FIELD_ACCESS;
+    node->type = _SUPER_FIELD_ACCESS;
     node->identifier = identifier;
     return node;
 }
 
 SimpleExpr1Node* SimpleExpr1Node::createThisFieldAccessNode(IdNode* identifier) {
     SimpleExpr1Node* node = new SimpleExpr1Node();
-    node->type = THIS_FIELD_ACCESS;
+    node->type = _THIS_FIELD_ACCESS;
     node->identifier = identifier;
     return node;
 }
 
 SimpleExpr1Node *SimpleExpr1Node::createSimpleExprFieldAccessNode(IdNode* identifier, SimpleExprNode* expr) {
     SimpleExpr1Node* node = new SimpleExpr1Node();
-    node->type = EXPRESSION_FIELD_ACCESS;
+    node->type = _EXPRESSION_FIELD_ACCESS;
     node->identifier = identifier;
     node->simpleExpr = expr;
     return node;
@@ -87,14 +87,14 @@ SimpleExpr1Node *SimpleExpr1Node::createSimpleExprFieldAccessNode(IdNode* identi
 
 SimpleExpr1Node* SimpleExpr1Node::createArgumentCallNode(ExprNode* expr) {
     SimpleExpr1Node* node = new SimpleExpr1Node();
-    node->type = ARGUMENT_CALL;
+    node->type = _ARGUMENT_CALL;
     node->expr = expr;
     return node;
 }
 
 SimpleExpr1Node* SimpleExpr1Node::createEmptyCallNode() {
     SimpleExpr1Node* node = new SimpleExpr1Node();
-    node->type = EMPTY_CALL;
+    node->type = _EMPTY_CALL;
     return node;
 }
 
@@ -113,12 +113,12 @@ string SimpleExpr1Node::toDot() const {
 
 string SimpleExpr1Node::getDotLabel() const {
     switch (type) {
-        case INTEGER_LITERAL:    return to_string(intValue);
-        case DOUBLE_LITERAL:     return to_string(doubleValue);
-        case BOOL_LITERAL:       return to_string(boolValue);
-        case CHAR_LITERAL :      return to_string(charValue);
-        case STRING_LITERAL:     return stringValue;
-        case NULL_LITERAL:       return "null";
+        case _INTEGER_LITERAL:    return to_string(intValue);
+        case _DOUBLE_LITERAL:     return to_string(doubleValue);
+        case _BOOL_LITERAL:       return to_string(boolValue);
+        case _CHAR_LITERAL :      return to_string(charValue);
+        case _STRING_LITERAL:     return stringValue;
+        case _NULL_LITERAL:       return "null";
 
         default: break;
     }

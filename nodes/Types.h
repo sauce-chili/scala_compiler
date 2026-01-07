@@ -4,104 +4,104 @@
 #include "string"
 
 enum ModifierType {
-    PRIVATE,
-    PROTECTED,
-    ABSTRACT,
-    FINAL,
-    SEALED,
-    OVERRIDE,
+    _PRIVATE,
+    _PROTECTED,
+    _ABSTRACT,
+    _FINAL,
+    _SEALED,
+    _OVERRIDE,
 };
 
 enum ExprType {
-    IF_ELSE,
-    IF,
-    WHILE,
-    TRY,
-    DO_WHILE,
-    THROW,
-    RETURN_EMPTY,
-    RETURN_EXPR,
-    FOR_WITHOUT_YIELD,
-    FOR_WITH_YIELD,
-    INFIX,
-    ASSIGNMENT,
+    _IF_ELSE,
+    _IF,
+    _WHILE,
+    _TRY,
+    _DO_WHILE,
+    _THROW,
+    _RETURN_EMPTY,
+    _RETURN_EXPR,
+    _FOR_WITHOUT_YIELD,
+    _FOR_WITH_YIELD,
+    _INFIX,
+    _ASSIGNMENT,
 };
 
 
 enum SimpleExprType {
-    OBJECT_CREATING,
-    BLOCK_STATS,
-    SIMPLE_EXPR_1,
+    _INSTANCE_CREATING,
+    _BLOCK_STATS,
+    _SIMPLE_EXPR_1,
 };
 
 enum SimpleExpr1Type {
-    INTEGER_LITERAL,
-    CHAR_LITERAL,
-    DOUBLE_LITERAL,
-    STRING_LITERAL,
-    BOOL_LITERAL,
-    NULL_LITERAL,
-    IDENTIFIER,
-    SUPER_FIELD_ACCESS,
-    THIS_FIELD_ACCESS,
-    EXPRESSION_FIELD_ACCESS,
-    ARGUMENT_CALL,
-    EMPTY_CALL,
-    METHOD_CALL,
+    _INTEGER_LITERAL,
+    _CHAR_LITERAL,
+    _DOUBLE_LITERAL,
+    _STRING_LITERAL,
+    _BOOL_LITERAL,
+    _NULL_LITERAL,
+    _IDENTIFIER,
+    _SUPER_FIELD_ACCESS,
+    _THIS_FIELD_ACCESS,
+    _EXPRESSION_FIELD_ACCESS,
+    _ARGUMENT_CALL,
+    _EMPTY_CALL,
+    _METHOD_CALL,
 };
 
 enum PrefixExprType {
-    UNARY_PLUS,
-    UNARY_MINUS,
-    NOT,
-    BIT_NOT,
+    _UNARY_PLUS,
+    _UNARY_MINUS,
+    _NOT,
+    _BIT_NOT,
 };
 
 enum StableIdType {
-    STABLE_ID_IDENTIFIER,
-    STABLE_ID_SUPER_FIELD_ACCESS,
-    STABLE_ID_THIS_FIELD_ACCESS,
+    _STABLE_ID_IDENTIFIER,
+    _STABLE_ID_SUPER_FIELD_ACCESS,
+    _STABLE_ID_THIS_FIELD_ACCESS,
 };
 
 enum StatType {
-    TEMPLATE,
-    CLASS,
-    OBJECT,
-    TRAIT,
-    ENUM,
-    VAR_DECL,
-    VAL_DECL,
-    FUN_DEF,
+    _TEMPLATE,
+    _CLASS,
+    _OBJECT,
+    _TRAIT,
+    _ENUM,
+    _VAR_DECL,
+    _VAL_DECL,
+    _FUN_DEF,
 };
 
 enum ClassParamType {
-    VAL_CLASS_PARAM,
-    VAR_CLASS_PARAM,
-    UNMARKED_CLASS_PARAM,
+    _VAL_CLASS_PARAM,
+    _VAR_CLASS_PARAM,
+    _UNMARKED_CLASS_PARAM,
 };
 
 enum EnumCaseType {
-    CASE_WITH_EXTENDS,
-    CASE_WITH_PARAMS,
-    CASE_WITH_IDS,
+    _CASE_WITH_EXTENDS,
+    _CASE_WITH_PARAMS,
+    _CASE_WITH_IDS,
 };
 
 enum DefinitionType {
-    VAR_DEFS,
-    FUN_DEFINITION,
-    TEMPLATE_DEFINITION,
+    _VAR_DEFS,
+    _FUN_DEFINITION,
+    _TEMPLATE_DEFINITION,
 };
 
 enum Type {
-    INT,
-    CHAR,
-    DOUBLE,
-    STRING,
-    BOOLEAN,
-    ID,
-    ARRAY,
-    UNDEFINED,
-    UNIT
+    _INT,
+    _CHAR,
+    _DOUBLE,
+    _STRING,
+    _BOOLEAN,
+    _ID,
+    _ARRAY,
+    _UNDEFINED,
+    _UNIT
 };
 
 

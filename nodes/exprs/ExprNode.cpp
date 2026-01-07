@@ -10,7 +10,7 @@ ExprNode::ExprNode() {
 
 ExprNode *ExprNode::createIfElse(ExprNode *cond, ExprNode *trueB, ExprNode *falseB) {
     ExprNode* node = new ExprNode();
-    node->type = IF_ELSE;
+    node->type = _IF_ELSE;
     node->exprs->push_back(cond);
     node->exprs->push_back(trueB);
     node->exprs->push_back(falseB);
@@ -19,7 +19,7 @@ ExprNode *ExprNode::createIfElse(ExprNode *cond, ExprNode *trueB, ExprNode *fals
 
 ExprNode *ExprNode::createIf(ExprNode *cond, ExprNode *expr) {
     ExprNode* node = new ExprNode();
-    node->type = IF;
+    node->type = _IF;
     node->exprs->push_back(cond);
     node->exprs->push_back(expr);
     return node;
@@ -27,7 +27,7 @@ ExprNode *ExprNode::createIf(ExprNode *cond, ExprNode *expr) {
 
 ExprNode *ExprNode::createWhile(ExprNode *cond, ExprNode *expr) {
     ExprNode* node = new ExprNode();
-    node->type = WHILE;
+    node->type = _WHILE;
     node->exprs->push_back(cond);
     node->exprs->push_back(expr);
     return node;
@@ -35,14 +35,14 @@ ExprNode *ExprNode::createWhile(ExprNode *cond, ExprNode *expr) {
 
 ExprNode *ExprNode::createTry(TryExprNode *tryExpr) {
     ExprNode* node = new ExprNode();
-    node->type = TRY;
+    node->type = _TRY;
     node->tryExpr = tryExpr;
     return node;
 }
 
 ExprNode *ExprNode::createDoWhile(ExprNode *cond, ExprNode *expr) {
     ExprNode* node = new ExprNode();
-    node->type = DO_WHILE;
+    node->type = _DO_WHILE;
     node->exprs->push_back(cond);
     node->exprs->push_back(expr);
     return node;
@@ -50,27 +50,27 @@ ExprNode *ExprNode::createDoWhile(ExprNode *cond, ExprNode *expr) {
 
 ExprNode *ExprNode::createThrow(ExprNode *expr) {
     ExprNode* node = new ExprNode();
-    node->type = THROW;
+    node->type = _THROW;
     node->exprs->push_back(expr);
     return node;
 }
 
 ExprNode *ExprNode::createReturn() {
     ExprNode* node = new ExprNode();
-    node->type = RETURN_EMPTY;
+    node->type = _RETURN_EMPTY;
     return node;
 }
 
 ExprNode *ExprNode::createReturnExpr(ExprNode *expr) {
     ExprNode* node = new ExprNode();
-    node->type = RETURN_EXPR;
+    node->type = _RETURN_EXPR;
     node->exprs->push_back(expr);
     return node;
 }
 
 ExprNode *ExprNode::createFor(EnumeratorsNode *enumerators, ExprNode *expr) {
     ExprNode* node = new ExprNode();
-    node->type = FOR_WITHOUT_YIELD;
+    node->type = _FOR_WITHOUT_YIELD;
     node->exprs->push_back(expr);
     node->enumerators = enumerators;
     return node;
@@ -78,7 +78,7 @@ ExprNode *ExprNode::createFor(EnumeratorsNode *enumerators, ExprNode *expr) {
 
 ExprNode *ExprNode::createForYield(EnumeratorsNode *enumerators, ExprNode *expr) {
     ExprNode* node = new ExprNode();
-    node->type = FOR_WITH_YIELD;
+    node->type = _FOR_WITH_YIELD;
     node->exprs->push_back(expr);
     node->enumerators = enumerators;
     return node;
@@ -86,14 +86,14 @@ ExprNode *ExprNode::createForYield(EnumeratorsNode *enumerators, ExprNode *expr)
 
 ExprNode *ExprNode::createInfix(InfixExprNode *infixExpr) {
     ExprNode* node = new ExprNode();
-    node->type = INFIX;
+    node->type = _INFIX;
     node->infixExpr = infixExpr;
     return node;
 }
 
 ExprNode *ExprNode::createAssignment(AssignmentNode *assignment) {
     ExprNode* node = new ExprNode();
-    node->type = ASSIGNMENT;
+    node->type = _ASSIGNMENT;
     node->assignment = assignment;
     return node;
 }

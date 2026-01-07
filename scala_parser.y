@@ -1,5 +1,6 @@
 %code requires {
     #include "nodes/nodes.h"
+    class TopStatSeqNode;
 }
 
 %code {
@@ -7,13 +8,14 @@
     using namespace std;
 
     int yylex();
-    void yyerror(const char* s);
+    void yyerror(TopStatSeqNode** out_root, const char* s);
 }
 
 /* для включения отладки */
 %define parse.trace
 
-%parse-param { ScalaFileNode** out_root }
+/* Передаем указатель на корень AST */
+%parse-param { TopStatSeqNode** out_root }
 
 %union {
     int intLiteral;

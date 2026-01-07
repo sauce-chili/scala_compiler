@@ -6,7 +6,6 @@
 #include "Types.h"
 
 using namespace std;
-
 class Node {
 private:
     static unsigned int seqId;

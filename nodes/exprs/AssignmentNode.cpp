@@ -3,6 +3,7 @@
 #include "SimpleExprNode.h"
 #include "SimpleExpr1Node.h"
 #include "../exprs/ArgumentExprsNode.h"
+#include "nodes/id/IdNode.h"
 
 AssignmentNode::AssignmentNode() {
 

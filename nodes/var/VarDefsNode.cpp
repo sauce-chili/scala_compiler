@@ -6,7 +6,7 @@ VarDefsNode::VarDefsNode() {
 
 VarDefsNode *VarDefsNode::createVal(IdsNode* ids, CompoundTypeNode* compoundType, ExprNode* expr) {
     VarDefsNode* node = new VarDefsNode();
-    node->type = VAL_DECL;
+    node->type = _VAL_DECL;
     node->ids = ids;
     node->compoundType = compoundType;
     node->expr = expr;
@@ -15,7 +15,7 @@ VarDefsNode *VarDefsNode::createVal(IdsNode* ids, CompoundTypeNode* compoundType
 
 VarDefsNode *VarDefsNode::createVar(IdsNode* ids, CompoundTypeNode* compoundType, ExprNode* expr) {
     VarDefsNode* node = new VarDefsNode();
-    node->type = VAR_DECL;
+    node->type = _VAR_DECL;
     node->ids = ids;
     node->compoundType = compoundType;
     node->expr = expr;

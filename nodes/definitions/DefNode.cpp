@@ -6,21 +6,21 @@ DefNode::DefNode() {
 
 DefNode *DefNode::createVarDefs(VarDefsNode *varDefs) {
     DefNode* node = new DefNode();
-    node->type = VAR_DEFS;
+    node->type = _VAR_DEFS;
     node->varDefs = varDefs;
     return node;
 }
 
 DefNode *DefNode::createFunDef(FunDefNode *funDef) {
     DefNode* node = new DefNode();
-    node->type = FUN_DEFINITION;
+    node->type = _FUN_DEFINITION;
     node->funDef = funDef;
     return node;
 }
 
 DefNode *DefNode::createTmplDef(TemplateDefNode *tmplDef) {
     DefNode* node = new DefNode();
-    node->type = TEMPLATE_DEFINITION;
+    node->type = _TEMPLATE_DEFINITION;
     node->tmplDef = tmplDef;
     return node;
 }

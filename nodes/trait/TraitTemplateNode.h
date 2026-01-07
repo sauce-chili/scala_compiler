@@ -3,9 +3,10 @@
 
 
 #include "../Node.h"
-#include "../type/SimpleTypesNode.h"
-#include "../templates/TemplateStatsNode.h"
-#include "../templates/TemplateStatsNode.h"
+
+class TemplateStatsNode;
+class SimpleTypeNode;
+class SimpleTypesNode;
 
 class TraitTemplateNode: public Node {
 public:

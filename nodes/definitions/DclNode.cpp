@@ -10,7 +10,7 @@ DclNode::DclNode() {
 
 DclNode *DclNode::createVarDcl(IdsNode *ids, CompoundTypeNode *compoundType) {
     DclNode* node = new DclNode();
-    node->type = VAR_DECL;
+    node->type = _VAR_DECL;
     node->ids = ids;
     node->compoundType = compoundType;
     return node;
@@ -18,7 +18,7 @@ DclNode *DclNode::createVarDcl(IdsNode *ids, CompoundTypeNode *compoundType) {
 
 DclNode *DclNode::createValDcl(IdsNode *ids, CompoundTypeNode *compoundType) {
     DclNode* node = new DclNode();
-    node->type = VAL_DECL;
+    node->type = _VAL_DECL;
     node->ids = ids;
     node->compoundType = compoundType;
     return node;
@@ -26,7 +26,7 @@ DclNode *DclNode::createValDcl(IdsNode *ids, CompoundTypeNode *compoundType) {
 
 DclNode *DclNode::createDefDcl(FunSigNode *funSig, CompoundTypeNode *compoundType) {
     DclNode* node = new DclNode();
-    node->type = FUN_DEF;
+    node->type = _FUN_DEF;
     node->funSig = funSig;
     node->compoundType = compoundType;
     return node;

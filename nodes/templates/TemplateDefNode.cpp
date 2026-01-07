@@ -6,14 +6,14 @@ TemplateDefNode::TemplateDefNode() {
 
 TemplateDefNode *TemplateDefNode::createClassDef(ClassDefNode *classDef) {
     TemplateDefNode* node = new TemplateDefNode();
-    node->type = CLASS;
+    node->type = _CLASS;
     node->classDef = classDef;
     return node;
 }
 
 TemplateDefNode *TemplateDefNode::createObjectDef(IdNode *fullId, ClassTemplateOptNode *classTemplateOpt) {
     TemplateDefNode* node = new TemplateDefNode();
-    node->type = TRAIT;
+    node->type = _TRAIT;
     node->fullId = fullId;
     node->classTemplateOpt = classTemplateOpt;
     return node;
@@ -21,7 +21,7 @@ TemplateDefNode *TemplateDefNode::createObjectDef(IdNode *fullId, ClassTemplateO
 
 TemplateDefNode *TemplateDefNode::createTraitDef(IdNode *fullId, TraitTemplateOptNode* traitTemplateOpt) {
     TemplateDefNode* node = new TemplateDefNode();
-    node->type = TRAIT;
+    node->type = _TRAIT;
     node->fullId = fullId;
     node->traitTemplateOpt = traitTemplateOpt;
     return node;
@@ -29,7 +29,7 @@ TemplateDefNode *TemplateDefNode::createTraitDef(IdNode *fullId, TraitTemplateOp
 
 TemplateDefNode *TemplateDefNode::createEnumDef(EnumDefNode *enumDef) {
     TemplateDefNode* node = new TemplateDefNode();
-    node->type = ENUM;
+    node->type = _ENUM;
     node->enumDef = enumDef;
     return node;
 }

@@ -2,9 +2,13 @@
 #define SCALA_LEXER_TEMPLATEDEFNODE_H
 
 #include "../Node.h"
-#include "../class/ClassDefNode.h"
-#include "../trait/TraitTemplateOptNode.h"
-#include "../enum/EnumDefNode.h"
+
+class ClassDefNode;
+class ClassTemplateOptNode;
+class IdNode;
+class TraitTemplateOptNode;
+class EnumDefNode;
+
 
 class TemplateDefNode: public Node {
 public:

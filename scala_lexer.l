@@ -8,7 +8,7 @@
 	#include <iostream>
     #include <string>
     #include <vector>
-     #include "scala_parser.tab.h"
+    #include "scala_parser.tab.c"
     #include "lexer/BufferedYYLex.h"
     #include "lexer/TokenProcessor.h"
 
@@ -73,7 +73,6 @@ whitespace [ \t\f\u000B]
 "trait"     { return processor.onToken(TRAIT); }
 "object"    { return processor.onToken(OBJECT); }
 "enum"      { return processor.onToken(ENUM); }
-"type"      { return processor.onToken(TYPE); }
 
 "abstract"  { return processor.onToken(ABSTRACT); }
 "final"     { return processor.onToken(FINAL); }

@@ -220,7 +220,7 @@ int TokenProcessor::onBinLiteral(const char *text) {
 
 int TokenProcessor::onDoubleLiteral(const char *text) {
     yylval.doubleLiteral = to_double(text);
-    return onToken(DOUBLE_LITERAL);
+    return onToken(_DOUBLE_LITERAL);
 }
 
 int TokenProcessor::onBooleanLiteral(int token, bool value) {

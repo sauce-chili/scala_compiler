@@ -2,9 +2,9 @@
 #define SCALA_LEXER_TEMPLATESTATNODE_H
 
 #include "../Node.h"
-#include "../modifier/ModifiersNode.h"
-#include "../definitions/DefNode.h"
-#include "../definitions/DclNode.h"
+class DefNode; // Разрываем цикл с определениями
+class ModifiersNode;
+class DclNode;
 
 class TemplateStatNode: public Node{
 public:
