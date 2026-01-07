@@ -360,8 +360,8 @@ classParamClause: nlo '(' ')'             { $$ = nullptr; }
                 | nlo '(' classParams ')' { $$ = $3; }
                 ;
 
-classParams: classParam                 { $$ = ClassParamNodes::addClassParamToList(nullptr, $1); }
-           | classParams ',' classParam { $$ = ClassParamNodes::addClassParamToList($1, $3); }
+classParams: classParam                 { $$ = ClassParamsNode::addClassParamToList(nullptr, $1); }
+           | classParams ',' classParam { $$ = ClassParamsNode::addClassParamToList($1, $3); }
            ;
 
 classParam: modifiers VAL fullID ':' compoundType assignExprO { $$ = ClassParamNode::createClassParam(VAL_CLASS_PARAM, $1, $3, $5, $6); }
