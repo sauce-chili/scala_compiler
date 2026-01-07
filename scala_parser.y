@@ -482,9 +482,9 @@ enumStat: templateStat       { $$ = EnumStatNode::createWithTemplateStat($1); }
 	;
 
 enumCase: CASE fullID classParamClause EXTENDS classParents { $$ = EnumCaseNode::createClassParents(_CASE_WITH_EXTENDS, IdsNode::addIdToList(nullptr, $2), $3, $5); }
-	| CASE fullID classParamClause                      { $$ = EnumCaseNode::createClassParents(_CASE_WITH_PARAMS, IdsNode::addIdToList(nullptr, $2), $3); }
-	| CASE fullID %prec END_TEMPLATE                    { $$ = EnumCaseNode::createClassParents(_CASE_WITH_IDS, IdsNode::addIdToList(nullptr, $2)); }
-        | CASE ids ',' fullID                               { $$ = EnumCaseNode::createClassParents(_CASE_WITH_IDS, IdsNode::addIdToList($2, $4)); } // Решает rr
+	| CASE fullID classParamClause                      { $$ = EnumCaseNode::createClassParents(_CASE_WITH_PARAMS, IdsNode::addIdToList(nullptr, $2), $3, nullptr); }
+	| CASE fullID %prec END_TEMPLATE                    { $$ = EnumCaseNode::createClassParents(_CASE_WITH_IDS, IdsNode::addIdToList(nullptr, $2), nullptr, nullptr); }
+        | CASE ids ',' fullID                               { $$ = EnumCaseNode::createClassParents(_CASE_WITH_IDS, IdsNode::addIdToList($2, $4), nullptr, nullptr); } // Решает rr
 	;
 
 topStatSeq: topStat                 { $$ = TopStatSeqNode::addModifierToList(nullptr, $1); }
