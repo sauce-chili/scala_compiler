@@ -364,24 +364,24 @@ classParams: classParam                 { $$ = ClassParamsNode::addClassParamToL
            | classParams ',' classParam { $$ = ClassParamsNode::addClassParamToList($1, $3); }
            ;
 
-classParam: modifiers VAL fullID ':' compoundType assignExprO { $$ = ClassParamNode::createClassParam(VAL_CLASS_PARAM, $1, $3, $5, $6); }
-          | modifiers VAR fullID ':' compoundType assignExprO { $$ = ClassParamNode::createClassParam(VAR_CLASS_PARAM, $1, $3, $5, $6); }
-          | modifiers fullID ':' compoundType assignExprO     { $$ = ClassParamNode::createClassParam(UNMARKED_CLASS_PARAM, $1, $2, $4, $5); }
+classParam: modifiers VAL fullID ':' compoundType assignExprO { $$ = ClassParamNode::createClassParam(_VAL_CLASS_PARAM, $1, $3, $5, $6); }
+          | modifiers VAR fullID ':' compoundType assignExprO { $$ = ClassParamNode::createClassParam(_VAR_CLASS_PARAM, $1, $3, $5, $6); }
+          | modifiers fullID ':' compoundType assignExprO     { $$ = ClassParamNode::createClassParam(_UNMARKED_CLASS_PARAM, $1, $2, $4, $5); }
           ;
 
 modifiers: /* empty */        { $$ = ModifiersNode::addModifierToList(nullptr, nullptr); }
          | modifiers modifier { $$ = ModifiersNode::addModifierToList($1, $2); }
          ;
 
-modifier: ABSTRACT       { $$ = ModifierNode::createModifier(ABSTRACT); }
-        | FINAL          { $$ = ModifierNode::createModifier(FINAL); }
-        | SEALED         { $$ = ModifierNode::createModifier(SEALED); }
+modifier: ABSTRACT       { $$ = ModifierNode::createModifier(_ABSTRACT); }
+        | FINAL          { $$ = ModifierNode::createModifier(_FINAL); }
+        | SEALED         { $$ = ModifierNode::createModifier(_SEALED); }
         | accessModifier { $$ = $1; }
-        | OVERRIDE       { $$ = ModifierNode::createModifier(OVERRIDE); }
+        | OVERRIDE       { $$ = ModifierNode::createModifier(_OVERRIDE); }
         ;
 
-accessModifier: PRIVATE   { $$ = ModifierNode::createModifier(PRIVATE); }
-	      | PROTECTED { $$ = ModifierNode::createModifier(PROTECTED); }
+accessModifier: PRIVATE   { $$ = ModifierNode::createModifier(_PRIVATE); }
+	      | PROTECTED { $$ = ModifierNode::createModifier(_PROTECTED); }
 	      ;
 
 /* --------------------- CLASS --------------------- */
@@ -393,7 +393,7 @@ templateStats: /* empty */                     { $$ = nullptr; }
              | templateStats semi templateStat { $$ = TemplateStatsNode::addFuncParamToBackToList($1, $3); }
              ;
 
-templateStat: /* empty */   { $$ = nullptr }
+templateStat: /* empty */   { $$ = nullptr; }
             | modifiers def { $$ = TemplateStatNode::createDefTemplate($1, $2); }
             | modifiers dcl { $$ = TemplateStatNode::createDclTemplate($1, $2); }
             ;
@@ -481,10 +481,10 @@ enumStat: templateStat       { $$ = EnumStatNode::createWithTemplateStat($1); }
 	| modifiers enumCase { $$ = EnumStatNode::createWithEnumCase($1, $2); }
 	;
 
-enumCase: CASE fullID classParamClause EXTENDS classParents { $$ = EnumCaseNode::createClassParents(CASE_WITH_EXTENDS, IdsNode::addIdToList(nullptr, $2), $3, $5); }
-	| CASE fullID classParamClause                      { $$ = EnumCaseNode::createClassParents(CASE_WITH_PARAMS, IdsNode::addIdToList(nullptr, $2), $3); }
-	| CASE fullID %prec END_TEMPLATE                    { $$ = EnumCaseNode::createClassParents(CASE_WITH_IDS, IdsNode::addIdToList(nullptr, $2)); }
-        | CASE ids ',' fullID                               { $$ = EnumCaseNode::createClassParents(CASE_WITH_IDS, IdsNode::addIdToList($2, $4)); } // Решает rr
+enumCase: CASE fullID classParamClause EXTENDS classParents { $$ = EnumCaseNode::createClassParents(_CASE_WITH_EXTENDS, IdsNode::addIdToList(nullptr, $2), $3, $5); }
+	| CASE fullID classParamClause                      { $$ = EnumCaseNode::createClassParents(_CASE_WITH_PARAMS, IdsNode::addIdToList(nullptr, $2), $3); }
+	| CASE fullID %prec END_TEMPLATE                    { $$ = EnumCaseNode::createClassParents(_CASE_WITH_IDS, IdsNode::addIdToList(nullptr, $2)); }
+        | CASE ids ',' fullID                               { $$ = EnumCaseNode::createClassParents(_CASE_WITH_IDS, IdsNode::addIdToList($2, $4)); } // Решает rr
 	;
 
 topStatSeq: topStat                 { $$ = TopStatSeqNode::addModifierToList(nullptr, $1); }
