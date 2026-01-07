@@ -267,10 +267,10 @@ infixExpr: prefixExpr { $$ = InfixExprNode::createInfixFromPrefix($1); }
          ;
 
 prefixExpr: simpleExpr { $$ = PrefixExprNode::createPrefixExprNode($1, _NO_UNARY_OPERATOR); }
-          | '+' simpleExpr %prec UPLUS { $$ = PrefixExprNode::createPrefixExprNode($1, _UNARY_PLUS); }
-          | '-' simpleExpr %prec UMINUS { $$ = PrefixExprNode::createPrefixExprNode($1, _UNARY_MINUS); }
-          | '~' simpleExpr %prec UBINNOT { $$ = PrefixExprNode::createPrefixExprNode($1, _BIT_NOT); }
-          | '!' simpleExpr %prec ULOGNOT { $$ = PrefixExprNode::createPrefixExprNode($1, _NOT); }
+          | '+' simpleExpr %prec UPLUS { $$ = PrefixExprNode::createPrefixExprNode($2, _UNARY_PLUS); }
+          | '-' simpleExpr %prec UMINUS { $$ = PrefixExprNode::createPrefixExprNode($2, _UNARY_MINUS); }
+          | '~' simpleExpr %prec UBINNOT { $$ = PrefixExprNode::createPrefixExprNode($2, _BIT_NOT); }
+          | '!' simpleExpr %prec ULOGNOT { $$ = PrefixExprNode::createPrefixExprNode($2, _NOT); }
           ;
 
 simpleExpr: NEW constrInvoke   { $$ = SimpleExprNode::createConstrInvokeNode($2); }
