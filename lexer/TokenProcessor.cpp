@@ -204,7 +204,7 @@ int TokenProcessor::onToken(int tokenType) {
 // --- Специфические методы ---
 
 int TokenProcessor::onDecimalLiteral(const char *text) {
-    yylval = (int) to_int(text, 10);
+    yylval.intLiteral = (int) to_int(text, 10);
     return onToken(DECIMAL_LITERAL);
 }
 
