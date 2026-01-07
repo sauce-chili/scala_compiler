@@ -278,7 +278,7 @@ simpleExpr: NEW constrInvoke   { $$ = SimpleExprNode::createConstrInvokeNode($2)
           | simpleExpr1        { $$ = SimpleExprNode::createSimpleExpr1Node($1); }
           ;
 
-simpleExpr1: literal                   { $$ = $1 }
+simpleExpr1: literal                   { $$ = $1; }
            | fullID                    { $$ = SimpleExpr1Node::createIdNode($1); }
            | SUPER '.' fullID          { $$ = SimpleExpr1Node::createSuperFieldAccessNode($3); }
            | THIS '.' fullID           { $$ = SimpleExpr1Node::createThisFieldAccessNode($3); }
