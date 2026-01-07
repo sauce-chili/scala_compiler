@@ -456,7 +456,7 @@ traitTemplateOpt: /* empty */ %prec LOW_PREC { $$ = nullptr; }
                 ;
 
 enumTemplate: EXTENDS classParents enumBody { $$ = EnumTemplateNode::createWithClassParents($2, $3); }
-            | enumBody                      { $$ = EnumTemplateNode::createWithClassParents($1); }
+            | enumBody                      { $$ = EnumTemplateNode::createWithEnumBody($1); }
             ;
 
 classTemplate: classParents templateBody       { $$ = ClassTemplateNode::createClassTemplate($1, $2); }
