@@ -337,8 +337,8 @@ tryExpr: TRY expr                         { $$ = TryExprNode::createExceptionBlo
 
 /* --------------------- FUNC --------------------- */
 
-funcParamClause: nlo '(' ')'            { $$ = nullptr }
-               | nlo '(' funcParams ')' { $$ = $3 }
+funcParamClause: nlo '(' ')'            { $$ = nullptr; }
+               | nlo '(' funcParams ')' { $$ = $3; }
                ;
 
 funcParams: funcParam                { $$ = FuncParamsNode::addFuncParamToList(nullptr, $1); }
