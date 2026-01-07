@@ -62,6 +62,7 @@ enum StableIdType {
     _STABLE_ID_IDENTIFIER,
     _STABLE_ID_SUPER_FIELD_ACCESS,
     _STABLE_ID_THIS_FIELD_ACCESS,
+    _RECURSIVE_STABLE_ID,
 };
 
 enum StatType {

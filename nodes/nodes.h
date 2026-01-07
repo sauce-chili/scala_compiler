@@ -12,7 +12,6 @@
 // ===== id =====
 #include "id/IdNode.h"
 #include "id/IdsNode.h"
-#include "id/SingleStableIdNode.h"
 #include "id/StableIdNode.h"
 
 // ===== modifier =====

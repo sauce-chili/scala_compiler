@@ -1,6 +1,7 @@
 #ifndef SCALA_LEXER_COMPOUNDTYPENODE_H
 #define SCALA_LEXER_COMPOUNDTYPENODE_H
 
+#include <list>
 #include "../Node.h"
 #include "SimpleTypeNode.h"
 

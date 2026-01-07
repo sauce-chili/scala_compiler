@@ -39,6 +39,7 @@ std::string stableIdTypeToString(StableIdType t) {
         case _STABLE_ID_IDENTIFIER:             return "Stable id identifier";
         case _STABLE_ID_SUPER_FIELD_ACCESS:     return "Stable id Super field access";
         case _STABLE_ID_THIS_FIELD_ACCESS:      return "Stable id This field access";
+        case _RECURSIVE_STABLE_ID:              return "Recursive stable id";
         default:                                return "Unknown";
     }
 }

@@ -1,34 +1,48 @@
 #include "StableIdNode.h"
 
-StableIdNode::StableIdNode(SingleStableIdNode *first) {
-    stableIds = new std::list<SingleStableIdNode*>();
-    stableIds->push_back(first);
+StableIdNode *StableIdNode::createStableIdByFullId(IdNode *identifier) {
+    StableIdNode* node = new StableIdNode();
+    node->type = _STABLE_ID_IDENTIFIER;
+    node->identifier = identifier;
+    return node;
 }
 
-StableIdNode *StableIdNode::addStableId(StableIdNode *list, SingleStableIdNode *stableId) {
-    if (list == nullptr) {
-        return new StableIdNode(stableId);
-    }
+StableIdNode *StableIdNode::createSuperCallStableId(IdNode *identifier) {
+    StableIdNode* node = new StableIdNode();
+    node->type = _STABLE_ID_SUPER_FIELD_ACCESS;
+    node->identifier = identifier;
+    return node;
+}
 
-    list->stableIds->push_back(stableId);
-    return list;
+StableIdNode *StableIdNode::createThisCallStableIdBy(IdNode *identifier) {
+    StableIdNode* node = new StableIdNode();
+    node->type = _STABLE_ID_THIS_FIELD_ACCESS;
+    node->identifier = identifier;
+    return node;
+}
+
+StableIdNode *StableIdNode::createRecursiveStableId(StableIdNode *stableId, IdNode *identifier) {
+    StableIdNode* node = new StableIdNode();
+    node->stableId = stableId;
+    node->type = _STABLE_ID_THIS_FIELD_ACCESS;
+    node->identifier = identifier;
+    return node;
 }
 
 string StableIdNode::toDot() const {
     string dot;
 
     addDotNode(dot);
-    if (!stableIds->empty()) {
-        int i = 0;
-        for (const auto *it : *stableIds) {
-            addDotChild(dot, it, "stableId_" + to_string(i));
-            i++;
-        }
-    }
+    addDotChild(dot, identifier, "identifier_");
+    addDotChild(dot, stableId, "stableId_");
 
     return dot;
 }
 
 string StableIdNode::getDotLabel() const {
-    return "Stable id";
+    string dot;
+
+    dot += "stable id type: " + stableIdTypeToString(type) + ", identifier: " + identifier->name;
+
+    return dot;
 }

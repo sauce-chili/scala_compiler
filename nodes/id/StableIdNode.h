@@ -2,15 +2,19 @@
 #define SCALA_LEXER_STABLEIDNODE_H
 
 #include "../Node.h"
-#include "SingleStableIdNode.h"
-#include <list>
+#include "IdNode.h"
+#include "../Types.h"
 
 class StableIdNode: public Node {
 public:
-    list<SingleStableIdNode*> *stableIds;
+    StableIdType type;
+    IdNode* identifier;
+    StableIdNode* stableId;
 
-    StableIdNode(SingleStableIdNode *first);
-    static StableIdNode* addStableId(StableIdNode* list, SingleStableIdNode* stableId);
+    static StableIdNode* createStableIdByFullId(IdNode* identifier);
+    static StableIdNode* createSuperCallStableId(IdNode* identifier);
+    static StableIdNode* createThisCallStableIdBy(IdNode* identifier);
+    static StableIdNode* createRecursiveStableId(StableIdNode* stableId, IdNode* identifier);
 
     string toDot() const override;
     string getDotLabel() const override;

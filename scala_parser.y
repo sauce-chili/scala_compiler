@@ -57,7 +57,6 @@
     GeneratorNode* generator;
     IdNode* id;
     IdsNode* ids;
-    SingleStableIdNode* singleStableId;
     StableIdNode* stableId;
     ModifierNode* modifier;
     ModifiersNode* modifiers;
@@ -299,18 +298,18 @@ exprs: /* empty */    { $$ = new ExprsNode(); } // TODO проверить вт�
 constrInvoke: simpleType argumentExprs { $$ = ConstrInvokeNode::createWithArgumentsNode($1, $2); } // бывший constr
       	    ;
 
-compoundType: simpleType                   { $$ = CompoundTypeNode::addStableId($1); }
-            | compoundType WITH simpleType { $$ = CompoundTypeNode::addStableId($3); }
+compoundType: simpleType                   { $$ = CompoundTypeNode::addStableId(nullptr, $1); }
+            | compoundType WITH simpleType { $$ = CompoundTypeNode::addStableId($1, $3); }
             ;
 
 simpleType: stableId                   { $$ = SimpleTypeNode::createStableIdNode($1); }
           | ARRAY '[' compoundType ']' { $$ = SimpleTypeNode::createArrayWithCompoundTypeNode($3); }
           ;
 
-stableId: fullID              { $$ = StableIdNode::addStableId(nullptr, SingleStableIdNode::createStableIdByFullId($1)); }
-        | SUPER '.' fullID    { $$ = StableIdNode::addStableId(nullptr, SingleStableIdNode::createSuperCallStableId($3)); }
-        | THIS '.' fullID     { $$ = StableIdNode::addStableId(nullptr, SingleStableIdNode::createThisCallStableIdBy($3)); }
-        | stableId '.' fullID { $$ = StableIdNode::addStableId($1, $3); }
+stableId: fullID              { $$ = StableIdNode::createStableIdByFullId($1); }
+        | SUPER '.' fullID    { $$ = StableIdNode::createSuperCallStableId($3); }
+        | THIS '.' fullID     { $$ = StableIdNode::createThisCallStableIdBy($3); }
+        | stableId '.' fullID { $$ = StableIdNode::createRecursiveStableId($1, $3); }
         ;
 
 blockStats: blockStat                 { $$ = BlockStatsNode::addBlockStatToList(nullptr, $1); }
