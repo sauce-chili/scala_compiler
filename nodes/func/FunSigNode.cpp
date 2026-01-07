@@ -8,6 +8,7 @@ FunSigNode *FunSigNode::createFunSig(IdNode *fullId, FuncParamsNode *params) {
     FunSigNode* node = new FunSigNode();
     node->fullId = fullId;
     node->params = params;
+    return node;
 }
 
 string FunSigNode::toDot() const {

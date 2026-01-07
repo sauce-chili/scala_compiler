@@ -15,8 +15,9 @@ string PrefixExprNode::toDot() const {
     string dot;
 
     addDotNode(dot);
-
     addDotChild(dot, simpleExpr, "Simple expr");
+
+    return dot;
 }
 
 string PrefixExprNode::getDotLabel() const {

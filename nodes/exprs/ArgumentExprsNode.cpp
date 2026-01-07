@@ -8,8 +8,9 @@ string ArgumentExprsNode::toDot() const {
     string dot;
 
     addDotNode(dot);
-
     addDotChild(dot, exprs, "argument exprs");
+
+    return dot;
 }
 
 string ArgumentExprsNode::getDotLabel() const {
