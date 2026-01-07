@@ -66,7 +66,7 @@
     TopStatSeqNode* topStatSeq;
     ClassTemplateOptNode* classTemplateOpt;
     EnumTemplateNode* enumTemplate;
-    TemplateDefNode* templateDef;
+    TemplateDefNode* tmplDef;
     TemplateStatNode* templateStat;
     TemplateStatsNode* templateStats;
     TraitTemplateNode* traitTemplate;
