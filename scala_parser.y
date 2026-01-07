@@ -190,26 +190,26 @@
 scalaFile: topStatSeq { $$ = $1; }
           ;
 
-expr: IF '(' expr ')' nls expr semio ELSE expr { $$ = new ExprNode::createIfElse($3, $6, $9; }
-    | IF '(' expr ')' nls expr                 { $$ = new ExprNode::createIf($3, $6); }
-    | WHILE '(' expr ')' nls expr              { $$ = new ExprNode::createWhile($3, $6); }
-    | tryExpr                                  { $$ = new ExprNode::createTry($1); }
-    | DO expr semio WHILE '(' expr ')'         { $$ = new ExprNode::createDoWhile($2, $6); }
-    | THROW expr                               { $$ = new ExprNode::createThrow($2); }
-    | RETURN                                   { $$ = new ExprNode::createReturn(); }
-    | RETURN expr                              { $$ = new ExprNode::createReturnExpr($2); }
-    | FOR '(' enumerators ')' nls expr         { $$ = new ExprNode::createFor($3, $6); }
-    | FOR '(' enumerators ')' nls YIELD expr   { $$ = new ExprNode::createForYield($3, $7); }
-    | infixExpr                                { $$ = new ExprNode::createInfix($1); }
-    | assignment                               { $$ = new ExprNode::createAssignment($1); }
+expr: IF '(' expr ')' nls expr semio ELSE expr { $$ = ExprNode::createIfElse($3, $6, $9); }
+    | IF '(' expr ')' nls expr                 { $$ = ExprNode::createIf($3, $6); }
+    | WHILE '(' expr ')' nls expr              { $$ = ExprNode::createWhile($3, $6); }
+    | tryExpr                                  { $$ = ExprNode::createTry($1); }
+    | DO expr semio WHILE '(' expr ')'         { $$ = ExprNode::createDoWhile($2, $6); }
+    | THROW expr                               { $$ = ExprNode::createThrow($2); }
+    | RETURN                                   { $$ = ExprNode::createReturn(); }
+    | RETURN expr                              { $$ = ExprNode::createReturnExpr($2); }
+    | FOR '(' enumerators ')' nls expr         { $$ = ExprNode::createFor($3, $6); }
+    | FOR '(' enumerators ')' nls YIELD expr   { $$ = ExprNode::createForYield($3, $7); }
+    | infixExpr                                { $$ = ExprNode::createInfix($1); }
+    | assignment                               { $$ = ExprNode::createAssignment($1); }
     ;
 
-assignment: fullID '=' expr                    { $$ = new AssignmentNode::createIdAssignment($1, $3); }
-          | simpleExpr '.' fullID '=' expr     { $$ = new AssignmentNode::createFieldAssignment($1, $3, $5); }
-          | simpleExpr1 argumentExprs '=' expr { $$ = new AssignmentNode::createArrayAssignment($1, $2, $4); } // запись в массив
+assignment: fullID '=' expr                    { $$ = AssignmentNode::createIdAssignment($1, $3); }
+          | simpleExpr '.' fullID '=' expr     { $$ = AssignmentNode::createFieldAssignment($1, $3, $5); }
+          | simpleExpr1 argumentExprs '=' expr { $$ = AssignmentNode::createArrayAssignment($1, $2, $4); } // запись в массив
           ;
 
-enumerators: generator                       { $$ = new EnumeratorsNode::EnumeratorsNode($1); }
+enumerators: generator                       { $$ = new EnumeratorsNode($1); }
            | enumerators semi enumeratorPart { $$ = EnumeratorsNode::addModifierToList($1, $3); }
            ;
 
@@ -225,52 +225,52 @@ compoundTypeO: /* empty */ %prec LOW_PREC { $$ = nullptr; }
           ;
 
 infixExpr: prefixExpr { $$ = InfixExprNode::createInfixFromPrefix($1); }
-         | infixExpr '+' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-         | infixExpr '!' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr '#' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-         | infixExpr '%' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr '&' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr '*' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr '-' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr '/' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr '<' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr '>' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr '?' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr '@' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr '\\' nlo infixExpr { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr '^' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr '~' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr PLUS_ASSIGNMENT nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr MINUS_ASSIGNMENT nlo infixExpr { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr MUL_ASSIGNMENT nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr DIV_ASSIGNMENT nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr MOD_ASSIGNMENT nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr EQUAL nlo infixExpr            { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr NOT_EQUAL nlo infixExpr        { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr GREATER_OR_EQUAL nlo infixExpr { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr LESS_OR_EQUAL nlo infixExpr    { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr ID nlo infixExpr               { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr ID_EQUALITY nlo infixExpr      { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr ID_VERTICAL_SIGN nlo infixExpr { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr ID_AMPERSAND nlo infixExpr     { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr ID_CIRCUMFLEX nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr ID_LESS nlo infixExpr    { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr ID_GREAT nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr ID_MINUS nlo infixExpr         { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr ID_PLUS nlo infixExpr          { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr ID_ASTERISK nlo infixExpr      { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr ID_SLASH nlo infixExpr         { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr ID_PERCENT nlo infixExpr       { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr ID_EXCLAMATION nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr ID_TILDE nlo infixExpr 	    { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr ID_COLON nlo infixExpr         { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+         | infixExpr '+' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+         | infixExpr '!' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr '#' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+         | infixExpr '%' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr '&' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr '*' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr '-' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr '/' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr '<' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr '>' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr '?' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr '@' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr '\\' nlo infixExpr { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr '^' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr '~' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr PLUS_ASSIGNMENT nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr MINUS_ASSIGNMENT nlo infixExpr { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr MUL_ASSIGNMENT nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr DIV_ASSIGNMENT nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr MOD_ASSIGNMENT nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr EQUAL nlo infixExpr            { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr NOT_EQUAL nlo infixExpr        { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr GREATER_OR_EQUAL nlo infixExpr { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr LESS_OR_EQUAL nlo infixExpr    { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr ID nlo infixExpr               { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr ID_EQUALITY nlo infixExpr      { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr ID_VERTICAL_SIGN nlo infixExpr { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr ID_AMPERSAND nlo infixExpr     { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr ID_CIRCUMFLEX nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr ID_LESS nlo infixExpr    { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr ID_GREAT nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr ID_MINUS nlo infixExpr         { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr ID_PLUS nlo infixExpr          { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr ID_ASTERISK nlo infixExpr      { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr ID_SLASH nlo infixExpr         { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr ID_PERCENT nlo infixExpr       { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr ID_EXCLAMATION nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr ID_TILDE nlo infixExpr 	    { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
+	 | infixExpr ID_COLON nlo infixExpr         { $$ = InfixExprNode::createFromInfixes($1, $2, $4); }
          ;
 
-prefixExpr: simpleExpr { $$ = PrefixExprNode::createPrefixExprNode($1, NO_UNARY_OPERATOR); }
-          | '+' simpleExpr %prec UPLUS { $$ = PrefixExprNode::createPrefixExprNode($1, UNARY_PLUS); }
-          | '-' simpleExpr %prec UMINUS { $$ = PrefixExprNode::createPrefixExprNode($1, UNARY_MINUS); }
-          | '~' simpleExpr %prec UBINNOT { $$ = PrefixExprNode::createPrefixExprNode($1, BIT_NOT); }
-          | '!' simpleExpr %prec ULOGNOT { $$ = PrefixExprNode::createPrefixExprNode($1, NOT); }
+prefixExpr: simpleExpr { $$ = PrefixExprNode::createPrefixExprNode($1, _NO_UNARY_OPERATOR); }
+          | '+' simpleExpr %prec UPLUS { $$ = PrefixExprNode::createPrefixExprNode($1, _UNARY_PLUS); }
+          | '-' simpleExpr %prec UMINUS { $$ = PrefixExprNode::createPrefixExprNode($1, _UNARY_MINUS); }
+          | '~' simpleExpr %prec UBINNOT { $$ = PrefixExprNode::createPrefixExprNode($1, _BIT_NOT); }
+          | '!' simpleExpr %prec ULOGNOT { $$ = PrefixExprNode::createPrefixExprNode($1, _NOT); }
           ;
 
 simpleExpr: NEW constrInvoke   { $$ = SimpleExprNode::createConstrInvokeNode($2); }
@@ -291,7 +291,7 @@ simpleExpr1: literal                   { $$ = $1 }
 argumentExprs: '(' exprs ')' { $$ = ArgumentExprsNode::ArgumentExprsNode($2); }
              ;
 
-exprs: /* empty */    { $$ = new ExprsNode::ExprsNode(); } // TODO проверить второе null
+exprs: /* empty */    { $$ = new ExprsNode(); } // TODO проверить второе null
      | expr           { $$ = ExprsNode::addExprToList(nullptr, $1); }
      | exprs ',' expr { $$ = ExprsNode::addExprToList($1, $3); }
      ;
