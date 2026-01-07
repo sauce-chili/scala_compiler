@@ -12,6 +12,7 @@ ClassParamNode *ClassParamNode::createClassParam(ClassParamType type, ModifiersN
     node->fullId = fullId;
     node->compoundType = compoundType;
     node->assignExpr = assignExpr;
+    return node;
 }
 
 string ClassParamNode::toDot() const {
