@@ -288,7 +288,7 @@ simpleExpr1: literal                   { $$ = $1; }
            | simpleExpr1 argumentExprs { $$ = SimpleExpr1Node::createMethodCallNode($1, $2); } // вызов метода
            ;
 
-argumentExprs: '(' exprs ')' { $$ = ArgumentExprsNode::ArgumentExprsNode($2); }
+argumentExprs: '(' exprs ')' { $$ = new ArgumentExprsNode($2); }
              ;
 
 exprs: /* empty */    { $$ = new ExprsNode(); } // TODO проверить второе null
