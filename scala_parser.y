@@ -326,10 +326,10 @@ ids: fullID         { $$ = IdsNode::addIdToList(nullptr, $1); }
 
 /* --------------------- TRY --------------------- */
 
-tryExpr: TRY expr                         { $$ = TryExprNode::createExceptionBlock($2); }
-       | TRY expr CATCH expr              { $$ = TryExprNode::createExceptionBlock($2, $4); }
+tryExpr: TRY expr                         { $$ = TryExprNode::createExceptionBlock($2, nullptr, nullptr); }
+       | TRY expr CATCH expr              { $$ = TryExprNode::createExceptionBlock($2, $4, nullptr); }
        | TRY expr CATCH expr FINALLY expr { $$ = TryExprNode::createExceptionBlock($2, $4, $6); }
-       | TRY expr FINALLY expr            { $$ = TryExprNode::createExceptionBlock($2, $4); }
+       | TRY expr FINALLY expr            { $$ = TryExprNode::createExceptionBlock($2, nullptr, $4); }
        ;
 
 /* --------------------- TRY --------------------- */
