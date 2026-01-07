@@ -131,7 +131,7 @@
 %nonassoc FINALLY
 %nonassoc END_TEMPLATE
 
-%type <topStatSeq> scalaFile topStatSeq
+%type <topStatSeq> topStatSeq
 %type <expr> expr
 %type <assignment> assignment
 %type <enumerators> enumerators
@@ -183,13 +183,10 @@
 %type <id> fullID
 
 
-%start scalaFile
+%start topStatSeq
 
 
 %%
-
-scalaFile: topStatSeq { $$ = $1; }
-          ;
 
 expr: IF '(' expr ')' nls expr semio ELSE expr { $$ = ExprNode::createIfElse($3, $6, $9); }
     | IF '(' expr ')' nls expr                 { $$ = ExprNode::createIf($3, $6); }
