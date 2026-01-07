@@ -55,6 +55,7 @@ enum PrefixExprType {
     _UNARY_MINUS,
     _NOT,
     _BIT_NOT,
+    _NO_UNARY_OPERATOR,
 };
 
 enum StableIdType {

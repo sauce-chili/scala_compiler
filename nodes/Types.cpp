@@ -59,10 +59,11 @@ std::string statTypeToString(StatType t) {
 
 std::string prefixExprToString(PrefixExprType t) {
     switch (t) {
-        case _UNARY_PLUS:  return "Unary plus";
-        case _UNARY_MINUS: return "Unary minus";
-        case _NOT:         return "Not";
-        case _BIT_NOT:     return "Bit not";
+        case _UNARY_PLUS:        return "Unary plus";
+        case _UNARY_MINUS:       return "Unary minus";
+        case _NOT:               return "Not";
+        case _BIT_NOT:           return "Bit not";
+        case _NO_UNARY_OPERATOR: return "No unary operator";
 
         default: return "No unary operator";
     }
