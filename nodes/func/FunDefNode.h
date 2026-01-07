@@ -6,6 +6,7 @@
 #include "../exprs/ConstrExprNode.h"
 
 class FunDefNode: public Node {
+public:
     FunSigNode* funSig;
     CompoundTypeNode* compoundType;
     ConstrExprNode* constrExpr;
