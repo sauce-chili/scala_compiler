@@ -8,6 +8,7 @@ std::string modifierToString(ModifierType m) {
         case _SEALED:    return "SEALED";
         case _FINAL:     return "FINAL";
         case _OVERRIDE:  return "OVERRIDE";
+        default:         return "Unknown";
     }
 }
 
@@ -20,14 +21,16 @@ std::string simpleExpr1ToString(SimpleExpr1Type t) {
         case _ARGUMENT_CALL:           return "Argument call";
         case _EMPTY_CALL:              return "Empty call";
         case _METHOD_CALL:             return "Method call";
+        default:                       return "Unknown";
     }
 }
 
 std::string simpleExprToString(SimpleExprType t) {
     switch (t) {
         case _INSTANCE_CREATING: return "Object creating";
-        case _BLOCK_STATS:     return "Block statements";
-        case _SIMPLE_EXPR_1:   return "Simple expr 1";
+        case _BLOCK_STATS:       return "Block statements";
+        case _SIMPLE_EXPR_1:     return "Simple expr 1";
+        default:                 return "Unknown";
     }
 }
 
@@ -36,6 +39,7 @@ std::string stableIdTypeToString(StableIdType t) {
         case _STABLE_ID_IDENTIFIER:             return "Stable id identifier";
         case _STABLE_ID_SUPER_FIELD_ACCESS:     return "Stable id Super field access";
         case _STABLE_ID_THIS_FIELD_ACCESS:      return "Stable id This field access";
+        default:                                return "Unknown";
     }
 }
 
@@ -49,6 +53,7 @@ std::string statTypeToString(StatType t) {
         case _VAR_DECL: return "Var declaration";
         case _VAL_DECL: return "Val declaration";
         case _FUN_DEF:  return "Function definition";
+        default:        return "Unknown";
     }
 }
 
@@ -68,6 +73,7 @@ std::string classParamTypeToString(ClassParamType t) {
         case _VAL_CLASS_PARAM:      return "Val class param";
         case _VAR_CLASS_PARAM:      return "Var class param";
         case _UNMARKED_CLASS_PARAM: return "Unmarked class param";
+        default:                    return "Unknown";
     }
 }
 
@@ -76,6 +82,7 @@ std::string classEnumCaseTypeToString(EnumCaseType t) {
         case _CASE_WITH_EXTENDS: return "Case with extends";
         case _CASE_WITH_PARAMS:  return "Case with params";
         case _CASE_WITH_IDS:     return "Case with ids list";
+        default:                 return "Unknown";
     }
 }
 
@@ -84,6 +91,7 @@ std::string definitionTypeToString(DefinitionType t) {
         case _VAR_DEFS:            return "Variables definition";
         case _FUN_DEFINITION:      return "Function definition";
         case _TEMPLATE_DEFINITION: return "Template definition";
+        default:                   return "Unknown";
     }
 }
 
@@ -101,5 +109,6 @@ std::string exprTypeToString(ExprType t) {
         case _FOR_WITH_YIELD:    return "For Yield";
         case _INFIX:             return "Infix";
         case _ASSIGNMENT:        return "Assignment";
+        default:                 return "Unknown";
     }
 }
