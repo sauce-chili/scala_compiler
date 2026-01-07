@@ -9,6 +9,7 @@ public:
     string name;
 
     static IdNode* createId(string name);
+    static IdNode* createOperator(string op);
 
     string toDot() const override;
     string getDotLabel() const override;
