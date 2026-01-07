@@ -1,4 +1,7 @@
 #include "TraitTemplateNode.h"
+#include "../type/SimpleTypeNode.h"
+#include "../type/SimpleTypesNode.h"
+#include "../templates/TemplateStatsNode.h"
 
 TraitTemplateNode::TraitTemplateNode() {
 

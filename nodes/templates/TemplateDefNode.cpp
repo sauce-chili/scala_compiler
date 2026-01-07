@@ -1,4 +1,7 @@
 #include "TemplateDefNode.h"
+#include "../class/ClassDefNode.h"
+#include "../trait/TraitTemplateOptNode.h."
+#include "../enum/EnumDefNode.h"
 
 TemplateDefNode::TemplateDefNode() {
 

@@ -1,8 +1,7 @@
-//
-// Created by Roman on 1/5/2026.
-//
-
 #include "TemplateStatNode.h"
+#include "../definitions/DclNode.h"
+#include "../definitions/DefNode.h"
+#include "../modifier/ModifiersNode.h"
 
 TemplateStatNode::TemplateStatNode() {
 

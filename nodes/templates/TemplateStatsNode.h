@@ -1,6 +1,8 @@
 #ifndef SCALA_LEXER_TEMPLATESTATSNODE_H
 #define SCALA_LEXER_TEMPLATESTATSNODE_H
 
+#include <list>
+
 #include "../Node.h"
 #include "TemplateStatNode.h"
 

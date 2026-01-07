@@ -1,4 +1,5 @@
 #include "TraitTemplateOptNode.h"
+#include "../templates/TemplateStatsNode.h"
 
 TraitTemplateOptNode::TraitTemplateOptNode() {
 
