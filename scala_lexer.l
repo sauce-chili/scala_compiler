@@ -8,7 +8,7 @@
 	#include <iostream>
     #include <string>
     #include <vector>
-    #include "scala_parser.tab.c"
+    #include "scala_parser.cpp"
     #include "lexer/BufferedYYLex.h"
     #include "lexer/TokenProcessor.h"
 
@@ -177,7 +177,7 @@ whitespace [ \t\f\u000B]
 }
 <STRING>\" {
     BEGIN(INITIAL);
-    return processor.onString(literal);
+    return processor.onStringLiteral(literal);
 }
 <STRING,CHARACTER>\n {
     std::cerr << "error: newline inside literal\n" << std::endl;
