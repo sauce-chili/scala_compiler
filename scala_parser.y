@@ -460,7 +460,7 @@ enumTemplate: EXTENDS classParents enumBody { $$ = EnumTemplateNode::createWithC
             ;
 
 classTemplate: classParents templateBody       { $$ = ClassTemplateNode::createClassTemplate($1, $2); }
-             | classParents %prec END_TEMPLATE { $$ = ClassTemplateNode::createClassTemplate($1); }
+             | classParents %prec END_TEMPLATE { $$ = ClassTemplateNode::createClassTemplate($1, nullptr); }
              ;
 
 classParents: constrInvoke simpleTypes { $$ = ClassParentsNode::createClassParents($1, $2); }
