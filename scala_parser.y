@@ -489,6 +489,9 @@ enumCase: CASE fullID classParamClause EXTENDS classParents { $$ = EnumCaseNode:
         | CASE ids ',' fullID                               { $$ = EnumCaseNode::createClassParents(_CASE_WITH_IDS, IdsNode::addIdToList($2, $4), nullptr, nullptr); } // Решает rr
 	;
 
+scalaFile: topStatSeq { *out_root = $1;}
+	 ;
+
 topStatSeq: topStat                 { $$ = TopStatSeqNode::addModifierToList(nullptr, $1); }
 	  | topStatSeq semi topStat { $$ = TopStatSeqNode::addModifierToList($1, $3); }
           ;

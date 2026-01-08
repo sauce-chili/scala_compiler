@@ -3,6 +3,7 @@
 #include <string>
 
 #include "nodes/stats/TopStatSeqNode.h"
+#include "utils/output/dot.cpp"
 
 // Подключаем определения токенов, сгенерированные Bison,
 // чтобы в режиме лексера можно было (опционально) понимать ID токенов.
@@ -85,6 +86,8 @@ int main(int argc, char **argv) {
             if (root) {
                 std::cout << "AST Root created at address: " << root << std::endl;
                 // Здесь можно вызвать root->print() или подобный метод, если он есть
+            } else {
+                std::cout << "AST Root not created at address: " << root << std::endl;
             }
         } else {
             std::cerr << "Parsing failed." << std::endl;
