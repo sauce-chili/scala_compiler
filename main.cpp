@@ -16,12 +16,15 @@ int yyparse(TopStatSeqNode **root);
 int yylex();
 
 extern "C" {
-    extern FILE *real_in;
-    extern int real_lineno;
-    extern int yydebug;
+extern FILE *real_in;
+extern int real_lineno;
 }
 
-void yyerror(TopStatSeqNode** out_root, const char* s) {
+extern int yydebug;
+
+extern const char* get_bison_token_name(int token);
+
+void yyerror(TopStatSeqNode **out_root, const char *s) {
     // Можно использовать внешнюю переменную yylineno, если она объявлена
     extern int real_lineno;
     cerr << "Parser error at line " << real_lineno << ": " << s << endl;
@@ -62,7 +65,7 @@ int main(int argc, char **argv) {
     } else {
         yydebug = 0;
     }
-
+    // yydebug = 1;
     // 4. Запуск в нужном режиме
     if (mode == "lexer") {
         std::cout << "--- Running in LEXER mode ---" << std::endl;
@@ -73,7 +76,7 @@ int main(int argc, char **argv) {
             // Вывод: ID токена
             // В идеале можно сделать switch-case для красивого вывода имен токенов,
             // но для базовой проверки достаточно ID.
-            std::cout << "Token ID: " << token << std::endl;
+            std::cout << "Token: " << get_bison_token_name(token) << " (" << token << ")" << std::endl;
         }
     } else {
         std::cout << "--- Running in PARSER mode ---" << std::endl;
@@ -90,7 +93,6 @@ int main(int argc, char **argv) {
             } else {
                 std::cout << "AST Root not created at address: " << root << std::endl;
             }
-
         } else {
             std::cerr << "Parsing failed." << std::endl;
         }
