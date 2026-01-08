@@ -9,14 +9,14 @@
 
 #include "scala_parser.hpp"
 
-struct TokenWrap {
-    int type;
+struct TokenInfo {
+    int type = YYEMPTY;
     YYSTYPE value;
-    int line;
+    int line = -1;
 };
 
 class BufferedYYLex {
-    std::deque<TokenWrap> _buffer;
+    std::deque<TokenInfo> _buffer;
     std::function<int()> _lex;
 
 public:

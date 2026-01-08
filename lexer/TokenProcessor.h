@@ -13,7 +13,7 @@ class TokenProcessor {
 
     // состояния для обработки NL токенов
     int pending_nl_count = 0;
-    bool last_token_can_end_stmt = false;
+    TokenInfo last_token;
     std::vector<bool> nl_enabled_stack;
 
     std::string remove_underscore(const char *text);
@@ -26,7 +26,7 @@ class TokenProcessor {
 
     bool can_end_stmt(int token);
 
-    void update_state_by_current_token(int token);
+    void update_state_by_current_token(const TokenInfo& info);
 
 public:
     TokenProcessor(BufferedYYLex &lexer);

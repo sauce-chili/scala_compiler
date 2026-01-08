@@ -10,6 +10,7 @@
 
 #include "nodes/Types.h"
 
+extern "C" int real_lineno;
 
 TokenProcessor::TokenProcessor(BufferedYYLex &lexer) : bufferedLexer(lexer) {
     nl_enabled_stack.push_back(true); // Изначально переводы строк разрешены
@@ -37,10 +38,8 @@ double TokenProcessor::to_double(const char *text) {
     return atof(s.c_str());
 }
 
-bool TokenProcessor::can_begin_stmt(const int token)
-{
-    switch (token)
-    {
+bool TokenProcessor::can_begin_stmt(const int token) {
+    switch (token) {
         // каких-то токенов нет(на пример match или forSome, но мы их и не поддерживаем)
         case CATCH:
         case ELSE:
@@ -68,8 +67,8 @@ bool TokenProcessor::can_begin_stmt(const int token)
 bool TokenProcessor::can_end_stmt(const int token) {
     switch (token) {
         // каких-то токенов нет(на пример type, но мы их и не поддерживаем)
-        case yytokentype::THIS:
-        case yytokentype::NULL_LITERAL:
+        case THIS:
+        case NULL_LITERAL:
         case TRUE_LITERAL:
         case FALSE_LITERAL:
         case RETURN:
@@ -78,7 +77,7 @@ bool TokenProcessor::can_end_stmt(const int token) {
         case ']':
         case '}':
         // вариации id:
-        case yytokentype::ID:
+        case ID:
         case '+':
         case '!':
         case '#':
@@ -120,23 +119,23 @@ bool TokenProcessor::can_end_stmt(const int token) {
         case ID_COLON:
         // Вариации литералов
         case DECIMAL_LITERAL:
-        case yytokentype::DOUBLE_LITERAL:
-        case yytokentype::STRING_LITERAL:
-        case yytokentype::CHAR_LITERAL:
+        case DOUBLE_LITERAL:
+        case STRING_LITERAL:
+        case CHAR_LITERAL:
             return true;
         default: return false;
     }
 }
 
-void TokenProcessor::update_state_by_current_token(int token) {
+void TokenProcessor::update_state_by_current_token(const TokenInfo &info) {
     // Обновляем стек скобок (nl zone enable)
-    if (token == '(' || token == '[') nl_enabled_stack.push_back(false);
-    else if (token == '{') nl_enabled_stack.push_back(true);
-    else if ((token == ')' || token == ']') && !nl_enabled_stack.empty()) nl_enabled_stack.pop_back();
-    else if (token == '}' && !nl_enabled_stack.empty()) nl_enabled_stack.pop_back();
+    if (info.type == '(' || info.type == '[') nl_enabled_stack.push_back(false);
+    else if (info.type == '{') nl_enabled_stack.push_back(true);
+    else if ((info.type == ')' || info.type == ']') && !nl_enabled_stack.empty()) nl_enabled_stack.pop_back();
+    else if (info.type == '}' && !nl_enabled_stack.empty()) nl_enabled_stack.pop_back();
 
     // Обновляем флаг окончания выражения
-    last_token_can_end_stmt = can_end_stmt(token);
+    last_token = info;
 }
 
 void TokenProcessor::onNewLine() {
@@ -149,52 +148,46 @@ void TokenProcessor::onNewLine() {
 int TokenProcessor::onToken(int tokenType) {
     // https://scala-lang.org/files/archive/spec/2.13/01-lexical-syntax.html#newline-characters
 
+    TokenInfo currentToken = {tokenType, yylval, real_lineno};
+
     // 1. Проверяем условия вставки NL
     bool nl_enabled = nl_enabled_stack.empty() ? true : nl_enabled_stack.back();
     bool should_insert = pending_nl_count > 0 &&
                          nl_enabled &&
-                         last_token_can_end_stmt &&
+                         (last_token.type != YYEMPTY && can_end_stmt(last_token.type)) &&
                          can_begin_stmt(tokenType);
 
     std::cout << "";
 
     if (should_insert) {
-        // Сохраняем текущее значение, тк оно уйдет в буфер
-        YYSTYPE currentVal = yylval;
-        // Если передан текст и он еще не в yylval (для ID и т.д.), обрабатываем его снаружи,
-        // но здесь мы предполагаем, что yylval уже заполнен методами типа onID/onLiteral
-        // или самим flex-правилом перед вызовом.
-
-        // int currentLine = yylineno;
-        YYSTYPE emptyVal; // Значение для токена NL (пустое)
-
+        YYSTYPE emptyVal;
+        // Обнуляем все поля union, чтобы там не было случайных указателей
+        std::memset(&emptyVal, 0, sizeof(YYSTYPE));
         if (pending_nl_count == 1) {
-            // Логика: Возвращаем NL сейчас. Следующий вызов должен вернуть CurrentToken.
-            // Так как BufferedYYLex - это очередь (FIFO), кладем CurrentToken.
-
-            bufferedLexer.push(tokenType, currentVal, -1);
-
-            update_state_by_current_token(tokenType);
+            // Текущий токен в очередь, возвращаем NL
+            bufferedLexer.push(currentToken.type, currentToken.value, currentToken.line);
+            update_state_by_current_token(currentToken);
             pending_nl_count = 0;
+            // !!! ВАЖНО: Обнуляем глобальный yylval перед возвратом NL
+            yylval = emptyVal;
+            // cout << "NL inserted" << endl;
             return NL;
-        } else if (pending_nl_count == 2) {
-            // pending_nl_count == 2
-            // Логика: Возвращаем NL сейчас. Следующий вызов - NL. Третий - CurrentToken.
-            // Далее:
-            // 1. Кладем NL (чтобы он вышел первым из буфера)
-            // 2. Кладем currentToken (чтобы он вышел вторым из буфера)
-
-            bufferedLexer.push(NL, emptyVal, -1);
-            bufferedLexer.push(tokenType, currentVal, -1);
-
-            update_state_by_current_token(tokenType);
+        }
+        else {
+            // Для 2 и более NL: возвращаем NL, в очередь еще один NL и сам токен
+            bufferedLexer.push(NL,emptyVal, real_lineno);
+            bufferedLexer.push(currentToken.type, currentToken.value, currentToken.line);
+            update_state_by_current_token(currentToken);
             pending_nl_count = 0;
+            // !!! ВАЖНО: Обнуляем глобальный yylval перед возвратом NL
+            yylval = emptyVal;
+            // cout << "NL inserted" << endl;
             return NL;
         }
     }
 
     // Иначе: NL не нужен
-    update_state_by_current_token(tokenType);
+    update_state_by_current_token(currentToken);
     pending_nl_count = 0;
 
     return tokenType;
