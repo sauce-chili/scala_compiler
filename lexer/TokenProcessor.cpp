@@ -156,6 +156,8 @@ int TokenProcessor::onToken(int tokenType) {
                          last_token_can_end_stmt &&
                          can_begin_stmt(tokenType);
 
+    std::cout << "";
+
     if (should_insert) {
         // Сохраняем текущее значение, тк оно уйдет в буфер
         YYSTYPE currentVal = yylval;

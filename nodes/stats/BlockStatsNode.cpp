@@ -16,7 +16,9 @@ BlockStatsNode *BlockStatsNode::addBlockStatToList(BlockStatsNode *list, BlockSt
         return new BlockStatsNode(blockStat);
     }
 
-    list->blockStats->push_back(blockStat);
+    if (blockStat) {
+        list->blockStats->push_back(blockStat);
+    }
     return list;
 }
 

@@ -16,7 +16,9 @@ TopStatSeqNode *TopStatSeqNode::addModifierToList(TopStatSeqNode *list, TopStatN
         return new TopStatSeqNode(topStat);
     }
 
-    list->topStats->push_back(topStat);
+    if (topStat) {
+        list->topStats->push_back(topStat);
+    }
     return list;
 }
 

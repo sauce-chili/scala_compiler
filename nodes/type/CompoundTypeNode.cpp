@@ -12,7 +12,9 @@ CompoundTypeNode *CompoundTypeNode::addStableId(CompoundTypeNode *list, SimpleTy
         return new CompoundTypeNode(simpleType);
     }
 
-    list->simpleTypes->push_back(simpleType);
+    if (simpleType) {
+        list->simpleTypes->push_back(simpleType);
+    }
     return list;
 }
 

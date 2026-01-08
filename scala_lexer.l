@@ -203,7 +203,7 @@ whitespace [ \t\f\u000B]
     /* Ничего не возвращаем парсеру здесь, Flex крутится дальше */
 }
 
-<*>" "   { std::cout << "Space \n";}
+<*>" "   { }
 <*>.     { std::cerr << "Unexpected char \'" << yytext[0] << "\'\n"; BEGIN(INITIAL);}
 
 %%

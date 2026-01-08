@@ -16,7 +16,9 @@ SimpleTypesNode *SimpleTypesNode::addSimpleTypeToList(SimpleTypesNode *list, Sim
         return new SimpleTypesNode(simpleType);
     }
 
-    list->simpleTypes->push_back(simpleType);
+    if (simpleType) {
+        list->simpleTypes->push_back(simpleType);
+    }
     return list;
 }
 

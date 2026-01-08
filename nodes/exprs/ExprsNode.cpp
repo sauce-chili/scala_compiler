@@ -16,7 +16,9 @@ ExprsNode *ExprsNode::addExprToList(ExprsNode *exprs, ExprNode *expr) {
         return new ExprsNode(expr);
     }
 
-    exprs->exprs->push_back(expr);
+    if (expr) {
+        exprs->exprs->push_back(expr);
+    }
     return exprs;
 }
 

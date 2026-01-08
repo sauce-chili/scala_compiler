@@ -16,7 +16,9 @@ ClassParamsNode *ClassParamsNode::addClassParamToList(ClassParamsNode *list, Cla
         return new ClassParamsNode(classParam);
     }
 
-    list->classParams->push_back(classParam);
+    if (classParam) {
+        list->classParams->push_back(classParam);
+    }
     return list;
 }
 

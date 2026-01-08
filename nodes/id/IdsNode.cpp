@@ -16,7 +16,10 @@ IdsNode *IdsNode::addIdToList(IdsNode *list, IdNode *fullId) {
         return new IdsNode(fullId);
     }
 
-    list->ids->push_back(fullId);
+    if (fullId) {
+        list->ids->push_back(fullId);
+
+    }
     return list;
 }
 

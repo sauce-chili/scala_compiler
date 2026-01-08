@@ -16,7 +16,9 @@ FuncParamsNode *FuncParamsNode::addFuncParamToList(FuncParamsNode *list, FuncPar
         return new FuncParamsNode(funcParam);
     }
 
-    list->funcParams->push_back(funcParam);
+    if (funcParam) {
+        list->funcParams->push_back(funcParam);
+    }
     return list;
 }
 

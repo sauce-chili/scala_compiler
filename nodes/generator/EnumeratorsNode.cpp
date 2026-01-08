@@ -8,7 +8,9 @@ EnumeratorsNode::EnumeratorsNode(GeneratorNode *generator) {
 }
 
 EnumeratorsNode *EnumeratorsNode::addModifierToList(EnumeratorsNode *list, EnumeratorPartNode *enumeratorPart) {
-    list->enumerators->push_back(enumeratorPart);
+    if (enumeratorPart) {
+        list->enumerators->push_back(enumeratorPart);
+    }
     return list;
 }
 

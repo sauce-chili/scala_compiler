@@ -16,7 +16,9 @@ ModifiersNode *ModifiersNode::addModifierToList(ModifiersNode *list, ModifierNod
         return new ModifiersNode(modifier);
     }
 
-    list->modifiers->push_back(modifier);
+    if (modifier) {
+        list->modifiers->push_back(modifier);
+    }
     return list;
 }
 

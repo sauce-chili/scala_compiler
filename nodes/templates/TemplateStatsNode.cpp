@@ -16,7 +16,9 @@ TemplateStatsNode* TemplateStatsNode::addFuncParamToBackToList(TemplateStatsNode
         return new TemplateStatsNode(templateStat);
     }
 
-    list->templateStats->push_back(templateStat);
+    if (templateStat) {
+        list->templateStats->push_back(templateStat);
+    }
     return list;
 }
 
@@ -25,13 +27,16 @@ TemplateStatsNode* TemplateStatsNode::addFuncParamToFrontToList(TemplateStatsNod
         return new TemplateStatsNode(templateStat);
     }
 
-    list->templateStats->push_front(templateStat);
+    if (templateStat != nullptr) {
+        list->templateStats->push_front(templateStat);
+    }
     return list;
 }
 
 string TemplateStatsNode::toDot() const {
     string dot;
 
+    this;
     addDotNode(dot);
     if (!templateStats->empty()) {
         for (const auto *it : *templateStats) {

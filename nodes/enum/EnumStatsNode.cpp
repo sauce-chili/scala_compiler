@@ -16,7 +16,9 @@ EnumStatsNode *EnumStatsNode::addModifierToList(EnumStatsNode *list, EnumStatNod
         return new EnumStatsNode(enumStat);
     }
 
-    list->enumStats->push_back(enumStat);
+    if (enumStat) {
+        list->enumStats->push_back(enumStat);
+    }
     return list;
 }
 
