@@ -6,7 +6,9 @@ SimpleTypesNode::SimpleTypesNode() {
 
 SimpleTypesNode::SimpleTypesNode(SimpleTypeNode *simpleType) {
     simpleTypes = new std::list<SimpleTypeNode*>;
-    simpleTypes->push_back(simpleType);
+    if (simpleType) {
+        simpleTypes->push_back(simpleType);
+    }
 }
 
 SimpleTypesNode *SimpleTypesNode::addSimpleTypeToList(SimpleTypesNode *list, SimpleTypeNode *simpleType) {

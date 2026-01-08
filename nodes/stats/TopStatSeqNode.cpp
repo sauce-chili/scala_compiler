@@ -6,7 +6,9 @@ TopStatSeqNode::TopStatSeqNode() {
 
 TopStatSeqNode::TopStatSeqNode(TopStatNode *topStat) {
     topStats = new std::list<TopStatNode*>;
-    topStats->push_back(topStat);
+    if (topStat) {
+        topStats->push_back(topStat);
+    }
 }
 
 TopStatSeqNode *TopStatSeqNode::addModifierToList(TopStatSeqNode *list, TopStatNode *topStat) {

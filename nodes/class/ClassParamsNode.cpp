@@ -2,7 +2,9 @@
 
 ClassParamsNode::ClassParamsNode(ClassParamNode *first) {
     classParams = new std::list<ClassParamNode*>();
-    classParams->push_back(first);
+    if (first) {
+        classParams->push_back(first);
+    }
 }
 
 ClassParamsNode::ClassParamsNode() {

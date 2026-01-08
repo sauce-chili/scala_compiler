@@ -6,7 +6,9 @@ IdsNode::IdsNode() {
 
 IdsNode::IdsNode(IdNode *fullId) {
     ids = new std::list<IdNode*>;
-    ids->push_back(fullId);
+    if (fullId) {
+        ids->push_back(fullId);
+    }
 }
 
 IdsNode *IdsNode::addIdToList(IdsNode *list, IdNode *fullId) {

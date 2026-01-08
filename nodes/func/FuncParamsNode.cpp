@@ -6,7 +6,9 @@ FuncParamsNode::FuncParamsNode() {
 
 FuncParamsNode::FuncParamsNode(FuncParamNode *first) {
     funcParams = new std::list<FuncParamNode*>();
-    funcParams->push_back(first);
+    if (first) {
+        funcParams->push_back(first);
+    }
 }
 
 FuncParamsNode *FuncParamsNode::addFuncParamToList(FuncParamsNode *list, FuncParamNode *funcParam) {

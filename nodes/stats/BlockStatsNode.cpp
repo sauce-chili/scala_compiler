@@ -6,7 +6,9 @@ BlockStatsNode::BlockStatsNode() {
 
 BlockStatsNode::BlockStatsNode(BlockStatNode *blockStat) {
     blockStats = new std::list<BlockStatNode*>;
-    blockStats->push_back(blockStat);
+    if (blockStat) {
+        blockStats->push_back(blockStat);
+    }
 }
 
 BlockStatsNode *BlockStatsNode::addBlockStatToList(BlockStatsNode *list, BlockStatNode *blockStat) {

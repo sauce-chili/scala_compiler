@@ -2,7 +2,9 @@
 
 EnumeratorsNode::EnumeratorsNode(GeneratorNode *generator) {
     enumerators = new std::list<EnumeratorPartNode*>;
-    this->generator = generator;
+    if (generator) {
+        this->generator = generator;
+    }
 }
 
 EnumeratorsNode *EnumeratorsNode::addModifierToList(EnumeratorsNode *list, EnumeratorPartNode *enumeratorPart) {

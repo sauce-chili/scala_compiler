@@ -6,7 +6,9 @@ ModifiersNode::ModifiersNode() {
 
 ModifiersNode::ModifiersNode(ModifierNode *modifier) {
     modifiers = new std::list<ModifierNode*>;
-    modifiers->push_back(modifier);
+    if (modifier) {
+        modifiers->push_back(modifier);
+    }
 }
 
 ModifiersNode *ModifiersNode::addModifierToList(ModifiersNode *list, ModifierNode *modifier) {

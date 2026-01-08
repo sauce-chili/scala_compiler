@@ -6,7 +6,9 @@ TemplateStatsNode::TemplateStatsNode() {
 
 TemplateStatsNode::TemplateStatsNode(TemplateStatNode *first) {
     templateStats = new std::list<TemplateStatNode*>;
-    templateStats->push_back(first);
+    if (first) {
+        templateStats->push_back(first);
+    }
 }
 
 TemplateStatsNode* TemplateStatsNode::addFuncParamToBackToList(TemplateStatsNode *list, TemplateStatNode *templateStat) {

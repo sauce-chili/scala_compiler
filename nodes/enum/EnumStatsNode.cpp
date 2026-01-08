@@ -6,7 +6,9 @@ EnumStatsNode::EnumStatsNode() {
 
 EnumStatsNode::EnumStatsNode(EnumStatNode *enumStat) {
     enumStats = new std::list<EnumStatNode*>;
-    enumStats->push_back(enumStat);
+    if (enumStat) {
+        enumStats->push_back(enumStat);
+    }
 }
 
 EnumStatsNode *EnumStatsNode::addModifierToList(EnumStatsNode *list, EnumStatNode *enumStat) {

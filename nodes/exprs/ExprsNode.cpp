@@ -6,7 +6,9 @@ ExprsNode::ExprsNode() {
 
 ExprsNode::ExprsNode(ExprNode *first) {
     exprs = new std::list<ExprNode*>();
-    exprs->push_back(first);
+    if (first) {
+        exprs->push_back(first);
+    }
 }
 
 ExprsNode *ExprsNode::addExprToList(ExprsNode *exprs, ExprNode *expr) {

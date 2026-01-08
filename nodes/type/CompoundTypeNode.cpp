@@ -2,7 +2,9 @@
 
 CompoundTypeNode::CompoundTypeNode(SimpleTypeNode *first) {
     simpleTypes = new std::list<SimpleTypeNode*>();
-    simpleTypes->push_back(first);
+    if (first) {
+        simpleTypes->push_back(first);
+    }
 }
 
 CompoundTypeNode *CompoundTypeNode::addStableId(CompoundTypeNode *list, SimpleTypeNode *simpleType) {
