@@ -10,9 +10,6 @@
 
 #include "nodes/Types.h"
 
-// Глобальные переменные Bison
-extern int yylineno;
-extern YYSTYPE yylval;
 
 TokenProcessor::TokenProcessor(BufferedYYLex &lexer) : bufferedLexer(lexer) {
     nl_enabled_stack.push_back(true); // Изначально переводы строк разрешены
@@ -166,14 +163,14 @@ int TokenProcessor::onToken(int tokenType) {
         // но здесь мы предполагаем, что yylval уже заполнен методами типа onID/onLiteral
         // или самим flex-правилом перед вызовом.
 
-        int currentLine = yylineno;
+        // int currentLine = yylineno;
         YYSTYPE emptyVal; // Значение для токена NL (пустое)
 
         if (pending_nl_count == 1) {
             // Логика: Возвращаем NL сейчас. Следующий вызов должен вернуть CurrentToken.
             // Так как BufferedYYLex - это очередь (FIFO), кладем CurrentToken.
 
-            bufferedLexer.push(tokenType, currentVal, currentLine);
+            bufferedLexer.push(tokenType, currentVal, -1);
 
             update_state_by_current_token(tokenType);
             pending_nl_count = 0;
@@ -185,8 +182,8 @@ int TokenProcessor::onToken(int tokenType) {
             // 1. Кладем NL (чтобы он вышел первым из буфера)
             // 2. Кладем currentToken (чтобы он вышел вторым из буфера)
 
-            bufferedLexer.push(NL, emptyVal, currentLine);
-            bufferedLexer.push(tokenType, currentVal, currentLine);
+            bufferedLexer.push(NL, emptyVal, -1);
+            bufferedLexer.push(tokenType, currentVal, -1);
 
             update_state_by_current_token(tokenType);
             pending_nl_count = 0;
@@ -220,7 +217,7 @@ int TokenProcessor::onBinLiteral(const char *text) {
 
 int TokenProcessor::onDoubleLiteral(const char *text) {
     yylval.doubleLiteral = to_double(text);
-    return onToken(_DOUBLE_LITERAL);
+    return onToken(DOUBLE_LITERAL);
 }
 
 int TokenProcessor::onBooleanLiteral(int token, bool value) {

@@ -29,7 +29,7 @@ class TokenProcessor {
     void update_state_by_current_token(int token);
 
 public:
-    explicit TokenProcessor(BufferedYYLex &lexer);
+    TokenProcessor(BufferedYYLex &lexer);
 
     // Вызывается при встрече \n
     void onNewLine();

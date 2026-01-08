@@ -5,10 +5,13 @@
 
 %code {
     #include <iostream>
-    using namespace std;
+    #include <cstdio>
 
+    // Просто объявляем функции без extern "C"
     int yylex();
     void yyerror(TopStatSeqNode** out_root, const char* s);
+
+    using namespace std;
 }
 
 /* для включения отладки */
@@ -566,7 +569,3 @@ fullID: '+'              { $$ = IdNode::createOperator("+"); }
       ;
 
 %%
-
-void yyerror(const char* s) {
-    cerr << "Parser error: " << s << endl;
-}

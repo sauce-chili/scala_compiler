@@ -2,21 +2,31 @@
 #include <cstdio>
 #include <string>
 
+#include "nodes/stats/TopStatSeqNode.h"
+
 // Подключаем определения токенов, сгенерированные Bison,
 // чтобы в режиме лексера можно было (опционально) понимать ID токенов.
 
-// Определяем указатель на корневой узел AST (тип должен совпадать с тем, что в %parse-param)
-class ScalaFileNode;
 
 // Функции и переменные из сгенерированных файлов
-extern int yyparse(ScalaFileNode** out_root);
-extern int yylex();
-extern FILE* yyin;
 
-// Переменная отладки Bison (становится доступной благодаря %define parse.trace или %debug)
-extern int yydebug;
+int yyparse(TopStatSeqNode **root);
 
-void print_help(const char* prog_name) {
+int yylex();
+
+extern "C" {
+    extern FILE *real_in;
+    extern int real_lineno;
+    extern int yydebug;
+}
+
+void yyerror(TopStatSeqNode** out_root, const char* s) {
+    // Можно использовать внешнюю переменную yylineno, если она объявлена
+    extern int real_lineno;
+    cerr << "Parser error at line " << real_lineno << ": " << s << endl;
+}
+
+void print_help(const char *prog_name) {
     std::cout << "Usage: " << prog_name << " <filename>\n";
     std::cout << "Environment variables:\n";
     std::cout << "  SCALA_MODE  : 'lexer' (only tokens) or 'parser' (default)\n";
@@ -30,16 +40,16 @@ int main(int argc, char **argv) {
     }
 
     // 1. Открываем файл
-    FILE* input_file = fopen(argv[1], "r");
+    FILE *input_file = fopen(argv[1], "r");
     if (!input_file) {
         std::cerr << "Cannot open file: " << argv[1] << std::endl;
         return -1;
     }
-    yyin = input_file;
+    real_in = input_file;
 
     // 2. Читаем переменные окружения
-    const char* mode_env = std::getenv("SCALA_MODE");
-    const char* debug_env = std::getenv("SCALA_DEBUG");
+    const char *mode_env = std::getenv("SCALA_MODE");
+    const char *debug_env = std::getenv("SCALA_DEBUG");
 
     std::string mode = (mode_env) ? std::string(mode_env) : "parser";
     bool debug = (debug_env && std::string(debug_env) == "1");
@@ -66,7 +76,7 @@ int main(int argc, char **argv) {
         }
     } else {
         std::cout << "--- Running in PARSER mode ---" << std::endl;
-        ScalaFileNode* root = nullptr;
+        TopStatSeqNode *root = nullptr;
 
         int result = yyparse(&root);
 

@@ -5,17 +5,17 @@
 #include "BufferedYYLex.h"
 
 void BufferedYYLex::push(int tokenType, const YYSTYPE &value, int line) {
-    buffer.push_back({tokenType, value, line});
+    _buffer.push_back({tokenType, value, line});
 }
 
 
-int BufferedYYLex::yylex() {
-    if (buffer.empty()) {
-        return lex();
+int BufferedYYLex::getNextToken() {
+    if (_buffer.empty()) {
+        return _lex();
     }
 
-    auto [type, value, line] = buffer.front();
-    buffer.pop_front();
+    auto [type, value, line] = _buffer.front();
+    _buffer.pop_front();
     yylval = value;
     return type;
 }

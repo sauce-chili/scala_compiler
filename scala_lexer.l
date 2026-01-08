@@ -8,22 +8,15 @@
 	#include <iostream>
     #include <string>
     #include <vector>
-    #include "scala_parser.cpp"
     #include "lexer/BufferedYYLex.h"
     #include "lexer/TokenProcessor.h"
 
     /* Объявление оригинальной функции Flex */
-    int real_yylex();
+    int real_lex();
 
-    /* Глобальные инстансы */
-    /* Лямбда передает управление в реальный Flex-лексер */
-    BufferedYYLex bufferedLexer([](){ return real_yylex(); });
-    TokenProcessor processor(bufferedLexer);
-
-    /* обертка, которую будет вызывать bison */
-    int yylex() {
-        return bufferedLexer.yylex();
-    }
+    /* Глобальные инстансы - ИСПОЛЬЗУЕМ ФИГУРНЫЕ СКОБКИ */
+    BufferedYYLex bufferedLexer{std::function<int()>(real_lex)};
+    TokenProcessor processor{bufferedLexer};
 %}
 
 digit [0-9]
@@ -214,3 +207,12 @@ whitespace [ \t\f\u000B]
 <*>.     { std::cerr << "Unexpected char \'" << yytext[0] << "\'\n"; BEGIN(INITIAL);}
 
 %%
+
+/* Снимаем макрос, который Flex мог наложить */
+#ifdef yylex
+#undef yylex
+#endif
+
+int yylex() {
+    return bufferedLexer.getNextToken(); // Название метода, которое мы сменили
+}

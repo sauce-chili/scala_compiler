@@ -16,15 +16,15 @@ struct TokenWrap {
 };
 
 class BufferedYYLex {
-    std::deque<TokenWrap> buffer;
-    std::function<int()> lex;
+    std::deque<TokenWrap> _buffer;
+    std::function<int()> _lex;
 
 public:
-    explicit BufferedYYLex(const std::function<int()> &realLex) : lex(realLex) {
+    explicit BufferedYYLex(const std::function<int()> &realLex) : _lex(realLex) {
     }
 
     // вызываем в собственной обертке yylex
-    int yylex();
+    int getNextToken();
 
     void push(int tokenType, const YYSTYPE &value, int line);
 };
