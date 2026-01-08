@@ -85,10 +85,12 @@ int main(int argc, char **argv) {
             std::cout << "Parsing completed successfully!" << std::endl;
             if (root) {
                 std::cout << "AST Root created at address: " << root << std::endl;
+                createDotTree(root, "after_transform.txt");
                 // Здесь можно вызвать root->print() или подобный метод, если он есть
             } else {
                 std::cout << "AST Root not created at address: " << root << std::endl;
             }
+
         } else {
             std::cerr << "Parsing failed." << std::endl;
         }

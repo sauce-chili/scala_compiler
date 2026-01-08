@@ -1,7 +1,6 @@
 #include <iostream>
 #include <fstream>
 
-#include "../nodes/stats/TopStatSeqNode.h"
 
 void createDotTree(TopStatSeqNode* root, const std::string& filename) {
     if (root == nullptr) {
