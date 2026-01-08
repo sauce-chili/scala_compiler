@@ -14,7 +14,6 @@
     /* Объявление оригинальной функции Flex */
     int real_lex();
 
-    /* Глобальные инстансы - ИСПОЛЬЗУЕМ ФИГУРНЫЕ СКОБКИ */
     BufferedYYLex bufferedLexer{std::function<int()>(real_lex)};
     TokenProcessor processor{bufferedLexer};
 %}
