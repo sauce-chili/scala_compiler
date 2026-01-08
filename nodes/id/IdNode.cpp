@@ -15,15 +15,11 @@ IdNode *IdNode::createOperator(string op) {
 string IdNode::toDot() const {
     string dot;
 
-    dot += "id: " + name;
+    addDotNode(dot);
 
     return dot;
 }
 
 string IdNode::getDotLabel() const {
-    string dot;
-
-    addDotNode(dot);
-
-    return dot;
+    return "id: " + name;
 }
