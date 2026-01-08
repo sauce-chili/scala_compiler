@@ -12,10 +12,13 @@
     void yyerror(TopStatSeqNode** out_root, const char* s);
 
     using namespace std;
+
+    const char* get_bison_token_name(int token);
 }
 
 /* для включения отладки */
 %define parse.trace
+%token-table
 
 /* Передаем указатель на корень AST */
 %parse-param { TopStatSeqNode** out_root }
@@ -573,3 +576,7 @@ fullID: '+'              { $$ = IdNode::createOperator("+"); }
       ;
 
 %%
+
+const char* get_bison_token_name(int token) {
+            return yytname[YYTRANSLATE(token)];
+}
