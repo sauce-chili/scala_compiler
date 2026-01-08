@@ -186,10 +186,13 @@
 %type <id> fullID
 
 
-%start topStatSeq
+%start scalaFile
 
 
 %%
+
+scalaFile: topStatSeq { *out_root = $1;}
+	 ;
 
 expr: IF '(' expr ')' nls expr semio ELSE expr { $$ = ExprNode::createIfElse($3, $6, $9); }
     | IF '(' expr ')' nls expr                 { $$ = ExprNode::createIf($3, $6); }
@@ -488,9 +491,6 @@ enumCase: CASE fullID classParamClause EXTENDS classParents { $$ = EnumCaseNode:
 	| CASE fullID %prec END_TEMPLATE                    { $$ = EnumCaseNode::createClassParents(_CASE_WITH_IDS, IdsNode::addIdToList(nullptr, $2), nullptr, nullptr); }
         | CASE ids ',' fullID                               { $$ = EnumCaseNode::createClassParents(_CASE_WITH_IDS, IdsNode::addIdToList($2, $4), nullptr, nullptr); } // Решает rr
 	;
-
-scalaFile: topStatSeq { *out_root = $1;}
-	 ;
 
 topStatSeq: topStat                 { $$ = TopStatSeqNode::addModifierToList(nullptr, $1); }
 	  | topStatSeq semi topStat { $$ = TopStatSeqNode::addModifierToList($1, $3); }
