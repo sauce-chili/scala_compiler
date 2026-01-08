@@ -1,7 +1,10 @@
 #include "ClassParamNode.h"
 
 ClassParamNode::ClassParamNode() {
-
+    modifiers = nullptr;
+    fullId = nullptr;
+    compoundType = nullptr;
+    assignExpr = nullptr;
 }
 
 ClassParamNode *ClassParamNode::createClassParam(ClassParamType type, ModifiersNode *modifiers, IdNode *fullId,

@@ -1,5 +1,10 @@
 #include "StableIdNode.h"
 
+StableIdNode::StableIdNode() {
+    identifier = nullptr;
+    stableId = nullptr;
+}
+
 StableIdNode *StableIdNode::createStableIdByFullId(IdNode *identifier) {
     StableIdNode* node = new StableIdNode();
     node->type = _STABLE_ID_IDENTIFIER;

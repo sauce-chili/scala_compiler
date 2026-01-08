@@ -1,7 +1,8 @@
 #include "ConstrInvokeNode.h"
 
 ConstrInvokeNode::ConstrInvokeNode() {
-
+    simpleType = nullptr;
+    arguments = nullptr;
 }
 
 ConstrInvokeNode *ConstrInvokeNode::createWithArgumentsNode(SimpleTypeNode *simpleType, ArgumentExprsNode *arguments) {

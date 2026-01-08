@@ -1,7 +1,10 @@
 #include "InfixExprNode.h"
 
 InfixExprNode::InfixExprNode() {
-
+    left = nullptr;
+    right = nullptr;
+    fullId = nullptr;
+    prefixExpr = nullptr;
 }
 
 InfixExprNode *InfixExprNode::createInfixFromPrefix(PrefixExprNode *prefixExpr) {

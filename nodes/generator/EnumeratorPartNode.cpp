@@ -1,7 +1,10 @@
 #include "EnumeratorPartNode.h"
 
 EnumeratorPartNode::EnumeratorPartNode() {
-
+    generator = nullptr;
+    fullId = nullptr;
+    compoundType = nullptr;
+    expr = nullptr;
 }
 
 EnumeratorPartNode *EnumeratorPartNode::createGeneratorEnumeratorPart(GeneratorNode *generator) {

@@ -1,7 +1,8 @@
 #include "ClassParentsNode.h"
 
 ClassParentsNode::ClassParentsNode() {
-
+    constr = nullptr;
+    simpleTypes = nullptr;
 }
 
 ClassParentsNode *ClassParentsNode::createClassParents(ConstrInvokeNode *constr, SimpleTypesNode *simpleTypes) {

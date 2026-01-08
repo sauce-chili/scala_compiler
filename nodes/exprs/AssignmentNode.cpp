@@ -6,7 +6,11 @@
 #include "nodes/id/IdNode.h"
 
 AssignmentNode::AssignmentNode() {
-
+    fullId = nullptr;
+    expr = nullptr;
+    simpleExpr = nullptr;
+    simpleExpr1 = nullptr;
+    argumentExprs = nullptr;
 }
 
 AssignmentNode *AssignmentNode::createIdAssignment(IdNode *fullId, ExprNode *expr) {

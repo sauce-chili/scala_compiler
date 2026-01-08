@@ -1,7 +1,9 @@
 #include "TryExprNode.h"
 
 TryExprNode::TryExprNode() {
-
+    tryExpr = nullptr;
+    catchExpr = nullptr;
+    finallyNode = nullptr;
 }
 
 TryExprNode *TryExprNode::createExceptionBlock(ExprNode *tryExpr, ExprNode *catchExpr, ExprNode *finallyNode) {

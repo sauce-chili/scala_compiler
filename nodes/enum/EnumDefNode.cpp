@@ -1,7 +1,10 @@
 #include "EnumDefNode.h"
 
 EnumDefNode::EnumDefNode() {
-
+    fullId = nullptr;
+    modifier = nullptr;
+    classParams = nullptr;
+    enumTemplate = nullptr;
 }
 
 EnumDefNode *EnumDefNode::createWithAccessModifier(IdNode *fullId, ModifierNode *modifier, ClassParamsNode *classParams,

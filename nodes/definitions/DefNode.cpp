@@ -1,7 +1,9 @@
 #include "DefNode.h"
 
 DefNode::DefNode() {
-
+    varDefs = nullptr;
+    funDef = nullptr;
+    tmplDef = nullptr;
 }
 
 DefNode *DefNode::createVarDefs(VarDefsNode *varDefs) {

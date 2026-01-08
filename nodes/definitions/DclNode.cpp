@@ -1,11 +1,9 @@
-//
-// Created by Roman on 1/5/2026.
-//
-
 #include "DclNode.h"
 
 DclNode::DclNode() {
-
+    ids = nullptr;
+    compoundType = nullptr;
+    funSig = nullptr;
 }
 
 DclNode *DclNode::createVarDcl(IdsNode *ids, CompoundTypeNode *compoundType) {

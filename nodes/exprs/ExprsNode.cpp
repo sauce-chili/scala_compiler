@@ -1,7 +1,7 @@
 #include "ExprsNode.h"
 
 ExprsNode::ExprsNode() {
-
+    exprs = new std::list<ExprNode*>();
 }
 
 ExprsNode::ExprsNode(ExprNode *first) {

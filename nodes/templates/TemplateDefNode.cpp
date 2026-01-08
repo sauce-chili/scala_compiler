@@ -4,7 +4,11 @@
 #include "../enum/EnumDefNode.h"
 
 TemplateDefNode::TemplateDefNode() {
-
+    classDef = nullptr;
+    fullId = nullptr;
+    classTemplateOpt = nullptr;
+    traitTemplateOpt = nullptr;
+    enumDef = nullptr;
 }
 
 TemplateDefNode *TemplateDefNode::createClassDef(ClassDefNode *classDef) {

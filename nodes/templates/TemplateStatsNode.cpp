@@ -1,7 +1,7 @@
 #include "TemplateStatsNode.h"
 
 TemplateStatsNode::TemplateStatsNode() {
-
+    templateStats = new std::list<TemplateStatNode*>;
 }
 
 TemplateStatsNode::TemplateStatsNode(TemplateStatNode *first) {

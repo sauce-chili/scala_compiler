@@ -1,7 +1,8 @@
 #include "TopStatNode.h"
 
 TopStatNode::TopStatNode() {
-
+    modifiers = nullptr;
+    tmplDef = nullptr;
 }
 
 TopStatNode *TopStatNode::createTopStat(ModifiersNode *modifiers, TemplateDefNode *tmplDef) {

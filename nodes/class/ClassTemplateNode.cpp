@@ -1,7 +1,8 @@
 #include "ClassTemplateNode.h"
 
 ClassTemplateNode::ClassTemplateNode() {
-
+    classParents = nullptr;
+    templateStats = nullptr;
 }
 
 ClassTemplateNode* ClassTemplateNode::createClassTemplate(ClassParentsNode* classParents, TemplateStatsNode* templateStats) {

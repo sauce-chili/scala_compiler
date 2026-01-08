@@ -1,7 +1,8 @@
 #include "BlockStatNode.h"
 
 BlockStatNode::BlockStatNode() {
-
+    varDefs = nullptr;
+    expr = nullptr;
 }
 
 BlockStatNode *BlockStatNode::createVarDefsNode(VarDefsNode *varDefs) {

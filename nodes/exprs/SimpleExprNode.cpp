@@ -4,7 +4,9 @@
 #include "SimpleExpr1Node.h"
 
 SimpleExprNode::SimpleExprNode() {
-
+    constr = nullptr;
+    blockStats = nullptr;
+    simpleExpr1 = nullptr;
 }
 
 SimpleExprNode* SimpleExprNode::createConstrInvokeNode(ConstrInvokeNode* constr) {

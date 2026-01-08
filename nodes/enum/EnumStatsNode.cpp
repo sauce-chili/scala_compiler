@@ -1,7 +1,7 @@
 #include "EnumStatsNode.h"
 
 EnumStatsNode::EnumStatsNode() {
-
+    enumStats = new std::list<EnumStatNode*>;
 }
 
 EnumStatsNode::EnumStatsNode(EnumStatNode *enumStat) {

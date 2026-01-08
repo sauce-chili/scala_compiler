@@ -1,7 +1,9 @@
 #include "EnumCaseNode.h"
 
 EnumCaseNode::EnumCaseNode() {
-
+    ids = nullptr;
+    classParams = nullptr;
+    classParents = nullptr;
 }
 
 EnumCaseNode* EnumCaseNode::createClassParents(EnumCaseType type, IdsNode *ids, ClassParamsNode *classParams, ClassParentsNode *classParents) {

@@ -1,7 +1,9 @@
 #include "EnumStatNode.h"
 
 EnumStatNode::EnumStatNode() {
-
+    templateStat = nullptr;
+    modifiers = nullptr;
+    enumCase = nullptr;
 }
 
 EnumStatNode *EnumStatNode::createWithTemplateStat(TemplateStatNode *templateStat) {

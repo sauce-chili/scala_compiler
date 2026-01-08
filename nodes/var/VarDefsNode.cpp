@@ -1,7 +1,9 @@
 #include "VarDefsNode.h"
 
 VarDefsNode::VarDefsNode() {
-
+    ids = nullptr;
+    compoundType = nullptr;
+    expr = nullptr;
 }
 
 VarDefsNode *VarDefsNode::createVal(IdsNode* ids, CompoundTypeNode* compoundType, ExprNode* expr) {

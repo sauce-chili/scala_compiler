@@ -1,7 +1,10 @@
 #include "ClassDefNode.h"
 
 ClassDefNode::ClassDefNode() {
-
+    fullId = nullptr;
+    modifier = nullptr;
+    classParams = nullptr;
+    classTemplateOpt = nullptr;
 }
 
 ClassDefNode *ClassDefNode::createClassDef(IdNode *fullId, ModifierNode *modifier, ClassParamsNode *classParams,

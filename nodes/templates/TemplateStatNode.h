@@ -2,7 +2,7 @@
 #define SCALA_LEXER_TEMPLATESTATNODE_H
 
 #include "../Node.h"
-class DefNode; // Разрываем цикл с определениями
+class DefNode;
 class ModifiersNode;
 class DclNode;
 

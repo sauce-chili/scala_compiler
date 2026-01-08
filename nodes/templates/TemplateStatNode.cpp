@@ -4,7 +4,9 @@
 #include "../modifier/ModifiersNode.h"
 
 TemplateStatNode::TemplateStatNode() {
-
+    modifiers = nullptr;
+    def = nullptr;
+    dcl = nullptr;
 }
 
 TemplateStatNode *TemplateStatNode::createDefTemplate(ModifiersNode *modifiers, DefNode *def) {

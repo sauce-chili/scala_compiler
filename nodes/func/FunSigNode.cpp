@@ -1,7 +1,8 @@
 #include "FunSigNode.h"
 
 FunSigNode::FunSigNode() {
-
+    fullId = nullptr;
+    params = nullptr;
 }
 
 FunSigNode *FunSigNode::createFunSig(IdNode *fullId, FuncParamsNode *params) {

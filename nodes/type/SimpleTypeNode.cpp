@@ -1,7 +1,8 @@
 #include "SimpleTypeNode.h"
 
 SimpleTypeNode::SimpleTypeNode() {
-
+    stableId = nullptr;
+    compoundType = nullptr;
 }
 
 SimpleTypeNode *SimpleTypeNode::createStableIdNode(StableIdNode *stableId) {

@@ -1,7 +1,8 @@
 #include "ConstrExprNode.h"
 
 ConstrExprNode::ConstrExprNode() {
-
+    argumentExprs = nullptr;
+    blockStats = nullptr;
 }
 
 ConstrExprNode *ConstrExprNode::createConstrExpr(ArgumentExprsNode *argumentExprs, BlockStatsNode *blockStats) {

@@ -1,7 +1,8 @@
 #include "ClassTemplateOptNode.h"
 
 ClassTemplateOptNode::ClassTemplateOptNode() {
-
+    classTemplate = nullptr;
+    templateStats = nullptr;
 }
 
 ClassTemplateOptNode* ClassTemplateOptNode::addFuncParamToBackToList(ClassTemplateNode* classTemplate, TemplateStatsNode* templateStats) {

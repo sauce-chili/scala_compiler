@@ -1,7 +1,9 @@
 #include "FuncParamNode.h"
 
 FuncParamNode::FuncParamNode() {
-
+    fullId = nullptr;
+    compoundType = nullptr;
+    assignExpr = nullptr;
 }
 
 FuncParamNode *FuncParamNode::createClassParam(IdNode *fullId, CompoundTypeNode *compoundType, AssignExprNode *assignExpr) {

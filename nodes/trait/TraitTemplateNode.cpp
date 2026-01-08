@@ -4,7 +4,9 @@
 #include "../templates/TemplateStatsNode.h"
 
 TraitTemplateNode::TraitTemplateNode() {
-
+    simpleType = nullptr;
+    simpleTypes = nullptr;
+    templateStats = nullptr;
 }
 
 TraitTemplateNode *TraitTemplateNode::createTraitTemplate(SimpleTypeNode *simpleType, SimpleTypesNode *simpleTypes,

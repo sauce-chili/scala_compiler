@@ -1,7 +1,9 @@
 #include "GeneratorNode.h"
 
 GeneratorNode::GeneratorNode() {
-
+    fullId = nullptr;
+    compoundType = nullptr;
+    expr = nullptr;
 }
 
 GeneratorNode *GeneratorNode::createGenerator(IdNode *fullId, CompoundTypeNode *compoundType, ExprNode *expr) {

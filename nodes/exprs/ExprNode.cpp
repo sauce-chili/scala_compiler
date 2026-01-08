@@ -6,6 +6,10 @@
 
 ExprNode::ExprNode() {
     exprs = new std::list<ExprNode*>;
+    tryExpr = nullptr;
+    enumerators = nullptr;
+    infixExpr = nullptr;
+    assignment = nullptr;
 }
 
 ExprNode *ExprNode::createIfElse(ExprNode *cond, ExprNode *trueB, ExprNode *falseB) {

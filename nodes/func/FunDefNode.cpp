@@ -1,7 +1,11 @@
 #include "FunDefNode.h"
 
 FunDefNode::FunDefNode() {
-
+    funSig = nullptr;
+    compoundType = nullptr;
+    constrExpr = nullptr;
+    expr = nullptr;
+    funcParams = nullptr;
 }
 
 FunDefNode *FunDefNode::createFunSigFunDef(FunSigNode *funSig, CompoundTypeNode *compoundType, ExprNode *expr) {

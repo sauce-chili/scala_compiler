@@ -2,7 +2,8 @@
 #include "../templates/TemplateStatsNode.h"
 
 TraitTemplateOptNode::TraitTemplateOptNode() {
-
+    traitTemplate = nullptr;
+    templateStats = nullptr;
 }
 
 TraitTemplateOptNode *TraitTemplateOptNode::createTraitTemplateOpt(TraitTemplateNode *traitTemplate, TemplateStatsNode *templateStats) {

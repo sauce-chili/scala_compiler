@@ -4,7 +4,17 @@
 #include "../id/IdNode.h"
 
 SimpleExpr1Node::SimpleExpr1Node() {
+    intValue = 0;
+    charValue = '\0';
+    doubleValue = 0.0;
+    stringValue = "";
+    boolValue = false;
 
+    simpleExpr = nullptr;
+    expr = nullptr;
+    argumentExprs = nullptr;
+    simpleExpr1 = nullptr;
+    identifier = nullptr;
 }
 
 SimpleExpr1Node* SimpleExpr1Node::createIntNode(int value) {

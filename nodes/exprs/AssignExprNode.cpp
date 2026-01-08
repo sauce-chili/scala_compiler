@@ -1,7 +1,7 @@
 #include "AssignExprNode.h"
 
 AssignExprNode::AssignExprNode() {
-
+    expr = nullptr;
 }
 
 AssignExprNode *AssignExprNode::createAssignExprNode(ExprNode *expr) {

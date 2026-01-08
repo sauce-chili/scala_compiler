@@ -1,7 +1,7 @@
 #include "PrefixExprNode.h"
 
 PrefixExprNode::PrefixExprNode() {
-
+    simpleExpr = nullptr;
 }
 
 PrefixExprNode *PrefixExprNode::createPrefixExprNode(SimpleExprNode *simpleExpr, PrefixExprType type) {

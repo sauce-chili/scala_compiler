@@ -11,6 +11,8 @@ public:
     IdNode* identifier;
     StableIdNode* stableId;
 
+    StableIdNode();
+
     static StableIdNode* createStableIdByFullId(IdNode* identifier);
     static StableIdNode* createSuperCallStableId(IdNode* identifier);
     static StableIdNode* createThisCallStableIdBy(IdNode* identifier);

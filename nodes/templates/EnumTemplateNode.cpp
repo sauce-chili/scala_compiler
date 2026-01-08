@@ -1,7 +1,8 @@
 #include "EnumTemplateNode.h"
 
 EnumTemplateNode::EnumTemplateNode() {
-
+    classParents = nullptr;
+    enumStats = nullptr;
 }
 
 EnumTemplateNode *EnumTemplateNode::createWithClassParents(ClassParentsNode *classParents, EnumStatsNode *enumStats) {
