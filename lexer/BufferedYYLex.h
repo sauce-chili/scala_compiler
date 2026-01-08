@@ -13,6 +13,7 @@ struct TokenInfo {
     int type = YYEMPTY;
     YYSTYPE value;
     int line = -1;
+    string tokenName = "NON";
 };
 
 class BufferedYYLex {
@@ -26,7 +27,7 @@ public:
     // вызываем в собственной обертке yylex
     int getNextToken();
 
-    void push(int tokenType, const YYSTYPE &value, int line);
+    void push(const TokenInfo& info);
 };
 
 

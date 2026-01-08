@@ -12,6 +12,8 @@
 
 extern "C" int real_lineno;
 
+extern const char *get_bison_token_name(int token);
+
 TokenProcessor::TokenProcessor(BufferedYYLex &lexer) : bufferedLexer(lexer) {
     nl_enabled_stack.push_back(true); // Изначально переводы строк разрешены
 }
@@ -148,7 +150,7 @@ void TokenProcessor::onNewLine() {
 int TokenProcessor::onToken(int tokenType) {
     // https://scala-lang.org/files/archive/spec/2.13/01-lexical-syntax.html#newline-characters
 
-    TokenInfo currentToken = {tokenType, yylval, real_lineno};
+    TokenInfo currentToken = {tokenType, yylval, real_lineno, get_bison_token_name(tokenType)};
 
     // 1. Проверяем условия вставки NL
     bool nl_enabled = nl_enabled_stack.empty() ? true : nl_enabled_stack.back();
@@ -165,18 +167,17 @@ int TokenProcessor::onToken(int tokenType) {
         std::memset(&emptyVal, 0, sizeof(YYSTYPE));
         if (pending_nl_count == 1) {
             // Текущий токен в очередь, возвращаем NL
-            bufferedLexer.push(currentToken.type, currentToken.value, currentToken.line);
+            bufferedLexer.push(currentToken);
             update_state_by_current_token(currentToken);
             pending_nl_count = 0;
             // !!! ВАЖНО: Обнуляем глобальный yylval перед возвратом NL
             yylval = emptyVal;
             // cout << "NL inserted" << endl;
             return NL;
-        }
-        else {
+        } else {
             // Для 2 и более NL: возвращаем NL, в очередь еще один NL и сам токен
-            bufferedLexer.push(NL,emptyVal, real_lineno);
-            bufferedLexer.push(currentToken.type, currentToken.value, currentToken.line);
+            bufferedLexer.push({NL, emptyVal, real_lineno, "NL"});
+            bufferedLexer.push(currentToken);
             update_state_by_current_token(currentToken);
             pending_nl_count = 0;
             // !!! ВАЖНО: Обнуляем глобальный yylval перед возвратом NL

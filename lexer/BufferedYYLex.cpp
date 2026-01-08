@@ -4,8 +4,8 @@
 
 #include "BufferedYYLex.h"
 
-void BufferedYYLex::push(int tokenType, const YYSTYPE &value, int line) {
-    _buffer.push_back({tokenType, value, line});
+void BufferedYYLex::push(const TokenInfo &info) {
+    _buffer.push_back(info);
 }
 
 
@@ -14,8 +14,8 @@ int BufferedYYLex::getNextToken() {
         return _lex();
     }
 
-    auto [type, value, line] = _buffer.front();
+    TokenInfo& t = _buffer.front();
     _buffer.pop_front();
-    yylval = value;
-    return type;
+    yylval = t.value;
+    return t.type;
 }
