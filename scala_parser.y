@@ -321,8 +321,9 @@ blockStats: blockStat                 { $$ = BlockStatsNode::addBlockStatToList(
           | blockStats semi blockStat { $$ = BlockStatsNode::addBlockStatToList($1, $3); }
           ;
 
-blockStat: varDefs { $$ = BlockStatNode::createVarDefsNode($1); }
-         | expr    { $$ = BlockStatNode::createExprNode($1); }
+blockStat: /* empty */ { $$ = nullptr; }
+	 | varDefs     { $$ = BlockStatNode::createVarDefsNode($1); }
+         | expr        { $$ = BlockStatNode::createExprNode($1); }
          ;
 
 ids: fullID         { $$ = IdsNode::addIdToList(nullptr, $1); }
