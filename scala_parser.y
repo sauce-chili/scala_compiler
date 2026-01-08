@@ -295,7 +295,7 @@ simpleExpr1: literal                   { $$ = $1; }
 argumentExprs: '(' exprs ')' { $$ = new ArgumentExprsNode($2); }
              ;
 
-exprs: /* empty */    { $$ = new ExprsNode(); } // TODO проверить второе null
+exprs: /* empty */    { $$ = new ExprsNode(); }
      | expr           { $$ = ExprsNode::addExprToList(nullptr, $1); }
      | exprs ',' expr { $$ = ExprsNode::addExprToList($1, $3); }
      ;
