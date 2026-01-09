@@ -305,6 +305,7 @@ exprs: /* empty */    { $$ = new ExprsNode(); }
      ;
 
 constrInvoke: simpleType argumentExprs { $$ = ConstrInvokeNode::createWithArgumentsNode($1, $2); } // бывший constr
+	    | simpleType 	       { $$ = ConstrInvokeNode::createWithArgumentsNode($1, nullptr); }
       	    ;
 
 compoundType: simpleType                   { $$ = CompoundTypeNode::addStableId(nullptr, $1); }
