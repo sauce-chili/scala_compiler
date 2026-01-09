@@ -529,7 +529,7 @@ nlo: /* empty */
    ;
 
 semi: ';'
-    | NL nls
+    | NL nlo
     ;
 
 semio: /* empty */
