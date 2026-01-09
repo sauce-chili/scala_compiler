@@ -38,6 +38,7 @@ public:
     static SimpleExpr1Node* createSimpleExprFieldAccessNode(IdNode* identifier, SimpleExprNode* expr);
     static SimpleExpr1Node* createArgumentCallNode(ExprNode* expr);
     static SimpleExpr1Node* createEmptyCallNode();
+    static SimpleExpr1Node* createPlainThisNode();
 
     string toDot() const override;
     string getDotLabel() const override;

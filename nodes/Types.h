@@ -48,6 +48,7 @@ enum SimpleExpr1Type {
     _ARGUMENT_CALL,
     _EMPTY_CALL,
     _METHOD_CALL,
+    _PLAIN_THIS,
 };
 
 enum PrefixExprType {

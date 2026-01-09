@@ -108,6 +108,12 @@ SimpleExpr1Node* SimpleExpr1Node::createEmptyCallNode() {
     return node;
 }
 
+SimpleExpr1Node *SimpleExpr1Node::createPlainThisNode() {
+    SimpleExpr1Node* node = new SimpleExpr1Node();
+    node->type = _PLAIN_THIS;
+    return node;
+}
+
 string SimpleExpr1Node::toDot() const {
     string dot;
 
