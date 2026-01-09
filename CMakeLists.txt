@@ -24,6 +24,9 @@ file(GLOB_RECURSE LEXER_UTILS_SOURCES "lexer/*.cpp")
 BISON_TARGET(MyParser scala_parser.y ${CMAKE_CURRENT_BINARY_DIR}/scala_parser.cpp
         COMPILE_FLAGS "-v -d --report=solved --report-file=${CMAKE_CURRENT_BINARY_DIR}/bison.report"
 )
+#BISON_TARGET(MyParser scala_parser.y ${CMAKE_CURRENT_BINARY_DIR}/scala_parser.cpp
+#        COMPILE_FLAGS "-v -Wcounterexamples -Wno-conflicts-sr --report=solved --report-file=${CMAKE_CURRENT_BINARY_DIR}/bison.report"
+#)
 
 # Настройка FLEX
 FLEX_TARGET(MyScanner scala_lexer.l ${CMAKE_CURRENT_BINARY_DIR}/scala_lexer.cpp)
