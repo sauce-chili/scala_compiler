@@ -18,6 +18,7 @@
 
 /* для включения отладки */
 %define parse.trace
+%define parse.error verbose
 %token-table
 
 /* Передаем указатель на корень AST */
