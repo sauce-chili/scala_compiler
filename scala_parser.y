@@ -123,12 +123,13 @@
 %left '|' ID_VERTICAL_SIGN
 %left '^' ID_CIRCUMFLEX
 %left '&' ID_AMPERSAND
-%left EQUAL NOT_EQUAL ID_EQUALITY
+%left EQUAL NOT_EQUAL ID_EQUALITY '!' ID_EXCLAMATION
 %left '<' '>' GREATER_OR_EQUAL LESS_OR_EQUAL ID_LESS ID_GREAT
 %right ID_COLON
 %left '+' '-' ID_MINUS ID_PLUS
 %left '*' '/' '%' ID_ASTERISK ID_SLASH ID_PERCENT
-%left ID '#' '?' '@' '\\' '!' '~' ID_EXCLAMATION ID_TILDE
+%left '~' ID_TILDE
+%left ID '#' '?' '@' '\\'
 %right UMINUS UPLUS
 %right ULOGNOT UBINNOT
 %left '.'
