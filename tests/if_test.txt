@@ -1,0 +1,49 @@
+class Person {
+    def abc(): Unit = {
+        if (x > 3) y = 4
+
+        x = 3
+    }
+}
+
+class Person {
+    def abc(): Unit = {
+        if (x > 3) y = 4;
+
+        x = 3
+    }
+}
+
+class Person {
+    def abc(): Unit = {
+        if (x > 3) {
+            y = 4
+        }
+
+        x = 3
+    }
+}
+
+class Person {
+    def abc(): Unit = {
+        if (x > 3) {
+            y = 4
+        };
+
+        x = 3
+    }
+}
+
+class Person {
+    def abc(): Unit = {
+        if (x > 3) y = 4
+        if (x > 3) y = 4;
+        if (x > 3) {
+            y = 4
+        }
+        if (x > 3) {
+            y = 4
+        };
+        x = 3
+    }
+}

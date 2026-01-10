@@ -1,0 +1,261 @@
+// BigGrammarTest.scala
+// Comprehensive grammar test for the provided Bison grammar (based on Scala 2.13 style).
+
+// method and field names
+class Ops {
+    // simple vals and vars
+    val topInt: Int = 3
+    val TopInt: Int = 2
+    val _topInt: Int = 3
+    val _TopInt: Int = 3
+    val _topInt: Int = 3
+    val _topInt: Int = 3
+    val _topInt: Int = 3
+    val _topInt: Int = 3
+    val topInt: Int = 42
+    val topInt: Int = 42
+    val topInt: Int = 42
+    val topInt: Int = 42
+    val topInt: Int = 42
+    val topInt: Int = 42
+    var topStr: String = "hello"
+    val topBool = true;
+    var topUnit: Unit = ()
+
+    def id(x: Int): Int = x
+    def add(a: Int, b: Int = 10): Int = a + b
+    def sideEffect(): Unit = { println("side effect"); () }
+    def unaryOpsTest(x: Int): Int = +x + -x
+
+    var a = new Ops();
+    def +(o: Ops): Ops = this
+    def !(): Boolean = false
+    def **(n: Int): Int = n * 2
+}
+
+
+class Outer {
+  val x = 1
+
+  class Inner {
+    val x = 2
+
+    def printOuterX(): Int =
+      Outer.this.x
+  }
+}
+
+
+
+
+//////////////////////
+// Class definitions: params (val/var/unmarked), access modifiers, class templates and extends/with
+//////////////////////
+
+class Person(private val name: String, var age: Int = 0) extends Human(name) with java.io.Serializable {
+    val _ops = new Ops()
+
+    // primary constructor body (blockStats)
+    val info: String = name + ":" + age
+    def birthday(): Unit = { age = age + 1; () }
+    def greet(prefix: String): String = prefix + " " + name
+}
+
+
+
+
+trait Greeter {
+  def greet(name: String): String
+}
+
+object Single {
+  val x = 1
+  def hello() = "object hello"
+}
+
+class C1 {} // short form
+class C2() {} // explicit empty param clause
+class C3(a: Int) extends C1 {}
+
+//////////////////////
+// Template definitions: object, trait, enum (grammar supports ENUM)
+//////////////////////
+
+enum Color {
+
+
+
+  case RED, GREEN, BLUE
+}
+
+//////////////////////
+// Enums with params / extends (exercise enumCase forms)
+//////////////////////
+
+enum Shape extends Serializable {
+  case Circle(radius: Double) extends AnyRef
+  case Rectangle(width: Double, height: Double)
+  case UnitShape
+}
+
+//////////////////////
+// Variable definitions, declarations (dcl), and assignments
+//////////////////////
+
+// field assignment
+class WithField { var f: Int = 0 }
+
+//////////////////////
+// Control flow: if/else, while, do while, for, for-yield, try/catch/finally, throw, return
+//////////////////////
+
+class Flows {
+    def flowExamples(xs: Int): Int = {
+        // if-else
+        val tmp = if (xs.nonEmpty) xs.head else -1
+
+        val wf = new WithField()
+        wf.f = 123
+
+        // array assignment (simpleExpr1 argumentExprs '=' expr)
+        val arr = Array(0,1,2,3)
+        arr(1) = 42
+
+        // assignment to id
+        var assignTarget = 0
+        assignTarget = arr(1) + 7
+
+        // while
+        var i = 0
+        var res: Int = Seq.empty
+        while (i < xs.length) {
+            res = res :+ xs(i)
+            i = i + 1
+        }
+
+        // do-while
+        var cnt = 0
+        do {
+            cnt = cnt + 1
+        } while (cnt < 1)
+
+        // for with generator and for-yield
+        val ys = for (x <- xs) yield x * 2
+
+        // nested generators and enumerators: generator with fullID + compoundType (x: Int <- expr)
+        val z = for (x: Int <- xs) yield x + 1
+
+        // try/catch/finally (catch uses block exprs)
+        val maybe: Int =
+        try {
+          if (xs.isEmpty) throw new RuntimeException("empty");;
+          xs.head
+        } catch {
+          { println("caught"); -999 }
+        } finally {
+          println("finally block")
+        }
+
+        res ++ ys ++ z
+    }
+
+    // throw / return usage inside function
+    def thrower(flag: Boolean): Int = {
+      if (!flag) throw new IllegalArgumentException("flag must be true");;
+      return 1
+    }
+
+    // do/while with semicolons and NL separation
+    def doExample(): Unit = {
+      var x = 0;
+      do {
+        x = x + 1;
+      } while (x < 2)
+    }
+
+    //////////////////////
+    // Infix expressions: many operators, ID tokens, compound expressions
+    //////////////////////
+
+    def infixTest(a: Int, b: Int): Boolean = {
+      val r1 = a + b * 2 - (a / 2)
+      val r2 = (a % b) # 5   // '#' treated as operator token in grammar
+      val r3 = a < b || a == b
+      // custom ID operator calls (ID tokens)
+      val fakeOp = (a :: b) // using :: to test ID-like tokens (parser sees ID)
+      true
+    }
+}
+
+
+//////////////////////
+// Prefix/unary operators and method/field accesses (THIS/SUPER)
+//////////////////////
+
+class Base { def foo(): Int = 1 }
+class Derived extends Base {
+  override def foo() = super.foo + 1
+  def testThisSuper(): Int = {
+    val s = this.foo
+    val sp = super.foo
+    s + sp
+  }
+}
+
+//////////////////////
+// Function parameters and defaults; this-constructor invocation (constrExpr)
+//////////////////////
+class Point(x: Int, y: Int) {
+  def this(x: Int) = { this(x, 0); }; // this argument-constructor
+  def this(x: Int) = { this(x, 0); } // this argument-constructor
+  def this(x: Int) = this(x, 0); // this argument-constructor
+  def this(x: Int) = this(x, 0) // this argument-constructor
+
+  def dist(): Double = math.sqrt((x*x + y*y).toDouble)
+}
+
+//////////////////////
+// Template stats + nested defs and empty template bodies / END_TEMPLATE edge case (represented by braces)
+//////////////////////
+
+trait Printable {
+  def printMe(): Unit
+}
+
+class Holder extends Printable {
+  def printMe(): Unit = println("Holder")
+}
+
+//////////////////////
+// Template: class with class parameters using VAL / VAR / unmarked
+//////////////////////
+
+class Config(private val host: String, var port: Int, timeout: Int = 30) {
+  def uri(): String = host + ":" + port.toString
+
+  //////////////////////
+  // Misc: compound types, arrays, simple types usage
+  //////////////////////
+
+  //val typedList: Array[Int] = List(1,2,3)
+  //val arrOfArr: Array[Array[Int]] = Array(Array(1,2), Array(3,4))
+
+  //////////////////////
+  // Complex nested expressions and argument lists
+  //////////////////////
+  def complexCall(): Int = {
+    val nested = new Person("Bob", 25).greet("Hello").length
+    val x = (1 + 2) * (3 + (4 - 5)) / 2
+    x
+  }
+}
+
+//////////////////////
+// ENUM + CASE variations
+//////////////////////
+
+enum ComplexEnum {
+  case A() extends SomeParent(1)
+  case B(param: Int)
+  case C, D
+}
