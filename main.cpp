@@ -16,8 +16,8 @@ int yyparse(TopStatSeqNode **root);
 int yylex();
 
 extern "C" {
-extern FILE *real_in;
-extern int real_lineno;
+    extern FILE *real_in;
+    extern int real_lineno;
 }
 
 extern int yydebug;
@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
             // Вывод: ID токена
             // В идеале можно сделать switch-case для красивого вывода имен токенов,
             // но для базовой проверки достаточно ID.
-            std::cout << "Token: " << get_bison_token_name(token) << " (" << token << ")" << std::endl;
+            std::cout<< real_lineno << " | " << "Token: " << get_bison_token_name(token) << " (" << token << ")" << std::endl;
         }
     } else {
         std::cout << "--- Running in PARSER mode ---" << std::endl;
