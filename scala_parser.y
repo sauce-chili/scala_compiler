@@ -399,11 +399,11 @@ accessModifier: PRIVATE   { $$ = ModifierNode::createModifier(_PRIVATE); }
 
 /* --------------------- CLASS --------------------- */
 
-templateBody: nlo '{' templateStat templateStats '}' { $$ = TemplateStatsNode::addFuncParamToFrontToList($4, $3); }
+templateBody: nlo '{' templateStats '}' { $$ = TemplateStatsNode::addFuncParamToFrontToList($3, nullptr); }
             ;
 
-templateStats: /* empty */                     { $$ = nullptr; }
-             | templateStats semi templateStat { $$ = TemplateStatsNode::addFuncParamToBackToList($1, $3); }
+templateStats: templateStat                     { $$ = TemplateStatsNode::addFuncParamToBackToList(nullptr, $1);; }
+             | templateStats semi templateStat  { $$ = TemplateStatsNode::addFuncParamToBackToList($1, $3); }
              ;
 
 templateStat: /* empty */   { $$ = nullptr; }
@@ -440,6 +440,7 @@ funDef: funSig compoundTypeO '=' expr       { $$ = FunDefNode::createFunSigFunDe
 
 constrExpr: THIS argumentExprs { $$ = ConstrExprNode::createConstrExpr($2, nullptr); } // вызов первичного конструктора, бывший selfInvocation
           | '{' THIS argumentExprs semi blockStats '}' { $$ = ConstrExprNode::createConstrExpr($3, $5); }
+          | '{' THIS argumentExprs '}' { $$ = ConstrExprNode::createConstrExpr($3, nullptr); }
           ;
 
 tmplDef: CLASS classDef                 { $$ = TemplateDefNode::createClassDef($2); }
