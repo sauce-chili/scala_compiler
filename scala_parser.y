@@ -249,15 +249,15 @@ infixExpr: prefixExpr { $$ = InfixExprNode::createInfixFromPrefix($1); }
 	 | infixExpr '\\' nlo infixExpr { $$ = InfixExprNode::createFromInfixes($1, IdNode::createOperator("\\"), $4); }
 	 | infixExpr '^' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createOperator("^"), $4); }
 	 | infixExpr '~' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createOperator("~"), $4); }
-	 | infixExpr PLUS_ASSIGNMENT nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr MINUS_ASSIGNMENT nlo infixExpr { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr MUL_ASSIGNMENT nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr DIV_ASSIGNMENT nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr MOD_ASSIGNMENT nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr EQUAL nlo infixExpr            { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr NOT_EQUAL nlo infixExpr        { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr GREATER_OR_EQUAL nlo infixExpr { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
-	 | infixExpr LESS_OR_EQUAL nlo infixExpr    { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
+	 | infixExpr PLUS_ASSIGNMENT nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createOperator("+="), $4); }
+	 | infixExpr MINUS_ASSIGNMENT nlo infixExpr { $$ = InfixExprNode::createFromInfixes($1, IdNode::createOperator("-="), $4); }
+	 | infixExpr MUL_ASSIGNMENT nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, IdNode::createOperator("*="), $4); }
+	 | infixExpr DIV_ASSIGNMENT nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, IdNode::createOperator("/="), $4); }
+	 | infixExpr MOD_ASSIGNMENT nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, IdNode::createOperator("%="), $4); }
+	 | infixExpr EQUAL nlo infixExpr            { $$ = InfixExprNode::createFromInfixes($1, IdNode::createOperator("="), $4); }
+	 | infixExpr NOT_EQUAL nlo infixExpr        { $$ = InfixExprNode::createFromInfixes($1, IdNode::createOperator("!="), $4); }
+	 | infixExpr GREATER_OR_EQUAL nlo infixExpr { $$ = InfixExprNode::createFromInfixes($1, IdNode::createOperator(">="), $4); }
+	 | infixExpr LESS_OR_EQUAL nlo infixExpr    { $$ = InfixExprNode::createFromInfixes($1, IdNode::createOperator("<="), $4); }
 	 | infixExpr ID nlo infixExpr               { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
 	 | infixExpr ID_EQUALITY nlo infixExpr      { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
 	 | infixExpr ID_VERTICAL_SIGN nlo infixExpr { $$ = InfixExprNode::createFromInfixes($1, IdNode::createId($2), $4); }
@@ -554,15 +554,15 @@ fullID: '+'              { $$ = IdNode::createOperator("+"); }
       | '\\'             { $$ = IdNode::createOperator("\\"); }
       | '^'              { $$ = IdNode::createOperator("^"); }
       | '~'              { $$ = IdNode::createOperator("~"); }
-      | PLUS_ASSIGNMENT  { $$ = IdNode::createId($1); }
-      | MINUS_ASSIGNMENT { $$ = IdNode::createId($1); }
-      | MUL_ASSIGNMENT   { $$ = IdNode::createId($1); }
-      | DIV_ASSIGNMENT   { $$ = IdNode::createId($1); }
-      | MOD_ASSIGNMENT   { $$ = IdNode::createId($1); }
-      | EQUAL            { $$ = IdNode::createId($1); }
-      | NOT_EQUAL        { $$ = IdNode::createId($1); }
-      | GREATER_OR_EQUAL { $$ = IdNode::createId($1); }
-      | LESS_OR_EQUAL    { $$ = IdNode::createId($1); }
+      | PLUS_ASSIGNMENT  { $$ = IdNode::createOperator("+="); }
+      | MINUS_ASSIGNMENT { $$ = IdNode::createOperator("-="); }
+      | MUL_ASSIGNMENT   { $$ = IdNode::createOperator("*="); }
+      | DIV_ASSIGNMENT   { $$ = IdNode::createOperator("/="); }
+      | MOD_ASSIGNMENT   { $$ = IdNode::createOperator("%="); }
+      | EQUAL            { $$ = IdNode::createOperator("="); }
+      | NOT_EQUAL        { $$ = IdNode::createOperator("!="); }
+      | GREATER_OR_EQUAL { $$ = IdNode::createOperator(">="); }
+      | LESS_OR_EQUAL    { $$ = IdNode::createOperator("<="); }
       | ID               { $$ = IdNode::createId($1); }
       | ID_EQUALITY      { $$ = IdNode::createId($1); }
       | ID_VERTICAL_SIGN { $$ = IdNode::createId($1); }
