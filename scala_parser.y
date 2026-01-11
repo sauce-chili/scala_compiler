@@ -229,7 +229,7 @@ enumeratorPart: generator                     { $$ = EnumeratorPartNode::createG
 generator: fullID compoundTypeO LEFT_ARROW expr { $$ = GeneratorNode::createGenerator($1, $2, $4); }
          ;
 
-compoundTypeO: /* empty */ %prec LOW_PREC { $$ = nullptr; }
+compoundTypeO: /* empty */                { $$ = nullptr; }
           | ':' compoundType              { $$ = $2; }
           ;
 
