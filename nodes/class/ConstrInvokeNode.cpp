@@ -1,13 +1,13 @@
 #include "ConstrInvokeNode.h"
 
 ConstrInvokeNode::ConstrInvokeNode() {
-    simpleType = nullptr;
+    stableId = nullptr;
     arguments = nullptr;
 }
 
-ConstrInvokeNode *ConstrInvokeNode::createWithArgumentsNode(SimpleTypeNode *simpleType, ArgumentExprsNode *arguments) {
+ConstrInvokeNode *ConstrInvokeNode::createConstrInvokeNode(StableIdNode *stableId, ArgumentExprsNode *arguments) {
     ConstrInvokeNode* node = new ConstrInvokeNode();
-    node->simpleType = simpleType;
+    node->stableId = stableId;
     node->arguments = arguments;
     return node;
 }
@@ -16,7 +16,7 @@ string ConstrInvokeNode::toDot() const {
     string dot;
 
     addDotNode(dot);
-    addDotChild(dot, simpleType, "simple type");
+    addDotChild(dot, stableId, "stable id");
     addDotChild(dot, arguments, "arguments expressions");
 
     return dot;

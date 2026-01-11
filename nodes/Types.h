@@ -32,6 +32,7 @@ enum SimpleExprType {
     _INSTANCE_CREATING,
     _BLOCK_STATS,
     _SIMPLE_EXPR_1,
+    _ARRAY_CREATING,
 };
 
 enum SimpleExpr1Type {

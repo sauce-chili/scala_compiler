@@ -30,6 +30,13 @@ SimpleExprNode* SimpleExprNode::createSimpleExpr1Node(SimpleExpr1Node* simpleExp
     return node;
 }
 
+SimpleExprNode *SimpleExprNode::createArrayCreatingNode(SimpleExpr1Node *simpleExpr1) {
+    SimpleExprNode* node = new SimpleExprNode();
+    node->type = _ARRAY_CREATING;
+    node->simpleExpr1 = simpleExpr1;
+    return node;
+}
+
 string SimpleExprNode::toDot() const {
     string dot;
 

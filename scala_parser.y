@@ -38,7 +38,6 @@
     ClassParamsNode* classParams;
     ClassParentsNode* classParents;
     ClassTemplateNode* classTemplate;
-    ConstrInvokeNode* constrInvoke;
     DclNode* dcl;
     DefNode* def;
     EnumCaseNode* enumCase;
@@ -152,7 +151,6 @@
 %type <simpleExpr1> simpleExpr1 literal
 %type <argumentExprs> argumentExprs
 %type <exprs> exprs
-%type <constrInvoke> constrInvoke
 %type <simpleType> simpleType
 %type <stableId> stableId
 %type <blockStats> blockStats
@@ -284,7 +282,10 @@ prefixExpr: simpleExpr { $$ = PrefixExprNode::createPrefixExprNode($1, _NO_UNARY
           | '!' simpleExpr %prec ULOGNOT { $$ = PrefixExprNode::createPrefixExprNode($2, _NOT); }
           ;
 
-simpleExpr: NEW constrInvoke   { $$ = SimpleExprNode::createConstrInvokeNode($2); }
+simpleExpr: NEW stableId argumentExprs { $$ = SimpleExprNode::createConstrInvokeNode(ConstrInvokeNode::createConstrInvokeNode($2, $3)); } // (бывший constrInvoke)
+	  | NEW stableId { $$ = SimpleExprNode::createConstrInvokeNode(ConstrInvokeNode::createConstrInvokeNode($2, nullptr)); } // (бывший constrInvoke)
+	  | NEW ARRAY '[' compoundType ']' argumentExprs { $$ = SimpleExprNode::createArrayCreatingNode(SimpleExpr1Node::createArrayWithTypeBuilderNode($4, $6)); }
+	  | NEW ARRAY argumentExprs { $$ = SimpleExprNode::createArrayCreatingNode(SimpleExpr1Node::createArrayBuilderNode($3)); } // argumentExprs принимает только 1 аргумент (размер массива)
           | '{' blockStats '}' { $$ = SimpleExprNode::createBlockStatsNode($2); } // бывший blockExpr
           | simpleExpr1        { $$ = SimpleExprNode::createSimpleExpr1Node($1); }
           ;
@@ -309,10 +310,6 @@ exprs: /* empty */    { $$ = new ExprsNode(); }
      | expr           { $$ = ExprsNode::addExprToList(nullptr, $1); }
      | exprs ',' expr { $$ = ExprsNode::addExprToList($1, $3); }
      ;
-
-constrInvoke: simpleType argumentExprs { $$ = ConstrInvokeNode::createWithArgumentsNode($1, $2); } // бывший constr
-	    | simpleType 	       { $$ = ConstrInvokeNode::createWithArgumentsNode($1, nullptr); }
-      	    ;
 
 compoundType: simpleType                   { $$ = CompoundTypeNode::addStableId(nullptr, $1); }
             | compoundType WITH simpleType { $$ = CompoundTypeNode::addStableId($1, $3); }
@@ -481,7 +478,8 @@ classTemplate: classParents templateBody       { $$ = ClassTemplateNode::createC
              | classParents %prec END_TEMPLATE { $$ = ClassTemplateNode::createClassTemplate($1, nullptr); }
              ;
 
-classParents: constrInvoke simpleTypes { $$ = ClassParentsNode::createClassParents($1, $2); }
+classParents: stableId argumentExprs simpleTypes { $$ = ClassParentsNode::createClassParents(ConstrInvokeNode::createConstrInvokeNode($1, $2), $3); } // (бывший constrInvoke)
+	    | stableId simpleTypes { $$ = ClassParentsNode::createClassParents(ConstrInvokeNode::createConstrInvokeNode($1, nullptr), $2); } // (бывший constrInvoke)
 	    ;
 
 traitTemplate: simpleType simpleTypes templateBody       { $$ = TraitTemplateNode::createTraitTemplate($1, $2, $3); }

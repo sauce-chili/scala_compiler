@@ -19,6 +19,7 @@ public:
     static SimpleExprNode* createConstrInvokeNode(ConstrInvokeNode* constr);
     static SimpleExprNode* createBlockStatsNode(BlockStatsNode* blockStats);
     static SimpleExprNode* createSimpleExpr1Node(SimpleExpr1Node* simpleExpr1);
+    static SimpleExprNode* createArrayCreatingNode(SimpleExpr1Node* simpleExpr1);
 
     string toDot() const override;
     string getDotLabel() const override;
