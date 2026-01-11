@@ -6,26 +6,23 @@
 #include <algorithm>
 #include <cstring>
 #include <iostream>
-#include <set>
-
-#include "nodes/Types.h"
 
 extern "C" int real_lineno;
 
 extern const char *get_bison_token_name(int token);
 
 TokenProcessor::TokenProcessor(BufferedYYLex &lexer) : bufferedLexer(lexer) {
-    nl_enabled_stack.push_back(true); // Изначально переводы строк разрешены
+    nlEnabledStack.push_back(true); // Изначально переводы строк разрешены
 }
 
-std::string TokenProcessor::remove_underscore(const char *text) {
+std::string TokenProcessor::removeUnderscore(const char *text) {
     std::string s(text);
     s.erase(std::ranges::remove(s, '_').begin(), s.end());
     return s;
 }
 
-long long TokenProcessor::to_int(const char *text, int base) {
-    std::string s = remove_underscore(text);
+long long TokenProcessor::toInt(const char *text, int base) {
+    std::string s = removeUnderscore(text);
     if (base == 2) {
         if (s.rfind("0b", 0) == 0 || s.rfind("0B", 0) == 0) s = s.substr(2);
         long long val = 0;
@@ -35,12 +32,12 @@ long long TokenProcessor::to_int(const char *text, int base) {
     return strtoll(s.c_str(), nullptr, base);
 }
 
-double TokenProcessor::to_double(const char *text) {
-    std::string s = remove_underscore(text);
+double TokenProcessor::toDouble(const char *text) {
+    std::string s = removeUnderscore(text);
     return atof(s.c_str());
 }
 
-bool TokenProcessor::can_begin_stmt(const int token) {
+bool TokenProcessor::canBeginStmt(const int token) {
     switch (token) {
         // каких-то токенов нет(на пример match или forSome, но мы их и не поддерживаем)
         case CATCH:
@@ -66,7 +63,7 @@ bool TokenProcessor::can_begin_stmt(const int token) {
 }
 
 
-bool TokenProcessor::can_end_stmt(const int token) {
+bool TokenProcessor::canEndStmt(const int token) {
     switch (token) {
         // каких-то токенов нет(на пример type, но мы их и не поддерживаем)
         case THIS:
@@ -129,20 +126,20 @@ bool TokenProcessor::can_end_stmt(const int token) {
     }
 }
 
-void TokenProcessor::update_state_by_current_token(const TokenInfo &info) {
+void TokenProcessor::updateStateByCurrentToken(const TokenInfo &info) {
     // Обновляем стек скобок (nl zone enable)
-    if (info.type == '(' || info.type == '[') nl_enabled_stack.push_back(false);
-    else if (info.type == '{') nl_enabled_stack.push_back(true);
-    else if ((info.type == ')' || info.type == ']') && !nl_enabled_stack.empty()) nl_enabled_stack.pop_back();
-    else if (info.type == '}' && !nl_enabled_stack.empty()) nl_enabled_stack.pop_back();
+    if (info.type == '(' || info.type == '[') nlEnabledStack.push_back(false);
+    else if (info.type == '{') nlEnabledStack.push_back(true);
+    else if ((info.type == ')' || info.type == ']') && !nlEnabledStack.empty()) nlEnabledStack.pop_back();
+    else if (info.type == '}' && !nlEnabledStack.empty()) nlEnabledStack.pop_back();
 
-    // Обновляем флаг окончания выражения
-    last_token = info;
+    lastToken = info;
+    pendingNlCount = 0;
 }
 
 void TokenProcessor::onNewLine() {
-    if (pending_nl_count < 2) {
-        pending_nl_count++;
+    if (pendingNlCount < 2) {
+        pendingNlCount++;
     }
     // Ничего не возвращаем, лексер Flex просто продолжит работу
 }
@@ -197,22 +194,22 @@ int TokenProcessor::onToken(int tokenType) {
 // --- Специфические методы ---
 
 int TokenProcessor::onDecimalLiteral(const char *text) {
-    yylval.intLiteral = (int) to_int(text, 10);
+    yylval.intLiteral = (int) toInt(text, 10);
     return onToken(DECIMAL_LITERAL);
 }
 
 int TokenProcessor::onHexLiteral(const char *text) {
-    yylval.intLiteral = (int) to_int(text, 16);
+    yylval.intLiteral = (int) toInt(text, 16);
     return onToken(DECIMAL_LITERAL);
 }
 
 int TokenProcessor::onBinLiteral(const char *text) {
-    yylval.intLiteral = (int) to_int(text, 2);
+    yylval.intLiteral = (int) toInt(text, 2);
     return onToken(DECIMAL_LITERAL);
 }
 
 int TokenProcessor::onDoubleLiteral(const char *text) {
-    yylval.doubleLiteral = to_double(text);
+    yylval.doubleLiteral = toDouble(text);
     return onToken(DOUBLE_LITERAL);
 }
 
@@ -228,7 +225,7 @@ int TokenProcessor::onStringLiteral(const std::string &text) {
 
 int TokenProcessor::onChar(char c) {
     yylval.charLiteral = c;
-    return onToken(yytokentype::CHAR_LITERAL);
+    return onToken(CHAR_LITERAL);
 }
 
 int TokenProcessor::onID(const char *text) {
@@ -274,7 +271,7 @@ int TokenProcessor::onID(const char *text) {
             break;
         // Остальные (например, @, ?, #, \) маппятся в общий ID,
         // если для них нет спец. токенов ID_... в парсере.
-        default: tokenType = yytokentype::ID;
+        default: tokenType = ID;
             break;
     }
 

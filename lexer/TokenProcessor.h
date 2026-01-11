@@ -12,21 +12,21 @@ class TokenProcessor {
     BufferedYYLex &bufferedLexer;
 
     // состояния для обработки NL токенов
-    int pending_nl_count = 0;
-    TokenInfo last_token;
-    std::vector<bool> nl_enabled_stack;
+    int pendingNlCount = 0;
+    TokenInfo lastToken;
+    std::vector<bool> nlEnabledStack;
 
-    std::string remove_underscore(const char *text);
+    std::string removeUnderscore(const char *text);
 
-    long long to_int(const char *text, int base);
+    long long toInt(const char *text, int base);
 
-    double to_double(const char *text);
+    double toDouble(const char *text);
 
-    bool can_begin_stmt(int token);
+    bool canBeginStmt(int token);
 
-    bool can_end_stmt(int token);
+    bool canEndStmt(int token);
 
-    void update_state_by_current_token(const TokenInfo& info);
+    void updateStateByCurrentToken(const TokenInfo &info);
 
 public:
     TokenProcessor(BufferedYYLex &lexer);
@@ -38,11 +38,17 @@ public:
     int onToken(int tokenType); // Перегрузка, если текст не нужен или уже в yylval
 
     int onDecimalLiteral(const char *text);
+
     int onHexLiteral(const char *text);
+
     int onBinLiteral(const char *text);
+
     int onDoubleLiteral(const char *text);
+
     int onBooleanLiteral(int token, bool value);
+
     int onStringLiteral(const std::string &text);
+
     int onChar(char c);
 
     int onID(const char *text);
