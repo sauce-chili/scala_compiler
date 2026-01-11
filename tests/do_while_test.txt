@@ -40,4 +40,10 @@ class Person {
         while (y < 200)
         x = 3
     }
+     def abc(): Unit = {
+        do
+        if (x > 3) { y = y + 4; }; else 4;
+        while (y < 200)
+        x = 3
+    }
 }
