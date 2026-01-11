@@ -209,6 +209,8 @@ expr: IF '(' expr ')' nls expr ELSE expr { $$ = ExprNode::createIfElse($3, $6, $
     | RETURN expr                              { $$ = ExprNode::createReturnExpr($2); }
     | FOR '(' enumerators ')' nls expr         { $$ = ExprNode::createFor($3, $6); }
     | FOR '(' enumerators ')' nls YIELD expr   { $$ = ExprNode::createForYield($3, $7); }
+    | FOR '{' enumerators '}' nls expr         { $$ = ExprNode::createFor($3, $6); }
+    | FOR '{' enumerators '}' nls YIELD expr   { $$ = ExprNode::createForYield($3, $7); }
     | infixExpr                                { $$ = ExprNode::createInfix($1); }
     | assignment                               { $$ = ExprNode::createAssignment($1); }
     ;
