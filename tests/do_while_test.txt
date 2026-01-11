@@ -1,4 +1,4 @@
-class Person {
+class DoWhiles {
     def abc(): Unit = {
         do
         if (x > 3) y = y + 4

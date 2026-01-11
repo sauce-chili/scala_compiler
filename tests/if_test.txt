@@ -1,20 +1,22 @@
-class Person {
+class ifs {
     def abc(): Unit = {
         if (x > 3) y = 4
 
         x = 3
     }
-}
 
-class Person {
+    def abc(): Unit = {
+        if (x > 3) y = 4; else y = 2;
+
+        x = 3
+    }
+
     def abc(): Unit = {
         if (x > 3) y = 4;
 
         x = 3
     }
-}
 
-class Person {
     def abc(): Unit = {
         if (x > 3) {
             y = 4
@@ -22,9 +24,7 @@ class Person {
 
         x = 3
     }
-}
 
-class Person {
     def abc(): Unit = {
         if (x > 3) {
             y = 4
@@ -32,9 +32,7 @@ class Person {
 
         x = 3
     }
-}
 
-class Person {
     def abc(): Unit = {
         if (x > 3) y = 4
         if (x > 3) y = 4;

@@ -1,0 +1,16 @@
+class Arrays {
+    val matrix: Array[Array[Int]] =
+      Array(
+        Array(1, 2, 3),
+        Array[Int](4, 5, 6),
+        Array(7, 8, 9)
+      )
+
+    val arr1: Array[Int] = Array(1, 2, 3)
+
+    val arr2 = Array(1, 2, 3)
+
+    def arraFunc(): Array[Int] = {
+        return Array(1, 2, 3);
+    }
+}

@@ -1,0 +1,15 @@
+class Ids {
+    val idName:   Int = 5
+    val _idName:  Int = 5
+    val id_Name:  Int = 5
+    val id_Name_+ : Int = 5
+    val +         : Int = 5
+    val ++++ :     Int = 5
+    val !!! :      Int = 5
+    val abc_++++ : Int = 5
+    val !+!+!+! :  Int = 5
+    val id_Name = 5
+    val id_Name_+ = 5
+    val + = 5
+    val ++++ = 5
+}

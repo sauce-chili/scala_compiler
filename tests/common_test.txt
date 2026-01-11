@@ -5,21 +5,6 @@
 class Ops {
     // simple vals and vars
     val topInt: Int = 3
-    val TopInt: Int = 2
-    val _topInt: Int = 3
-    val _TopInt: Int = 3
-    val _topInt: Int = 3
-    val _topInt: Int = 3
-    val _topInt: Int = 3
-    val _topInt: Int = 3
-    val topInt: Int = 42
-    val topInt: Int = 42
-    val topInt: Int = 42
-    val topInt: Int = 42
-    val topInt: Int = 42
-    val topInt: Int = 42
-    var topStr: String = "hello"
-    val topBool = true;
     var topUnit: Unit = ()
 
     def id(x: Int): Int = x
