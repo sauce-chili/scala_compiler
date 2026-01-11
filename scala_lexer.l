@@ -57,9 +57,11 @@ whitespace [ \t\f\u000B]
 <MULTILINE_COMMENT>\*+[^/] { buff += yytext; }
 <MULTILINE_COMMENT>\*+\/ { /* std::cout << "Multiline comment: " << buff << std::endl; */ BEGIN(INITIAL); }
 
-"Int"|"Double"|"String"|"Char"|"Boolean"|"Unit"|"Array" {
+"Int"|"Double"|"String"|"Char"|"Boolean"|"Unit" {
     return processor.onID(yytext);
 }
+
+"Array"     { return processor.onToken(ARRAY); }
 
 "class"     { return processor.onToken(CLASS); }
 "trait"     { return processor.onToken(TRAIT); }

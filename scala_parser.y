@@ -296,6 +296,7 @@ simpleExpr1: literal                   { $$ = $1; }
            | '(' expr ')'              { $$ = SimpleExpr1Node::createArgumentCallNode($2); }
            | '(' ')'                   { $$ = SimpleExpr1Node::createEmptyCallNode(); }
            | simpleExpr1 argumentExprs { $$ = SimpleExpr1Node::createMethodCallNode($1, $2); } // вызов метода
+           | ARRAY argumentExprs       {$$ = nullptr;/* TODO array-builder */ }
            ;
 
 argumentExprs: '(' exprs ')' { $$ = new ArgumentExprsNode($2); }
