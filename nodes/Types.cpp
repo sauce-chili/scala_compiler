@@ -21,6 +21,8 @@ std::string simpleExpr1ToString(SimpleExpr1Type t) {
         case _ARGUMENT_CALL:           return "Argument call";
         case _EMPTY_CALL:              return "Empty call";
         case _METHOD_CALL:             return "Method call";
+        case _ARRAY_BUILDER:           return "Array builder";
+        case _ARRAY_WITH_TYPE_BUILDER: return "Array with type builder";
         default:                       return "Unknown";
     }
 }

@@ -15,6 +15,7 @@ SimpleExpr1Node::SimpleExpr1Node() {
     argumentExprs = nullptr;
     simpleExpr1 = nullptr;
     identifier = nullptr;
+    compoundType = nullptr;
 }
 
 SimpleExpr1Node* SimpleExpr1Node::createIntNode(int value) {
@@ -114,6 +115,22 @@ SimpleExpr1Node *SimpleExpr1Node::createPlainThisNode() {
     return node;
 }
 
+SimpleExpr1Node *SimpleExpr1Node::createArrayWithTypeBuilderNode(CompoundTypeNode *compoundType,
+                                                                 ArgumentExprsNode *argumentExprs) {
+    SimpleExpr1Node* node = new SimpleExpr1Node();
+    node->type = _ARRAY_WITH_TYPE_BUILDER;
+    node->compoundType = compoundType;
+    node->argumentExprs = argumentExprs;
+    return node;
+}
+
+SimpleExpr1Node *SimpleExpr1Node::createArrayBuilderNode(ArgumentExprsNode *argumentExprs) {
+    SimpleExpr1Node* node = new SimpleExpr1Node();
+    node->type = _ARRAY_BUILDER;
+    node->argumentExprs = argumentExprs;
+    return node;
+}
+
 string SimpleExpr1Node::toDot() const {
     string dot;
 
@@ -141,4 +158,3 @@ string SimpleExpr1Node::getDotLabel() const {
 
     return simpleExpr1ToString(type);
 }
-

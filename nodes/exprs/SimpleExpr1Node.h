@@ -8,6 +8,7 @@ class ArgumentExprsNode;
 class SimpleExprNode;
 class ExprNode;
 class IdNode;
+class CompoundTypeNode;
 
 class SimpleExpr1Node: public Node {
 public:
@@ -22,6 +23,7 @@ public:
     ArgumentExprsNode* argumentExprs;
     SimpleExpr1Node* simpleExpr1;
     IdNode* identifier;
+    CompoundTypeNode* compoundType;
 
     SimpleExpr1Node();
 
@@ -39,6 +41,8 @@ public:
     static SimpleExpr1Node* createArgumentCallNode(ExprNode* expr);
     static SimpleExpr1Node* createEmptyCallNode();
     static SimpleExpr1Node* createPlainThisNode();
+    static SimpleExpr1Node* createArrayWithTypeBuilderNode(CompoundTypeNode* compoundType, ArgumentExprsNode* argumentExprs);
+    static SimpleExpr1Node* createArrayBuilderNode(ArgumentExprsNode* argumentExprs);
 
     string toDot() const override;
     string getDotLabel() const override;
