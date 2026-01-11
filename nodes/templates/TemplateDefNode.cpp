@@ -20,7 +20,7 @@ TemplateDefNode *TemplateDefNode::createClassDef(ClassDefNode *classDef) {
 
 TemplateDefNode *TemplateDefNode::createObjectDef(IdNode *fullId, ClassTemplateOptNode *classTemplateOpt) {
     TemplateDefNode* node = new TemplateDefNode();
-    node->type = _TRAIT;
+    node->type = _OBJECT;
     node->fullId = fullId;
     node->classTemplateOpt = classTemplateOpt;
     return node;
