@@ -199,8 +199,8 @@
 scalaFile: topStatSeq { *out_root = $1;}
 	 ;
 
-expr: IF '(' expr ')' nls expr semio ELSE expr { $$ = ExprNode::createIfElse($3, $6, $9); }
-    | IF '(' expr ')' nls expr semio           { $$ = ExprNode::createIf($3, $6); }                                      %prec LOW_PREC
+expr: IF '(' expr ')' nls expr ELSE expr { $$ = ExprNode::createIfElse($3, $6, $8); }
+    | IF '(' expr ')' nls expr           	{ $$ = ExprNode::createIf($3, $6); }
     | WHILE '(' expr ')' nls expr              { $$ = ExprNode::createWhile($3, $6); }
     | tryExpr                                  { $$ = ExprNode::createTry($1); }
     | DO expr semio WHILE '(' expr ')'         { $$ = ExprNode::createDoWhile($2, $6); }

@@ -144,51 +144,88 @@ void TokenProcessor::onNewLine() {
     // Ничего не возвращаем, лексер Flex просто продолжит работу
 }
 
+void TokenProcessor::onSemicolon() {
+    pendingSemicolonCount++;
+    pendingNlCount = 0; // тк не может начинать выражение
+}
+
 int TokenProcessor::onToken(int tokenType) {
-    // https://scala-lang.org/files/archive/spec/2.13/01-lexical-syntax.html#newline-characters
+    TokenInfo currentToken{
+        tokenType, yylval, real_lineno, get_bison_token_name(tokenType)
+    };
 
-    TokenInfo currentToken = {tokenType, yylval, real_lineno, get_bison_token_name(tokenType)};
+    YYSTYPE emptyVal{};
+    // Обнуляем все поля union, чтобы там не было случайных указателей
+    std::memset(&emptyVal, 0, sizeof(YYSTYPE));
 
-    // 1. Проверяем условия вставки NL
-    bool nl_enabled = nl_enabled_stack.empty() ? true : nl_enabled_stack.back();
-    bool should_insert = pending_nl_count > 0 &&
-                         nl_enabled &&
-                         (last_token.type != YYEMPTY && can_end_stmt(last_token.type)) &&
-                         can_begin_stmt(tokenType);
+    // вставляем все отложенные ";"
+    if (pendingSemicolonCount > 0) {
+        // Если текущий токен ELSE, то "съедаем" одну точку с запятой
+        if (currentToken.type == ELSE) {
+            pendingSemicolonCount--;
+        }
 
-    std::cout << "";
+        if (pendingSemicolonCount > 0) {
 
-    if (should_insert) {
-        YYSTYPE emptyVal;
-        // Обнуляем все поля union, чтобы там не было случайных указателей
-        std::memset(&emptyVal, 0, sizeof(YYSTYPE));
-        if (pending_nl_count == 1) {
-            // Текущий токен в очередь, возвращаем NL
+            TokenInfo semicolonToken = {';', emptyVal, real_lineno, ";"};
+
+            pendingSemicolonCount--; // тк один ";" мы будем возвращать
+            for (; pendingSemicolonCount > 0; pendingSemicolonCount--) {
+                bufferedLexer.push(semicolonToken);
+            }
+            // закидываем текущий токен для возврата его парсеру после вставок всех ";"
             bufferedLexer.push(currentToken);
-            update_state_by_current_token(currentToken);
-            pending_nl_count = 0;
+            // вставок nl не нужно, тк вместо него были вставлены ";", также после ";" не может быть вставлен nl,
+            // поэтому обновляем состояния по текущему токену
+            updateStateByCurrentToken(currentToken);
+            // pendingNlCount = 0; // не имеют значения, тк ставим прямой символ окончания statement
+
             // !!! ВАЖНО: Обнуляем глобальный yylval перед возвратом NL
             yylval = emptyVal;
-            // cout << "NL inserted" << endl;
-            return NL;
+
+            return semicolonToken.type;
         } else {
-            // Для 2 и более NL: возвращаем NL, в очередь еще один NL и сам токен
-            bufferedLexer.push({NL, emptyVal, real_lineno, "NL"});
-            bufferedLexer.push(currentToken);
-            update_state_by_current_token(currentToken);
-            pending_nl_count = 0;
-            // !!! ВАЖНО: Обнуляем глобальный yylval перед возвратом NL
-            yylval = emptyVal;
-            // cout << "NL inserted" << endl;
-            return NL;
+            // здесь можем оказаться только если зашли в ветку else выше;
+            // else не может начинать выражение,
+            // значит вставок nl не требуется и сразу возвращаем токен
+            updateStateByCurrentToken(currentToken);
+            return currentToken.type;
         }
     }
 
-    // Иначе: NL не нужен
-    update_state_by_current_token(currentToken);
-    pending_nl_count = 0;
+    // 1. Проверяем условия вставки NL
+    // https://scala-lang.org/files/archive/spec/2.13/01-lexical-syntax.html#newline-characters
+    bool nlZoneEnabled = nlEnabledStack.empty() || nlEnabledStack.back();
+    bool shouldInsertNL =
+            pendingNlCount > 0 &&
+            nlZoneEnabled &&
+            canEndStmt(lastToken.type) && // YYEMPTY сюда тоже попадает (вернет false)
+            canBeginStmt(currentToken.type);
 
-    return tokenType;
+    if (shouldInsertNL) {
+        if (pendingNlCount > 1) {
+            // Для 2 и более NL: кладём ещё один NL в очередь
+            bufferedLexer.push({NL, emptyVal, real_lineno, "NL"});
+        }
+
+        // Текущий токен всегда уходит в очередь
+        bufferedLexer.push(currentToken);
+        updateStateByCurrentToken(currentToken);
+
+        // pendingNlCount = 0;
+
+        // !!! ВАЖНО: Обнуляем глобальный yylval перед возвратом NL
+        yylval = emptyVal;
+
+        // Возвращаем вставленный NL
+        return NL;
+    }
+
+    // 2. NL не нужен — обычная обработка токена
+    updateStateByCurrentToken(currentToken);
+    // pendingNlCount = 0;
+
+    return currentToken.type;
 }
 
 // --- Специфические методы ---

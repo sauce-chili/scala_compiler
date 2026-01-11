@@ -109,7 +109,6 @@ whitespace [ \t\f\u000B]
 "."     { return processor.onToken('.'); }
 ","     { return processor.onToken(','); }
 ":"     { return processor.onToken(':'); }
-";"     { return processor.onToken(';'); }
 
 "("     { return processor.onToken('('); }
 ")"     { return processor.onToken(')'); }
@@ -201,6 +200,8 @@ whitespace [ \t\f\u000B]
     processor.onNewLine();
     /* Ничего не возвращаем парсеру здесь, Flex крутится дальше */
 }
+
+";"     { processor.onSemicolon(); }
 
 <*>" "   { }
 <*>.     { std::cerr << "Unexpected char \'" << yytext[0] << "\'\n"; BEGIN(INITIAL);}

@@ -13,6 +13,7 @@ class TokenProcessor {
 
     // состояния для обработки NL токенов
     int pendingNlCount = 0;
+    int pendingSemicolonCount = 0;
     TokenInfo lastToken;
     std::vector<bool> nlEnabledStack;
 
@@ -34,8 +35,10 @@ public:
     // Вызывается при встрече \n
     void onNewLine();
 
+    void onSemicolon();
+
     // Основной метод логики
-    int onToken(int tokenType); // Перегрузка, если текст не нужен или уже в yylval
+    int onToken(int tokenType);
 
     int onDecimalLiteral(const char *text);
 
