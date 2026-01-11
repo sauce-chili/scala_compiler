@@ -1,6 +1,6 @@
 %option noyywrap never-interactive yylineno
 %option prefix="real_"
-%x MULTILINE_COMMENT
+%x ML_COMMENT
 %x STRING
 %x CHARACTER
 
@@ -44,6 +44,7 @@ whitespace [ \t\f\u000B]
     // локальная область
     std::string buff = "";
     std::string literal = "";
+    int comment_depth = 0;
 %}
 
 
@@ -52,10 +53,23 @@ whitespace [ \t\f\u000B]
          //printf("Oneline comment: %s\n", yytext + 2);
 }
 
-"/*" { BEGIN(MULTILINE_COMMENT); buff = ""; }
-<MULTILINE_COMMENT>[^*]+ { buff += yytext; }
-<MULTILINE_COMMENT>\*+[^/] { buff += yytext; }
-<MULTILINE_COMMENT>\*+\/ { /* std::cout << "Multiline comment: " << buff << std::endl; */ BEGIN(INITIAL); }
+"/*"        {
+    BEGIN(ML_COMMENT);
+    buff = "";
+}
+
+<ML_COMMENT>[^*]+|[^*] {
+    buff += yytext;
+}
+
+<ML_COMMENT>\*+[^*/] {
+    buff += yytext;
+}
+
+<ML_COMMENT>\*+\/ {
+    /* std::cout << "Multiline comment: " << buff << std::endl; */
+    BEGIN(INITIAL);
+}
 
 "Int"|"Double"|"String"|"Char"|"Boolean"|"Unit" {
     return processor.onID(yytext);
@@ -148,7 +162,22 @@ whitespace [ \t\f\u000B]
 "/="    { return processor.onToken(DIV_ASSIGNMENT); }
 "%="    { return processor.onToken(MOD_ASSIGNMENT); }
 
-{ID} { return processor.onID(yytext); }
+{ID} {
+         std::string text(yytext);
+
+         if (text.compare(0, 2, "/*") == 0) {
+             yyless(2);
+             buff = "";
+             BEGIN(ML_COMMENT);
+         }
+         else if (text.compare(0, 2, "//") == 0) {
+             yyless(2);
+             yyless(0);
+         }
+         else {
+             return processor.onID(yytext);
+         }
+     }
 
 \"                     { literal = ""; BEGIN(STRING); }
 <STRING>[^\\\n\"]+     { literal.append(yytext); };
