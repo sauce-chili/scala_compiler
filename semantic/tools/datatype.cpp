@@ -148,7 +148,7 @@ bool DataType::isUndefined() {
 
 void DataType::addArrType(DataType arrType) {
     if (this->type != DataType::array_) {
-        throw Exception(Exception::UNEXPECTED, "POKA NASRAT`");
+        throw Exception(Exception::UNEXPECTED, "PEDOBEER");
     } else {
         this->arrType = arrType.type;
         this->id = arrType.id;
@@ -242,7 +242,7 @@ string DataType::toConstTableFormat() const {
             res += getArrDataType().toConstTableFormat();
             break;
         case undefined_:
-            throw Exception(Exception::UNEXPECTED, "cannot convert type for consttable");
+            throw Exception(Exception::UNEXPECTED, "cannot convert type for constable");
             break;
     }
 

@@ -18,7 +18,8 @@ private:
     int line;
 public:
     enum ExceptionType {
-
+        UNEXPECTED,
+        TYPE_ERROR,
     };
 
     static int counter;
