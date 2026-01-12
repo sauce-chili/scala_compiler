@@ -43,4 +43,50 @@ Exception::Exception(Exception::ExceptionType exceptionType, const string& messa
     this->message = tmp + message;
 }
 
+string Modifiers::toString() {
+    return accessModifierToString() + overrideModifierToString() + inheritModifierToString();
+}
+
+string Modifiers::accessModifierToString() {
+    switch (this->accessModifier) {
+        case public_:
+            return "public ";
+        case private_:
+            return "private ";
+        case protected_:
+            return "protected ";
+        default: "";
+    }
+
+    return "";
+}
+
+string Modifiers::overrideModifierToString() {
+    switch (this->overrideModifier) {
+        case override_:
+            return "override ";
+    }
+
+    return nullptr;
+}
+
+string Modifiers::inheritModifierToString() {
+    switch (this->inheritModifier) {
+        case abstract_:
+            return "abstract ";
+        case final_:
+            return "final ";
+        case sealed_:
+            return "sealed ";
+    }
+
+    return nullptr;
+}
+
+bool Modifiers::isEquals(const Modifiers& other) {
+    return other.accessModifier && this->accessModifier
+           && other.inheritModifier && this->inheritModifier
+           && other.overrideModifier && this->overrideModifier;
+}
+
 int Exception::counter = 0;
