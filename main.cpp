@@ -65,21 +65,19 @@ int main(int argc, char **argv) {
     } else {
         yydebug = 0;
     }
-    // yydebug = 1;
+
     // 4. Запуск в нужном режиме
     if (mode == "lexer") {
         std::cout << "--- Running in LEXER mode ---" << std::endl;
         while (true) {
             int token = yylex();
             if (token == 0) break; // 0 означает EOF
-
-            // Вывод: ID токена
-            // В идеале можно сделать switch-case для красивого вывода имен токенов,
-            // но для базовой проверки достаточно ID.
+            // Вывод строка | имя токена(ELSE, +, IF и тд), ID токена
             std::cout<< real_lineno << " | " << "Token: " << get_bison_token_name(token) << " (" << token << ")" << std::endl;
         }
     } else {
         std::cout << "--- Running in PARSER mode ---" << std::endl;
+        // Scala file
         TopStatSeqNode *root = nullptr;
 
         int result = yyparse(&root);
@@ -89,7 +87,6 @@ int main(int argc, char **argv) {
             if (root) {
                 std::cout << "AST Root created at address: " << root << std::endl;
                 createDotTree(root, "after_transform.txt");
-                // Здесь можно вызвать root->print() или подобный метод, если он есть
             } else {
                 std::cout << "AST Root not created at address: " << root << std::endl;
             }

@@ -12,19 +12,19 @@ vector<string> split(const string &str, char separator);
 
 class Modifiers {
 public:
-    enum AccessModifiers {
+    enum class AccessModifiers {
         private_,
         public_,
         protected_,
         access_modifier_not_set,
     };
 
-    enum OverrideModifiers {
+    enum class OverrideModifiers {
         override_,
         override_modifier_not_set,
     };
 
-    enum InheritModifiers {
+    enum class InheritModifiers {
         abstract_,
         final_,
         sealed_,

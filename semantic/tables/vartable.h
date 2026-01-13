@@ -2,9 +2,13 @@
 #define COMPILER_VARTABLE_H
 
 #include "../tools/datatype.h"
+#include "semantic/scopes/Scope.h"
 
 class ExprNode;
 
+// общая абстракция для:
+// FieldVar(поля класса) - всегда имеет дефолтное значение (null если класс, 0 если число)
+// LocalVar(это переменные, который создаются в рамках аргументов функций, внутри функция) - обязана иметь значение при инициализации.
 class VarTableItem {
 public:
 
@@ -12,22 +16,21 @@ public:
     DataType dataType;
     bool isConst = false;
     bool isInit = false;
-    Modifiers *modifiers;
 
-    ExprNode* expr; // блок, с которым связана переменная
+    IScope* scope; // блок, с которым связана переменная
     ExprNode* value; // для const;
 
-    VarTableItem();
-    VarTableItem(string name, DataType dataType, bool isInit, bool isConst, Modifiers *modifiers);
-    VarTableItem(string name, DataType dataType, bool isInit, bool isConst, ExprNode* expr, Modifiers *modifiers);
-    VarTableItem(string name, DataType dataType, bool isInit, bool isConst, ExprNode* expr, ExprNode* value, Modifiers *modifiers);
-    VarTableItem(DataType dataType, bool isInit, Modifiers *modifiers) ;
-    VarTableItem(DataType dataType, bool isInit, ExprNode *expr, Modifiers *modifiers);
+    VarTableItem(); // хуй знает зачем, но пусть
+
+    VarTableItem(string name, DataType dataType, bool isInit, bool isConst);
+    VarTableItem(string name, DataType dataType, bool isInit, bool isConst, IScope* scope);
+    VarTableItem(string name, DataType dataType, bool isInit, bool isConst, IScope* scope, ExprNode* value);
     string toString();
 
     bool isEquals(const VarTableItem &varTableItem);
 };
 
+//  общая абстракция для таблиц локальных переменных и полей классов
 class VarTable {
 public:
     vector<VarTableItem> items;

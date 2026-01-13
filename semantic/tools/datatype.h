@@ -18,8 +18,8 @@ public:
     Type arrType; // тип значений которые хранятся в массиве
     int arrDeep = 0; // 1 - одномерный массив, 2 - двумерный массив и т.д.
     vector<int> arrLength; // -1 - undefined
-    vector<string> structPath; // полный путь до структуры т. е.  последнее слово в массиве название структуры - остальное путь
-    string id; // мб лучше это использовать
+    vector<string> qualId; // полный путь до класса т. е.  последнее слово в массиве название класса - остальное путь
+    string id; // мб лучше это использовать имя класса
     vector<DataType> arrTypes;
     DataType();
     DataType(Type type);

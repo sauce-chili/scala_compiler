@@ -18,6 +18,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 # Автоматически находим все исходники узлов и вспомогательных классов лексера
 file(GLOB_RECURSE NODE_SOURCES "nodes/*.cpp")
 file(GLOB_RECURSE LEXER_UTILS_SOURCES "lexer/*.cpp")
+file(GLOB_RECURSE SEMANTIC "semantic/*cpp")
 
 # Настройка BISON
 # Добавлен флаг -d (или --defines), чтобы генерировать заголовочный файл .h
@@ -41,6 +42,7 @@ add_executable(scala_lexer
         ${FLEX_MyScanner_OUTPUTS}
         ${NODE_SOURCES}
         ${LEXER_UTILS_SOURCES}
+        ${SEMANTIC}
 )
 
 message(STATUS "Flex output: ${FLEX_MyScanner_OUTPUTS}")
@@ -59,4 +61,4 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
             ${BISON_MyParser_OUTPUTS}
             PROPERTIES COMPILE_OPTIONS "/wd5033;/wd4996"
     )
-endif()
+endif ()

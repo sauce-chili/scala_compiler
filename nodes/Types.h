@@ -12,9 +12,11 @@ enum ModifierType {
     _OVERRIDE,
 };
 
+// TODO  прописать ordinal у всех типов
+
 enum ExprType {
-    _IF_ELSE,
-    _IF,
+    _IF_ELSE = 0,
+    _IF = 1,
     _WHILE,
     _TRY,
     _DO_WHILE,

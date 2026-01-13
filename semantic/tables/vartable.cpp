@@ -19,7 +19,7 @@ VarTableItem::VarTableItem(string name, DataType dataType, bool isInit, bool isC
     this->id = name;
     this->dataType = dataType;
     this->isInit = isInit;
-    this->expr = expr;
+    this->scope = expr;
     this->isConst = isConst;
     this->modifiers = modifiers;
 }
@@ -30,7 +30,7 @@ VarTableItem::VarTableItem(string name, DataType dataType, bool isInit, bool isC
     this->dataType = dataType;
     this->isInit = isInit;
     this->isConst = isConst;
-    this->expr = expr;
+    this->scope = expr;
     this->value = value;
     this->modifiers = modifiers;
 }
@@ -41,7 +41,7 @@ string VarTableItem::toString() {
     res = this->id;
 
     if (isConst) {
-        res += "const";
+        res += "val";
     }
 
     if (isInit) {
@@ -49,6 +49,7 @@ string VarTableItem::toString() {
     }
 
     if (modifiers) {
+        // только у полей
         res += modifiers->toString();
     }
 
@@ -95,9 +96,9 @@ bool VarTable::isExist(const string &varName, const ExprNode* expr) {
     bool res = false;
 
     for (auto i = items.rbegin(); i != items.rend(); ++i) {
-        res = res || (i->id == varName &&  i->expr == expr);
+        res = res || (i->id == varName &&  i->scope == expr);
         bool f = i->id == varName;
-        bool f2 = i->expr == expr;
+        bool f2 = i->scope == expr;
     }
     return res;
 }
@@ -129,7 +130,7 @@ int VarTable::getVarNumber(const string &varName, const ExprNode *expr) {
 
     int cnt = items.size() - 1;
     for (auto i = items.rbegin(); i != items.rend(); ++i) {
-        if (i->id == varName &&  i->expr == expr){
+        if (i->id == varName &&  i->scope == expr){
             return cnt;
         }
         cnt--;
