@@ -23,9 +23,9 @@ DataType DataType::ArrayDataType(DataType::Type arrType, int arrDeep, vector<int
     return dataType;
 }
 
-DataType DataType::StructDataType(vector<string> structPath) {
+DataType DataType::QualIdDataType(vector<string> qualId) {
     DataType dataType = DataType(class_);
-    dataType.structPath = structPath;
+    dataType.qualId = qualId;
     return dataType;
 }
 

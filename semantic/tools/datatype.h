@@ -25,7 +25,7 @@ public:
     DataType(Type type);
     static DataType ArrayDataType(Type arrType, int arrDeep);
     static DataType ArrayDataType(Type arrType, int arrDeep, vector<int> arrLength);
-    static DataType StructDataType(vector<string> structPath);
+    static DataType QualIdDataType(vector<string> qualId);
     static DataType StructDataType(string id);
     string toString();
     string toConstTableFormat() const;

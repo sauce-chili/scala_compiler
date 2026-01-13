@@ -6,33 +6,28 @@ VarTableItem::VarTableItem() {
 }
 
 
-VarTableItem::VarTableItem(string name, DataType dataType, bool isInit, bool isConst, Modifiers *modifiers) {
+VarTableItem::VarTableItem(string name, DataType dataType, bool isInit, bool isConst) {
     this->id = name;
     this->dataType = dataType;
     this->isInit = isInit;
     this->isConst = isConst;
-    this->modifiers = modifiers;
 }
 
 VarTableItem::VarTableItem(string name, DataType dataType, bool isInit, bool isConst,
-                           ExprNode *expr, Modifiers *modifiers) {
+                           IScope* scope) {
     this->id = name;
     this->dataType = dataType;
     this->isInit = isInit;
-    this->scope = expr;
     this->isConst = isConst;
-    this->modifiers = modifiers;
 }
 
 VarTableItem::VarTableItem(string name, DataType dataType, bool isInit, bool isConst,
-                           ExprNode *expr, ExprNode *value, Modifiers *modifiers) {
+                           IScope* scope, ExprNode *value) {
     this->id = name;
     this->dataType = dataType;
     this->isInit = isInit;
     this->isConst = isConst;
-    this->scope = expr;
     this->value = value;
-    this->modifiers = modifiers;
 }
 
 string VarTableItem::toString() {
@@ -46,11 +41,6 @@ string VarTableItem::toString() {
 
     if (isInit) {
         res += "init";
-    }
-
-    if (modifiers) {
-        // только у полей
-        res += modifiers->toString();
     }
 
     res += " " + dataType.toString();
@@ -67,7 +57,6 @@ bool VarTableItem::isEquals(const VarTableItem &varTableItem) {
     res = res && this->dataType.isEquals(varTableItem.dataType);
     res = res && this->isInit == varTableItem.isInit;
     res = res && this->value == varTableItem.value;
-    res = res && this->modifiers->isEquals(*varTableItem.modifiers);
 
     return res;
 }
@@ -96,9 +85,8 @@ bool VarTable::isExist(const string &varName, const ExprNode* expr) {
     bool res = false;
 
     for (auto i = items.rbegin(); i != items.rend(); ++i) {
-        res = res || (i->id == varName &&  i->scope == expr);
+        res = res || (i->id == varName); // TODO может надо проверять еще value
         bool f = i->id == varName;
-        bool f2 = i->scope == expr;
     }
     return res;
 }
@@ -107,7 +95,7 @@ bool VarTable::isEquals(const VarTable &varTable) {
 
     bool res = true;
     res = res && this->items.size() == varTable.items.size();
-    if (res == false) {
+    if (!res) {
         return res;
     }
     for(int i = 0; i < varTable.items.size(); i++){
@@ -130,7 +118,7 @@ int VarTable::getVarNumber(const string &varName, const ExprNode *expr) {
 
     int cnt = items.size() - 1;
     for (auto i = items.rbegin(); i != items.rend(); ++i) {
-        if (i->id == varName &&  i->scope == expr){
+        if (i->id == varName){ // TODO может надо проверять еще value
             return cnt;
         }
         cnt--;

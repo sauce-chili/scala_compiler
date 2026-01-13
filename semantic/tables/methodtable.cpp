@@ -1,4 +1,5 @@
 #include "methodtable.h"
+#include "vartable.h"
 
 MethodTableItem::MethodTableItem(const VarTable &paramTable) : paramTable(paramTable) {
     modifiers = new Modifiers();
@@ -52,10 +53,9 @@ string MethodTableItem::paramsToConstTableFormat() {
 MethodTableItem MethodTableItem::initMethod() {
     MethodTableItem methodTableItem = MethodTableItem();
     methodTableItem.returnDataType = DataType(DataType::void_);
-    methodTableItem.modifiers->accessModifier = Modifiers::public_;
+    methodTableItem.modifiers->accessModifier = Modifiers::AccessModifiers::public_;
     VarTableItem varTableItem;
     varTableItem.dataType = DataType::StructDataType("this_class");
-    varTableItem.modifiers->accessModifier = Modifiers::public_;
     varTableItem.id = "self";
     methodTableItem.localVarTable.items.push_back(varTableItem);
     return methodTableItem;

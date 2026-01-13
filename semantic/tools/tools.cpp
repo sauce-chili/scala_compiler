@@ -49,44 +49,40 @@ string Modifiers::toString() {
 
 string Modifiers::accessModifierToString() {
     switch (this->accessModifier) {
-        case public_:
+        case AccessModifiers::public_:
             return "public ";
-        case private_:
+        case AccessModifiers::private_:
             return "private ";
-        case protected_:
+        case AccessModifiers::protected_:
             return "protected ";
-        default: "";
+        default: return "";
     }
-
-    return "";
 }
 
 string Modifiers::overrideModifierToString() {
     switch (this->overrideModifier) {
-        case override_:
+        case OverrideModifiers::override_:
             return "override ";
+        default: return "";
     }
-
-    return nullptr;
 }
 
 string Modifiers::inheritModifierToString() {
     switch (this->inheritModifier) {
-        case abstract_:
+        case InheritModifiers::abstract_:
             return "abstract ";
-        case final_:
+        case InheritModifiers::final_:
             return "final ";
-        case sealed_:
+        case InheritModifiers::sealed_:
             return "sealed ";
+        default: return "";
     }
-
-    return nullptr;
 }
 
 bool Modifiers::isEquals(const Modifiers& other) {
-    return other.accessModifier && this->accessModifier
-           && other.inheritModifier && this->inheritModifier
-           && other.overrideModifier && this->overrideModifier;
+    return other.accessModifier == this->accessModifier
+        && other.inheritModifier == this->inheritModifier
+        && other.overrideModifier == this->overrideModifier;
 }
 
 int Exception::counter = 0;

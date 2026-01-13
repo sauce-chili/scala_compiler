@@ -7,18 +7,20 @@
 #include <optional>
 #include <string>
 
-#include "semantic/tables/methodtable.h"
-#include "semantic/tables/vartable.h"
+using namespace std;
 
+class MethodTableItem;
+class VarTableItem;
+class DataType;
 
 class IScope {
 public:
     // TODO подумать по какому имени искать про простому или qualId
-    std::optional<VarTableItem> findVariable(string varName);
+    static std::optional<VarTableItem> findVariable(const string& varName);
 
-    std::optional<DataType> findType(string name);
+    std::optional<DataType> findType(const string& name);
 
-    std::optional<MethodTableItem> findMethod(string name);
+    std::optional<MethodTableItem> findMethod(const string& name);
 };
 
 class Scope {

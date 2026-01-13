@@ -3,11 +3,13 @@
 
 
 #include "../tools/datatype.h"
-#include "vartable.h"
 #include <map>
 #include "constable.h"
+#include "vartable.h"
 
 using namespace std;
+
+class ExprNode;
 
 class MethodTableItem {
 public:

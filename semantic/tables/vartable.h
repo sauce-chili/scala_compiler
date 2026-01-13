@@ -5,6 +5,7 @@
 #include "semantic/scopes/Scope.h"
 
 class ExprNode;
+class IScope;
 
 // общая абстракция для:
 // FieldVar(поля класса) - всегда имеет дефолтное значение (null если класс, 0 если число)
