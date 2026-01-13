@@ -1,0 +1,113 @@
+#ifndef COMPILER_CLASSTABLE_H
+#define COMPILER_CLASSTABLE_H
+
+
+#include "methodtable.h"
+#include "fieldtable.h"
+#include "constable.h"
+#include <map>
+#include <filesystem>
+
+using namespace std;
+using namespace std::filesystem;
+
+class ClassTableItem{
+public:
+    enum Type{
+        class_, object_, trait_, enum_
+    };
+
+    Type classType;
+    string name;
+    MethodTable methodTable;
+    FieldTable fieldTable;
+    string parentName; // имя родителя
+    bool haveAbstract = false;
+    Modifiers *modifiers;
+
+    ConstTable constTable;
+
+    ClassTableItem();
+    ClassTableItem(FieldTable fieldTable, MethodTable methodTable, Modifiers *modifiers, string parentName = "");
+    string toString();
+    bool isHaveParent();
+    bool isHaveAbstract();
+};
+
+class ClassTable {
+private:
+    static ClassTable* _instanse;
+    map<string, ClassTableItem> items;
+    ClassTable();
+public:
+
+    string toString();
+    static const string moduleClassName;
+    static const string globalClassName;
+    static const string RTLClassName;
+
+    static ClassTable* Instance();
+    void addMethod(const string& className, const string& methodName, MethodTableItem methodTableItem);
+    void updateMethod(string className, string methodName, MethodTableItem methodTableItem);
+    void addField(string className, string fieldName, FieldTableItem fieldTableItem);
+    void updateField(string className, string fieldName, FieldTableItem fieldTableItem);
+    void updateClass(string  className, ClassTableItem classTableItem);
+    void addClass(string  className, ClassTableItem classTableItem);
+    void addParent(string childName, string parentName);
+    void addLocalParam(string className,string methodName, VarTableItem varTableItem);
+    void addFuncParam(string className,string methodName, VarTableItem varTableItem);
+    static int addLoopCounterVar(string className,string methodName);
+
+
+    bool isClassExist(const string& className);
+    bool isMethodExist(const string& className, const string& methodName);
+    bool isFieldExist(const string& className, const string& methodName);
+    bool isParamExist(const string& className, const string& methodName, const string& varName);
+    bool isLocalVarExist(const string& className, const string& methodName, const string& varName);
+    bool isLocalVarExist(const string& className, const string& methodName, const string& varName, const ExprNode* blockExpr);
+    bool isParent(const string& child, const string& parentName);
+
+    ClassTableItem getClass(const string& className);
+    ClassTableItem getParentClass(const string &className);
+    FieldTableItem getField(const string& className, const string& fieldName);
+    MethodTableItem getMethod(const string& className, const string& methodName);
+    VarTableItem getParam(const string& className, const string& methodName, int paramNum);
+    VarTableItem getLocalVar(const string& className, const string& methodName, int localVarNum);
+    static string getDirectory(string className);
+    static void isCorrectChild(string childName, string parentName);
+    static void isCorrectTraitsImpl();
+    static bool isHaveParent(const string& child);
+    static bool isEqualDirectory(const string& first, const string &second);
+    static bool isSubDirectory(const string& subdir, const string &dir);
+    static bool isHaveAccess(const string& requesterClass, const string& requestedClass);
+    static bool isHaveAccessToMethtod(const string& requesterClass, const string& requestedClass, const string& requestedMethod);
+    static bool isHaveAccessToField(const string& requesterClass, const string& requestedClass, const string& requestedField);
+
+    static int addIntToConstTable(const string& className, int val);
+    static int addFloatToConstTable(const string& className, float val);
+    static int addStringToConstTable(const string& className, const string& str);
+    static int addClassToConstTable(const string& className, const string& addingClassName);
+    static int addMethodRefToConstTable(const string& className, const string& addingClassName, const string& method, const vector<DataType> &params,const DataType &returnType);
+    static int addFieldRefToConstTable(const string& className, const string& addingClassName, const string& field, const DataType& dataType);
+    static int addUTF8ToConstTable(const string& className, const string& utf8);
+
+    static int getStructFieldCount(const string& className);
+    static void isMainFunctionExist();
+    static void createConstTableCSV();
+
+    static bool isMethodExistDeep(const string& className, const string& methodName);
+    static bool isFieldExistDeep(const string& className, const string& fieldName);
+    static string getParentClassName(const string& className);
+    static FieldTableItem getFieldDeep(const string& className, const string& fieldName);
+    static MethodTableItem getMethodDeep(const string& className, const string& methodName);
+    static void isCorrectTraitImpl(const std::string &childName, const std::string &parentName);
+
+    static  bool  isEnum(const string& className);
+    static  map<string, ClassTableItem> getItems();
+    static void makeMainForJavaFormat();
+    static void checkClassNames();
+    static void addAbstract(const string& className);
+};
+
+
+#endif //COMPILER_CLASSTABLE_H
