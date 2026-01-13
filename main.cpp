@@ -4,6 +4,7 @@
 
 #include "nodes/stats/TopStatSeqNode.h"
 #include "utils/output/dot.cpp"
+#include "code_generation/codegenerator.h"
 
 // Подключаем определения токенов, сгенерированные Bison,
 // чтобы в режиме лексера можно было (опционально) понимать ID токенов.
@@ -96,5 +97,9 @@ int main(int argc, char **argv) {
     }
 
     fclose(input_file);
+
+    CodeGenerator* codeGenerator = new CodeGenerator();
+    codeGenerator->generate();
+
     return 0;
 }
