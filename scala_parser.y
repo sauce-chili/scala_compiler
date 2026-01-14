@@ -45,7 +45,6 @@
     EnumStatNode* enumStat;
     EnumStatsNode* enumStats;
     ArgumentExprsNode* argumentExprs;
-    AssignExprNode* assignExpr;
     AssignmentNode* assignment;
     ConstrExprNode* constrExpr;
     ExprNode* expr;
@@ -159,7 +158,6 @@
 %type <tryExpr> tryExpr
 %type <funcParams> funcParamClause funcParams
 %type <funcParam> funcParam
-//%type <assignExpr> assignExprO
 %type <classParams> classParamClause classParams
 %type <classParam> classParam
 %type <modifiers> modifiers
@@ -358,13 +356,9 @@ funcParamClause: nlo '(' ')'            { $$ = nullptr; }
 funcParams: funcParam                { $$ = FuncParamsNode::addFuncParamToList(nullptr, $1); }
           | funcParams ',' funcParam { $$ = FuncParamsNode::addFuncParamToList($1, $3); }
           ;
-// TODO выпилить 3-й аргумент
-funcParam: fullID compoundType { $$ = FuncParamNode::createClassParam($1, $2, nullprt); }
-         ;
 
-//assignExprO: /* empty */ { $$ = nullptr; }
-//           | '=' expr    { $$ = AssignExprNode::createAssignExprNode($2); }
-//           ;
+funcParam: fullID compoundType { $$ = FuncParamNode::createFuncParam($1, $2); }
+         ;
 
 /* --------------------- FUNC --------------------- */
 
@@ -378,12 +372,11 @@ classParams: classParam                 { $$ = ClassParamsNode::addClassParamToL
            | classParams ',' classParam { $$ = ClassParamsNode::addClassParamToList($1, $3); }
            ;
 
-// TODO выпилить 3-й аргумент(значение)
-classParam: modifiers VAL fullID ':' compoundType { $$ = ClassParamNode::createClassParam(_VAL_CLASS_PARAM, $1, $3, $5, $6); }
-          | modifiers VAR fullID ':' compoundType { $$ = ClassParamNode::createClassParam(_VAR_CLASS_PARAM, $1, $3, $5, $6); }
+classParam: modifiers VAL fullID ':' compoundType { $$ = ClassParamNode::createClassParam(_VAL_CLASS_PARAM, $1, $3, $5); }
+          | modifiers VAR fullID ':' compoundType { $$ = ClassParamNode::createClassParam(_VAR_CLASS_PARAM, $1, $3, $5); }
           ;
 
-modifiers: /* empty */        { $$ = ModifiersNode::addModifierToList(nullptr, nullptr); }
+modifiers: /* empty */        { $$ = nullptr; }
          | modifiers modifier { $$ = ModifiersNode::addModifierToList($1, $2); }
          ;
 
@@ -440,8 +433,8 @@ funDef: funSig compoundTypeO '=' expr       { $$ = FunDefNode::createFunSigFunDe
       ;
 
 constrExpr: THIS argumentExprs { $$ = ConstrExprNode::createConstrExpr($2, nullptr); } // вызов первичного конструктора, бывший selfInvocation
-          | '{' THIS argumentExprs semi blockStats '}' { $$ = ConstrExprNode::createConstrExpr($3, $5); }
-          | '{' THIS argumentExprs '}' { $$ = ConstrExprNode::createConstrExpr($3, nullptr); }
+          | '{' THIS argumentExprs semi blockStats '}' { $$ = ConstrExprNode::createConstrExpr($3, $5, true); }
+          | '{' THIS argumentExprs '}' { $$ = ConstrExprNode::createConstrExpr($3, nullptr, true); }
           ;
 
 tmplDef: CLASS classDef                 { $$ = TemplateDefNode::createClassDef($2); }
