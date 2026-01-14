@@ -159,7 +159,7 @@
 %type <tryExpr> tryExpr
 %type <funcParams> funcParamClause funcParams
 %type <funcParam> funcParam
-%type <assignExpr> assignExprO
+//%type <assignExpr> assignExprO
 %type <classParams> classParamClause classParams
 %type <classParam> classParam
 %type <modifiers> modifiers
@@ -358,13 +358,13 @@ funcParamClause: nlo '(' ')'            { $$ = nullptr; }
 funcParams: funcParam                { $$ = FuncParamsNode::addFuncParamToList(nullptr, $1); }
           | funcParams ',' funcParam { $$ = FuncParamsNode::addFuncParamToList($1, $3); }
           ;
-
-funcParam: fullID compoundTypeO assignExprO { $$ = FuncParamNode::createClassParam($1, $2, $3); }
+// TODO выпилить 3-й аргумент
+funcParam: fullID compoundType { $$ = FuncParamNode::createClassParam($1, $2, nullprt); }
          ;
 
-assignExprO: /* empty */ { $$ = nullptr; }
-           | '=' expr    { $$ = AssignExprNode::createAssignExprNode($2); }
-           ;
+//assignExprO: /* empty */ { $$ = nullptr; }
+//           | '=' expr    { $$ = AssignExprNode::createAssignExprNode($2); }
+//           ;
 
 /* --------------------- FUNC --------------------- */
 
@@ -378,9 +378,9 @@ classParams: classParam                 { $$ = ClassParamsNode::addClassParamToL
            | classParams ',' classParam { $$ = ClassParamsNode::addClassParamToList($1, $3); }
            ;
 
-classParam: modifiers VAL fullID ':' compoundType assignExprO { $$ = ClassParamNode::createClassParam(_VAL_CLASS_PARAM, $1, $3, $5, $6); }
-          | modifiers VAR fullID ':' compoundType assignExprO { $$ = ClassParamNode::createClassParam(_VAR_CLASS_PARAM, $1, $3, $5, $6); }
-          | modifiers fullID ':' compoundType assignExprO     { $$ = ClassParamNode::createClassParam(_UNMARKED_CLASS_PARAM, $1, $2, $4, $5); }
+// TODO выпилить 3-й аргумент(значение)
+classParam: modifiers VAL fullID ':' compoundType { $$ = ClassParamNode::createClassParam(_VAL_CLASS_PARAM, $1, $3, $5, $6); }
+          | modifiers VAR fullID ':' compoundType { $$ = ClassParamNode::createClassParam(_VAR_CLASS_PARAM, $1, $3, $5, $6); }
           ;
 
 modifiers: /* empty */        { $$ = ModifiersNode::addModifierToList(nullptr, nullptr); }
@@ -432,7 +432,7 @@ varDefs: VAL ids compoundTypeO '=' expr { $$ = VarDefsNode::createVal($2, $3, $5
 
 def: varDefs    { $$ = DefNode::createVarDefs($1); }
    | DEF funDef { $$ = DefNode::createFunDef($2); }
-//   | tmplDef    { $$ = DefNode::createTmplDef($1); }
+//   | tmplDef    { $$ = DefNode::createTmplDef($1); } // запрещает вложенные классы, трейты, перечисоения, имбо мы ебали возиться ещё и с их скоупами и таблицами
    ;
 
 funDef: funSig compoundTypeO '=' expr       { $$ = FunDefNode::createFunSigFunDef($1, $2, $4); }
