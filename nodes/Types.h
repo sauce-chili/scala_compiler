@@ -12,8 +12,6 @@ enum ModifierType {
     _OVERRIDE = 6,
 };
 
-// TODO  прописать ordinal у всех типов
-
 enum ExprType {
     _IF_ELSE = 7,
     _IF = 8,

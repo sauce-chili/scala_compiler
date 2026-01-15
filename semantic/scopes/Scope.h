@@ -14,7 +14,7 @@ enum class ScopeType {
     GLOBAL, // уровень файла
     CLASS,
     METHOD_ARGS,
-    METHOD_BODY,
+    // METHOD_BODY, мб не нужно тк, любой тело метода, где можно создавать хоть какие-то переменные это blockStats
     BLOCK // между {...}, в т.ч if-else, for,do/while и тд
 };
 
