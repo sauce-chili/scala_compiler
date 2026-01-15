@@ -21,9 +21,16 @@ enum class ScopeType {
 class Scope {
 public:
     Scope *external;
-    Scope *parent; // скоуп класса родителя
+    Scope *parent = nullptr; // скоуп класса родителя
     std::string className; // если скоуп класса, хранит имя текущего класса
     ScopeType type;
+
+    Scope(Scope *external, ScopeType type) : external(external), type(type) {
+    }
+
+    Scope(Scope *external, std::string className) : external(external), className(className) {
+        type = ScopeType::CLASS;
+    }
 };
 
 /**
