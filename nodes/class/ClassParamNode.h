@@ -6,7 +6,6 @@
 #include "../modifier/ModifiersNode.h"
 #include "../id/IdNode.h"
 #include "../type/CompoundTypeNode.h"
-#include "../exprs/AssignExprNode.h"
 
 class ClassParamNode: public Node {
 public:
@@ -14,7 +13,6 @@ public:
     ModifiersNode* modifiers;
     IdNode* fullId;
     CompoundTypeNode* compoundType;
-    AssignExprNode* assignExpr;
 
     ClassParamNode();
 
@@ -22,8 +20,7 @@ public:
             ClassParamType type,
             ModifiersNode* modifiers,
             IdNode* fullId,
-            CompoundTypeNode* compoundType,
-            AssignExprNode* assignExpr
+            CompoundTypeNode* compoundType
     );
 
     string toDot() const override;

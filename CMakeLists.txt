@@ -47,6 +47,8 @@ add_executable(scala_lexer
         code_generation/tools/byte_convert.cpp
         code_generation/codegenerator.cpp
         code_generation/codegenerator.h
+        semantic/tables/LocalVar.cpp
+        semantic/tables/LocalVar.h
 )
 
 message(STATUS "Flex output: ${FLEX_MyScanner_OUTPUTS}")

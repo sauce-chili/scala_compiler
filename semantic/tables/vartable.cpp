@@ -10,24 +10,26 @@ VarTableItem::VarTableItem(string name, DataType dataType, bool isInit, bool isC
     this->id = name;
     this->dataType = dataType;
     this->isInit = isInit;
-    this->isConst = isConst;
+    this->isVal = isConst;
 }
 
 VarTableItem::VarTableItem(string name, DataType dataType, bool isInit, bool isConst,
-                           IScope* scope) {
+                           Scope* scope) {
     this->id = name;
     this->dataType = dataType;
     this->isInit = isInit;
-    this->isConst = isConst;
+    this->isVal = isConst;
+    this->scope = scope;
 }
 
 VarTableItem::VarTableItem(string name, DataType dataType, bool isInit, bool isConst,
-                           IScope* scope, ExprNode *value) {
+                           Scope* scope, ExprNode *value) {
     this->id = name;
     this->dataType = dataType;
     this->isInit = isInit;
-    this->isConst = isConst;
+    this->isVal = isConst;
     this->value = value;
+    this->scope = scope;
 }
 
 string VarTableItem::toString() {
@@ -35,7 +37,7 @@ string VarTableItem::toString() {
 
     res = this->id;
 
-    if (isConst) {
+    if (isVal) {
         res += "val";
     }
 
@@ -53,7 +55,7 @@ bool VarTableItem::isEquals(const VarTableItem &varTableItem) {
     bool res = true;
 
     res = res && this->id == varTableItem.id;
-    res = res && this->isConst == varTableItem.isConst;
+    res = res && this->isVal == varTableItem.isVal;
     res = res && this->dataType.isEquals(varTableItem.dataType);
     res = res && this->isInit == varTableItem.isInit;
     res = res && this->value == varTableItem.value;
@@ -81,7 +83,7 @@ bool VarTable::isExist(const string &varName) {
     return res;
 }
 
-bool VarTable::isExist(const string &varName, const ExprNode* expr) {
+bool VarTable::isExist(const string &varName, const Scope* scope) {
     bool res = false;
 
     for (auto i = items.rbegin(); i != items.rend(); ++i) {
@@ -114,7 +116,7 @@ VarTableItem VarTable::getVar(int varNum) {
     return items[varNum];
 }
 
-int VarTable::getVarNumber(const string &varName, const ExprNode *expr) {
+int VarTable::getVarNumber(const string &varName, const Scope* scope) {
 
     int cnt = items.size() - 1;
     for (auto i = items.rbegin(); i != items.rend(); ++i) {

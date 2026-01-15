@@ -10,7 +10,7 @@ using namespace std;
 
 vector<string> split(const string &str, char separator);
 
-[[maybe_unused]] bool isStartWith(const string &str, const string& substr);
+[[maybe_unused]] bool isStartWith(const string &str, const string &substr);
 
 class Modifiers {
 public:
@@ -35,23 +35,26 @@ public:
 
 public:
     string toString();
-    string accessModifierToString();
-    string overrideModifierToString();
-    string inheritModifierToString();
-    bool isEquals(const Modifiers& other);
 
-    AccessModifiers accessModifier;
-    OverrideModifiers overrideModifier;
-    InheritModifiers inheritModifier;
+    string accessModifierToString();
+
+    string overrideModifierToString();
+
+    string inheritModifierToString();
+
+    bool isEquals(const Modifiers &other);
+
+    AccessModifiers accessModifier = AccessModifiers::public_;
+    OverrideModifiers overrideModifier = OverrideModifiers::override_modifier_not_set;
+    InheritModifiers inheritModifier = InheritModifiers::inherit_modifier_not_set;
 };
 
-class Exception{
+class Exception {
     static vector<Exception> exceptions;
 
-private:
     string message;
     int line;
-    Modifiers modifiers;
+
 public:
     enum ExceptionType {
         UNEXPECTED,
@@ -61,11 +64,12 @@ public:
 
     static int counter;
     ExceptionType exceptionType;
-    string getMessage();
-    Exception(ExceptionType exceptionType, const string& message);
-    Exception(ExceptionType exceptionType, const string& message, int line);
 
+    string getMessage();
+
+    Exception(ExceptionType exceptionType, const string &message);
+
+    Exception(ExceptionType exceptionType, const string &message, int line);
 };
 
 #endif //COMPILER_TOOLS_H
-

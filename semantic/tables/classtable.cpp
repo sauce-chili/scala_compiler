@@ -494,7 +494,7 @@ void ClassTable::isMainFunctionExist() {
             throw Exception(Exception::UNEXPECTED,
                             "incorrect number of function parameters in `main`. expected 0 params");
         }
-        if (!methodTableItem.returnDataType.isEquals(DataType(DataType::void_))) {
+        if (!methodTableItem.returnDataType.isEquals(DataType(DataType::unit_))) {
             throw Exception(Exception::TYPE_ERROR,
                             "`main` can only void_. ReturnType now: " + methodTableItem.returnDataType.toString());
         }

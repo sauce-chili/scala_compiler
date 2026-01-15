@@ -19,6 +19,7 @@ public:
     Modifiers* modifiers;
 
     ExprNode* body;
+    Scope* scope;
 
     MethodTableItem();
     explicit MethodTableItem(const VarTable &paramTable);
@@ -26,8 +27,11 @@ public:
     string toString();
     bool isEqualsDeclaration(const MethodTableItem& other);
     vector<DataType> getParamDataTypes();
+
     string paramsToConstTableFormat();
+
     static MethodTableItem initMethod();
+
     static MethodTableItem clinitMethod();
 };
 

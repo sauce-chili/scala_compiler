@@ -38,7 +38,7 @@ string DataType::toString() {
 
     switch (type) {
 
-        case void_:
+        case unit_:
             res += varName(void_);
             break;
         case int_:
@@ -84,7 +84,7 @@ string DataType::TypeToString(DataType::Type type) {
     string res = "";
     switch (type) {
 
-        case void_:
+        case unit_:
             res = varName(void_);
             break;
         case int_:
@@ -122,7 +122,7 @@ bool DataType::isEquals(const DataType &other) {
 
     switch (this->type) {
 
-        case void_:
+        case unit_:
         case int_:
         case float_:
         case char_:
@@ -189,7 +189,7 @@ DataType DataType::getArrDataType() const {
 
 bool DataType::isCanConvert(DataType first, DataType second) {
 
-    if (first.type == second.type && first.type != class_ && first.type != array_ && first.type != void_) {
+    if (first.type == second.type && first.type != class_ && first.type != array_ && first.type != unit_) {
         return true;
     }
 
@@ -216,7 +216,7 @@ string DataType::toConstTableFormat() const {
     string res;
     switch (type) {
 
-        case void_:
+        case unit_:
             res = "V";
             break;
         case int_:
@@ -267,7 +267,7 @@ bool DataType::isFloat() {
 }
 
 bool DataType::isVoid() {
-    return this->type == void_;
+    return this->type == unit_;
 }
 
 bool DataType::isString() {

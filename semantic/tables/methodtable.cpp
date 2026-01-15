@@ -52,18 +52,18 @@ string MethodTableItem::paramsToConstTableFormat() {
 
 MethodTableItem MethodTableItem::initMethod() {
     MethodTableItem methodTableItem = MethodTableItem();
-    methodTableItem.returnDataType = DataType(DataType::void_);
+    methodTableItem.returnDataType = DataType(DataType::unit_);
     methodTableItem.modifiers->accessModifier = Modifiers::AccessModifiers::public_;
     VarTableItem varTableItem;
     varTableItem.dataType = DataType::StructDataType("this_class");
-    varTableItem.id = "self";
+    varTableItem.id = "this";
     methodTableItem.localVarTable.items.push_back(varTableItem);
     return methodTableItem;
 }
 
 MethodTableItem MethodTableItem::clinitMethod() {
     MethodTableItem methodTableItem = MethodTableItem();
-    methodTableItem.returnDataType = DataType(DataType::void_);
+    methodTableItem.returnDataType = DataType(DataType::unit_);
     return methodTableItem;
 }
 
