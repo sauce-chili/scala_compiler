@@ -1,5 +1,7 @@
 #include "ErrorTable.h"
 
+std::list<SemanticError*>* ErrorTable::errors = nullptr;
+
 ErrorTable::ErrorTable() {
     errors = new std::list<SemanticError*>();
 }
