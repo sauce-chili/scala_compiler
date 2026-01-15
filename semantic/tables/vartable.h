@@ -5,7 +5,6 @@
 #include "semantic/scopes/Scope.h"
 
 class ExprNode;
-class IScope;
 
 // общая абстракция для:
 // FieldVar(поля класса) - всегда имеет дефолтное значение (null если класс, 0 если число)
@@ -15,17 +14,17 @@ public:
 
     string id = "";
     DataType dataType;
-    bool isConst = false;
+    bool isVal = false;
     bool isInit = false;
 
-    IScope* scope; // блок, с которым связана переменная
+    Scope* scope; // область видимости, с которой связана переменная
     ExprNode* value; // для const;
 
     VarTableItem(); // хуй знает зачем, но пусть
 
     VarTableItem(string name, DataType dataType, bool isInit, bool isConst);
-    VarTableItem(string name, DataType dataType, bool isInit, bool isConst, IScope* scope);
-    VarTableItem(string name, DataType dataType, bool isInit, bool isConst, IScope* scope, ExprNode* value);
+    VarTableItem(string name, DataType dataType, bool isInit, bool isConst, Scope* scope);
+    VarTableItem(string name, DataType dataType, bool isInit, bool isConst, Scope* scope, ExprNode* value);
     string toString();
 
     bool isEquals(const VarTableItem &varTableItem);
@@ -38,8 +37,8 @@ public:
     string toString();
     bool isExist(const string& varName);
     bool isEquals(const VarTable & varTable);
-    bool isExist(const string& varName, const ExprNode* blockExpr);
-    int getVarNumber(const string& varName, const ExprNode* blockExpr);
+    bool isExist(const string& varName, const Scope* scope);
+    int getVarNumber(const string& varName, const Scope* scope);
     VarTableItem getVar(int varNum);
     size_t size() const;
 };

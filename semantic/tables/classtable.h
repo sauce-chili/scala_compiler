@@ -13,17 +13,17 @@ using namespace std::filesystem;
 
 class ClassTableItem{
 public:
-    enum Type{
+    enum ClassType{
         class_, object_, trait_, enum_
     };
 
-    Type classType;
+    ClassType classType;
     string name;
     MethodTable methodTable;
     FieldTable fieldTable;
-    string parentName; // имя родителя
-    bool haveAbstract = false;
+    string parentName; // имя родителя, мб нам не нужно тк можно получить по scope->paren->className;
     Modifiers *modifiers;
+    Scope* scope;
 
     ConstTable constTable;
 

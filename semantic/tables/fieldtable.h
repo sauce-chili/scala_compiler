@@ -6,6 +6,8 @@
 #include <map>
 #include <iostream>
 
+#include "semantic/scopes/Scope.h"
+
 using namespace std;
 
 class  ExprNode;
@@ -15,8 +17,8 @@ public:
     bool isConst = false;
     bool isInit = false;
     Modifiers *modifiers;
-
     ExprNode *value;
+    Scope* scope;
 
     FieldTableItem();
     FieldTableItem(DataType dataType, bool isConst, Modifiers *modifiers);
