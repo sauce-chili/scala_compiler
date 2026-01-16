@@ -4,17 +4,21 @@
 
 #include "../Node.h"
 #include "BlockStatNode.h"
+#include "semantic/scopes/Scope.h"
 
-class BlockStatsNode: public Node {
+class BlockStatsNode : public Node {
 public:
-    std::list<BlockStatNode*> *blockStats;
+    Scope *blockScope; // тип должен быть blockType
+    std::list<BlockStatNode *> *blockStats;
 
     BlockStatsNode();
-    BlockStatsNode(BlockStatNode* blockStat);
 
-    static BlockStatsNode* addBlockStatToList(BlockStatsNode *list, BlockStatNode *blockStat);
+    BlockStatsNode(BlockStatNode *blockStat);
+
+    static BlockStatsNode *addBlockStatToList(BlockStatsNode *list, BlockStatNode *blockStat);
 
     string toDot() const override;
+
     string getDotLabel() const override;
 };
 

@@ -18,6 +18,7 @@ public:
     ClassTemplateOptNode* classTemplateOpt;
     TraitTemplateOptNode* traitTemplateOpt;
     EnumDefNode* enumDef;
+    Scope* classScope; // тип класс, сразу назначать имя
 
     TemplateDefNode();
 
