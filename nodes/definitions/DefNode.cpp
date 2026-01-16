@@ -4,6 +4,7 @@ DefNode::DefNode() {
     varDefs = nullptr;
     funDef = nullptr;
     tmplDef = nullptr;
+    modifiers = nullptr;
 }
 
 DefNode *DefNode::createVarDefs(VarDefsNode *varDefs) {
@@ -25,6 +26,11 @@ DefNode *DefNode::createTmplDef(TemplateDefNode *tmplDef) {
     node->type = _TEMPLATE_DEFINITION;
     node->tmplDef = tmplDef;
     return node;
+}
+
+DefNode *DefNode::setModifiers(ModifiersNode *modifiers) {
+    this->modifiers = modifiers;
+    return this;
 }
 
 string DefNode::toDot() const {

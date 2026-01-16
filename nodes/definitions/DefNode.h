@@ -6,6 +6,7 @@
 #include "../var/VarDefsNode.h"
 #include "../func/FunDefNode.h"
 #include "../templates/TemplateDefNode.h"
+#include "../modifier/ModifiersNode.h"
 
 class DefNode: public Node {
 public:
@@ -13,12 +14,15 @@ public:
     VarDefsNode* varDefs;
     FunDefNode* funDef;
     TemplateDefNode* tmplDef;
+    ModifiersNode* modifiers;
 
     DefNode();
 
     static DefNode* createVarDefs(VarDefsNode* varDefs);
     static DefNode* createFunDef(FunDefNode* funDef);
     static DefNode* createTmplDef(TemplateDefNode* tmplDef);
+
+    DefNode* setModifiers(ModifiersNode* modifiers);
 
     string toDot() const override;
     string getDotLabel() const override;

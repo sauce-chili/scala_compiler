@@ -4,6 +4,7 @@ DclNode::DclNode() {
     ids = nullptr;
     compoundType = nullptr;
     funSig = nullptr;
+    modifiers = nullptr;
 }
 
 DclNode *DclNode::createVarDcl(IdsNode *ids, CompoundTypeNode *compoundType) {
@@ -43,4 +44,9 @@ string DclNode::toDot() const {
 
 string DclNode::getDotLabel() const {
     return "Declaration";
+}
+
+DclNode *DclNode::setModifiers(ModifiersNode *modifiers) {
+    this->modifiers = modifiers;
+    return this;
 }

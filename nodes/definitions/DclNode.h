@@ -6,6 +6,7 @@
 #include "../id/IdsNode.h"
 #include "../type/CompoundTypeNode.h"
 #include "../func/FunSigNode.h"
+#include "../modifier/ModifiersNode.h"
 
 class DclNode: public Node {
 public:
@@ -13,12 +14,15 @@ public:
     IdsNode* ids;
     CompoundTypeNode* compoundType;
     FunSigNode* funSig;
+    ModifiersNode* modifiers;
 
     DclNode();
 
     static DclNode* createVarDcl(IdsNode* ids, CompoundTypeNode* compoundType);
     static DclNode* createValDcl(IdsNode* ids, CompoundTypeNode* compoundType);
     static DclNode* createDefDcl(FunSigNode* funSig, CompoundTypeNode* compoundType);
+
+    DclNode* setModifiers(ModifiersNode* modifiers);
 
     string toDot() const override;
     string getDotLabel() const override;

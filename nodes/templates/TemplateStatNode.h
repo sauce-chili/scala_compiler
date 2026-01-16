@@ -8,7 +8,6 @@ class DclNode;
 
 class TemplateStatNode: public Node{
 public:
-    ModifiersNode* modifiers;
     DefNode* def;
     DclNode* dcl;
 
