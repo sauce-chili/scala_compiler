@@ -37,7 +37,6 @@
     ClassParamNode* classParam;
     ClassParamsNode* classParams;
     ClassParentsNode* classParents;
-    ClassTemplateNode* classTemplate;
     DclNode* dcl;
     DefNode* def;
     EnumCaseNode* enumCase;
@@ -176,7 +175,6 @@
 %type <classTemplateOpt> classTemplateOpt
 %type <traitTemplateOpt> traitTemplateOpt
 %type <enumTemplate> enumTemplate
-%type <classTemplate> classTemplate
 %type <classParents> classParents
 %type <traitTemplate> traitTemplate
 %type <enumStats> enumStats enumBody
@@ -364,7 +362,7 @@ funcParam: fullID compoundType { $$ = FuncParamNode::createFuncParam($1, $2); }
 
 /* --------------------- CLASS --------------------- */
 
-classParamClause: nlo '(' ')'             { $$ = nullptr; }
+classParamClause: nlo '(' ')'             { $$ = new ClassParamsNode(); }
                 | nlo '(' classParams ')' { $$ = $3; }
                 ;
 
@@ -454,8 +452,9 @@ enumDef: fullID accessModifier classParamClause enumTemplate { $$ = EnumDefNode:
        ;
 
 classTemplateOpt: /* empty */ %prec LOW_PREC { $$ = nullptr; }
-                | EXTENDS classTemplate      { $$ = ClassTemplateOptNode::addFuncParamToBackToList($2, nullptr); }
-                | templateBody               { $$ = ClassTemplateOptNode::addFuncParamToBackToList(nullptr, $1); }
+                | templateBody               { $$ = ClassTemplateOptNode::addFuncParamToBackToList($1); }
+	        | EXTENDS classParents %prec END_TEMPLATE { $$ = ClassTemplateOptNode::createClassTemplate($2, nullptr); }
+	        | EXTENDS classParents templateBody { $$ = ClassTemplateOptNode::createClassTemplate($2, $3); }
                 ;
 
 traitTemplateOpt: /* empty */ %prec LOW_PREC { $$ = nullptr; }
@@ -466,10 +465,6 @@ traitTemplateOpt: /* empty */ %prec LOW_PREC { $$ = nullptr; }
 enumTemplate: EXTENDS classParents enumBody { $$ = EnumTemplateNode::createWithClassParents($2, $3); }
             | enumBody                      { $$ = EnumTemplateNode::createWithEnumBody($1); }
             ;
-
-classTemplate: classParents templateBody       { $$ = ClassTemplateNode::createClassTemplate($1, $2); }
-             | classParents %prec END_TEMPLATE { $$ = ClassTemplateNode::createClassTemplate($1, nullptr); }
-             ;
 
 classParents: stableId argumentExprs simpleTypes { $$ = ClassParentsNode::createClassParents(ConstrInvokeNode::createConstrInvokeNode($1, $2), $3); } // (бывший constrInvoke)
 	    | stableId simpleTypes { $$ = ClassParentsNode::createClassParents(ConstrInvokeNode::createConstrInvokeNode($1, nullptr), $2); } // (бывший constrInvoke)

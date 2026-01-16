@@ -66,7 +66,6 @@
 #include "class/ClassParamNode.h"
 #include "class/ClassParamsNode.h"
 #include "class/ClassParentsNode.h"
-#include "class/ClassTemplateNode.h"
 #include "class/ConstrInvokeNode.h"
 
 // ===== enum =====

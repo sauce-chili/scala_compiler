@@ -3,16 +3,18 @@
 
 
 #include "../Node.h"
-#include "../class/ClassTemplateNode.h"
+#include "../class/ClassParentsNode.h"
+#include "../templates/TemplateStatsNode.h"
 
 class ClassTemplateOptNode: public Node {
 public:
-    ClassTemplateNode* classTemplate;
     TemplateStatsNode* templateStats;
+    ClassParentsNode* classParents;
 
     ClassTemplateOptNode();
 
-    static ClassTemplateOptNode* addFuncParamToBackToList(ClassTemplateNode* classTemplate, TemplateStatsNode* templateStats);
+    static ClassTemplateOptNode* addFuncParamToBackToList(TemplateStatsNode* templateStats);
+    static ClassTemplateOptNode* createClassTemplate(ClassParentsNode* classParents, TemplateStatsNode* templateStats);
 
     string toDot() const override;
     string getDotLabel() const override;

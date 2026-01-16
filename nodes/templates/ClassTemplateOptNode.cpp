@@ -1,13 +1,19 @@
 #include "ClassTemplateOptNode.h"
 
 ClassTemplateOptNode::ClassTemplateOptNode() {
-    classTemplate = nullptr;
     templateStats = nullptr;
+    classParents  = nullptr;
 }
 
-ClassTemplateOptNode* ClassTemplateOptNode::addFuncParamToBackToList(ClassTemplateNode* classTemplate, TemplateStatsNode* templateStats) {
+ClassTemplateOptNode* ClassTemplateOptNode::addFuncParamToBackToList(TemplateStatsNode* templateStats) {
     ClassTemplateOptNode* node = new ClassTemplateOptNode();
-    node->classTemplate = classTemplate;
+    node->templateStats = templateStats;
+    return node;
+}
+
+ClassTemplateOptNode *ClassTemplateOptNode::createClassTemplate(ClassParentsNode *classParents, TemplateStatsNode *templateStats) {
+    ClassTemplateOptNode* node = new ClassTemplateOptNode();
+    node->classParents = classParents;
     node->templateStats = templateStats;
     return node;
 }
@@ -16,7 +22,6 @@ string ClassTemplateOptNode::toDot() const {
     string dot;
 
     addDotNode(dot);
-    addDotChild(dot, classTemplate, "classTemplate_");
     addDotChild(dot, templateStats, "templateStats_");
 
     return dot;
