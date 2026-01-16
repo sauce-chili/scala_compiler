@@ -1,5 +1,5 @@
 #ifndef SCALA_BYTE_CONVERTATION_H
-#define COMPILER_BYTE_CONVERTATION_H
+#define SCALA_BYTE_CONVERTATION_H
 
 #include <vector>
 #include <cstdint>

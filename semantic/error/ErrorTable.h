@@ -6,9 +6,7 @@
 
 class ErrorTable {
 public:
-    static std::list<SemanticError*> *errors;
-
-    ErrorTable();
+    static std::list<SemanticError*> errors;
 
     static void addErrorToList(SemanticError *error);
 

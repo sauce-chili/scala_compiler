@@ -43,8 +43,8 @@ add_executable(scala_lexer
         ${NODE_SOURCES}
         ${LEXER_UTILS_SOURCES}
         ${SEMANTIC}
-        semantic/tables/LocalVar.cpp
-        semantic/tables/LocalVar.h
+        semantic/Semantic.cpp
+        code_generation/tools/byte_convert.cpp
 )
 
 message(STATUS "Flex output: ${FLEX_MyScanner_OUTPUTS}")
