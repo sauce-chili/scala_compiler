@@ -75,7 +75,6 @@
     TemplateStatsNode* templateStats;
     TraitTemplateNode* traitTemplate;
     TraitTemplateOptNode* traitTemplateOpt;
-    TryExprNode* tryExpr;
     CompoundTypeNode* compoundType;
     SimpleTypeNode* simpleType;
     SimpleTypesNode* simpleTypes;
@@ -154,7 +153,6 @@
 %type <blockStats> blockStats
 %type <blockStat> blockStat
 %type <ids> ids
-%type <tryExpr> tryExpr
 %type <funcParams> funcParamClause funcParams
 %type <funcParam> funcParam
 %type <classParams> classParamClause classParams
@@ -196,7 +194,6 @@ scalaFile: topStatSeq { *out_root = $1;}
 expr: IF '(' expr ')' nls expr ELSE expr { $$ = ExprNode::createIfElse($3, $6, $8); }
     | IF '(' expr ')' nls expr           	{ $$ = ExprNode::createIf($3, $6); }
     | WHILE '(' expr ')' nls expr              { $$ = ExprNode::createWhile($3, $6); }
-    | tryExpr                                  { $$ = ExprNode::createTry($1); }
     | DO expr semio WHILE '(' expr ')'         { $$ = ExprNode::createDoWhile($2, $6); }
     | THROW expr                               { $$ = ExprNode::createThrow($2); }
     | RETURN                                   { $$ = ExprNode::createReturn(); }
@@ -333,16 +330,6 @@ blockStat: /* empty */ { $$ = nullptr; }
 ids: fullID         { $$ = IdsNode::addIdToList(nullptr, $1); }
    | ids ',' fullID { $$ = IdsNode::addIdToList($1, $3); }
    ;
-
-/* --------------------- TRY --------------------- */
-
-tryExpr: TRY expr                         { $$ = TryExprNode::createExceptionBlock($2, nullptr, nullptr); }
-       | TRY expr CATCH expr              { $$ = TryExprNode::createExceptionBlock($2, $4, nullptr); }
-       | TRY expr CATCH expr FINALLY expr { $$ = TryExprNode::createExceptionBlock($2, $4, $6); }
-       | TRY expr FINALLY expr            { $$ = TryExprNode::createExceptionBlock($2, nullptr, $4); }
-       ;
-
-/* --------------------- TRY --------------------- */
 
 
 /* --------------------- FUNC --------------------- */
