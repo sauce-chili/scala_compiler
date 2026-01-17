@@ -47,3 +47,13 @@ string EnumDefNode::toDot() const {
 string EnumDefNode::getDotLabel() const {
     return "Enum definition";
 }
+
+list<Node *> EnumDefNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, modifier);
+    addChildIfNotNull(children, fullId);
+    addChildIfNotNull(children, classParams);
+    addChildIfNotNull(children, enumTemplate);
+    return children;
+}
+

@@ -5,21 +5,27 @@
 #include "IdNode.h"
 #include "../Types.h"
 
-class StableIdNode: public Node {
+class StableIdNode : public Node {
 public:
     StableIdType type;
-    IdNode* identifier;
-    StableIdNode* stableId;
+    IdNode *identifier;
+    StableIdNode *stableId;
 
     StableIdNode();
 
-    static StableIdNode* createStableIdByFullId(IdNode* identifier);
-    static StableIdNode* createSuperCallStableId(IdNode* identifier);
-    static StableIdNode* createThisCallStableIdBy(IdNode* identifier);
-    static StableIdNode* createRecursiveStableId(StableIdNode* stableId, IdNode* identifier);
+    static StableIdNode *createStableIdByFullId(IdNode *identifier);
+
+    static StableIdNode *createSuperCallStableId(IdNode *identifier);
+
+    static StableIdNode *createThisCallStableIdBy(IdNode *identifier);
+
+    static StableIdNode *createRecursiveStableId(StableIdNode *stableId, IdNode *identifier);
 
     string toDot() const override;
+
     string getDotLabel() const override;
+
+    list<Node *> getChildren() const override;
 };
 
 

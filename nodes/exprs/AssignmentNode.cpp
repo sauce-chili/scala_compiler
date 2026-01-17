@@ -58,3 +58,14 @@ string AssignmentNode::getDotLabel() const {
 
     return "Id assignment";
 }
+
+list<Node *> AssignmentNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, fullId);
+    addChildIfNotNull(children, expr);
+    addChildIfNotNull(children, simpleExpr);
+    addChildIfNotNull(children, simpleExpr1);
+    addChildIfNotNull(children, argumentExprs);
+    return children;
+}
+

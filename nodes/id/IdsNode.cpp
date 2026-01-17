@@ -39,3 +39,11 @@ string IdsNode::toDot() const {
 string IdsNode::getDotLabel() const {
     return "Ids";
 }
+
+list<Node *> IdsNode::getChildren() const {
+    list<Node *> children = {};
+    for (Node *node : *ids) {
+        addChildIfNotNull(children, node);
+    }
+    return children;
+}

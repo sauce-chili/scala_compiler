@@ -26,3 +26,11 @@ string ConstrExprNode::toDot() const {
 string ConstrExprNode::getDotLabel() const {
     return "Constructor expr";
 }
+
+list<Node *> ConstrExprNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, argumentExprs);
+    addChildIfNotNull(children, blockStats);
+    return children;
+}
+

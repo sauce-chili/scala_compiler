@@ -122,3 +122,14 @@ string ExprNode::toDot() const {
 string ExprNode::getDotLabel() const {
     return exprTypeToString(type);
 }
+
+list<Node *> ExprNode::getChildren() const {
+    list<Node *> children = {};
+    for (ExprNode* exprNode : *exprs) {
+        addChildIfNotNull(children, exprNode);
+    }
+    addChildIfNotNull(children, enumerators);
+    addChildIfNotNull(children, infixExpr);
+    addChildIfNotNull(children, assignment);
+    return children;
+}

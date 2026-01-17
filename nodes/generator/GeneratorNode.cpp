@@ -28,3 +28,11 @@ string GeneratorNode::toDot() const {
 string GeneratorNode::getDotLabel() const {
     return "Generator";
 }
+
+list<Node *> GeneratorNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, fullId);
+    addChildIfNotNull(children, compoundType);
+    addChildIfNotNull(children, expr);
+    return children;
+}

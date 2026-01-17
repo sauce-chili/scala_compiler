@@ -38,3 +38,11 @@ string VarDefsNode::toDot() const {
 string VarDefsNode::getDotLabel() const {
     return statTypeToString(type);
 }
+
+list<Node *> VarDefsNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, ids);
+    addChildIfNotNull(children, compoundType);
+    addChildIfNotNull(children, expr);
+    return children;
+}

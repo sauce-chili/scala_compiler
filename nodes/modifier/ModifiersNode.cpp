@@ -38,3 +38,11 @@ string ModifiersNode::toDot() const {
 string ModifiersNode::getDotLabel() const {
     return "Modifiers";
 }
+
+list<Node *> ModifiersNode::getChildren() const {
+    list<Node *> children = {};
+    for (Node* node : *modifiers) {
+        addChildIfNotNull(children, node);
+    }
+    return children;
+}

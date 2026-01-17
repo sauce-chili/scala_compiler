@@ -36,3 +36,12 @@ string InfixExprNode::toDot() const {
 string InfixExprNode::getDotLabel() const {
     return prefixExpr ? "Infix expr from prefix" : "Infix expr with two infixes";
 }
+
+list<Node *> InfixExprNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, prefixExpr);
+    addChildIfNotNull(children, left);
+    addChildIfNotNull(children, fullId);
+    addChildIfNotNull(children, right);
+    return children;
+}

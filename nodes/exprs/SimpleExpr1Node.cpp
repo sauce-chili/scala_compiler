@@ -2,6 +2,7 @@
 #include "ArgumentExprsNode.h"
 #include "SimpleExprNode.h"
 #include "../id/IdNode.h"
+#include "nodes/type/CompoundTypeNode.h"
 
 SimpleExpr1Node::SimpleExpr1Node() {
     intValue = 0;
@@ -157,4 +158,15 @@ string SimpleExpr1Node::getDotLabel() const {
     }
 
     return simpleExpr1ToString(type);
+}
+
+list<Node *> SimpleExpr1Node::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, simpleExpr);
+    addChildIfNotNull(children, expr); // '(' expr ')'
+    addChildIfNotNull(children, argumentExprs);
+    addChildIfNotNull(children, simpleExpr1);
+    addChildIfNotNull(children, identifier);
+    addChildIfNotNull(children, compoundType);
+    return children;
 }

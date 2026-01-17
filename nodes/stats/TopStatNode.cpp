@@ -25,3 +25,7 @@ string TopStatNode::toDot() const {
 string TopStatNode::getDotLabel() const {
     return "Top statement";
 }
+
+list<Node *> TopStatNode::getChildren() const {
+    return {tmplDef};
+}

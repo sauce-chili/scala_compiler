@@ -20,6 +20,8 @@ public:
 
     string toDot() const override;
     string getDotLabel() const override;
+    bool isConstructor();
+    list<Node *> getChildren() const override;
 };
 
 

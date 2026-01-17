@@ -51,3 +51,11 @@ string StableIdNode::getDotLabel() const {
 
     return dot;
 }
+
+list<Node *> StableIdNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, identifier);
+    addChildIfNotNull(children, stableId);
+    return children;
+}
+

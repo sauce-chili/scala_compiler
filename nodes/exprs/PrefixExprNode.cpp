@@ -23,3 +23,9 @@ string PrefixExprNode::toDot() const {
 string PrefixExprNode::getDotLabel() const {
     return prefixExprToString(type) + " prefix expr";
 }
+
+list<Node *> PrefixExprNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, simpleExpr);
+    return children;
+}

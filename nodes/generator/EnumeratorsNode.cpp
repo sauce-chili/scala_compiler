@@ -30,3 +30,13 @@ string EnumeratorsNode::toDot() const {
 string EnumeratorsNode::getDotLabel() const {
     return "Enumerators";
 }
+
+list<Node *> EnumeratorsNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, generator);
+    for (Node* node : *enumerators) {
+        addChildIfNotNull(children, node);
+    }
+    return children;
+}
+

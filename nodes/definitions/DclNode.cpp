@@ -8,7 +8,7 @@ DclNode::DclNode() {
 }
 
 DclNode *DclNode::createVarDcl(IdsNode *ids, CompoundTypeNode *compoundType) {
-    DclNode* node = new DclNode();
+    DclNode *node = new DclNode();
     node->type = _VAR_DECL;
     node->ids = ids;
     node->compoundType = compoundType;
@@ -16,7 +16,7 @@ DclNode *DclNode::createVarDcl(IdsNode *ids, CompoundTypeNode *compoundType) {
 }
 
 DclNode *DclNode::createValDcl(IdsNode *ids, CompoundTypeNode *compoundType) {
-    DclNode* node = new DclNode();
+    DclNode *node = new DclNode();
     node->type = _VAL_DECL;
     node->ids = ids;
     node->compoundType = compoundType;
@@ -24,7 +24,7 @@ DclNode *DclNode::createValDcl(IdsNode *ids, CompoundTypeNode *compoundType) {
 }
 
 DclNode *DclNode::createDefDcl(FunSigNode *funSig, CompoundTypeNode *compoundType) {
-    DclNode* node = new DclNode();
+    DclNode *node = new DclNode();
     node->type = _FUN_DEF;
     node->funSig = funSig;
     node->compoundType = compoundType;
@@ -49,4 +49,13 @@ string DclNode::getDotLabel() const {
 DclNode *DclNode::setModifiers(ModifiersNode *modifiers) {
     this->modifiers = modifiers;
     return this;
+}
+
+list<Node *> DclNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, modifiers);
+    addChildIfNotNull(children, ids);
+    addChildIfNotNull(children, compoundType);
+    addChildIfNotNull(children, funSig);
+    return children;
 }

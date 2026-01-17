@@ -2,7 +2,9 @@
 #define SCALA_LEXER_TEMPLATEDEFNODE_H
 
 #include "../Node.h"
+#include "nodes/modifier/ModifiersNode.h"
 
+class Scope;
 class ClassDefNode;
 class ClassTemplateOptNode;
 class IdNode;
@@ -12,6 +14,7 @@ class EnumDefNode;
 
 class TemplateDefNode: public Node {
 public:
+    ModifiersNode* modifiers;
     StatType type;
     ClassDefNode* classDef;
     IdNode* fullId;
@@ -29,6 +32,10 @@ public:
 
     string toDot() const override;
     string getDotLabel() const override;
+
+    TemplateDefNode* setModifiers(ModifiersNode* modifiers);
+
+    list<Node *> getChildren() const override;
 };
 
 

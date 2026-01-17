@@ -51,3 +51,12 @@ string SimpleExprNode::toDot() const {
 string SimpleExprNode::getDotLabel() const {
     return simpleExprToString(type);
 }
+
+list<Node *> SimpleExprNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, constr);
+    addChildIfNotNull(children, blockStats);
+    addChildIfNotNull(children, simpleExpr1);
+    return children;
+}
+

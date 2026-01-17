@@ -36,3 +36,12 @@ string CompoundTypeNode::toDot() const {
 string CompoundTypeNode::getDotLabel() const {
     return "Compound type";
 }
+
+
+list<Node *> CompoundTypeNode::getChildren() const {
+    list<Node *> children = {};
+    for (Node *node : *simpleTypes) {
+        addChildIfNotNull(children, node);
+    }
+    return children;
+}

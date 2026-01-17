@@ -47,3 +47,12 @@ string DefNode::toDot() const {
 string DefNode::getDotLabel() const {
     return definitionTypeToString(type);
 }
+
+list<Node *> DefNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, modifiers);
+    addChildIfNotNull(children, varDefs);
+    addChildIfNotNull(children, funDef);
+    addChildIfNotNull(children, tmplDef); // не поддерживаем
+    return children;
+}

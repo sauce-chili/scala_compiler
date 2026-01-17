@@ -1,11 +1,11 @@
 #include "BlockStatsNode.h"
 
 BlockStatsNode::BlockStatsNode() {
-    blockStats = new std::list<BlockStatNode*>;
+    blockStats = new std::list<BlockStatNode *>;
 }
 
 BlockStatsNode::BlockStatsNode(BlockStatNode *blockStat) {
-    blockStats = new std::list<BlockStatNode*>;
+    blockStats = new std::list<BlockStatNode *>;
     if (blockStat) {
         blockStats->push_back(blockStat);
     }
@@ -27,7 +27,7 @@ string BlockStatsNode::toDot() const {
 
     addDotNode(dot);
     if (!blockStats->empty()) {
-        for (const auto *it : *blockStats) {
+        for (const auto *it: *blockStats) {
             addDotChild(dot, it, "blockStat_" + to_string(it->id));
         }
     }
@@ -37,4 +37,12 @@ string BlockStatsNode::toDot() const {
 
 string BlockStatsNode::getDotLabel() const {
     return "Block stats";
+}
+
+list<Node *> BlockStatsNode::getChildren() const {
+    list<Node *> children = {};
+    for (Node *node: *blockStats) {
+        addChildIfNotNull(children, node);
+    }
+    return children;
 }
