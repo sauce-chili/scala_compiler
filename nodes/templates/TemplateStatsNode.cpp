@@ -33,6 +33,23 @@ TemplateStatsNode* TemplateStatsNode::addFuncParamToFrontToList(TemplateStatsNod
     return list;
 }
 
+TemplateStatsNode *TemplateStatsNode::copy() {
+    TemplateStatsNode* copied = new TemplateStatsNode();
+
+    if (templateStats) {
+        copied->templateStats = new std::list<TemplateStatNode*>();
+
+        for (TemplateStatNode* e: *templateStats) {
+            if (e)
+                copied->templateStats->push_back(e->copy());
+            else
+                copied->templateStats->push_back(nullptr);
+        }
+    }
+
+    return copied;
+}
+
 string TemplateStatsNode::toDot() const {
     string dot;
 
@@ -50,3 +67,4 @@ string TemplateStatsNode::toDot() const {
 string TemplateStatsNode::getDotLabel() const {
     return "Template stats";
 }
+

@@ -15,6 +15,8 @@ public:
 
     GeneratorNode();
 
+    GeneratorNode* copy();
+
     static GeneratorNode* createGenerator(IdNode* fullId, CompoundTypeNode* compoundType, ExprNode* expr);
 
     string toDot() const override;

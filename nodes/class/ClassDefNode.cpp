@@ -20,6 +20,25 @@ ClassDefNode *ClassDefNode::createClassDef(IdNode *fullId, ModifierNode *modifie
     return node;
 }
 
+ClassDefNode *ClassDefNode::copy() {
+    ClassDefNode* node = new ClassDefNode();
+
+    if (fullId) {
+        node->fullId = fullId->copy();
+    }
+    if (primaryConstructModifier) {
+        node->primaryConstructModifier = primaryConstructModifier->copy();
+    }
+    if (classParams) {
+        node->classParams = classParams->copy();
+    }
+    if (classTemplateOpt) {
+        node->classTemplateOpt = classTemplateOpt->copy();
+    }
+
+    return node;
+}
+
 string ClassDefNode::toDot() const {
     string dot;
 

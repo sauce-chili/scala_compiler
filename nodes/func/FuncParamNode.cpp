@@ -12,6 +12,19 @@ FuncParamNode *FuncParamNode::createFuncParam(IdNode *fullId, CompoundTypeNode *
     return node;
 }
 
+FuncParamNode *FuncParamNode::copy() {
+    FuncParamNode* node = new FuncParamNode();
+
+    if (fullId) {
+        node->fullId = fullId->copy();
+    }
+    if (compoundType) {
+        node->compoundType = compoundType->copy();
+    }
+
+    return node;
+}
+
 string FuncParamNode::toDot() const {
     string dot;
 

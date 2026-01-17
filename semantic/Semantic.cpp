@@ -3,6 +3,8 @@
 #include "nodes/definitions/DclNode.h"
 #include "nodes/definitions/DefNode.h"
 #include "nodes/exprs/ArgumentExprsNode.h"
+#include "nodes/stats/TopStatNode.h"
+
 #include <stdexcept>
 
 void TopStatSeqNode::convertAst() {

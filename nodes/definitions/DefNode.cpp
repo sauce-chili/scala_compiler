@@ -35,6 +35,26 @@ DefNode *DefNode::createPrimaryConstructor(PrimaryConstructorNode *primaryConstr
     return node;
 }
 
+DefNode *DefNode::copy() {
+    DefNode* node = new DefNode();
+    node->type = type;
+
+    if (varDefs) {
+        node->varDefs = varDefs->copy();
+    }
+    if (funDef) {
+        node->funDef = funDef->copy();
+    }
+    if (tmplDef) {
+        node->tmplDef = tmplDef->copy();
+    }
+    if (modifiers) {
+        node->modifiers = modifiers->copy();
+    }
+
+    return node;
+}
+
 DefNode *DefNode::setModifiers(ModifiersNode *modifiers) {
     this->modifiers = modifiers;
     return this;
@@ -55,3 +75,4 @@ string DefNode::toDot() const {
 string DefNode::getDotLabel() const {
     return definitionTypeToString(type);
 }
+

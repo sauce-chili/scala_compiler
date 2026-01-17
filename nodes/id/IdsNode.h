@@ -15,6 +15,8 @@ public:
 
     static IdsNode* addIdToList(IdsNode *list, IdNode *fullId);
 
+    IdsNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
 };

@@ -16,6 +16,8 @@ public:
 
     ClassDefNode();
 
+    ClassDefNode* copy();
+
     static ClassDefNode* createClassDef(
             IdNode* fullId,
             ModifierNode* modifier,

@@ -21,6 +21,25 @@ InfixExprNode *InfixExprNode::createFromInfixes(InfixExprNode *left, IdNode *ful
     return node;
 }
 
+InfixExprNode *InfixExprNode::copy() {
+    InfixExprNode* node = new InfixExprNode();
+
+    if (left) {
+        node->left = left->copy();
+    }
+    if (fullId) {
+        node->fullId = fullId->copy();
+    }
+    if (right) {
+        node->right = right->copy();
+    }
+    if (prefixExpr) {
+        node->prefixExpr = prefixExpr->copy();
+    }
+
+    return node;
+}
+
 string InfixExprNode::toDot() const {
     string dot;
 

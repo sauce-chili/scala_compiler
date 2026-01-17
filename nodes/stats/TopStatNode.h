@@ -19,6 +19,8 @@ public:
     void initializeBaseConstructorFromFields();
     void initializeClassModifiers();
 
+    TopStatNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
 };

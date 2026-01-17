@@ -32,6 +32,25 @@ EnumDefNode *EnumDefNode::createEnumTemplate(IdNode *fullId, EnumTemplateNode *e
     return node;
 }
 
+EnumDefNode *EnumDefNode::copy() {
+    EnumDefNode* node = new EnumDefNode();
+
+    if (fullId) {
+        node->fullId = fullId->copy();
+    }
+    if (enumTemplate) {
+        node->enumTemplate = enumTemplate->copy();
+    }
+    if (modifier) {
+        node->modifier = modifier->copy();
+    }
+    if (classParams) {
+        node->classParams = classParams->copy();
+    }
+
+    return node;
+}
+
 string EnumDefNode::toDot() const {
     string dot;
 

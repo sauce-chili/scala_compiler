@@ -21,6 +21,18 @@ TemplateStatNode *TemplateStatNode::createDclTemplate(ModifiersNode *modifiers, 
     return node;
 }
 
+TemplateStatNode *TemplateStatNode::copy() {
+    TemplateStatNode* node = new TemplateStatNode();
+
+    if (dcl) {
+        node->dcl = dcl->copy();
+    }
+    if (dcl) {
+        node->def = def->copy();
+    }
+    return node;
+}
+
 string TemplateStatNode::toDot() const {
     string dot;
 
@@ -39,3 +51,4 @@ string TemplateStatNode::toDot() const {
 string TemplateStatNode::getDotLabel() const {
     return "Template stat";
 }
+

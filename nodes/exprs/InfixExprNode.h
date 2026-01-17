@@ -13,6 +13,9 @@ public:
     PrefixExprNode* prefixExpr;
 
     InfixExprNode();
+
+    InfixExprNode* copy();
+
     static InfixExprNode* createInfixFromPrefix(PrefixExprNode* prefixExpr);
     static InfixExprNode* createFromInfixes(InfixExprNode *left, IdNode* fullId, InfixExprNode *right);
 

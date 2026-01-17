@@ -17,6 +17,8 @@ public:
     static BlockStatNode* createVarDefsNode(VarDefsNode* varDefs);
     static BlockStatNode* createExprNode(ExprNode* expr);
 
+    BlockStatNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
 };

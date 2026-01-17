@@ -14,6 +14,20 @@ GeneratorNode *GeneratorNode::createGenerator(IdNode *fullId, CompoundTypeNode *
     return node;
 }
 
+GeneratorNode *GeneratorNode::copy() {
+    GeneratorNode* node = new GeneratorNode();
+    if (fullId) {
+        node->fullId = fullId->copy();
+    }
+    if (compoundType) {
+        node->compoundType = compoundType->copy();
+    }
+    if (expr) {
+        node->expr = expr->copy();
+    }
+    return node;
+}
+
 string GeneratorNode::toDot() const {
     string dot;
 

@@ -11,6 +11,9 @@ public:
     std::list<EnumeratorPartNode*> *enumerators;
 
     EnumeratorsNode(GeneratorNode* generator);
+    EnumeratorsNode();
+
+    EnumeratorsNode* copy();
 
     static EnumeratorsNode* addModifierToList(EnumeratorsNode *list, EnumeratorPartNode *enumeratorPart);
 

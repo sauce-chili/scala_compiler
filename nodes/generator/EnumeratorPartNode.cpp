@@ -21,6 +21,23 @@ EnumeratorPartNode *EnumeratorPartNode::createVarDefEnumeratorPart(IdNode *fullI
     return node;
 }
 
+EnumeratorPartNode *EnumeratorPartNode::copy() {
+    EnumeratorPartNode* node = new EnumeratorPartNode();
+    if (generator) {
+        node->generator = generator->copy();
+    }
+    if (fullId) {
+        node->fullId = fullId->copy();
+    }
+    if (compoundType) {
+        node->compoundType = compoundType->copy();
+    }
+    if (expr) {
+        node->expr = expr->copy();
+    }
+    return node;
+}
+
 string EnumeratorPartNode::toDot() const {
     string dot;
 
@@ -36,3 +53,4 @@ string EnumeratorPartNode::toDot() const {
 string EnumeratorPartNode::getDotLabel() const {
     return generator ? "Enumerator part with generator" : "Enumerator part with var def";
 }
+

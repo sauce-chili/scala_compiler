@@ -28,6 +28,8 @@ public:
     static TemplateDefNode* createTraitDef(IdNode* fullId, TraitTemplateOptNode* traitTemplateOpt);
     static TemplateDefNode* createEnumDef(EnumDefNode* enumDef);
 
+    TemplateDefNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
 };

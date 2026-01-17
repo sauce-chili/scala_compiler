@@ -8,7 +8,7 @@
 
 #include <list>
 
-class BlockStatsNode : public Node {
+class BlockStatsNode: public Node {
 public:
     Scope *blockScope; // тип должен быть blockType
     std::list<BlockStatNode *> *blockStats;
@@ -18,6 +18,8 @@ public:
     BlockStatsNode(BlockStatNode *blockStat);
 
     static BlockStatsNode *addBlockStatToList(BlockStatsNode *list, BlockStatNode *blockStat);
+
+    BlockStatsNode* copy();
 
     string toDot() const override;
 

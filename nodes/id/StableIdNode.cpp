@@ -36,6 +36,7 @@ StableIdNode *StableIdNode::createRecursiveStableId(StableIdNode *stableId, IdNo
 
 StableIdNode *StableIdNode::copy() {
     StableIdNode* node = new StableIdNode();
+
     if (stableId) {
         node->stableId = stableId->copy();
     }
@@ -43,6 +44,7 @@ StableIdNode *StableIdNode::copy() {
     if (identifier) {
         node->identifier = identifier->copy();
     }
+
     return node;
 }
 

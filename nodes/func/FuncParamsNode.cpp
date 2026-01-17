@@ -31,6 +31,23 @@ FuncParamsNode *FuncParamsNode::addFuncParamToList(FuncParamsNode *list, FuncPar
     return list;
 }
 
+FuncParamsNode *FuncParamsNode::copy() {
+    FuncParamsNode* copied = new FuncParamsNode();
+
+    if (funcParams) {
+        copied->funcParams = new std::list<FuncParamNode*>();
+
+        for (FuncParamNode* e: *funcParams) {
+            if (e)
+                copied->funcParams->push_back(e->copy());
+            else
+                copied->funcParams->push_back(nullptr);
+        }
+    }
+
+    return copied;
+}
+
 string FuncParamsNode::toDot() const {
     string dot;
 

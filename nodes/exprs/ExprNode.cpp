@@ -122,3 +122,32 @@ string ExprNode::toDot() const {
 string ExprNode::getDotLabel() const {
     return exprTypeToString(type);
 }
+
+ExprNode *ExprNode::copy() {
+    ExprNode* node = new ExprNode();
+
+    if (exprs) {
+        node->exprs = new std::list<ExprNode*>();
+
+        for (ExprNode* e: *exprs) {
+            if (e)
+                node->exprs->push_back(e->copy());
+            else
+                node->exprs->push_back(nullptr);
+        }
+    }
+
+    if (tryExpr) {
+        node->tryExpr = tryExpr->copy();
+    }
+    if (enumerators) {
+        node->enumerators = enumerators->copy();
+    }
+    if (infixExpr) {
+        node->infixExpr = infixExpr->copy();
+    }
+    if (assignment) {
+        node->assignment = assignment->copy();
+    }
+    return node;
+}

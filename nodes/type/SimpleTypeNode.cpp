@@ -19,12 +19,14 @@ SimpleTypeNode *SimpleTypeNode::createArrayWithCompoundTypeNode(CompoundTypeNode
 
 SimpleTypeNode *SimpleTypeNode::copy() {
     SimpleTypeNode* node = new SimpleTypeNode();
+
     if (stableId) {
         node->stableId = stableId->copy();
     }
     if (compoundType) {
         node->compoundType = compoundType->copy();
     }
+
     return node;
 }
 

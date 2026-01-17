@@ -8,7 +8,10 @@ class SuperConstructorCallNode: public Node {
 public:
     ArgumentExprsNode* argumentExprs;
 
+    SuperConstructorCallNode();
     SuperConstructorCallNode(ArgumentExprsNode* argumentExprs);
+
+    SuperConstructorCallNode* copy();
 
     string toDot() const override;
     string getDotLabel() const override;

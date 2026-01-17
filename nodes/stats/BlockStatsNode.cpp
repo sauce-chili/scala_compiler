@@ -22,6 +22,23 @@ BlockStatsNode *BlockStatsNode::addBlockStatToList(BlockStatsNode *list, BlockSt
     return list;
 }
 
+BlockStatsNode *BlockStatsNode::copy() {
+    BlockStatsNode* copied = new BlockStatsNode();
+
+    if (blockStats) {
+        copied->blockStats = new std::list<BlockStatNode*>();
+
+        for (BlockStatNode* e: *blockStats) {
+            if (e)
+                copied->blockStats->push_back(e->copy());
+            else
+                copied->blockStats->push_back(nullptr);
+        }
+    }
+
+    return copied;
+}
+
 string BlockStatsNode::toDot() const {
     string dot;
 
@@ -38,3 +55,4 @@ string BlockStatsNode::toDot() const {
 string BlockStatsNode::getDotLabel() const {
     return "Block stats";
 }
+

@@ -17,6 +17,8 @@ public:
     static EnumStatNode* createWithTemplateStat(TemplateStatNode* templateStat);
     static EnumStatNode* createWithEnumCase(ModifiersNode* modifiers, EnumCaseNode* enumCase);
 
+    EnumStatNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
 };

@@ -16,6 +16,8 @@ public:
 
     EnumDefNode();
 
+    EnumDefNode* copy();
+
     static EnumDefNode* createWithAccessModifier(
             IdNode* fullId,
             ModifierNode* modifier,

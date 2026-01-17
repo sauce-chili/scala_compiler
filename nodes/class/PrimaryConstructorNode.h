@@ -12,6 +12,9 @@ public:
     SuperConstructorCallNode *superCall;
     BlockStatsNode *blockStats;
 
+    PrimaryConstructorNode* copy();
+
+    PrimaryConstructorNode();
     PrimaryConstructorNode(FuncParamsNode *funcParams, BlockStatsNode *blockStats, SuperConstructorCallNode *superCall);
 
     string toDot() const override;

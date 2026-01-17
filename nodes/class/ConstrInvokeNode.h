@@ -12,6 +12,8 @@ public:
 
     ConstrInvokeNode();
 
+    ConstrInvokeNode* copy();
+
     static ConstrInvokeNode* createConstrInvokeNode(StableIdNode* stableId, ArgumentExprsNode* arguments);
 
     string toDot() const override;

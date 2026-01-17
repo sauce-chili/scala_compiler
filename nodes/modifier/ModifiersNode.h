@@ -13,6 +13,8 @@ public:
     ModifiersNode();
     ModifiersNode(ModifierNode* modifier);
 
+    ModifiersNode* copy();
+
     static ModifiersNode* addModifierToList(ModifiersNode *list, ModifierNode *modifier);
 
     string toDot() const override;

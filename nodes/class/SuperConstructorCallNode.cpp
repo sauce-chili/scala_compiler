@@ -1,7 +1,22 @@
 #include "SuperConstructorCallNode.h"
 
+
+SuperConstructorCallNode::SuperConstructorCallNode() {
+
+}
+
 SuperConstructorCallNode::SuperConstructorCallNode(ArgumentExprsNode *argumentExprs) {
     this->argumentExprs = argumentExprs;
+}
+
+SuperConstructorCallNode *SuperConstructorCallNode::copy() {
+    SuperConstructorCallNode* node = new SuperConstructorCallNode();
+
+    if (argumentExprs) {
+        node->argumentExprs = argumentExprs->copy();
+    }
+
+    return node;
 }
 
 string SuperConstructorCallNode::toDot() const {

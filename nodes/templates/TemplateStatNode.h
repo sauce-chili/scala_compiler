@@ -16,6 +16,8 @@ public:
     static TemplateStatNode* createDefTemplate(ModifiersNode* modifiers, DefNode* def);
     static TemplateStatNode* createDclTemplate(ModifiersNode* modifiers, DclNode* dcl);
 
+    TemplateStatNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
 };

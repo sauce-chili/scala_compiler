@@ -11,6 +11,18 @@ PrefixExprNode *PrefixExprNode::createPrefixExprNode(SimpleExprNode *simpleExpr,
     return node;
 }
 
+PrefixExprNode *PrefixExprNode::copy() {
+    PrefixExprNode* node = new PrefixExprNode();
+
+    node->type = type;
+
+    if (simpleExpr) {
+        node->simpleExpr = simpleExpr->copy();
+    }
+
+    return node;
+}
+
 string PrefixExprNode::toDot() const {
     string dot;
 

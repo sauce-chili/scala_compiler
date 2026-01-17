@@ -22,6 +22,8 @@ public:
 
     ExprNode();
 
+    ExprNode* copy();
+
     static ExprNode* createIfElse(ExprNode* cond, ExprNode* trueB, ExprNode* falseB);
     static ExprNode* createIf(ExprNode* cond, ExprNode* expr);
     static ExprNode* createWhile(ExprNode* cond, ExprNode* expr);

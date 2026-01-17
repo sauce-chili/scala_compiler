@@ -16,6 +16,8 @@ public:
 
     void convertAst();
 
+    TopStatSeqNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
 };

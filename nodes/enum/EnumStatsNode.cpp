@@ -22,6 +22,23 @@ EnumStatsNode *EnumStatsNode::addModifierToList(EnumStatsNode *list, EnumStatNod
     return list;
 }
 
+EnumStatsNode *EnumStatsNode::copy() {
+    EnumStatsNode* copied = new EnumStatsNode();
+
+    if (enumStats) {
+        copied->enumStats = new std::list<EnumStatNode*>();
+
+        for (EnumStatNode* es: *enumStats) {
+            if (es)
+                copied->enumStats->push_back(es->copy());
+            else
+                copied->enumStats->push_back(nullptr);
+        }
+    }
+
+    return copied;
+}
+
 string EnumStatsNode::toDot() const {
     string dot;
 

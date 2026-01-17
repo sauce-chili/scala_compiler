@@ -19,6 +19,22 @@ EnumStatNode *EnumStatNode::createWithEnumCase(ModifiersNode *modifiers, EnumCas
     return node;
 }
 
+EnumStatNode *EnumStatNode::copy() {
+    EnumStatNode* node = new EnumStatNode();
+
+    if (templateStat) {
+        node->templateStat = templateStat->copy();
+    }
+    if (modifiers) {
+        node->modifiers = modifiers->copy();
+    }
+    if (enumCase) {
+        node->enumCase = enumCase->copy();
+    }
+
+    return node;
+}
+
 string EnumStatNode::toDot() const {
     string dot;
 

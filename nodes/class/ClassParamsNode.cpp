@@ -22,6 +22,23 @@ ClassParamsNode *ClassParamsNode::addClassParamToList(ClassParamsNode *list, Cla
     return list;
 }
 
+ClassParamsNode *ClassParamsNode::copy() {
+    ClassParamsNode* copied = new ClassParamsNode();
+
+    if (classParams) {
+        copied->classParams = new std::list<ClassParamNode*>();
+
+        for (ClassParamNode* e: *classParams) {
+            if (e)
+                copied->classParams->push_back(e->copy());
+            else
+                copied->classParams->push_back(nullptr);
+        }
+    }
+
+    return copied;
+}
+
 string ClassParamsNode::toDot() const {
     string dot;
 

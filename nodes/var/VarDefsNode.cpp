@@ -24,6 +24,23 @@ VarDefsNode *VarDefsNode::createVar(IdsNode* ids, CompoundTypeNode* compoundType
     return node;
 }
 
+VarDefsNode *VarDefsNode::copy() {
+    VarDefsNode* node = new VarDefsNode();
+    node->type = type;
+
+    if (ids) {
+        node->ids = ids->copy();
+    }
+    if (compoundType) {
+        node->compoundType = compoundType->copy();
+    }
+    if (expr) {
+        node->expr = expr->copy();
+    }
+
+    return node;
+}
+
 string VarDefsNode::toDot() const {
     string dot;
 
@@ -38,3 +55,4 @@ string VarDefsNode::toDot() const {
 string VarDefsNode::getDotLabel() const {
     return statTypeToString(type);
 }
+

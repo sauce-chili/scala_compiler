@@ -16,6 +16,8 @@ public:
     static TemplateStatsNode* addFuncParamToBackToList(TemplateStatsNode *list, TemplateStatNode *templateStat);
     static TemplateStatsNode* addFuncParamToFrontToList(TemplateStatsNode *list, TemplateStatNode *templateStat);
 
+    TemplateStatsNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
 };

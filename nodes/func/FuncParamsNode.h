@@ -19,6 +19,8 @@ public:
 
     static FuncParamsNode *addFuncParamToList(FuncParamsNode *list, FuncParamNode *funcParam);
 
+    FuncParamsNode* copy();
+
     string toDot() const override;
 
     string getDotLabel() const override;

@@ -22,6 +22,8 @@ public:
     static DclNode* createValDcl(IdsNode* ids, CompoundTypeNode* compoundType);
     static DclNode* createDefDcl(FunSigNode* funSig, CompoundTypeNode* compoundType);
 
+    DclNode* copy();
+
     DclNode* setModifiers(ModifiersNode* modifiers);
 
     string toDot() const override;

@@ -12,6 +12,8 @@ public:
 
     TryExprNode();
 
+    TryExprNode* copy();
+
     static TryExprNode* createExceptionBlock(ExprNode* tryExpr, ExprNode* catchExpr, ExprNode* finallyNode);
 
     string toDot() const override;

@@ -26,7 +26,7 @@ ArgumentExprsNode *ArgumentExprsNode::copy() {
 
         for (ExprNode* e: *exprs->exprs) {
             if (e)
-                copied->exprs->push_back(e); // TODO тут
+                copied->exprs->push_back(e->copy());
             else
                 copied->exprs->push_back(nullptr);
         }

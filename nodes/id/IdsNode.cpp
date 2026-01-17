@@ -23,6 +23,23 @@ IdsNode *IdsNode::addIdToList(IdsNode *list, IdNode *fullId) {
     return list;
 }
 
+IdsNode *IdsNode::copy() {
+    IdsNode* copied = new IdsNode();
+
+    if (ids) {
+        copied->ids = new std::list<IdNode*>();
+
+        for (IdNode* e: *ids) {
+            if (e)
+                copied->ids->push_back(e->copy());
+            else
+                copied->ids->push_back(nullptr);
+        }
+    }
+
+    return copied;
+}
+
 string IdsNode::toDot() const {
     string dot;
 
@@ -39,3 +56,4 @@ string IdsNode::toDot() const {
 string IdsNode::getDotLabel() const {
     return "Ids";
 }
+

@@ -18,6 +18,18 @@ BlockStatNode *BlockStatNode::createExprNode(ExprNode *expr) {
     return node;
 }
 
+BlockStatNode *BlockStatNode::copy() {
+    BlockStatNode* node = new BlockStatNode();
+
+    if (varDefs) {
+        node->varDefs = varDefs->copy();
+    }
+    if (expr) {
+        node->expr = expr->copy();
+    }
+    return node;
+}
+
 string BlockStatNode::toDot() const {
     string dot;
 
@@ -31,3 +43,4 @@ string BlockStatNode::toDot() const {
 string BlockStatNode::getDotLabel() const {
     return "Block stats";
 }
+

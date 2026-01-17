@@ -18,6 +18,22 @@ TraitTemplateNode *TraitTemplateNode::createTraitTemplate(SimpleTypeNode *simple
     return node;
 }
 
+TraitTemplateNode* TraitTemplateNode::copy() {
+    TraitTemplateNode* node = new TraitTemplateNode();
+
+    if (simpleType) {
+        node->simpleType = simpleType->copy();
+    }
+    if (simpleTypes) {
+        node->simpleTypes = simpleTypes->copy();
+    }
+    if (templateStats) {
+        node->templateStats = templateStats->copy();
+    }
+
+    return node;
+}
+
 string TraitTemplateNode::toDot() const {
     string dot;
 

@@ -14,6 +14,8 @@ public:
 
     ConstrExprNode();
 
+    ConstrExprNode* copy();
+
     static ConstrExprNode* createConstrExpr(ArgumentExprsNode* argumentExprs, BlockStatsNode* blockStats, bool isBlock = false);
 
     string toDot() const override;

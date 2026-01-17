@@ -23,6 +23,8 @@ public:
 
     DefNode();
 
+    DefNode* copy();
+
     static DefNode* createVarDefs(VarDefsNode* varDefs);
     static DefNode* createFunDef(FunDefNode* funDef);
     static DefNode* createTmplDef(TemplateDefNode* tmplDef);

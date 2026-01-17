@@ -12,6 +12,19 @@ TopStatNode *TopStatNode::createTopStat(ModifiersNode *modifiers, TemplateDefNod
     return node;
 }
 
+TopStatNode *TopStatNode::copy() {
+    TopStatNode* node = new TopStatNode();
+
+    if (modifiers) {
+        node->modifiers = modifiers->copy();
+    }
+    if (tmplDef) {
+        node->tmplDef = tmplDef->copy();
+    }
+
+    return node;
+}
+
 string TopStatNode::toDot() const {
     string dot;
 

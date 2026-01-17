@@ -12,6 +12,19 @@ ClassParentsNode *ClassParentsNode::createClassParents(ConstrInvokeNode *constr,
     return node;
 }
 
+ClassParentsNode *ClassParentsNode::copy() {
+    ClassParentsNode* node = new ClassParentsNode();
+
+    if (constr) {
+        node->constr = constr->copy();
+    }
+    if (simpleTypes) {
+        node->simpleTypes = simpleTypes->copy();
+    }
+
+    return node;
+}
+
 string ClassParentsNode::toDot() const {
     string dot;
 

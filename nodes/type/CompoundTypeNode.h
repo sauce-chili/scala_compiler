@@ -14,6 +14,7 @@ public:
     CompoundTypeNode(SimpleTypeNode *first);
     CompoundTypeNode();
     CompoundTypeNode(IdNode *first);
+
     static CompoundTypeNode* addStableId(CompoundTypeNode* list, SimpleTypeNode* simpleType);
 
     CompoundTypeNode* copy();

@@ -14,6 +14,8 @@ public:
 
     EnumeratorPartNode();
 
+    EnumeratorPartNode* copy();
+
     static EnumeratorPartNode* createGeneratorEnumeratorPart(GeneratorNode* generator);
     static EnumeratorPartNode* createVarDefEnumeratorPart(IdNode* fullId, CompoundTypeNode* compoundType, ExprNode* expr);
 

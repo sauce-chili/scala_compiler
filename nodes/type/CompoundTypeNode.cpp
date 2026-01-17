@@ -43,8 +43,6 @@ CompoundTypeNode* CompoundTypeNode::copy() {
             else
                 compoundType->simpleTypes->push_back(nullptr);
         }
-    } else {
-        compoundType->simpleTypes = nullptr;
     }
 
     return compoundType;

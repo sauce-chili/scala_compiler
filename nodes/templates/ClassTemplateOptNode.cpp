@@ -18,6 +18,19 @@ ClassTemplateOptNode *ClassTemplateOptNode::createClassTemplate(ClassParentsNode
     return node;
 }
 
+ClassTemplateOptNode *ClassTemplateOptNode::copy() {
+    ClassTemplateOptNode* node = new ClassTemplateOptNode();
+
+    if (classParents) {
+        node->classParents = classParents->copy();
+    }
+    if (templateStats) {
+        node->templateStats = templateStats->copy();
+    }
+
+    return node;
+}
+
 string ClassTemplateOptNode::toDot() const {
     string dot;
 

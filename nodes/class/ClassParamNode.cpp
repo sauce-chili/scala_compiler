@@ -19,9 +19,15 @@ ClassParamNode *ClassParamNode::createClassParam(ClassParamType type, ModifiersN
 ClassParamNode* ClassParamNode::copy() {
     ClassParamNode* node = new ClassParamNode();
     node->type = type;
-    node->modifiers = modifiers;
-    node->fullId = fullId;
-    node->compoundType = compoundType;
+    if (modifiers) {
+        node->modifiers = modifiers->copy();
+    }
+    if (fullId) {
+        node->fullId = fullId->copy();
+    }
+    if (compoundType) {
+        node->compoundType = compoundType->copy();
+    }
     return node;
 }
 

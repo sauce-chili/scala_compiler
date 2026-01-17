@@ -27,6 +27,8 @@ public:
 
     SimpleExpr1Node();
 
+    SimpleExpr1Node* copy();
+
     static SimpleExpr1Node* createIntNode(int value);
     static SimpleExpr1Node* createCharNode(char value);
     static SimpleExpr1Node* createDoubleNode(double value);

@@ -31,6 +31,32 @@ DclNode *DclNode::createDefDcl(FunSigNode *funSig, CompoundTypeNode *compoundTyp
     return node;
 }
 
+DclNode *DclNode::setModifiers(ModifiersNode *modifiers) {
+    this->modifiers = modifiers;
+    return this;
+}
+
+DclNode *DclNode::copy() {
+    DclNode* node = new DclNode();
+
+    node->type = type;
+
+    if (ids) {
+        node->ids = ids->copy();
+    }
+    if (compoundType) {
+        node->compoundType = compoundType->copy();
+    }
+    if (funSig) {
+        node->funSig = funSig->copy();
+    }
+    if (modifiers) {
+        node->modifiers = modifiers->copy();
+    }
+
+    return node;
+}
+
 string DclNode::toDot() const {
     string dot;
 
@@ -46,7 +72,3 @@ string DclNode::getDotLabel() const {
     return "Declaration " + statTypeToString(type);
 }
 
-DclNode *DclNode::setModifiers(ModifiersNode *modifiers) {
-    this->modifiers = modifiers;
-    return this;
-}

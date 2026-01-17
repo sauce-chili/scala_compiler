@@ -16,6 +16,8 @@ public:
     static ClassTemplateOptNode* addFuncParamToBackToList(TemplateStatsNode* templateStats);
     static ClassTemplateOptNode* createClassTemplate(ClassParentsNode* classParents, TemplateStatsNode* templateStats);
 
+    ClassTemplateOptNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
 };

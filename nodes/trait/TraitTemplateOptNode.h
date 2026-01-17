@@ -14,6 +14,8 @@ public:
 
     static TraitTemplateOptNode* createTraitTemplateOpt(TraitTemplateNode* traitTemplate, TemplateStatsNode* templateStats);
 
+    TraitTemplateOptNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
 };

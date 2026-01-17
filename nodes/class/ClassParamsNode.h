@@ -12,6 +12,8 @@ public:
     ClassParamsNode();
     ClassParamsNode(ClassParamNode *first);
 
+    ClassParamsNode* copy();
+
     static ClassParamsNode* addClassParamToList(ClassParamsNode *list, ClassParamNode *classParam);
 
     string toDot() const override;
