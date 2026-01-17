@@ -8,7 +8,6 @@
 
 class TopStatNode: public Node {
 public:
-    ModifiersNode* modifiers;
     TemplateDefNode* tmplDef;
 
     TopStatNode();
