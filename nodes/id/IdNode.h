@@ -11,6 +11,10 @@ public:
     static IdNode* createId(string name);
     static IdNode* createOperator(string op);
 
+    static IdNode* copy(IdNode* idNode);
+
+    IdNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
 };

@@ -81,6 +81,7 @@ int main(int argc, char **argv) {
         TopStatSeqNode *root = nullptr;
 
         int result = yyparse(&root);
+        root->convertAst();
 
         if (result == 0) {
             std::cout << "Parsing completed successfully!" << std::endl;

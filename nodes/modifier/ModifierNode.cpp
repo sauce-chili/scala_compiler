@@ -6,6 +6,12 @@ ModifierNode* ModifierNode::createModifier(ModifierType type) {
     return node;
 }
 
+ModifierNode *ModifierNode::copy() {
+    ModifierNode* node = new ModifierNode();
+    node->type = type;
+    return node;
+}
+
 string ModifierNode::getDotLabel() const {
     string dot;
 
@@ -21,3 +27,4 @@ string ModifierNode::toDot() const {
 
     return dot;
 }
+

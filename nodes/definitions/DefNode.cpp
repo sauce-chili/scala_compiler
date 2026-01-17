@@ -28,6 +28,13 @@ DefNode *DefNode::createTmplDef(TemplateDefNode *tmplDef) {
     return node;
 }
 
+DefNode *DefNode::createPrimaryConstructor(PrimaryConstructorNode *primaryConstructor) {
+    DefNode* node = new DefNode();
+    node->type = _PRIMARY_CONSTRUCTOR;
+    node->primaryConstructor = primaryConstructor;
+    return node;
+}
+
 DefNode *DefNode::setModifiers(ModifiersNode *modifiers) {
     this->modifiers = modifiers;
     return this;
@@ -40,6 +47,7 @@ string DefNode::toDot() const {
     addDotChild(dot, varDefs, "varDefs_");
     addDotChild(dot, funDef, "funDef_");
     addDotChild(dot, tmplDef, "tmplDef_");
+    addDotChild(dot, primaryConstructor, "primaryConstructor_");
 
     return dot;
 }

@@ -18,6 +18,8 @@ public:
     static StableIdNode* createThisCallStableIdBy(IdNode* identifier);
     static StableIdNode* createRecursiveStableId(StableIdNode* stableId, IdNode* identifier);
 
+    StableIdNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
 };

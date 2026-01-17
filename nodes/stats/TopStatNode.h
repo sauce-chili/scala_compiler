@@ -15,6 +15,10 @@ public:
 
     static TopStatNode* createTopStat(ModifiersNode* modifiers, TemplateDefNode* tmplDef);
 
+    void initializeFieldsFromPrimaryConstructor();
+    void initializeBaseConstructorFromFields();
+    void initializeClassModifiers();
+
     string toDot() const override;
     string getDotLabel() const override;
 };

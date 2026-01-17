@@ -3,6 +3,7 @@
 
 #include <list>
 #include "../Node.h"
+#include "../nodes/stats/BlockStatsNode.h"
 
 class ExprNode;
 class TryExprNode;
@@ -33,6 +34,7 @@ public:
     static ExprNode* createForYield(EnumeratorsNode* enumerators, ExprNode* expr);
     static ExprNode* createInfix(InfixExprNode* infixExpr);
     static ExprNode* createAssignment(AssignmentNode* assignment);
+    static ExprNode* createFromBlockStats(BlockStatsNode* blockStats);
 
     string toDot() const override;
     string getDotLabel() const override;

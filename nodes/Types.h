@@ -6,6 +6,7 @@
 enum ModifierType {
     _PRIVATE = 1,
     _PROTECTED = 2,
+    _PUBLIC = 65,
     _ABSTRACT = 3,
     _FINAL = 4,
     _SEALED = 5,
@@ -97,6 +98,7 @@ enum DefinitionType {
     _VAR_DEFS = 62,
     _FUN_DEFINITION = 63,
     _TEMPLATE_DEFINITION = 64,
+    _PRIMARY_CONSTRUCTOR = 65,
 };
 
 enum Type {

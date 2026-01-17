@@ -3,8 +3,9 @@
 
 
 #include "../Node.h"
-#include "../exprs/ExprNode.h"
-#include "../var/VarDefsNode.h"
+
+class VarDefsNode;
+class ExprNode;
 
 class BlockStatNode: public Node {
 public:

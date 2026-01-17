@@ -23,6 +23,7 @@ string ClassTemplateOptNode::toDot() const {
 
     addDotNode(dot);
     addDotChild(dot, templateStats, "templateStats_");
+    addDotChild(dot, classParents, "classParents_");
 
     return dot;
 }

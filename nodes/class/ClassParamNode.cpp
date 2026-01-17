@@ -16,6 +16,15 @@ ClassParamNode *ClassParamNode::createClassParam(ClassParamType type, ModifiersN
     return node;
 }
 
+ClassParamNode* ClassParamNode::copy() {
+    ClassParamNode* node = new ClassParamNode();
+    node->type = type;
+    node->modifiers = modifiers;
+    node->fullId = fullId;
+    node->compoundType = compoundType;
+    return node;
+}
+
 string ClassParamNode::toDot() const {
     string dot;
 

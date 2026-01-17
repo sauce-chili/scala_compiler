@@ -43,7 +43,7 @@ string DclNode::toDot() const {
 }
 
 string DclNode::getDotLabel() const {
-    return "Declaration";
+    return "Declaration " + statTypeToString(type);
 }
 
 DclNode *DclNode::setModifiers(ModifiersNode *modifiers) {

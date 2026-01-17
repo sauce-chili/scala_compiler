@@ -45,6 +45,10 @@ add_executable(scala_lexer
         ${SEMANTIC}
         semantic/Semantic.cpp
         code_generation/tools/byte_convert.cpp
+        nodes/class/SuperConstructorCallNode.cpp
+        nodes/class/SuperConstructorCallNode.h
+        nodes/class/PrimaryConstructorNode.cpp
+        nodes/class/PrimaryConstructorNode.h
 )
 
 message(STATUS "Flex output: ${FLEX_MyScanner_OUTPUTS}")

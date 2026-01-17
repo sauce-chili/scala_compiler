@@ -12,6 +12,8 @@ public:
 
     ArgumentExprsNode(ExprsNode* exprs);
 
+    ArgumentExprsNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
 };

@@ -11,6 +11,15 @@ FuncParamsNode::FuncParamsNode(FuncParamNode *first) {
     }
 }
 
+FuncParamsNode::FuncParamsNode(ClassParamsNode *first) {
+    funcParams = new std::list<FuncParamNode*>();
+    for (ClassParamNode* c: *(first->classParams)) {
+        if (!c) continue;
+
+        funcParams->push_back(FuncParamNode::createFuncParam(c->fullId->copy(), c->compoundType->copy()));
+    }
+}
+
 FuncParamsNode *FuncParamsNode::addFuncParamToList(FuncParamsNode *list, FuncParamNode *funcParam) {
     if (list == nullptr) {
         return new FuncParamsNode(funcParam);

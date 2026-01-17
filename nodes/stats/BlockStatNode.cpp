@@ -1,4 +1,5 @@
 #include "BlockStatNode.h"
+#include "../var/VarDefsNode.h"
 
 BlockStatNode::BlockStatNode() {
     varDefs = nullptr;

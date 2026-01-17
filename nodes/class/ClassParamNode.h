@@ -23,6 +23,8 @@ public:
             CompoundTypeNode* compoundType
     );
 
+    ClassParamNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
 };

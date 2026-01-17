@@ -10,6 +10,8 @@ public:
 
     static ModifierNode* createModifier(ModifierType type);
 
+    ModifierNode *copy();
+
     string toDot() const override;
     string getDotLabel() const override;
 };

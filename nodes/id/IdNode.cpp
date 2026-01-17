@@ -12,6 +12,12 @@ IdNode *IdNode::createOperator(string op) {
     return node;
 }
 
+IdNode *IdNode::copy() {
+    IdNode* node = new IdNode();
+    node->name = name;
+    return node;
+}
+
 string IdNode::toDot() const {
     string dot;
 

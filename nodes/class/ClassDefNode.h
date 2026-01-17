@@ -10,7 +10,7 @@
 class ClassDefNode: public Node {
 public:
     IdNode* fullId;
-    ModifierNode* modifier;
+    ModifierNode* primaryConstructModifier;
     ClassParamsNode* classParams;
     ClassTemplateOptNode* classTemplateOpt;
 

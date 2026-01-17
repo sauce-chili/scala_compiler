@@ -4,6 +4,7 @@ std::string modifierToString(ModifierType m) {
     switch (m) {
         case _PRIVATE:   return "PRIVATE";
         case _PROTECTED: return "PROTECTED";
+        case _PUBLIC:    return "PUBLIC";
         case _ABSTRACT:  return "ABSTRACT";
         case _SEALED:    return "SEALED";
         case _FINAL:     return "FINAL";

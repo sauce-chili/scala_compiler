@@ -6,6 +6,8 @@
 #include "BlockStatNode.h"
 #include "semantic/scopes/Scope.h"
 
+#include <list>
+
 class BlockStatsNode : public Node {
 public:
     Scope *blockScope; // тип должен быть blockType

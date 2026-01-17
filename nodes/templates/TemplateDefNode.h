@@ -2,6 +2,7 @@
 #define SCALA_LEXER_TEMPLATEDEFNODE_H
 
 #include "../Node.h"
+#include "../semantic/scopes/Scope.h"
 
 class ClassDefNode;
 class ClassTemplateOptNode;
