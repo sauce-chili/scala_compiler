@@ -55,3 +55,12 @@ string TopStatSeqNode::toDot() const {
 string TopStatSeqNode::getDotLabel() const {
     return "Top statement sequence";
 }
+
+list<Node *> TopStatSeqNode::getChildren() const {
+    list<Node *> children = {};
+    for (Node *node : *topStats) {
+        addChildIfNotNull(children, node);
+    }
+    return children;
+}
+

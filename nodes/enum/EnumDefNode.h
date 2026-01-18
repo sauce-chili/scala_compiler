@@ -7,37 +7,39 @@
 #include "../class/ClassParamsNode.h"
 #include "../templates/EnumTemplateNode.h"
 
-class EnumDefNode: public Node {
+class EnumDefNode : public Node {
 public:
-    IdNode* fullId;
-    ModifierNode* modifier;
-    ClassParamsNode* classParams;
-    EnumTemplateNode* enumTemplate;
+    IdNode *fullId;
+    ModifierNode *modifier;
+    ClassParamsNode *classParams;
+    EnumTemplateNode *enumTemplate;
 
     EnumDefNode();
 
+    static EnumDefNode *createWithAccessModifier(
+        IdNode *fullId,
+        ModifierNode *modifier,
+        ClassParamsNode *classParams,
+        EnumTemplateNode *enumTemplate
+    );
     EnumDefNode* copy();
 
-    static EnumDefNode* createWithAccessModifier(
-            IdNode* fullId,
-            ModifierNode* modifier,
-            ClassParamsNode* classParams,
-            EnumTemplateNode* enumTemplate
-            );
-
-    static EnumDefNode* createWithClassParams(
-            IdNode* fullId,
-            ClassParamsNode* classParams,
-            EnumTemplateNode* enumTemplate
+    static EnumDefNode *createWithClassParams(
+        IdNode *fullId,
+        ClassParamsNode *classParams,
+        EnumTemplateNode *enumTemplate
     );
 
-    static EnumDefNode* createEnumTemplate(
-            IdNode* fullId,
-            EnumTemplateNode* enumTemplate
+    static EnumDefNode *createEnumTemplate(
+        IdNode *fullId,
+        EnumTemplateNode *enumTemplate
     );
 
     string toDot() const override;
+
     string getDotLabel() const override;
+
+    list<Node *> getChildren() const override;
 };
 
 

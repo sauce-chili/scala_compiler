@@ -24,6 +24,8 @@ public:
     string toDot() const override;
 
     string getDotLabel() const override;
+
+    list<Node *> getChildren() const override;
 };
 
 

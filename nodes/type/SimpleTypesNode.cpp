@@ -56,3 +56,10 @@ string SimpleTypesNode::getDotLabel() const {
     return "Simple types";
 }
 
+list<Node *> SimpleTypesNode::getChildren() const {
+    list<Node *> children = {};
+    for (Node* node: *simpleTypes) {
+        addChildIfNotNull(children, node);
+    }
+}
+

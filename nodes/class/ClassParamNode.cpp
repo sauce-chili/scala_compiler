@@ -45,3 +45,11 @@ string ClassParamNode::toDot() const {
 string ClassParamNode::getDotLabel() const {
     return classParamTypeToString(type);
 }
+
+list<Node *> ClassParamNode::getChildren() const {
+    std::list<Node *> children = {};
+    addChildIfNotNull(children, modifiers);
+    addChildIfNotNull(children, fullId);
+    addChildIfNotNull(children, compoundType);
+    return children;
+}

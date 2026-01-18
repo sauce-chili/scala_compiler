@@ -21,9 +21,9 @@ void TopStatSeqNode::convertAst() {
 }
 
 void TopStatNode::initializeClassModifiers() {
-    if (!modifiers || modifiers->modifiers->empty()) {
-        modifiers = modifiers->addModifierToList(modifiers, ModifierNode::createModifier(ModifierType::_PUBLIC));
-    }
+//    if (!modifiers || modifiers->modifiers->empty()) {
+//        modifiers = modifiers->addModifierToList(modifiers, ModifierNode::createModifier(ModifierType::_PUBLIC));
+//    }
 
     ClassDefNode *currentClass = tmplDef->classDef;
     currentClass->primaryConstructModifier = currentClass->primaryConstructModifier ? currentClass->primaryConstructModifier : ModifierNode::createModifier(ModifierType::_PUBLIC);

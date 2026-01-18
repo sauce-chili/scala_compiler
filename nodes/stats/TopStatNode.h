@@ -8,7 +8,6 @@
 
 class TopStatNode: public Node {
 public:
-    ModifiersNode* modifiers;
     TemplateDefNode* tmplDef;
 
     TopStatNode();
@@ -23,6 +22,7 @@ public:
 
     string toDot() const override;
     string getDotLabel() const override;
+    list<Node *> getChildren() const override;
 };
 
 

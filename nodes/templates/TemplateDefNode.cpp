@@ -80,3 +80,19 @@ string TemplateDefNode::toDot() const {
 string TemplateDefNode::getDotLabel() const {
     return "Template definition of " + statTypeToString(type);
 }
+
+TemplateDefNode * TemplateDefNode::setModifiers(ModifiersNode *modifiers) {
+    this->modifiers = modifiers;
+    return this;
+}
+
+
+std::list<Node*> TemplateDefNode::getChildren() const {
+    std::list<Node*> children;
+    addChildIfNotNull(children, classDef);
+    addChildIfNotNull(children, fullId);
+    addChildIfNotNull(children, classTemplateOpt);
+    addChildIfNotNull(children, traitTemplateOpt);
+    addChildIfNotNull(children, enumDef);
+    return children;
+}

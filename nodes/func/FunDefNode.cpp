@@ -9,7 +9,7 @@ FunDefNode::FunDefNode() {
 }
 
 FunDefNode *FunDefNode::createFunSigFunDef(FunSigNode *funSig, CompoundTypeNode *compoundType, ExprNode *expr) {
-    FunDefNode* node = new FunDefNode();
+    FunDefNode *node = new FunDefNode();
     node->funSig = funSig;
     node->compoundType = compoundType;
     node->expr = expr;
@@ -17,7 +17,7 @@ FunDefNode *FunDefNode::createFunSigFunDef(FunSigNode *funSig, CompoundTypeNode 
 }
 
 FunDefNode *FunDefNode::createThisConstrCallFunDef(FuncParamsNode *funcParams, ConstrExprNode *constrExpr) {
-    FunDefNode* node = new FunDefNode();
+    FunDefNode *node = new FunDefNode();
     node->funcParams = funcParams;
     node->constrExpr = constrExpr;
     return node;
@@ -60,4 +60,18 @@ string FunDefNode::toDot() const {
 
 string FunDefNode::getDotLabel() const {
     return "Fun def";
+}
+
+bool FunDefNode::isConstructor() {
+    return nullptr != constrExpr;
+}
+
+list<Node *> FunDefNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, funSig);
+    addChildIfNotNull(children, funcParams);
+    addChildIfNotNull(children, compoundType);
+    addChildIfNotNull(children, expr);
+    addChildIfNotNull(children, constrExpr);
+    return children;
 }

@@ -17,6 +17,12 @@ string ArgumentExprsNode::getDotLabel() const {
     return "Argument exprs";
 }
 
+list<Node *> ArgumentExprsNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children,exprs);
+    return children;
+}
+
 ArgumentExprsNode *ArgumentExprsNode::copy() {
 
     ExprsNode* copied = new ExprsNode();

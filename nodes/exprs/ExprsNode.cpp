@@ -57,3 +57,12 @@ string ExprsNode::toDot() const {
 string ExprsNode::getDotLabel() const {
     return "Exprs";
 }
+
+list<Node *> ExprsNode::getChildren() const {
+    list<Node *> children = {};
+    for (Node *it : *exprs) {
+        addChildIfNotNull(children, it);
+    }
+    return children;
+}
+

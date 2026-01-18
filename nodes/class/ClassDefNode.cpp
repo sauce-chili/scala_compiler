@@ -54,3 +54,12 @@ string ClassDefNode::toDot() const {
 string ClassDefNode::getDotLabel() const {
     return "Class definition";
 }
+
+list<Node *> ClassDefNode::getChildren() const {
+    std::list<Node *> children = {};
+    addChildIfNotNull(children, fullId);
+    addChildIfNotNull(children, primaryConstructModifier); // TODO пофиксить
+    addChildIfNotNull(children, classParams);
+    addChildIfNotNull(children, classTemplateOpt);
+    return children;
+}

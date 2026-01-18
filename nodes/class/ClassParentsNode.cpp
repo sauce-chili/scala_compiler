@@ -38,3 +38,11 @@ string ClassParentsNode::toDot() const {
 string ClassParentsNode::getDotLabel() const {
     return "Class parents";
 }
+
+list<Node *> ClassParentsNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, constr);
+    addChildIfNotNull(children, simpleTypes);
+    return children;
+}
+

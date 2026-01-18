@@ -46,3 +46,11 @@ string EnumCaseNode::toDot() const {
 string EnumCaseNode::getDotLabel() const {
     return classEnumCaseTypeToString(type);
 }
+
+list<Node *> EnumCaseNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, ids);
+    addChildIfNotNull(children, classParams);
+    addChildIfNotNull(children, classParents);
+    return children;
+}

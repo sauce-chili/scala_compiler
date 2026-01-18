@@ -48,3 +48,11 @@ string EnumStatNode::toDot() const {
 string EnumStatNode::getDotLabel() const {
     return "Enum stat";
 }
+
+list<Node *> EnumStatNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, modifiers);
+    addChildIfNotNull(children, templateStat);
+    addChildIfNotNull(children, enumCase);
+    return children;
+}

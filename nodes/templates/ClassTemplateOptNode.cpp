@@ -44,3 +44,11 @@ string ClassTemplateOptNode::toDot() const {
 string ClassTemplateOptNode::getDotLabel() const {
     return "Class template optional";
 }
+
+list<Node *> ClassTemplateOptNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, classParents);
+    addChildIfNotNull(children, templateStats);
+    return children;
+}
+

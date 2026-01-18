@@ -79,3 +79,11 @@ string TemplateStatsNode::getDotLabel() const {
     return "Template stats";
 }
 
+list<Node *> TemplateStatsNode::getChildren() const {
+    list<Node *> children = {};
+    for (Node *node : *templateStats) {
+        addChildIfNotNull(children, node);
+    }
+    return children;
+}
+

@@ -43,3 +43,10 @@ string SimpleTypeNode::toDot() const {
 string SimpleTypeNode::getDotLabel() const {
     return this->stableId ? "Simple type is stable id" : "Simple type is array";
 }
+
+list<Node *> SimpleTypeNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, stableId);
+    addChildIfNotNull(children, compoundType);
+    return children;
+}

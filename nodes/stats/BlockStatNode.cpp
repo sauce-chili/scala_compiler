@@ -44,3 +44,10 @@ string BlockStatNode::getDotLabel() const {
     return "Block stats";
 }
 
+list<Node *> BlockStatNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, varDefs);
+    addChildIfNotNull(children, expr);
+    return children;
+}
+

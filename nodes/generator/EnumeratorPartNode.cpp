@@ -54,3 +54,12 @@ string EnumeratorPartNode::getDotLabel() const {
     return generator ? "Enumerator part with generator" : "Enumerator part with var def";
 }
 
+list<Node *> EnumeratorPartNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, generator);
+    addChildIfNotNull(children, fullId);
+    addChildIfNotNull(children, compoundType);
+    addChildIfNotNull(children, expr);
+    return children;
+}
+

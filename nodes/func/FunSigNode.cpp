@@ -38,3 +38,10 @@ string FunSigNode::toDot() const {
 string FunSigNode::getDotLabel() const {
     return "Fun signature";
 }
+
+list<Node *> FunSigNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, fullId);
+    addChildIfNotNull(children, params);
+    return children;
+}

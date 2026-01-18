@@ -52,3 +52,11 @@ string TemplateStatNode::getDotLabel() const {
     return "Template stat";
 }
 
+list<Node *> TemplateStatNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, dcl);
+    addChildIfNotNull(children, def);
+    return children;
+}
+
+

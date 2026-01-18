@@ -10,7 +10,7 @@
 class ClassDefNode: public Node {
 public:
     IdNode* fullId;
-    ModifierNode* primaryConstructModifier;
+    ModifierNode* primaryConstructModifier; // TODO пофиксить
     ClassParamsNode* classParams;
     ClassTemplateOptNode* classTemplateOpt;
 
@@ -27,6 +27,8 @@ public:
 
     string toDot() const override;
     string getDotLabel() const override;
+
+    list<Node *> getChildren() const override;
 };
 
 

@@ -66,3 +66,12 @@ string FuncParamsNode::toDot() const {
 string FuncParamsNode::getDotLabel() const {
     return "Func params";
 }
+
+list<Node *> FuncParamsNode::getChildren() const {
+    list<Node *> children = {};
+    for (Node *node : *funcParams) {
+        addChildIfNotNull(children, node);
+    }
+    return children;
+}
+

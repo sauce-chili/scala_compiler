@@ -44,3 +44,10 @@ string EnumTemplateNode::toDot() const {
 string EnumTemplateNode::getDotLabel() const {
     return "Enum template";
 }
+
+list<Node *> EnumTemplateNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, classParents);
+    addChildIfNotNull(children, enumStats);
+    return children;
+}
