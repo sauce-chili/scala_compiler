@@ -37,8 +37,12 @@ public:
     string getDotLabel() const override;
 
     TemplateDefNode* setModifiers(ModifiersNode* modifiers);
+    void validateModifiers() const;
 
     list<Node *> getChildren() const override;
+
+private:
+    void validateClassModifiers() const;
 };
 
 

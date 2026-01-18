@@ -96,6 +96,7 @@ std::string definitionTypeToString(DefinitionType t) {
         case _VAR_DEFS:            return "Variables definition";
         case _FUN_DEFINITION:      return "Function definition";
         case _TEMPLATE_DEFINITION: return "Template definition";
+        case _PRIMARY_CONSTRUCTOR: return "Primary constructor";
         default:                   return "Unknown";
     }
 }

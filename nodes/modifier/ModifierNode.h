@@ -14,6 +14,11 @@ public:
 
     string toDot() const override;
     string getDotLabel() const override;
+
+
+    bool isAccessModifier() const;
+    bool isOverrideModifier() const;
+    bool isInheritModifier() const;
 };
 
 

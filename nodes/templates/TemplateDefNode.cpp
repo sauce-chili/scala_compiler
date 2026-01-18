@@ -99,3 +99,4 @@ std::list<Node*> TemplateDefNode::getChildren() const {
     addChildIfNotNull(children, modifiers);
     return children;
 }
+

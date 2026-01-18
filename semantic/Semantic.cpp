@@ -4,6 +4,8 @@
 #include "nodes/definitions/DefNode.h"
 #include "nodes/exprs/ArgumentExprsNode.h"
 #include "nodes/stats/TopStatNode.h"
+#include "nodes/class/ClassParamNode.h"
+#include "nodes/class/ClassParamsNode.h"
 #include "semantic/error/SemanticError.h"
 
 #include <stdexcept>
@@ -15,6 +17,8 @@ void TopStatSeqNode::convertAst() {
         if (!tsn->tmplDef->classDef) continue;
 
         tsn->initializeClassModifiers();
+        tsn->tmplDef->classDef->validatePrimaryConstructorModifiers();
+        tsn->tmplDef->validateModifiers();
         tsn->toFieldsFromPrimaryConstructor();
         tsn->initializeBaseConstructorFromFields();
     }
@@ -69,7 +73,7 @@ void TopStatNode::toFieldsFromPrimaryConstructor() {
     currentClass->classParams = new ClassParamsNode();
 }
 
-void TopStatNode::initializeBaseConstructorFromFields() {
+void TopStatNode::initializeBaseConstructorFromFields() const {
     if (!tmplDef) return;
     if (!tmplDef->classDef) return;
 
@@ -96,6 +100,7 @@ void TopStatNode::initializeBaseConstructorFromFields() {
     for (TemplateStatNode* p: *(currentClass->classTemplateOpt->templateStats->templateStats)) {
         if (!p) continue;
         if (p->dcl) continue;
+        if (!p->def->varDefs) continue;
 
         BlockStatNode *stat;
         if (p->def->varDefs->type == StatType::_VAR_DECL) {
@@ -112,5 +117,205 @@ void TopStatNode::initializeBaseConstructorFromFields() {
     baseConstructor->def = DefNode::createPrimaryConstructor(primaryConstructorNode);
     currentClass->classTemplateOpt->templateStats->templateStats->push_front(baseConstructor);
 
-    currentClass->classTemplateOpt->classParents->constr->arguments = nullptr;
+    if (currentClass->classTemplateOpt->classParents
+    && currentClass->classTemplateOpt->classParents->constr
+    && currentClass->classTemplateOpt->classParents->constr->arguments) {
+        currentClass->classTemplateOpt->classParents->constr->arguments = nullptr;
+    }
+}
+
+void TemplateDefNode::validateModifiers() const {
+    validateClassModifiers();
+    if (classTemplateOpt && classTemplateOpt->templateStats) {
+        classTemplateOpt->templateStats->validateModifiers();
+    } else if (classDef && classDef->classTemplateOpt && classDef->classTemplateOpt->templateStats) {
+        classDef->classTemplateOpt->templateStats->validateModifiers();
+    }
+}
+
+void TemplateDefNode::validateClassModifiers() const {
+    string prevAccess;
+    string prevInherit;
+    for (ModifierNode* m: *modifiers->modifiers) {
+        if (m->isAccessModifier()) {
+            if (!prevAccess.empty()) {
+                throw SemanticError::InvalidCombinationOfModifiers(0, prevAccess + " " + modifierToString(m->type));
+            }
+            prevAccess = modifierToString(m->type);
+        } else if (m->isInheritModifier()) {
+            if (!prevInherit.empty()) {
+                throw SemanticError::InvalidCombinationOfModifiers(0, prevInherit + " " + modifierToString(m->type));
+            }
+            prevInherit = modifierToString(m->type);
+        } else if (m->isOverrideModifier()) {
+            throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type));
+        }
+    }
+}
+
+void TemplateStatsNode::validateModifiers() const {
+    for (TemplateStatNode* ts: *templateStats) {
+        if (ts) {
+            ts->validateModifiers();
+        }
+    }
+}
+
+void TemplateStatNode::validateModifiers() const {
+    validateVarModifiers();
+    validateMethodModifiers();
+    validateSecondaryConstructorModifiers();
+}
+
+void TemplateStatNode::validateVarModifiers() const {
+    ModifiersNode* modifiers;
+    if (dcl && (dcl->type == _VAL_DECL || dcl->type == _VAR_DECL)) {
+        modifiers = dcl->modifiers;
+    } else if (def && def->varDefs) {
+        modifiers = def->modifiers;
+    } else {
+        return;
+    }
+
+    string prevAccess;
+    string prevInherit;
+    bool overrided = false;
+    for (ModifierNode* m: *modifiers->modifiers) {
+        if (m->isAccessModifier()) {
+            if (!prevAccess.empty()) {
+                throw SemanticError::InvalidCombinationOfModifiers(0, prevAccess + " " + modifierToString(m->type));
+            }
+            prevAccess = modifierToString(m->type);
+        } else if (m->isInheritModifier()) {
+            if (m->type == _SEALED) {
+                throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type));
+            }
+            if (!prevInherit.empty()) {
+                throw SemanticError::InvalidCombinationOfModifiers(0, prevInherit + " " + modifierToString(m->type));
+            }
+            prevInherit = modifierToString(m->type);
+        } else if (m->isOverrideModifier()) {
+            if (dcl && dcl->type == _VAR_DECL) {
+                throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type) + " to var");
+            }
+
+            if (overrided) {
+                throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type) + " " + modifierToString(m->type));
+            }
+            overrided = true;
+        }
+    }
+}
+
+void TemplateStatNode::validateMethodModifiers() const {
+    ModifiersNode* modifiers;
+    if (dcl && dcl->funSig) {
+        modifiers = dcl->modifiers;
+    } else if (def && def->funDef && def->funDef->funSig) {
+        modifiers = def->modifiers;
+    } else {
+        return;
+    }
+
+    string prevAccess;
+    string prevInherit;
+    bool overrided = false;
+    for (ModifierNode* m: *modifiers->modifiers) {
+        if (m->isAccessModifier()) {
+            if (!prevAccess.empty()) {
+                throw SemanticError::InvalidCombinationOfModifiers(0, prevAccess + " " + modifierToString(m->type));
+            }
+            prevAccess = modifierToString(m->type);
+        } else if (m->isInheritModifier()) {
+            if (m->type == _SEALED) {
+                throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type));
+            }
+            if (!prevInherit.empty()) {
+                throw SemanticError::InvalidCombinationOfModifiers(0, prevInherit + " " + modifierToString(m->type));
+            }
+            prevInherit = modifierToString(m->type);
+        } else if (m->isOverrideModifier()) {
+            if (overrided) {
+                throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type) + " " + modifierToString(m->type));
+            }
+            overrided = true;
+        }
+    }
+}
+
+void ClassDefNode::validatePrimaryConstructorModifiers() const {
+    if (!primaryConstructModifier) {
+        return;
+    }
+
+    if (!primaryConstructModifier->isAccessModifier()) {
+        throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(primaryConstructModifier->type));
+    }
+
+    validatePrimaryConstructorParametersModifiers();
+}
+
+void ClassDefNode::validatePrimaryConstructorParametersModifiers() const {
+    if (!classParams) {
+        return;
+    }
+
+    string prevAccess;
+    string prevInherit;
+    bool overrided = false;
+    for (ClassParamNode* cp: *classParams->classParams) {
+        for (ModifierNode *m: *cp->modifiers->modifiers) {
+            if (m->isAccessModifier()) {
+                if (!prevAccess.empty()) {
+                    throw SemanticError::InvalidCombinationOfModifiers(0, prevAccess + " " + modifierToString(m->type));
+                }
+                prevAccess = modifierToString(m->type);
+            } else if (m->isInheritModifier()) {
+                if (m->type == _SEALED) {
+                    throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type));
+                }
+                if (!prevInherit.empty()) {
+                    throw SemanticError::InvalidCombinationOfModifiers(0, prevInherit + " " + modifierToString(m->type));
+                }
+                prevInherit = modifierToString(m->type);
+            } else if (m->isOverrideModifier()) {
+                if (cp && cp->type == _VAR_CLASS_PARAM) {
+                    throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type) + " to var");
+                }
+
+                if (overrided) {
+                    throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type) + " " + modifierToString(m->type));
+                }
+                overrided = true;
+            }
+        }
+    }
+
+
+    if (!primaryConstructModifier->isAccessModifier()) {
+        throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(primaryConstructModifier->type));
+    }
+}
+
+void TemplateStatNode::validateSecondaryConstructorModifiers() const {
+    ModifiersNode* modifiers;
+    if (def && def->funDef && def->funDef->constrExpr) {
+        modifiers = def->modifiers;
+    } else {
+        return;
+    }
+
+    string prevAccess;
+    for (ModifierNode* m: *modifiers->modifiers) {
+        if (m->isAccessModifier()) {
+            if (!prevAccess.empty()) {
+                throw SemanticError::InvalidCombinationOfModifiers(0, prevAccess + " " + modifierToString(m->type));
+            }
+            prevAccess = modifierToString(m->type);
+        } else if (m->isInheritModifier()) {
+            throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type));
+        } else if (m->isOverrideModifier()) {
+            throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type));
+        }
+    }
 }

@@ -29,6 +29,9 @@ public:
     string getDotLabel() const override;
 
     list<Node *> getChildren() const override;
+
+    void validatePrimaryConstructorModifiers() const;
+    void validatePrimaryConstructorParametersModifiers() const;
 };
 
 

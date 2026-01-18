@@ -88,3 +88,4 @@ list<Node *> DclNode::getChildren() const {
     addChildIfNotNull(children, funSig);
     return children;
 }
+

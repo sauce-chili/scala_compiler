@@ -17,6 +17,7 @@ public:
     static TemplateStatsNode* addFuncParamToFrontToList(TemplateStatsNode *list, TemplateStatNode *templateStat);
 
     TemplateStatsNode* copy();
+    void validateModifiers() const;
 
     bool containsVar(string name);
 

@@ -5,6 +5,7 @@ DefNode::DefNode() {
     funDef = nullptr;
     tmplDef = nullptr;
     modifiers = nullptr;
+    primaryConstructor = nullptr;
 }
 
 DefNode *DefNode::createVarDefs(VarDefsNode *varDefs) {
