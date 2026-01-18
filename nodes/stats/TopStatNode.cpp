@@ -6,6 +6,7 @@ TopStatNode::TopStatNode() {
 
 TopStatNode *TopStatNode::createTopStat(ModifiersNode *modifiers, TemplateDefNode *tmplDef) {
     TopStatNode *node = new TopStatNode();
+    node->tmplDef = tmplDef;
     node->tmplDef = tmplDef->setModifiers(modifiers);
     return node;
 }

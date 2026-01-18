@@ -1,6 +1,7 @@
 #include <string>
 #include "datatype.h"
 #include "tools.h"
+#include "semantic/error/SemanticError.h"
 
 DataType::DataType(DataType::Type type) {
     this->type = type;
@@ -148,7 +149,7 @@ bool DataType::isUndefined() {
 
 void DataType::addArrType(DataType arrType) {
     if (this->type != DataType::array_) {
-        throw Exception(Exception::UNEXPECTED, "PEDOBEER");
+        throw SemanticError::ExprNotArray(0);
     } else {
         this->arrType = arrType.type;
         this->id = arrType.id;
@@ -174,7 +175,7 @@ bool DataType::isEquals(vector<DataType> types) {
 DataType DataType::getArrDataType() const {
     DataType dataType = *this;
     if (this->type != array_) {
-        throw Exception(Exception::TYPE_ERROR, "cannot get ArrType because it is not array_");
+        throw SemanticError::ExprNotArray(0);
     }
 
     dataType.arrDeep--;
@@ -242,8 +243,7 @@ string DataType::toConstTableFormat() const {
             res += getArrDataType().toConstTableFormat();
             break;
         case undefined_:
-            throw Exception(Exception::UNEXPECTED, "cannot convert type for constable");
-            break;
+            throw SemanticError::NullSemanticType(0);
     }
 
     return res;

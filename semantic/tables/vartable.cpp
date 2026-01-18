@@ -1,5 +1,6 @@
 #include <string>
 #include "vartable.h"
+#include "semantic/error/SemanticError.h"
 
 VarTableItem::VarTableItem() {
 
@@ -109,7 +110,7 @@ bool VarTable::isEquals(const VarTable &varTable) {
 VarTableItem VarTable::getVar(int varNum) {
     if (items.size() <= varNum || varNum < 0)
     {
-        throw Exception(Exception::NOT_EXIST, "param not exist in method ");
+        throw SemanticError::MethodCandidateNotFound(0, to_string(varNum), nullptr);
 
     }
 

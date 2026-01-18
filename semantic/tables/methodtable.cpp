@@ -53,7 +53,7 @@ string MethodTableItem::paramsToConstTableFormat() {
 MethodTableItem MethodTableItem::initMethod() {
     MethodTableItem methodTableItem = MethodTableItem();
     methodTableItem.returnDataType = DataType(DataType::unit_);
-    methodTableItem.modifiers->accessModifier = Modifiers::AccessModifiers::public_;
+    methodTableItem.modifiers->modifiers->push_back(_PUBLIC);
     VarTableItem varTableItem;
     varTableItem.dataType = DataType::StructDataType("this_class");
     varTableItem.id = "this";
