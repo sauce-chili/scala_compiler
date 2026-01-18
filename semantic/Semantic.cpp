@@ -4,6 +4,7 @@
 #include "nodes/definitions/DefNode.h"
 #include "nodes/exprs/ArgumentExprsNode.h"
 #include "nodes/stats/TopStatNode.h"
+#include "semantic/error/SemanticError.h"
 
 #include <stdexcept>
 
@@ -14,7 +15,7 @@ void TopStatSeqNode::convertAst() {
         if (!tsn->tmplDef->classDef) continue;
 
         tsn->initializeClassModifiers();
-        tsn->initializeFieldsFromPrimaryConstructor();
+        tsn->toFieldsFromPrimaryConstructor();
         tsn->initializeBaseConstructorFromFields();
     }
 }
@@ -28,7 +29,7 @@ void TopStatNode::initializeClassModifiers() {
     currentClass->primaryConstructModifier = currentClass->primaryConstructModifier ? currentClass->primaryConstructModifier : ModifierNode::createModifier(ModifierType::_PUBLIC);
 }
 
-void TopStatNode::initializeFieldsFromPrimaryConstructor() {
+void TopStatNode::toFieldsFromPrimaryConstructor() {
     if (!tmplDef) return;
     if (!tmplDef->classDef) return;
 
@@ -40,12 +41,17 @@ void TopStatNode::initializeFieldsFromPrimaryConstructor() {
 
     if (!currentClass->classTemplateOpt) throw std::runtime_error("No class template");
 
-    if (!currentClass->classTemplateOpt->templateStats) {
-        currentClass->classTemplateOpt->templateStats = new TemplateStatsNode();
+    TemplateStatsNode* classBody = currentClass->classTemplateOpt->templateStats;
+    if (!classBody) {
+        classBody = new TemplateStatsNode();
     }
 
     for (ClassParamNode* p: *(currentClass->classParams->classParams)) {
         if (!p) continue;
+        if (classBody->containsVar(p->fullId->name)) {
+            throw SemanticError::VarRedefinition(0, p->fullId->name);
+        }
+        //if (currentClass->classTemplateOpt->classParents->constr->arguments->contains()) {} // аргументы могут содержать вырадения по типу x + y
 
         TemplateStatNode *stat = new TemplateStatNode();
         IdsNode *ids = IdsNode::addIdToList(nullptr, p->fullId->copy());
@@ -58,6 +64,8 @@ void TopStatNode::initializeFieldsFromPrimaryConstructor() {
 
         currentClass->classTemplateOpt->templateStats->templateStats->push_front(stat);
     }
+
+    currentClass->classParams = new ClassParamsNode();
 }
 
 void TopStatNode::initializeBaseConstructorFromFields() {
@@ -77,7 +85,7 @@ void TopStatNode::initializeBaseConstructorFromFields() {
     FuncParamsNode *params = new FuncParamsNode(currentClass->classParams);
     // Вызов родительского конструктора (будет всегда, как минимум Object)
     SuperConstructorCallNode *superCall;
-    if (currentClass->classTemplateOpt->classParents && currentClass->classTemplateOpt->classParents->constr) {
+    if (currentClass->classTemplateOpt->classParents && currentClass->classTemplateOpt->classParents->constr && currentClass->classTemplateOpt->classParents->constr->arguments) {
         superCall = new SuperConstructorCallNode(currentClass->classTemplateOpt->classParents->constr->arguments->copy());
     } else {
         superCall = new SuperConstructorCallNode(new ArgumentExprsNode(new ExprsNode()));
@@ -102,4 +110,6 @@ void TopStatNode::initializeBaseConstructorFromFields() {
     PrimaryConstructorNode *primaryConstructorNode = new PrimaryConstructorNode(params, blockStats, superCall);
     baseConstructor->def = DefNode::createPrimaryConstructor(primaryConstructorNode);
     currentClass->classTemplateOpt->templateStats->templateStats->push_front(baseConstructor);
+
+    currentClass->classTemplateOpt->classParents->constr->arguments = nullptr;
 }

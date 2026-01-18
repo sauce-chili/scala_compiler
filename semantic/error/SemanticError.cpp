@@ -1,7 +1,9 @@
 #include "SemanticError.h"
 
 SemanticError::SemanticError(SemanticErrorCode code, int line, const std::string &message) {
-
+    this->code = code;
+    this->line = line;
+    this->message = message;
 }
 
 std::string SemanticError::getErrorMessage() {
@@ -9,7 +11,7 @@ std::string SemanticError::getErrorMessage() {
 }
 
 const char *SemanticError::what() const noexcept {
-    return exception::what();
+    return message.c_str();
 }
 
 // ------------------------------------------ AST ------------------------------------------

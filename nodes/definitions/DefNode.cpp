@@ -76,3 +76,9 @@ string DefNode::getDotLabel() const {
     return definitionTypeToString(type);
 }
 
+bool DefNode::containsVar(string name) {
+    if (!varDefs) return false;
+
+    return varDefs->ids->contains(name);
+}
+

@@ -32,6 +32,7 @@ public:
     static DefNode* createPrimaryConstructor(PrimaryConstructorNode* primaryConstructor);
 
     DefNode* setModifiers(ModifiersNode* modifiers);
+    bool containsVar(string name);
 
     string toDot() const override;
     string getDotLabel() const override;

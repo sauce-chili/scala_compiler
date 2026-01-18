@@ -39,6 +39,18 @@ ClassParamsNode *ClassParamsNode::copy() {
     return copied;
 }
 
+bool ClassParamsNode::containsParam(string name) {
+    for (ClassParamNode* cp: *classParams) {
+        if (cp) {
+            if (cp->fullId->name == name) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 string ClassParamsNode::toDot() const {
     string dot;
 

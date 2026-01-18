@@ -40,6 +40,16 @@ IdsNode *IdsNode::copy() {
     return copied;
 }
 
+bool IdsNode::contains(string name) {
+    for (IdNode* e: *ids) {
+        if (e) {
+            if (e->name == name) return true;
+        }
+    }
+
+    return false;
+}
+
 string IdsNode::toDot() const {
     string dot;
 
@@ -56,4 +66,5 @@ string IdsNode::toDot() const {
 string IdsNode::getDotLabel() const {
     return "Ids";
 }
+
 

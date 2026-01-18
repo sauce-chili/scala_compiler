@@ -57,6 +57,13 @@ DclNode *DclNode::copy() {
     return node;
 }
 
+bool DclNode::containsVar(string name) {
+
+    if (type != _VAL_DECL && type != _VAR_DECL) return false;
+
+    return ids->contains(name);
+}
+
 string DclNode::toDot() const {
     string dot;
 

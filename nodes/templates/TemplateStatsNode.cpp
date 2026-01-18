@@ -1,4 +1,5 @@
 #include "TemplateStatsNode.h"
+#include "../definitions/DclNode.h"
 
 TemplateStatsNode::TemplateStatsNode() {
     templateStats = new std::list<TemplateStatNode*>;
@@ -48,6 +49,16 @@ TemplateStatsNode *TemplateStatsNode::copy() {
     }
 
     return copied;
+}
+
+bool TemplateStatsNode::containsVar(string name) {
+    for (TemplateStatNode* ts: *templateStats) {
+        if (ts) {
+            if (ts->dcl && ts->dcl->containsVar(name)) return true;
+        }
+    }
+
+    return false;
 }
 
 string TemplateStatsNode::toDot() const {

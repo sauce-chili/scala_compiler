@@ -18,6 +18,8 @@ public:
 
     TemplateStatsNode* copy();
 
+    bool containsVar(string name);
+
     string toDot() const override;
     string getDotLabel() const override;
 };

@@ -23,6 +23,7 @@ public:
     static DclNode* createDefDcl(FunSigNode* funSig, CompoundTypeNode* compoundType);
 
     DclNode* copy();
+    bool containsVar(string name);
 
     DclNode* setModifiers(ModifiersNode* modifiers);
 

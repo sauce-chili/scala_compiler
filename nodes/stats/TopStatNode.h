@@ -15,7 +15,7 @@ public:
 
     static TopStatNode* createTopStat(ModifiersNode* modifiers, TemplateDefNode* tmplDef);
 
-    void initializeFieldsFromPrimaryConstructor();
+    void toFieldsFromPrimaryConstructor();
     void initializeBaseConstructorFromFields();
     void initializeClassModifiers();
 
