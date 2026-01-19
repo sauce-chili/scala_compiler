@@ -1,4 +1,5 @@
 #include "TemplateStatsNode.h"
+#include "../definitions/DclNode.h"
 
 TemplateStatsNode::TemplateStatsNode() {
     templateStats = new std::list<TemplateStatNode*>;
@@ -33,6 +34,33 @@ TemplateStatsNode* TemplateStatsNode::addFuncParamToFrontToList(TemplateStatsNod
     return list;
 }
 
+TemplateStatsNode *TemplateStatsNode::copy() {
+    TemplateStatsNode* copied = new TemplateStatsNode();
+
+    if (templateStats) {
+        copied->templateStats = new std::list<TemplateStatNode*>();
+
+        for (TemplateStatNode* e: *templateStats) {
+            if (e)
+                copied->templateStats->push_back(e->copy());
+            else
+                copied->templateStats->push_back(nullptr);
+        }
+    }
+
+    return copied;
+}
+
+bool TemplateStatsNode::containsVar(string name) {
+    for (TemplateStatNode* ts: *templateStats) {
+        if (ts) {
+            if (ts->dcl && ts->dcl->containsVar(name)) return true;
+        }
+    }
+
+    return false;
+}
+
 string TemplateStatsNode::toDot() const {
     string dot;
 
@@ -58,3 +86,4 @@ list<Node *> TemplateStatsNode::getChildren() const {
     }
     return children;
 }
+

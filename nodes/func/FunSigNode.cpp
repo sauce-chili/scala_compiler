@@ -12,6 +12,19 @@ FunSigNode *FunSigNode::createFunSig(IdNode *fullId, FuncParamsNode *params) {
     return node;
 }
 
+FunSigNode *FunSigNode::copy() {
+    FunSigNode* node = new FunSigNode();
+
+    if (fullId) {
+        node->fullId = fullId->copy();
+    }
+    if (params) {
+        node->params = params->copy();
+    }
+
+    return node;
+}
+
 string FunSigNode::toDot() const {
     string dot;
 

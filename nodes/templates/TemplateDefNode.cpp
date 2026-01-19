@@ -9,6 +9,7 @@ TemplateDefNode::TemplateDefNode() {
     classTemplateOpt = nullptr;
     traitTemplateOpt = nullptr;
     enumDef = nullptr;
+    modifiers = nullptr;
 }
 
 TemplateDefNode *TemplateDefNode::createClassDef(ClassDefNode *classDef) {
@@ -41,6 +42,29 @@ TemplateDefNode *TemplateDefNode::createEnumDef(EnumDefNode *enumDef) {
     return node;
 }
 
+TemplateDefNode *TemplateDefNode::copy() {
+    TemplateDefNode* node = new TemplateDefNode();
+    node->type = type;
+
+    if (classDef) {
+        node->classDef = classDef->copy();
+    }
+    if (fullId) {
+        node->fullId = fullId->copy();
+    }
+    if (classTemplateOpt) {
+        node->classTemplateOpt = classTemplateOpt->copy();
+    }
+    if (traitTemplateOpt) {
+        node->traitTemplateOpt = traitTemplateOpt->copy();
+    }
+    if (enumDef) {
+        node->enumDef = enumDef->copy();
+    }
+
+    return node;
+}
+
 string TemplateDefNode::toDot() const {
     string dot;
 
@@ -50,6 +74,7 @@ string TemplateDefNode::toDot() const {
     addDotChild(dot, classTemplateOpt, "classTemplateOpt_");
     addDotChild(dot, traitTemplateOpt, "traitTemplateOpt_");
     addDotChild(dot, enumDef, "enumDef_");
+    addDotChild(dot, modifiers, "modifiers_");
 
     return dot;
 }
@@ -71,5 +96,7 @@ std::list<Node*> TemplateDefNode::getChildren() const {
     addChildIfNotNull(children, classTemplateOpt);
     addChildIfNotNull(children, traitTemplateOpt);
     addChildIfNotNull(children, enumDef);
+    addChildIfNotNull(children, modifiers);
     return children;
 }
+

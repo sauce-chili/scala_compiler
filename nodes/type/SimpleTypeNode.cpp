@@ -17,6 +17,19 @@ SimpleTypeNode *SimpleTypeNode::createArrayWithCompoundTypeNode(CompoundTypeNode
     return node;
 }
 
+SimpleTypeNode *SimpleTypeNode::copy() {
+    SimpleTypeNode* node = new SimpleTypeNode();
+
+    if (stableId) {
+        node->stableId = stableId->copy();
+    }
+    if (compoundType) {
+        node->compoundType = compoundType->copy();
+    }
+
+    return node;
+}
+
 string SimpleTypeNode::toDot() const {
     string dot;
 

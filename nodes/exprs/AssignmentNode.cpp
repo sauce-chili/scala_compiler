@@ -28,6 +28,26 @@ AssignmentNode *AssignmentNode::createFieldAssignment(SimpleExprNode *simpleExpr
     return node;
 }
 
+AssignmentNode *AssignmentNode::copy() {
+    AssignmentNode* node = new AssignmentNode();
+    if (simpleExpr) {
+        node->simpleExpr = simpleExpr->copy();
+    }
+    if (fullId) {
+        node->fullId = fullId->copy();
+    }
+    if (expr) {
+        node->expr = expr->copy();
+    }
+    if (simpleExpr1) {
+        node->simpleExpr1 = simpleExpr1->copy();
+    }
+    if (argumentExprs) {
+        node->argumentExprs = argumentExprs->copy();
+    }
+    return node;
+}
+
 AssignmentNode *AssignmentNode::createArrayAssignment(SimpleExpr1Node *simpleExpr1, ArgumentExprsNode *argumentExprs, ExprNode *expr) {
     AssignmentNode* node = new AssignmentNode();
     node->simpleExpr1 = simpleExpr1;

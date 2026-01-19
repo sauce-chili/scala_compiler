@@ -12,6 +12,8 @@ public:
     ExprsNode(ExprNode *first);
     ExprsNode();
 
+    ExprsNode* copy();
+
     static ExprsNode* addExprToList(ExprsNode *exprs, ExprNode *expr);
 
     string toDot() const override;

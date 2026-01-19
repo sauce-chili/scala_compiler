@@ -14,6 +14,8 @@ public:
 
     static EnumStatsNode* addModifierToList(EnumStatsNode *list, EnumStatNode *enumStat);
 
+    EnumStatsNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
     list<Node *> getChildren() const override;

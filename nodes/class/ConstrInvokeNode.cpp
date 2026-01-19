@@ -12,6 +12,19 @@ ConstrInvokeNode *ConstrInvokeNode::createConstrInvokeNode(StableIdNode *stableI
     return node;
 }
 
+ConstrInvokeNode *ConstrInvokeNode::copy() {
+    ConstrInvokeNode* node = new ConstrInvokeNode();
+
+    if (stableId) {
+        node->stableId = stableId->copy();
+    }
+    if (arguments) {
+        node->arguments = arguments->copy();
+    }
+
+    return node;
+}
+
 string ConstrInvokeNode::toDot() const {
     string dot;
 

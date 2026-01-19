@@ -12,6 +12,8 @@ public:
 
     PrefixExprNode();
 
+    PrefixExprNode* copy();
+
     static PrefixExprNode* createPrefixExprNode(SimpleExprNode* simpleExpr, PrefixExprType type);
 
     string toDot() const override;

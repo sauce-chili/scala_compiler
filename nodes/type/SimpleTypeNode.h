@@ -17,6 +17,8 @@ public:
     static SimpleTypeNode* createStableIdNode(StableIdNode* stableId);
     static SimpleTypeNode* createArrayWithCompoundTypeNode(CompoundTypeNode* compoundType);
 
+    SimpleTypeNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
 

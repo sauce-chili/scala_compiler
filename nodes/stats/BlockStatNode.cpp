@@ -1,4 +1,5 @@
 #include "BlockStatNode.h"
+#include "../var/VarDefsNode.h"
 
 BlockStatNode::BlockStatNode() {
     varDefs = nullptr;
@@ -14,6 +15,18 @@ BlockStatNode *BlockStatNode::createVarDefsNode(VarDefsNode *varDefs) {
 BlockStatNode *BlockStatNode::createExprNode(ExprNode *expr) {
     BlockStatNode* node = new BlockStatNode();
     node->expr = expr;
+    return node;
+}
+
+BlockStatNode *BlockStatNode::copy() {
+    BlockStatNode* node = new BlockStatNode();
+
+    if (varDefs) {
+        node->varDefs = varDefs->copy();
+    }
+    if (expr) {
+        node->expr = expr->copy();
+    }
     return node;
 }
 
@@ -37,3 +50,4 @@ list<Node *> BlockStatNode::getChildren() const {
     addChildIfNotNull(children, expr);
     return children;
 }
+

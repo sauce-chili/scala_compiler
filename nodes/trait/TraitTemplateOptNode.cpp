@@ -13,6 +13,19 @@ TraitTemplateOptNode *TraitTemplateOptNode::createTraitTemplateOpt(TraitTemplate
     return node;
 }
 
+TraitTemplateOptNode *TraitTemplateOptNode::copy() {
+    TraitTemplateOptNode* node = new TraitTemplateOptNode();
+
+    if (traitTemplate) {
+        node->traitTemplate = traitTemplate->copy();
+    }
+    if (templateStats) {
+        node->templateStats = templateStats->copy();
+    }
+
+    return node;
+}
+
 string TraitTemplateOptNode::toDot() const {
     string dot;
 
@@ -26,3 +39,4 @@ string TraitTemplateOptNode::toDot() const {
 string TraitTemplateOptNode::getDotLabel() const {
     return "Trait template opt";
 }
+

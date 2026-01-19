@@ -14,6 +14,10 @@ public:
 
     static TopStatSeqNode* addModifierToList(TopStatSeqNode *list, TopStatNode *topStat);
 
+    void convertAst();
+
+    TopStatSeqNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
     list<Node *> getChildren() const override;

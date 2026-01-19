@@ -18,6 +18,19 @@ EnumTemplateNode *EnumTemplateNode::createWithEnumBody(EnumStatsNode *enumStats)
     return node;
 }
 
+EnumTemplateNode *EnumTemplateNode::copy() {
+    EnumTemplateNode* node = new EnumTemplateNode();
+
+    if (classParents) {
+        node->classParents = classParents->copy();
+    }
+    if (enumStats) {
+        node->enumStats = enumStats->copy();
+    }
+
+    return node;
+}
+
 string EnumTemplateNode::toDot() const {
     string dot;
 

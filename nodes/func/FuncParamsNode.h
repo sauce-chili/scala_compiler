@@ -5,6 +5,7 @@
 #include "../Node.h"
 #include "FuncParamNode.h"
 #include "semantic/scopes/Scope.h"
+#include "../class/ClassParamsNode.h"
 
 class FuncParamsNode : public Node {
 public:
@@ -14,8 +15,11 @@ public:
     FuncParamsNode();
 
     FuncParamsNode(FuncParamNode *first);
+    FuncParamsNode(ClassParamsNode *first);
 
     static FuncParamsNode *addFuncParamToList(FuncParamsNode *list, FuncParamNode *funcParam);
+
+    FuncParamsNode* copy();
 
     string toDot() const override;
 

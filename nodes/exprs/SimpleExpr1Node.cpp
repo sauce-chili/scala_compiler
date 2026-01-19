@@ -2,7 +2,7 @@
 #include "ArgumentExprsNode.h"
 #include "SimpleExprNode.h"
 #include "../id/IdNode.h"
-#include "nodes/type/CompoundTypeNode.h"
+#include "../type/CompoundTypeNode.h"
 
 SimpleExpr1Node::SimpleExpr1Node() {
     intValue = 0;
@@ -129,6 +129,37 @@ SimpleExpr1Node *SimpleExpr1Node::createArrayBuilderNode(ArgumentExprsNode *argu
     SimpleExpr1Node* node = new SimpleExpr1Node();
     node->type = _ARRAY_BUILDER;
     node->argumentExprs = argumentExprs;
+    return node;
+}
+
+SimpleExpr1Node *SimpleExpr1Node::copy() {
+    SimpleExpr1Node* node = new SimpleExpr1Node();
+    node->type = type;
+    node->intValue = intValue;
+    node->charValue = charValue;
+    node->doubleValue = doubleValue;
+    node->stringValue = stringValue;
+    node->boolValue = boolValue;
+
+    if (simpleExpr) {
+        node->simpleExpr = simpleExpr->copy();
+    }
+    if (expr) {
+        node->expr = expr->copy();
+    }
+    if (argumentExprs) {
+        node->argumentExprs = argumentExprs->copy();
+    }
+    if (simpleExpr1) {
+        node->simpleExpr1 = simpleExpr1->copy();
+    }
+    if (identifier) {
+        node->identifier = identifier->copy();
+    }
+    if (compoundType) {
+        node->compoundType = compoundType->copy();
+    }
+
     return node;
 }
 

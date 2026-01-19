@@ -22,11 +22,16 @@ public:
     static DclNode* createValDcl(IdsNode* ids, CompoundTypeNode* compoundType);
     static DclNode* createDefDcl(FunSigNode* funSig, CompoundTypeNode* compoundType);
 
+    DclNode* copy();
+    bool containsVar(string name);
+
     DclNode* setModifiers(ModifiersNode* modifiers);
 
     string toDot() const override;
     string getDotLabel() const override;
     list<Node *> getChildren() const override;
+
+    void validateModifiers();
 };
 
 

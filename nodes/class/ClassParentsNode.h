@@ -13,6 +13,8 @@ public:
 
     ClassParentsNode();
 
+    ClassParentsNode* copy();
+
     static ClassParentsNode* createClassParents(ConstrInvokeNode* constr, SimpleTypesNode* simpleTypes);
 
     string toDot() const override;

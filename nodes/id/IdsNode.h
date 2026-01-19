@@ -15,6 +15,10 @@ public:
 
     static IdsNode* addIdToList(IdsNode *list, IdNode *fullId);
 
+    IdsNode* copy();
+
+    bool contains(string name);
+
     string toDot() const override;
     string getDotLabel() const override;
     list<Node *> getChildren() const override;

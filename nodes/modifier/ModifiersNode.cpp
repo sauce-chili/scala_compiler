@@ -22,6 +22,23 @@ ModifiersNode *ModifiersNode::addModifierToList(ModifiersNode *list, ModifierNod
     return list;
 }
 
+ModifiersNode *ModifiersNode::copy() {
+    ModifiersNode* copied = new ModifiersNode();
+
+    if (modifiers) {
+        copied->modifiers = new std::list<ModifierNode*>();
+
+        for (ModifierNode* m: *modifiers) {
+            if (m)
+                copied->modifiers->push_back(m->copy());
+            else
+                copied->modifiers->push_back(nullptr);
+        }
+    }
+
+    return copied;
+}
+
 string ModifiersNode::toDot() const {
     string dot;
 

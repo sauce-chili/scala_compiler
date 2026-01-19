@@ -4,6 +4,7 @@
 
 #include "nodes/stats/TopStatSeqNode.h"
 #include "utils/output/dot.cpp"
+#include "semantic/error/SemanticError.h"
 
 // Подключаем определения токенов, сгенерированные Bison,
 // чтобы в режиме лексера можно было (опционально) понимать ID токенов.
@@ -81,6 +82,13 @@ int main(int argc, char **argv) {
         TopStatSeqNode *root = nullptr;
 
         int result = yyparse(&root);
+
+        try {
+            root->convertAst();
+        } catch (SemanticError& e) {
+            std::cerr << e.getErrorMessage() << std::endl;
+            return 1;
+        }
 
         if (result == 0) {
             std::cout << "Parsing completed successfully!" << std::endl;

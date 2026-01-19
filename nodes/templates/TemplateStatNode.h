@@ -16,9 +16,18 @@ public:
     static TemplateStatNode* createDefTemplate(ModifiersNode* modifiers, DefNode* def);
     static TemplateStatNode* createDclTemplate(ModifiersNode* modifiers, DclNode* dcl);
 
+    TemplateStatNode* copy();
+    void validateModifiers() const;
+
     string toDot() const override;
     string getDotLabel() const override;
     list<Node *> getChildren() const override;
+
+private:
+    void validateVarModifiers() const;
+    void validateMethodModifiers() const;
+    void validateSecondaryConstructorModifiers() const;
+    void validatePrimaryConstructorModifiers() const;
 };
 
 

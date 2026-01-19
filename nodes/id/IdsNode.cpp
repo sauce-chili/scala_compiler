@@ -23,6 +23,33 @@ IdsNode *IdsNode::addIdToList(IdsNode *list, IdNode *fullId) {
     return list;
 }
 
+IdsNode *IdsNode::copy() {
+    IdsNode* copied = new IdsNode();
+
+    if (ids) {
+        copied->ids = new std::list<IdNode*>();
+
+        for (IdNode* e: *ids) {
+            if (e)
+                copied->ids->push_back(e->copy());
+            else
+                copied->ids->push_back(nullptr);
+        }
+    }
+
+    return copied;
+}
+
+bool IdsNode::contains(string name) {
+    for (IdNode* e: *ids) {
+        if (e) {
+            if (e->name == name) return true;
+        }
+    }
+
+    return false;
+}
+
 string IdsNode::toDot() const {
     string dot;
 
@@ -47,3 +74,5 @@ list<Node *> IdsNode::getChildren() const {
     }
     return children;
 }
+
+

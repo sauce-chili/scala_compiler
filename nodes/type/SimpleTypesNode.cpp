@@ -22,6 +22,23 @@ SimpleTypesNode *SimpleTypesNode::addSimpleTypeToList(SimpleTypesNode *list, Sim
     return list;
 }
 
+SimpleTypesNode *SimpleTypesNode::copy() {
+    SimpleTypesNode* copied = new SimpleTypesNode();
+
+    if (simpleTypes) {
+        copied->simpleTypes = new std::list<SimpleTypeNode*>();
+
+        for (SimpleTypeNode* st: *simpleTypes) {
+            if (st)
+                copied->simpleTypes->push_back(st->copy());
+            else
+                copied->simpleTypes->push_back(nullptr);
+        }
+    }
+
+    return copied;
+}
+
 string SimpleTypesNode::toDot() const {
     string dot;
 
@@ -45,3 +62,4 @@ list<Node *> SimpleTypesNode::getChildren() const {
         addChildIfNotNull(children, node);
     }
 }
+

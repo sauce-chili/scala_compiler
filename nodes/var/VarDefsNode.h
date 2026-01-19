@@ -21,6 +21,8 @@ public:
     static VarDefsNode* createVal(IdsNode* ids, CompoundTypeNode* compoundType, ExprNode* expr);
     static VarDefsNode* createVar(IdsNode* ids, CompoundTypeNode* compoundType, ExprNode* expr);
 
+    VarDefsNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
     list<Node *> getChildren() const override;

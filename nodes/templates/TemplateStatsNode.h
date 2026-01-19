@@ -16,6 +16,11 @@ public:
     static TemplateStatsNode* addFuncParamToBackToList(TemplateStatsNode *list, TemplateStatNode *templateStat);
     static TemplateStatsNode* addFuncParamToFrontToList(TemplateStatsNode *list, TemplateStatNode *templateStat);
 
+    TemplateStatsNode* copy();
+    void validateModifiers() const;
+
+    bool containsVar(string name);
+
     string toDot() const override;
     string getDotLabel() const override;
     list<Node *> getChildren() const override;

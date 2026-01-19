@@ -15,6 +15,8 @@ public:
 
     static FuncParamNode* createFuncParam(IdNode* fullId, CompoundTypeNode* compoundType);
 
+    FuncParamNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
     list<Node *> getChildren() const override;

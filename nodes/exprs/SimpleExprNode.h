@@ -16,6 +16,8 @@ public:
 
     SimpleExprNode();
 
+    SimpleExprNode* copy();
+
     static SimpleExprNode* createConstrInvokeNode(ConstrInvokeNode* constr);
     static SimpleExprNode* createBlockStatsNode(BlockStatsNode* blockStats);
     static SimpleExprNode* createSimpleExpr1Node(SimpleExpr1Node* simpleExpr1);

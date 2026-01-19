@@ -11,6 +11,15 @@ FuncParamsNode::FuncParamsNode(FuncParamNode *first) {
     }
 }
 
+FuncParamsNode::FuncParamsNode(ClassParamsNode *first) {
+    funcParams = new std::list<FuncParamNode*>();
+    for (ClassParamNode* c: *(first->classParams)) {
+        if (!c) continue;
+
+        funcParams->push_back(FuncParamNode::createFuncParam(c->fullId->copy(), c->compoundType->copy()));
+    }
+}
+
 FuncParamsNode *FuncParamsNode::addFuncParamToList(FuncParamsNode *list, FuncParamNode *funcParam) {
     if (list == nullptr) {
         return new FuncParamsNode(funcParam);
@@ -20,6 +29,23 @@ FuncParamsNode *FuncParamsNode::addFuncParamToList(FuncParamsNode *list, FuncPar
         list->funcParams->push_back(funcParam);
     }
     return list;
+}
+
+FuncParamsNode *FuncParamsNode::copy() {
+    FuncParamsNode* copied = new FuncParamsNode();
+
+    if (funcParams) {
+        copied->funcParams = new std::list<FuncParamNode*>();
+
+        for (FuncParamNode* e: *funcParams) {
+            if (e)
+                copied->funcParams->push_back(e->copy());
+            else
+                copied->funcParams->push_back(nullptr);
+        }
+    }
+
+    return copied;
 }
 
 string FuncParamsNode::toDot() const {

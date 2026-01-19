@@ -12,7 +12,11 @@ public:
     ClassParamsNode();
     ClassParamsNode(ClassParamNode *first);
 
+    ClassParamsNode* copy();
+
     static ClassParamsNode* addClassParamToList(ClassParamsNode *list, ClassParamNode *classParam);
+
+    bool containsParam(string name);
 
     string toDot() const override;
     string getDotLabel() const override;

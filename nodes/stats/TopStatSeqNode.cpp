@@ -22,6 +22,23 @@ TopStatSeqNode *TopStatSeqNode::addModifierToList(TopStatSeqNode *list, TopStatN
     return list;
 }
 
+TopStatSeqNode *TopStatSeqNode::copy() {
+    TopStatSeqNode* copied = new TopStatSeqNode();
+
+    if (topStats) {
+        copied->topStats = new std::list<TopStatNode*>();
+
+        for (TopStatNode* e: *topStats) {
+            if (e)
+                copied->topStats->push_back(e->copy());
+            else
+                copied->topStats->push_back(nullptr);
+        }
+    }
+
+    return copied;
+}
+
 string TopStatSeqNode::toDot() const {
     string dot;
 

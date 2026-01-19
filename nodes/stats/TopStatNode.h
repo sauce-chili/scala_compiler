@@ -14,6 +14,12 @@ public:
 
     static TopStatNode* createTopStat(ModifiersNode* modifiers, TemplateDefNode* tmplDef);
 
+    void toFieldsFromPrimaryConstructor();
+    void initializeBaseConstructorFromFields() const;
+    void initializeClassModifiers();
+
+    TopStatNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
     list<Node *> getChildren() const override;

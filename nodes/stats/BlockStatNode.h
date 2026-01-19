@@ -3,8 +3,9 @@
 
 
 #include "../Node.h"
-#include "../exprs/ExprNode.h"
-#include "../var/VarDefsNode.h"
+
+class VarDefsNode;
+class ExprNode;
 
 class BlockStatNode: public Node {
 public:
@@ -15,6 +16,8 @@ public:
 
     static BlockStatNode* createVarDefsNode(VarDefsNode* varDefs);
     static BlockStatNode* createExprNode(ExprNode* expr);
+
+    BlockStatNode* copy();
 
     string toDot() const override;
     string getDotLabel() const override;

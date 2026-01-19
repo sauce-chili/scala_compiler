@@ -22,6 +22,7 @@ public:
         ClassParamsNode *classParams,
         EnumTemplateNode *enumTemplate
     );
+    EnumDefNode* copy();
 
     static EnumDefNode *createWithClassParams(
         IdNode *fullId,

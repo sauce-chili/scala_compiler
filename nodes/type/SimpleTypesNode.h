@@ -14,6 +14,8 @@ public:
 
     static SimpleTypesNode* addSimpleTypeToList(SimpleTypesNode *list, SimpleTypeNode *simpleType);
 
+    SimpleTypesNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
     list<Node *> getChildren() const override;

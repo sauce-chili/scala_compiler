@@ -18,6 +18,8 @@ public:
     static FunDefNode* createFunSigFunDef(FunSigNode* funSig, CompoundTypeNode* compoundType, ExprNode* expr);
     static FunDefNode* createThisConstrCallFunDef(FuncParamsNode* funcParams, ConstrExprNode* constrExpr);
 
+    FunDefNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
     bool isConstructor();

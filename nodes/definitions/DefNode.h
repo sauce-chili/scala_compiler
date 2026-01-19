@@ -7,6 +7,7 @@
 #include "../func/FunDefNode.h"
 #include "../templates/TemplateDefNode.h"
 #include "../modifier/ModifiersNode.h"
+#include "../class/PrimaryConstructorNode.h"
 
 class DefNode: public Node {
 public:
@@ -15,14 +16,23 @@ public:
     FunDefNode* funDef;
     TemplateDefNode* tmplDef;
     ModifiersNode* modifiers;
+    /**
+     * Искусственный узел
+     */
+    PrimaryConstructorNode* primaryConstructor;
 
     DefNode();
+
+    DefNode* copy();
 
     static DefNode* createVarDefs(VarDefsNode* varDefs);
     static DefNode* createFunDef(FunDefNode* funDef);
     static DefNode* createTmplDef(TemplateDefNode* tmplDef);
 
+    static DefNode* createPrimaryConstructor(PrimaryConstructorNode* primaryConstructor);
+
     DefNode* setModifiers(ModifiersNode* modifiers);
+    bool containsVar(string name);
 
     string toDot() const override;
     string getDotLabel() const override;

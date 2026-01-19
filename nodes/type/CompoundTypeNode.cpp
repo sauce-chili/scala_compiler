@@ -1,10 +1,23 @@
 #include "CompoundTypeNode.h"
+#include "nodes/id/StableIdNode.h"
 
 CompoundTypeNode::CompoundTypeNode(SimpleTypeNode *first) {
     simpleTypes = new std::list<SimpleTypeNode*>();
     if (first) {
         simpleTypes->push_back(first);
     }
+}
+
+CompoundTypeNode::CompoundTypeNode(IdNode *first) {
+    simpleTypes = new std::list<SimpleTypeNode*>();
+    CompoundTypeNode(SimpleTypeNode::createStableIdNode(
+                    StableIdNode::createStableIdByFullId(
+                            first
+                           )));
+}
+
+CompoundTypeNode::CompoundTypeNode() {
+    simpleTypes = new std::list<SimpleTypeNode*>();
 }
 
 CompoundTypeNode *CompoundTypeNode::addStableId(CompoundTypeNode *list, SimpleTypeNode *simpleType) {
@@ -18,6 +31,24 @@ CompoundTypeNode *CompoundTypeNode::addStableId(CompoundTypeNode *list, SimpleTy
     return list;
 }
 
+CompoundTypeNode* CompoundTypeNode::copy() {
+    auto* compoundType = new CompoundTypeNode();
+
+    if (simpleTypes) {
+        compoundType->simpleTypes = new std::list<SimpleTypeNode*>();
+
+        for (SimpleTypeNode* st : *simpleTypes) {
+            if (st)
+                compoundType->simpleTypes->push_back(st->copy());
+            else
+                compoundType->simpleTypes->push_back(nullptr);
+        }
+    }
+
+    return compoundType;
+}
+
+
 string CompoundTypeNode::toDot() const {
     string dot;
 
@@ -25,7 +56,7 @@ string CompoundTypeNode::toDot() const {
     if (!simpleTypes->empty()) {
         int i = 0;
         for (const auto *it : *simpleTypes) {
-            addDotChild(dot, it, "compoundType_" + to_string(i));
+            addDotChild(dot, it, "simpleType_" + to_string(i));
             i++;
         }
     }

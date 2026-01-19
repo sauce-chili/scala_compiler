@@ -10,11 +10,13 @@
 class ClassDefNode: public Node {
 public:
     IdNode* fullId;
-    ModifierNode* modifier; // TODO пофиксить
+    ModifierNode* primaryConstructModifier; // TODO пофиксить
     ClassParamsNode* classParams;
     ClassTemplateOptNode* classTemplateOpt;
 
     ClassDefNode();
+
+    ClassDefNode* copy();
 
     static ClassDefNode* createClassDef(
             IdNode* fullId,
@@ -27,6 +29,9 @@ public:
     string getDotLabel() const override;
 
     list<Node *> getChildren() const override;
+
+    void validatePrimaryConstructorModifiers() const;
+    void validatePrimaryConstructorParametersModifiers() const;
 };
 
 

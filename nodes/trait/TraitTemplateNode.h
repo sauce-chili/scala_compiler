@@ -18,6 +18,8 @@ public:
 
     static TraitTemplateNode* createTraitTemplate(SimpleTypeNode* simpleType, SimpleTypesNode* simpleTypes, TemplateStatsNode* templateStats);
 
+    TraitTemplateNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
 };

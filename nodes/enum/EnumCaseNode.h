@@ -18,6 +18,8 @@ public:
 
     static EnumCaseNode* createClassParents(EnumCaseType type, IdsNode* ids, ClassParamsNode* classParams, ClassParentsNode* classParents);
 
+    EnumCaseNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
     list<Node *> getChildren() const override;

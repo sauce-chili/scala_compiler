@@ -22,6 +22,35 @@ ClassParamsNode *ClassParamsNode::addClassParamToList(ClassParamsNode *list, Cla
     return list;
 }
 
+ClassParamsNode *ClassParamsNode::copy() {
+    ClassParamsNode* copied = new ClassParamsNode();
+
+    if (classParams) {
+        copied->classParams = new std::list<ClassParamNode*>();
+
+        for (ClassParamNode* e: *classParams) {
+            if (e)
+                copied->classParams->push_back(e->copy());
+            else
+                copied->classParams->push_back(nullptr);
+        }
+    }
+
+    return copied;
+}
+
+bool ClassParamsNode::containsParam(string name) {
+    for (ClassParamNode* cp: *classParams) {
+        if (cp) {
+            if (cp->fullId->name == name) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 string ClassParamsNode::toDot() const {
     string dot;
 
@@ -50,10 +79,3 @@ list<Node *> ClassParamsNode::getChildren() const {
 }
 
 
-list<Node *> ClassParamNode::getChildren() const {
-    std::list<Node *> children = {};
-    addChildIfNotNull(children, modifiers);
-    addChildIfNotNull(children, fullId);
-    addChildIfNotNull(children, compoundType);
-    return children;
-}

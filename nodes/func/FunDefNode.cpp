@@ -23,6 +23,28 @@ FunDefNode *FunDefNode::createThisConstrCallFunDef(FuncParamsNode *funcParams, C
     return node;
 }
 
+FunDefNode *FunDefNode::copy() {
+    FunDefNode* node = new FunDefNode();
+
+    if (funSig) {
+        node->funSig = funSig->copy();
+    }
+    if (compoundType) {
+        node->compoundType = compoundType->copy();
+    }
+    if (constrExpr) {
+        node->constrExpr = constrExpr->copy();
+    }
+    if (expr) {
+        node->expr = expr->copy();
+    }
+    if (funcParams) {
+        node->funcParams = funcParams->copy();
+    }
+
+    return node;
+}
+
 string FunDefNode::toDot() const {
     string dot;
 

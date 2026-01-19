@@ -13,6 +13,19 @@ ConstrExprNode *ConstrExprNode::createConstrExpr(ArgumentExprsNode *argumentExpr
     return node;
 }
 
+ConstrExprNode *ConstrExprNode::copy() {
+    ConstrExprNode* node = new ConstrExprNode();
+    node->isBlock = isBlock;
+
+    if (argumentExprs) {
+        node->argumentExprs = argumentExprs->copy();
+    }
+    if (blockStats) {
+        node->blockStats = blockStats->copy();
+    }
+    return node;
+}
+
 string ConstrExprNode::toDot() const {
     string dot;
 

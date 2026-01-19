@@ -3,6 +3,7 @@
 
 #include "../Node.h"
 #include "nodes/modifier/ModifiersNode.h"
+#include "../semantic/scopes/Scope.h"
 
 class Scope;
 class ClassDefNode;
@@ -30,12 +31,18 @@ public:
     static TemplateDefNode* createTraitDef(IdNode* fullId, TraitTemplateOptNode* traitTemplateOpt);
     static TemplateDefNode* createEnumDef(EnumDefNode* enumDef);
 
+    TemplateDefNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
 
     TemplateDefNode* setModifiers(ModifiersNode* modifiers);
+    void validateModifiers() const;
 
     list<Node *> getChildren() const override;
+
+private:
+    void validateClassModifiers() const;
 };
 
 

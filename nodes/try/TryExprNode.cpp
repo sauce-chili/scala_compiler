@@ -14,6 +14,20 @@ TryExprNode *TryExprNode::createExceptionBlock(ExprNode *tryExpr, ExprNode *catc
     return node;
 }
 
+TryExprNode *TryExprNode::copy() {
+    TryExprNode* node = new TryExprNode();
+    if (tryExpr) {
+        node->tryExpr = tryExpr->copy();
+    }
+    if (catchExpr) {
+        node->catchExpr = catchExpr->copy();
+    }
+    if (finallyNode) {
+        node->finallyNode = finallyNode->copy();
+    }
+    return node;
+}
+
 string TryExprNode::toDot() const {
     string dot;
 

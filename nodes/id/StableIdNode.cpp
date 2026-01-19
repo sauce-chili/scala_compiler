@@ -34,6 +34,20 @@ StableIdNode *StableIdNode::createRecursiveStableId(StableIdNode *stableId, IdNo
     return node;
 }
 
+StableIdNode *StableIdNode::copy() {
+    StableIdNode* node = new StableIdNode();
+
+    if (stableId) {
+        node->stableId = stableId->copy();
+    }
+    node->type = type;
+    if (identifier) {
+        node->identifier = identifier->copy();
+    }
+
+    return node;
+}
+
 string StableIdNode::toDot() const {
     string dot;
 

@@ -1,5 +1,9 @@
 #include "EnumeratorsNode.h"
 
+EnumeratorsNode::EnumeratorsNode() {
+    enumerators = new std::list<EnumeratorPartNode*>;
+}
+
 EnumeratorsNode::EnumeratorsNode(GeneratorNode *generator) {
     enumerators = new std::list<EnumeratorPartNode*>;
     if (generator) {
@@ -40,3 +44,20 @@ list<Node *> EnumeratorsNode::getChildren() const {
     return children;
 }
 
+
+EnumeratorsNode *EnumeratorsNode::copy() {
+    EnumeratorsNode* node = new EnumeratorsNode();
+
+    if (enumerators) {
+        node->enumerators = new std::list<EnumeratorPartNode*>();
+
+        for (EnumeratorPartNode* e: *enumerators) {
+            if (e)
+                node->enumerators->push_back(e->copy());
+            else
+                node->enumerators->push_back(nullptr);
+        }
+    }
+
+    return node;
+}

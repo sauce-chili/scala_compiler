@@ -16,6 +16,8 @@ public:
     static EnumTemplateNode* createWithClassParents(ClassParentsNode* classParents, EnumStatsNode* enumStats);
     static EnumTemplateNode* createWithEnumBody(EnumStatsNode* enumStats);
 
+    EnumTemplateNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
     list<Node *> getChildren() const override;

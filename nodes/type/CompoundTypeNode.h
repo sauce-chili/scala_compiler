@@ -12,7 +12,12 @@ public:
     list<SimpleTypeNode*> *simpleTypes;
 
     CompoundTypeNode(SimpleTypeNode *first);
+    CompoundTypeNode();
+    CompoundTypeNode(IdNode *first);
+
     static CompoundTypeNode* addStableId(CompoundTypeNode* list, SimpleTypeNode* simpleType);
+
+    CompoundTypeNode* copy();
 
     string toDot() const override;
     string getDotLabel() const override;

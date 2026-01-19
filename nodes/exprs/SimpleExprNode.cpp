@@ -37,6 +37,22 @@ SimpleExprNode *SimpleExprNode::createArrayCreatingNode(SimpleExpr1Node *simpleE
     return node;
 }
 
+SimpleExprNode *SimpleExprNode::copy() {
+    SimpleExprNode* node = new SimpleExprNode();
+    node->type = type;
+
+    if (constr) {
+        node->constr = constr->copy();
+    }
+    if (blockStats) {
+        node->blockStats = blockStats->copy();
+    }
+    if (simpleExpr1) {
+        node->simpleExpr1 = simpleExpr1->copy();
+    }
+    return node;
+}
+
 string SimpleExprNode::toDot() const {
     string dot;
 

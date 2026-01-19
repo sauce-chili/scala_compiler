@@ -15,6 +15,23 @@ EnumCaseNode* EnumCaseNode::createClassParents(EnumCaseType type, IdsNode *ids, 
     return node;
 }
 
+EnumCaseNode *EnumCaseNode::copy() {
+    EnumCaseNode* node = new EnumCaseNode();
+    node->type = type;
+
+    if (ids) {
+        node->ids = ids->copy();
+    }
+    if (classParams) {
+        node->classParams = classParams->copy();
+    }
+    if (classParents) {
+        node->classParents = classParents->copy();
+    }
+
+    return node;
+}
+
 string EnumCaseNode::toDot() const {
     string dot;
 
