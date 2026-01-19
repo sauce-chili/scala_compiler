@@ -63,6 +63,11 @@ string EnumDefNode::toDot() const {
     return dot;
 }
 
+EnumDefNode *EnumDefNode::setModifiers(ModifiersNode *modifiers) {
+    this->modifiers = modifiers;
+    return this;
+}
+
 string EnumDefNode::getDotLabel() const {
     return "Enum definition";
 }

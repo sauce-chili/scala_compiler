@@ -2,7 +2,6 @@
 
 ClassParamNode::ClassParamNode() {
     modifiers = nullptr;
-    fullId = nullptr;
     compoundType = nullptr;
 }
 

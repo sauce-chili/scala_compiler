@@ -10,6 +10,7 @@ class ClassTemplateOptNode: public Node {
 public:
     TemplateStatsNode* templateStats;
     ClassParentsNode* classParents;
+    ModifiersNode* modifiers;
 
     ClassTemplateOptNode();
 
@@ -17,6 +18,7 @@ public:
     static ClassTemplateOptNode* createClassTemplate(ClassParentsNode* classParents, TemplateStatsNode* templateStats);
 
     ClassTemplateOptNode* copy();
+    ClassTemplateOptNode* setModifiers(ModifiersNode* modifiers);
 
     string toDot() const override;
     string getDotLabel() const override;

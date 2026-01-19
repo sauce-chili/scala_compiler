@@ -26,6 +26,11 @@ TraitTemplateOptNode *TraitTemplateOptNode::copy() {
     return node;
 }
 
+TraitTemplateOptNode* TraitTemplateOptNode::setModifiers(ModifiersNode* modifiers) {
+    this->modifiers = modifiers;
+    return this;
+}
+
 string TraitTemplateOptNode::toDot() const {
     string dot;
 

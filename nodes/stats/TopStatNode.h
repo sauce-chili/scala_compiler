@@ -16,7 +16,6 @@ public:
 
     void toFieldsFromPrimaryConstructor();
     void initializeBaseConstructorFromFields() const;
-    void initializeClassModifiers();
 
     TopStatNode* copy();
 

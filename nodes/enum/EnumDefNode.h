@@ -13,6 +13,7 @@ public:
     ModifierNode *modifier;
     ClassParamsNode *classParams;
     EnumTemplateNode *enumTemplate;
+    ModifiersNode* modifiers;
 
     EnumDefNode();
 
@@ -40,6 +41,7 @@ public:
     string getDotLabel() const override;
 
     list<Node *> getChildren() const override;
+    EnumDefNode* setModifiers(ModifiersNode* modifiers);
 };
 
 

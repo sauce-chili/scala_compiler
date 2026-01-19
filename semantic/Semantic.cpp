@@ -16,7 +16,7 @@ void TopStatSeqNode::convertAst() {
         if (!tsn->tmplDef) continue;
         if (!tsn->tmplDef->classDef) continue;
 
-        tsn->initializeClassModifiers();
+        //ModifiersNode::initializeModifiers(tsn);
         tsn->tmplDef->classDef->validatePrimaryConstructorModifiers();
         tsn->tmplDef->validateModifiers();
         tsn->toFieldsFromPrimaryConstructor();
@@ -24,15 +24,25 @@ void TopStatSeqNode::convertAst() {
     }
 }
 
-void TopStatNode::initializeClassModifiers() {
-    ModifiersNode* modifiers = tmplDef->modifiers;
-    if (!modifiers || modifiers->modifiers->empty()) {
-        tmplDef->modifiers = modifiers->addModifierToList(modifiers, ModifierNode::createModifier(ModifierType::_PUBLIC));
-    }
-
-    ClassDefNode *currentClass = tmplDef->classDef;
-    currentClass->primaryConstructModifier = currentClass->primaryConstructModifier ? currentClass->primaryConstructModifier : ModifierNode::createModifier(ModifierType::_PUBLIC);
-}
+//void ModifiersNode::initializeModifiers(Node* node) {
+//    if (!node) return;
+//
+//    if (auto* mods = dynamic_cast<ModifiersNode*>(node)) {
+//        if (!mods->modifiers || mods->modifiers->empty()) {
+//            if (!mods->modifiers) {
+//                mods->modifiers = new std::list<ModifierNode *>();
+//            }
+//
+////            mods->modifiers->push_back(
+////                    ModifierNode::createModifier(_PUBLIC)
+////            );
+//        }
+//    }
+//
+//    for (Node* child : node->getChildren()) {
+//        initializeModifiers(child);
+//    }
+//}
 
 void TopStatNode::toFieldsFromPrimaryConstructor() {
     if (!tmplDef) return;
@@ -136,7 +146,7 @@ void TemplateDefNode::validateModifiers() const {
 void TemplateDefNode::validateClassModifiers() const {
     string prevAccess;
     string prevInherit;
-    for (ModifierNode* m: *modifiers->modifiers) {
+    for (ModifierNode* m: *this->getModifiers()->modifiers) {
         if (m->isAccessModifier()) {
             if (!prevAccess.empty()) {
                 throw SemanticError::InvalidCombinationOfModifiers(0, prevAccess + " " + modifierToString(m->type));

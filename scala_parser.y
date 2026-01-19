@@ -374,7 +374,7 @@ classParam: modifiers VAL fullID ':' compoundType { $$ = ClassParamNode::createC
           | modifiers VAR fullID ':' compoundType { $$ = ClassParamNode::createClassParam(_VAR_CLASS_PARAM, $1, $3, $5); }
           ;
 
-modifiers: /* empty */        { $$ = nullptr; }
+modifiers: /* empty */        { $$ = new ModifiersNode(); }
          | modifiers modifier { $$ = ModifiersNode::addModifierToList($1, $2); }
          ;
 
