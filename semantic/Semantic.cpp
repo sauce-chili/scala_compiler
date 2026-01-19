@@ -75,12 +75,10 @@ void TopStatNode::toFieldsFromPrimaryConstructor() {
         } else {
             stat->dcl = DclNode::createValDcl(ids, p->compoundType->copy());
         }
-        stat->dcl->modifiers = stat->dcl->modifiers->addModifierToList(stat->dcl->modifiers, ModifierNode::createModifier(_PUBLIC));
+        stat->dcl->modifiers = p->modifiers->copy();
 
         currentClass->classTemplateOpt->templateStats->templateStats->push_front(stat);
     }
-
-    currentClass->classParams = new ClassParamsNode();
 }
 
 void TopStatNode::initializeBaseConstructorFromFields() const {
@@ -92,7 +90,9 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
     if (!currentClass->classTemplateOpt) return;
     if (!currentClass->classTemplateOpt->templateStats) return;
 
-    if (!currentClass->classParams) currentClass->classParams = new ClassParamsNode();
+    if (!currentClass->classParams) {
+        currentClass->classParams = new ClassParamsNode();
+    }
 
     // Сущность конструктора
     TemplateStatNode *baseConstructor = new TemplateStatNode();
@@ -102,6 +102,11 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
     SuperConstructorCallNode *superCall;
     if (currentClass->classTemplateOpt->classParents && currentClass->classTemplateOpt->classParents->constr && currentClass->classTemplateOpt->classParents->constr->arguments) {
         superCall = new SuperConstructorCallNode(currentClass->classTemplateOpt->classParents->constr->arguments->copy());
+        currentClass->classTemplateOpt->classParents->simpleTypes = SimpleTypesNode::addSimpleTypeToList(
+                currentClass->classTemplateOpt->classParents->simpleTypes,
+                SimpleTypeNode::createStableIdNode(currentClass->classTemplateOpt->classParents->constr->stableId->copy())
+        );
+        currentClass->classTemplateOpt->classParents->constr = nullptr;
     } else {
         superCall = new SuperConstructorCallNode(new ArgumentExprsNode(new ExprsNode()));
     }
@@ -124,14 +129,9 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
     }
 
     PrimaryConstructorNode *primaryConstructorNode = new PrimaryConstructorNode(params, blockStats, superCall);
+    currentClass->classParams = new ClassParamsNode();
     baseConstructor->def = DefNode::createPrimaryConstructor(primaryConstructorNode);
     currentClass->classTemplateOpt->templateStats->templateStats->push_front(baseConstructor);
-
-    if (currentClass->classTemplateOpt->classParents
-    && currentClass->classTemplateOpt->classParents->constr
-    && currentClass->classTemplateOpt->classParents->constr->arguments) {
-        currentClass->classTemplateOpt->classParents->constr->arguments = nullptr;
-    }
 }
 
 void TemplateDefNode::validateModifiers() const {
