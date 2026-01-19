@@ -125,6 +125,7 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
             stat = BlockStatNode::createVarDefsNode(
                     VarDefsNode::createVal(p->def->varDefs->ids->copy(), p->def->varDefs->compoundType->copy(), p->def->varDefs->expr->copy()));
         }
+        p->def->varDefs->expr = nullptr;
         BlockStatsNode::addBlockStatToList(blockStats, stat);
     }
 
