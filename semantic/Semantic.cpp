@@ -115,10 +115,10 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
         BlockStatNode *stat;
         if (p->def->varDefs->type == StatType::_VAR_DECL) {
             stat = BlockStatNode::createVarDefsNode(
-                    VarDefsNode::createVar(p->def->varDefs->ids, p->def->varDefs->compoundType, p->def->varDefs->expr));
+                    VarDefsNode::createVar(p->def->varDefs->ids->copy(), p->def->varDefs->compoundType->copy(), p->def->varDefs->expr->copy()));
         } else {
             stat = BlockStatNode::createVarDefsNode(
-                    VarDefsNode::createVal(p->def->varDefs->ids, p->def->varDefs->compoundType, p->def->varDefs->expr));
+                    VarDefsNode::createVal(p->def->varDefs->ids->copy(), p->def->varDefs->compoundType->copy(), p->def->varDefs->expr->copy()));
         }
         BlockStatsNode::addBlockStatToList(blockStats, stat);
     }

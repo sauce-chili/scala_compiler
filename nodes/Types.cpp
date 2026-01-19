@@ -9,7 +9,7 @@ std::string modifierToString(ModifierType m) {
         case _SEALED:    return "SEALED";
         case _FINAL:     return "FINAL";
         case _OVERRIDE:  return "OVERRIDE";
-        default:         return "Unknown";
+        default:         return "Unknown modifier";
     }
 }
 
@@ -24,7 +24,7 @@ std::string simpleExpr1ToString(SimpleExpr1Type t) {
         case _METHOD_CALL:             return "Method call";
         case _ARRAY_BUILDER:           return "Array builder";
         case _ARRAY_WITH_TYPE_BUILDER: return "Array with type builder";
-        default:                       return "Unknown";
+        default:                       return "Unknown simple expr1";
     }
 }
 
@@ -33,7 +33,7 @@ std::string simpleExprToString(SimpleExprType t) {
         case _INSTANCE_CREATING: return "Object creating";
         case _BLOCK_STATS:       return "Block statements";
         case _SIMPLE_EXPR_1:     return "Simple expr 1";
-        default:                 return "Unknown";
+        default:                 return "Unknown simple expr";
     }
 }
 
@@ -43,7 +43,7 @@ std::string stableIdTypeToString(StableIdType t) {
         case _STABLE_ID_SUPER_FIELD_ACCESS:     return "Stable id Super field access";
         case _STABLE_ID_THIS_FIELD_ACCESS:      return "Stable id This field access";
         case _RECURSIVE_STABLE_ID:              return "Recursive stable id";
-        default:                                return "Unknown";
+        default:                                return "Unknown stable id";
     }
 }
 
@@ -57,7 +57,7 @@ std::string statTypeToString(StatType t) {
         case _VAR_DECL: return "Var declaration";
         case _VAL_DECL: return "Val declaration";
         case _FUN_DEF:  return "Function definition";
-        default:        return "Unknown";
+        default:        return "Unknown stat type";
     }
 }
 
@@ -69,7 +69,7 @@ std::string prefixExprToString(PrefixExprType t) {
         case _BIT_NOT:           return "Bit not";
         case _NO_UNARY_OPERATOR: return "No unary operator";
 
-        default: return "No unary operator";
+        default: return "No unary operator prefix expr";
     }
 }
 
@@ -78,7 +78,7 @@ std::string classParamTypeToString(ClassParamType t) {
         case _VAL_CLASS_PARAM:      return "Val class param";
         case _VAR_CLASS_PARAM:      return "Var class param";
         case _UNMARKED_CLASS_PARAM: return "Unmarked class param";
-        default:                    return "Unknown";
+        default:                    return "Unknown class param";
     }
 }
 
@@ -87,7 +87,7 @@ std::string classEnumCaseTypeToString(EnumCaseType t) {
         case _CASE_WITH_EXTENDS: return "Case with extends";
         case _CASE_WITH_PARAMS:  return "Case with params";
         case _CASE_WITH_IDS:     return "Case with ids list";
-        default:                 return "Unknown";
+        default:                 return "Unknown enum case";
     }
 }
 
@@ -97,7 +97,7 @@ std::string definitionTypeToString(DefinitionType t) {
         case _FUN_DEFINITION:      return "Function definition";
         case _TEMPLATE_DEFINITION: return "Template definition";
         case _PRIMARY_CONSTRUCTOR: return "Primary constructor";
-        default:                   return "Unknown";
+        default:                   return "Unknown definition type";
     }
 }
 
@@ -115,6 +115,6 @@ std::string exprTypeToString(ExprType t) {
         case _FOR_WITH_YIELD:    return "For Yield";
         case _INFIX:             return "Infix";
         case _ASSIGNMENT:        return "Assignment";
-        default:                 return "Unknown";
+        default:                 return "Unknown expr type";
     }
 }
