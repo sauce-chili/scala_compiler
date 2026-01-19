@@ -260,8 +260,7 @@ prefixExpr: simpleExpr { $$ = PrefixExprNode::createPrefixExprNode($1, _NO_UNARY
           | '!' simpleExpr %prec ULOGNOT { $$ = PrefixExprNode::createPrefixExprNode($2, _NOT); }
           ;
 
-simpleExpr: NEW simpleType argumentExprs { $$ = SimpleExprNode::createConstrInvokeNode(ConstrInvokeNode::createConstrInvokeNode($2, $3)); } // (бывший constrInvoke)
-	  | NEW simpleType { $$ = SimpleExprNode::createConstrInvokeNode(ConstrInvokeNode::createConstrInvokeNode($2, nullptr)); } // (бывший constrInvoke)
+simpleExpr: NEW fullID argumentExprs { $$ = SimpleExprNode::createConstrInvokeNode(ConstrInvokeNode::createConstrInvokeNode($2, $3)); } // (бывший constrInvoke)
 	  | NEW ARRAY '[' simpleType ']' argumentExprs { $$ = SimpleExprNode::createArrayCreatingNode(SimpleExpr1Node::createArrayWithTypeBuilderNode($4, $6)); }
 	  | NEW ARRAY argumentExprs { $$ = SimpleExprNode::createArrayCreatingNode(SimpleExpr1Node::createArrayBuilderNode($3)); } // argumentExprs принимает только 1 аргумент (размер массива)
           | '{' blockStats '}' { $$ = SimpleExprNode::createBlockStatsNode($2); } // бывший blockExpr
