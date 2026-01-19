@@ -40,11 +40,11 @@ double TokenProcessor::toDouble(const char *text) {
 bool TokenProcessor::canBeginStmt(const int token) {
     switch (token) {
         // каких-то токенов нет(на пример match или forSome, но мы их и не поддерживаем)
-        case CATCH:
+        // case CATCH:
         case ELSE:
         case EXTENDS:
-        case FINALLY:
-        case WITH:
+        // case FINALLY:
+        // case WITH:
         case YIELD:
         case ',':
         case '.':
