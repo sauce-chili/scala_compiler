@@ -45,7 +45,6 @@
     EnumStatNode* enumStat;
     EnumStatsNode* enumStats;
     ArgumentExprsNode* argumentExprs;
-    AssignExprNode* assignExpr;
     AssignmentNode* assignment;
     ConstrExprNode* constrExpr;
     ExprNode* expr;
@@ -150,7 +149,6 @@
 %type <ids> ids
 %type <funcParams> funcParamClause funcParams
 %type <funcParam> funcParam
-%type <assignExpr> assignExprO
 %type <classParams> classParamClause classParams
 %type <classParam> classParam
 %type <modifiers> modifiers
@@ -318,12 +316,8 @@ funcParams: funcParam                { $$ = FuncParamsNode::addFuncParamToList(n
           | funcParams ',' funcParam { $$ = FuncParamsNode::addFuncParamToList($1, $3); }
           ;
 
-funcParam: fullID simpleTypeO assignExprO { $$ = FuncParamNode::createClassParam($1, $2, $3); }
+funcParam: fullID simpleType { $$ = FuncParamNode::createFuncParam($1, $2); }
          ;
-
-assignExprO: /* empty */ { $$ = nullptr; }
-           | '=' expr    { $$ = AssignExprNode::createAssignExprNode($2); }
-           ;
 
 /* --------------------- FUNC --------------------- */
 
@@ -337,12 +331,11 @@ classParams: classParam                 { $$ = ClassParamsNode::addClassParamToL
            | classParams ',' classParam { $$ = ClassParamsNode::addClassParamToList($1, $3); }
            ;
 
-classParam: modifiers VAL fullID ':' simpleType assignExprO { $$ = ClassParamNode::createClassParam(_VAL_CLASS_PARAM, $1, $3, $5, $6); }
-          | modifiers VAR fullID ':' simpleType assignExprO { $$ = ClassParamNode::createClassParam(_VAR_CLASS_PARAM, $1, $3, $5, $6); }
-          | modifiers fullID ':' simpleType assignExprO     { $$ = ClassParamNode::createClassParam(_UNMARKED_CLASS_PARAM, $1, $2, $4, $5); }
+classParam: modifiers VAL fullID ':' simpleType { $$ = ClassParamNode::createClassParam(_VAL_CLASS_PARAM, $1, $3, $5); }
+          | modifiers VAR fullID ':' simpleType { $$ = ClassParamNode::createClassParam(_VAR_CLASS_PARAM, $1, $3, $5); }
           ;
 
-modifiers: /* empty */        { $$ = ModifiersNode::addModifierToList(nullptr, nullptr); }
+modifiers: /* empty */        { $$ = nullptr; }
          | modifiers modifier { $$ = ModifiersNode::addModifierToList($1, $2); }
          ;
 
@@ -398,8 +391,8 @@ funDef: funSig simpleTypeO '=' expr       { $$ = FunDefNode::createFunSigFunDef(
       ;
 
 constrExpr: THIS argumentExprs { $$ = ConstrExprNode::createConstrExpr($2, nullptr); } // вызов первичного конструктора, бывший selfInvocation
-          | '{' THIS argumentExprs semi blockStats '}' { $$ = ConstrExprNode::createConstrExpr($3, $5); }
-          | '{' THIS argumentExprs '}' { $$ = ConstrExprNode::createConstrExpr($3, nullptr); }
+          | '{' THIS argumentExprs semi blockStats '}' { $$ = ConstrExprNode::createConstrExpr($3, $5, true); }
+          | '{' THIS argumentExprs '}' { $$ = ConstrExprNode::createConstrExpr($3, nullptr, true); }
           ;
 
 classDef: fullID accessModifier classParamClause classTemplateOpt { $$ = ClassDefNode::createClassDef($1, $2, $3, $4); }

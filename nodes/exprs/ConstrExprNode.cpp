@@ -5,10 +5,11 @@ ConstrExprNode::ConstrExprNode() {
     blockStats = nullptr;
 }
 
-ConstrExprNode *ConstrExprNode::createConstrExpr(ArgumentExprsNode *argumentExprs, BlockStatsNode *blockStats) {
+ConstrExprNode *ConstrExprNode::createConstrExpr(ArgumentExprsNode *argumentExprs, BlockStatsNode *blockStats, bool isBlock) {
     ConstrExprNode* node = new ConstrExprNode();
     node->argumentExprs = argumentExprs;
     node->blockStats = blockStats;
+    node->isBlock = isBlock;
     return node;
 }
 
