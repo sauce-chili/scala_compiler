@@ -314,7 +314,7 @@ funcParams: funcParam                { $$ = FuncParamsNode::addFuncParamToList(n
           | funcParams ',' funcParam { $$ = FuncParamsNode::addFuncParamToList($1, $3); }
           ;
 
-funcParam: fullID simpleType { $$ = FuncParamNode::createFuncParam($1, $2); }
+funcParam: fullID ':' simpleType { $$ = FuncParamNode::createFuncParam($1, $2); }
          ;
 
 /* --------------------- FUNC --------------------- */
