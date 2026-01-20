@@ -56,6 +56,12 @@ void TopStatNode::toFieldsFromPrimaryConstructor() {
 
     if (!currentClass->classTemplateOpt) throw std::runtime_error("No class template");
 
+    // Переносим тело класса из ноды наследования в ноду класса
+    if (currentClass->classTemplateOpt->extensionPartClassTemplate && currentClass->classTemplateOpt->extensionPartClassTemplate->templateStats) {
+        currentClass->classTemplateOpt->templateStats = currentClass->classTemplateOpt->extensionPartClassTemplate->templateStats;
+        currentClass->classTemplateOpt->extensionPartClassTemplate->templateStats = nullptr;
+    }
+
     TemplateStatsNode* classBody = currentClass->classTemplateOpt->templateStats;
     if (!classBody) {
         classBody = new TemplateStatsNode();
@@ -71,9 +77,9 @@ void TopStatNode::toFieldsFromPrimaryConstructor() {
         TemplateStatNode *stat = new TemplateStatNode();
         IdsNode *ids = IdsNode::addIdToList(nullptr, p->fullId->copy());
         if (p->type == ClassParamType::_VAR_CLASS_PARAM) {
-            stat->dcl = DclNode::createVarDcl(ids, p->compoundType->copy());
+            stat->dcl = DclNode::createVarDcl(ids, p->simpleType->copy());
         } else {
-            stat->dcl = DclNode::createValDcl(ids, p->compoundType->copy());
+            stat->dcl = DclNode::createValDcl(ids, p->simpleType->copy());
         }
         stat->dcl->modifiers = p->modifiers->copy();
 
@@ -100,13 +106,11 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
     FuncParamsNode *params = new FuncParamsNode(currentClass->classParams);
     // Вызов родительского конструктора (будет всегда, как минимум Object)
     SuperConstructorCallNode *superCall;
-    if (currentClass->classTemplateOpt->classParents && currentClass->classTemplateOpt->classParents->constr && currentClass->classTemplateOpt->classParents->constr->arguments) {
-        superCall = new SuperConstructorCallNode(currentClass->classTemplateOpt->classParents->constr->arguments->copy());
-        currentClass->classTemplateOpt->classParents->simpleTypes = SimpleTypesNode::addSimpleTypeToList(
-                currentClass->classTemplateOpt->classParents->simpleTypes,
-                SimpleTypeNode::createStableIdNode(currentClass->classTemplateOpt->classParents->constr->stableId->copy())
-        );
-        currentClass->classTemplateOpt->classParents->constr = nullptr;
+    if (currentClass->classTemplateOpt->extensionPartClassTemplate && currentClass->classTemplateOpt->extensionPartClassTemplate->argumentExprs) {
+        superCall = new SuperConstructorCallNode(currentClass->classTemplateOpt->extensionPartClassTemplate->argumentExprs->copy());
+        // Убираем скобки с аргументами конструктора родителя
+        currentClass->classTemplateOpt->extensionPartClassTemplate->fullId = currentClass->classTemplateOpt->extensionPartClassTemplate->fullId;
+        currentClass->classTemplateOpt->extensionPartClassTemplate->argumentExprs = nullptr;
     } else {
         superCall = new SuperConstructorCallNode(new ArgumentExprsNode(new ExprsNode()));
     }
@@ -118,12 +122,13 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
         if (!p->def->varDefs) continue;
 
         BlockStatNode *stat;
+        SimpleTypeNode* typeOfVars = p->def->varDefs->simpleType ? p->def->varDefs->simpleType->copy() : nullptr;
         if (p->def->varDefs->type == StatType::_VAR_DECL) {
             stat = BlockStatNode::createVarDefsNode(
-                    VarDefsNode::createVar(p->def->varDefs->ids->copy(), p->def->varDefs->compoundType->copy(), p->def->varDefs->expr->copy()));
+                    VarDefsNode::createVar(p->def->varDefs->ids->copy(), typeOfVars, p->def->varDefs->expr->copy()));
         } else {
             stat = BlockStatNode::createVarDefsNode(
-                    VarDefsNode::createVal(p->def->varDefs->ids->copy(), p->def->varDefs->compoundType->copy(), p->def->varDefs->expr->copy()));
+                    VarDefsNode::createVal(p->def->varDefs->ids->copy(), typeOfVars, p->def->varDefs->expr->copy()));
         }
         p->def->varDefs->expr = nullptr;
         BlockStatsNode::addBlockStatToList(blockStats, stat);
@@ -137,9 +142,7 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
 
 void TemplateDefNode::validateModifiers() const {
     validateClassModifiers();
-    if (classTemplateOpt && classTemplateOpt->templateStats) {
-        classTemplateOpt->templateStats->validateModifiers();
-    } else if (classDef && classDef->classTemplateOpt && classDef->classTemplateOpt->templateStats) {
+    if (classDef && classDef->classTemplateOpt && classDef->classTemplateOpt->templateStats) {
         classDef->classTemplateOpt->templateStats->validateModifiers();
     }
 }

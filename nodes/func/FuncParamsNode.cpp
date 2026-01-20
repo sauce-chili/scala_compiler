@@ -16,7 +16,7 @@ FuncParamsNode::FuncParamsNode(ClassParamsNode *first) {
     for (ClassParamNode* c: *(first->classParams)) {
         if (!c) continue;
 
-        funcParams->push_back(FuncParamNode::createFuncParam(c->fullId->copy(), c->compoundType->copy()));
+        funcParams->push_back(FuncParamNode::createFuncParam(c->fullId->copy(), c->simpleType->copy()));
     }
 }
 

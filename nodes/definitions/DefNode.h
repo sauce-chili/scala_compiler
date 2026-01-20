@@ -27,6 +27,8 @@ public:
     DefNode* setModifiers(ModifiersNode* modifiers);
     bool containsVar(string name);
 
+    DefNode* copy();
+
     string toDot() const override;
     string getDotLabel() const override;
     list<Node *> getChildren() const override;

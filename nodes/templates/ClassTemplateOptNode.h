@@ -7,13 +7,14 @@
 
 class ClassTemplateOptNode: public Node {
 public:
-    ExtensionClassTemplateNode* classTemplate;
+    ExtensionClassTemplateNode* extensionPartClassTemplate;
     TemplateStatsNode* templateStats;
     ModifiersNode* modifiers;
 
     ClassTemplateOptNode();
 
     static ClassTemplateOptNode* addFuncParamToBackToList(ExtensionClassTemplateNode* classTemplate, TemplateStatsNode* templateStats);
+    static ClassTemplateOptNode* createClassWithoutInherit(TemplateStatsNode* templateStats);
 
     ClassTemplateOptNode* copy();
     ClassTemplateOptNode* setModifiers(ModifiersNode* modifiers);

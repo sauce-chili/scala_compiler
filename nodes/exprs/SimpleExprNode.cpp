@@ -41,6 +41,28 @@ SimpleExprNode* SimpleExprNode::createSimpleExpr1Node(SimpleExpr1Node* simpleExp
     return node;
 }
 
+SimpleExprNode *SimpleExprNode::copy() {
+    SimpleExprNode* node = new SimpleExprNode();
+    node->type = type;
+
+    if (fullId) {
+        node->fullId = fullId->copy();
+    }
+    if (arguments) {
+        node->arguments = arguments->copy();
+    }
+    if (simpleType) {
+        node->simpleType = simpleType->copy();
+    }
+    if (blockStats) {
+        node->blockStats = blockStats->copy();
+    }
+    if (simpleExpr1) {
+        node->simpleExpr1 = simpleExpr1->copy();
+    }
+    return node;
+}
+
 string SimpleExprNode::toDot() const {
     string dot;
 
@@ -57,3 +79,14 @@ string SimpleExprNode::toDot() const {
 string SimpleExprNode::getDotLabel() const {
     return simpleExprToString(type);
 }
+
+list<Node *> SimpleExprNode::getChildren() const {
+    list<Node *> children = {};
+    addChildIfNotNull(children, fullId);
+    addChildIfNotNull(children, blockStats);
+    addChildIfNotNull(children, simpleExpr1);
+    addChildIfNotNull(children, arguments);
+    addChildIfNotNull(children, simpleType);
+    return children;
+}
+

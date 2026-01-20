@@ -28,26 +28,25 @@ string TemplateDefNode::getDotLabel() const {
 TemplateDefNode * TemplateDefNode::setModifiers(ModifiersNode *modifiers) {
     if (classDef) {
         classDef->setModifiers(modifiers);
-    } else if (classTemplateOpt) {
-        classTemplateOpt->setModifiers(modifiers);
-    } else if (traitTemplateOpt) {
-        traitTemplateOpt->setModifiers(modifiers);
-    } else if (enumDef) {
-        enumDef->setModifiers(modifiers);
     }
 
     return this;
 }
 
+TemplateDefNode *TemplateDefNode::copy() {
+    TemplateDefNode* node = new TemplateDefNode();
+    node->type = type;
+
+    if (classDef) {
+        node->classDef = classDef->copy();
+    }
+
+    return node;
+}
+
 ModifiersNode * TemplateDefNode::getModifiers() const {
     if (classDef) {
         return classDef->modifiers;
-    } else if (classTemplateOpt) {
-        return classTemplateOpt->modifiers;
-    } else if (traitTemplateOpt) {
-        return traitTemplateOpt->modifiers;
-    } else if (enumDef) {
-        return enumDef->modifiers;
     }
 
     return nullptr;
@@ -56,10 +55,7 @@ ModifiersNode * TemplateDefNode::getModifiers() const {
 std::list<Node*> TemplateDefNode::getChildren() const {
     std::list<Node*> children;
     addChildIfNotNull(children, classDef);
-    addChildIfNotNull(children, fullId);
-    addChildIfNotNull(children, classTemplateOpt);
-    addChildIfNotNull(children, traitTemplateOpt);
-    addChildIfNotNull(children, enumDef);
+
     return children;
 }
 

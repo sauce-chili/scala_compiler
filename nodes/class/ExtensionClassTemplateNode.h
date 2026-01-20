@@ -9,16 +9,18 @@
 class ExtensionClassTemplateNode: public Node {
 public:
     ClassExtensionTemplateType type;
-    IdNode* idNode;
+    IdNode* fullId;
     ArgumentExprsNode* argumentExprs;
     TemplateStatsNode* templateStats;
 
     ExtensionClassTemplateNode();
 
-    static ExtensionClassTemplateNode* createExtendWithConstrAndBody(IdNode* idNode, ArgumentExprsNode* argumentExprs, TemplateStatsNode* templateStats);
-    static ExtensionClassTemplateNode* createExtendWithBody(IdNode* idNode, TemplateStatsNode* templateStats);
-    static ExtensionClassTemplateNode* createExtendWithConstr(IdNode* idNode, ArgumentExprsNode* argumentExprs);
-    static ExtensionClassTemplateNode* createEmptyExtend(IdNode* idNode);
+    static ExtensionClassTemplateNode* createExtendWithConstrAndBody(IdNode* fullId, ArgumentExprsNode* argumentExprs, TemplateStatsNode* templateStats);
+    static ExtensionClassTemplateNode* createExtendWithBody(IdNode* fullId, TemplateStatsNode* templateStats);
+    static ExtensionClassTemplateNode* createExtendWithConstr(IdNode* fullId, ArgumentExprsNode* argumentExprs);
+    static ExtensionClassTemplateNode* createEmptyExtend(IdNode* fullId);
+
+    ExtensionClassTemplateNode* copy();
 
     string toDot() const override;
     string getDotLabel() const override;

@@ -4,6 +4,7 @@ DefNode::DefNode() {
     varDefs = nullptr;
     funDef = nullptr;
     modifiers = nullptr;
+    primaryConstructor = nullptr;
 }
 
 DefNode *DefNode::createVarDefs(VarDefsNode *varDefs) {
@@ -17,6 +18,13 @@ DefNode *DefNode::createFunDef(FunDefNode *funDef) {
     DefNode* node = new DefNode();
     node->type = _FUN_DEFINITION;
     node->funDef = funDef;
+    return node;
+}
+
+DefNode *DefNode::createPrimaryConstructor(PrimaryConstructorNode *primaryConstructor) {
+    DefNode* node = new DefNode();
+    node->type = _PRIMARY_CONSTRUCTOR;
+    node->primaryConstructor = primaryConstructor;
     return node;
 }
 
@@ -48,6 +56,7 @@ string DefNode::toDot() const {
     addDotNode(dot);
     addDotChild(dot, varDefs, "varDefs_");
     addDotChild(dot, funDef, "funDef_");
+    addDotChild(dot, primaryConstructor, "primaryConstructor_");
 
     return dot;
 }

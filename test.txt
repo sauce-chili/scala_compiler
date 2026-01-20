@@ -1,3 +1,8 @@
-object Backoff {
-    val a = 5
+private class MyClass (private override val x: Char, val y: Int) extends A(x) {
+    protected override val z: Unit = 10
+    val d: Double
+
+    abstract private def myFunc(): Unit = {
+        return;
+    }
 }

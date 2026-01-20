@@ -3,19 +3,19 @@
 
 ClassTemplateOptNode::ClassTemplateOptNode() {
     templateStats = nullptr;
-    classParents  = nullptr;
+    extensionPartClassTemplate  = nullptr;
     modifiers = nullptr;
 }
 
 ClassTemplateOptNode* ClassTemplateOptNode::addFuncParamToBackToList(ExtensionClassTemplateNode* classTemplate, TemplateStatsNode* templateStats) {
     ClassTemplateOptNode* node = new ClassTemplateOptNode();
+    node->extensionPartClassTemplate = classTemplate;
     node->templateStats = templateStats;
     return node;
 }
 
-ClassTemplateOptNode *ClassTemplateOptNode::createClassTemplate(ClassParentsNode *classParents, TemplateStatsNode *templateStats) {
+ClassTemplateOptNode *ClassTemplateOptNode::createClassWithoutInherit(TemplateStatsNode *templateStats) {
     ClassTemplateOptNode* node = new ClassTemplateOptNode();
-    node->classParents = classParents;
     node->templateStats = templateStats;
     return node;
 }
@@ -23,8 +23,8 @@ ClassTemplateOptNode *ClassTemplateOptNode::createClassTemplate(ClassParentsNode
 ClassTemplateOptNode *ClassTemplateOptNode::copy() {
     ClassTemplateOptNode* node = new ClassTemplateOptNode();
 
-    if (classParents) {
-        node->classParents = classParents->copy();
+    if (extensionPartClassTemplate) {
+        node->extensionPartClassTemplate = extensionPartClassTemplate->copy();
     }
     if (templateStats) {
         node->templateStats = templateStats->copy();
@@ -38,7 +38,7 @@ string ClassTemplateOptNode::toDot() const {
 
     addDotNode(dot);
     addDotChild(dot, templateStats, "templateStats_");
-    addDotChild(dot, classParents, "classParents_");
+    addDotChild(dot, extensionPartClassTemplate, "extension part of class_");
 
     return dot;
 }
@@ -49,7 +49,7 @@ string ClassTemplateOptNode::getDotLabel() const {
 
 list<Node *> ClassTemplateOptNode::getChildren() const {
     list<Node *> children = {};
-    addChildIfNotNull(children, classParents);
+    addChildIfNotNull(children, extensionPartClassTemplate);
     addChildIfNotNull(children, templateStats);
     return children;
 }

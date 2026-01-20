@@ -20,11 +20,11 @@ SimpleTypeNode *SimpleTypeNode::createSimpleTypeNode(SimpleTypeNode *simpleType)
 SimpleTypeNode *SimpleTypeNode::copy() {
     SimpleTypeNode* node = new SimpleTypeNode();
 
-    if (stableId) {
-        node->stableId = stableId->copy();
+    if (fullId) {
+        node->fullId = fullId->copy();
     }
-    if (compoundType) {
-        node->compoundType = compoundType->copy();
+    if (simpleType) {
+        node->simpleType = simpleType->copy();
     }
 
     return node;
@@ -46,7 +46,7 @@ string SimpleTypeNode::getDotLabel() const {
 
 list<Node *> SimpleTypeNode::getChildren() const {
     list<Node *> children = {};
-    addChildIfNotNull(children, stableId);
-    addChildIfNotNull(children, compoundType);
+    addChildIfNotNull(children, fullId);
+    addChildIfNotNull(children, simpleType);
     return children;
 }

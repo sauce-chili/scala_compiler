@@ -44,8 +44,8 @@ DclNode *DclNode::copy() {
     if (ids) {
         node->ids = ids->copy();
     }
-    if (compoundType) {
-        node->compoundType = compoundType->copy();
+    if (simpleType) {
+        node->simpleType = simpleType->copy();
     }
     if (funSig) {
         node->funSig = funSig->copy();
@@ -84,7 +84,7 @@ list<Node *> DclNode::getChildren() const {
     list<Node *> children = {};
     addChildIfNotNull(children, modifiers);
     addChildIfNotNull(children, ids);
-    addChildIfNotNull(children, compoundType);
+    addChildIfNotNull(children, simpleType);
     addChildIfNotNull(children, funSig);
     return children;
 }

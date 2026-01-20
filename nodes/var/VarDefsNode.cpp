@@ -59,7 +59,7 @@ string VarDefsNode::getDotLabel() const {
 list<Node *> VarDefsNode::getChildren() const {
     list<Node *> children = {};
     addChildIfNotNull(children, ids);
-    addChildIfNotNull(children, compoundType);
+    addChildIfNotNull(children, simpleType);
     addChildIfNotNull(children, expr);
     return children;
 }

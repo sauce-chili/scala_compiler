@@ -15,8 +15,8 @@ ConstrInvokeNode *ConstrInvokeNode::createConstrInvokeNode(IdNode* fullId, Argum
 ConstrInvokeNode *ConstrInvokeNode::copy() {
     ConstrInvokeNode* node = new ConstrInvokeNode();
 
-    if (stableId) {
-        node->stableId = stableId->copy();
+    if (fullId) {
+        node->fullId = fullId->copy();
     }
     if (arguments) {
         node->arguments = arguments->copy();
@@ -41,7 +41,7 @@ string ConstrInvokeNode::getDotLabel() const {
 
 list<Node *> ConstrInvokeNode::getChildren() const {
     std::list<Node *> children = {};
-    addChildIfNotNull(children, stableId);
+    addChildIfNotNull(children, fullId);
     addChildIfNotNull(children, arguments);
     return children;
 }

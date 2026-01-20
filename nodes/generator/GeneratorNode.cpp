@@ -19,8 +19,8 @@ GeneratorNode *GeneratorNode::copy() {
     if (fullId) {
         node->fullId = fullId->copy();
     }
-    if (compoundType) {
-        node->compoundType = compoundType->copy();
+    if (simpleType) {
+        node->simpleType = simpleType->copy();
     }
     if (expr) {
         node->expr = expr->copy();
@@ -46,7 +46,7 @@ string GeneratorNode::getDotLabel() const {
 list<Node *> GeneratorNode::getChildren() const {
     list<Node *> children = {};
     addChildIfNotNull(children, fullId);
-    addChildIfNotNull(children, compoundType);
+    addChildIfNotNull(children, simpleType);
     addChildIfNotNull(children, expr);
     return children;
 }
