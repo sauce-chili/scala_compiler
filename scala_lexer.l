@@ -78,9 +78,6 @@ whitespace [ \t\f\u000B]
 "Array"     { return processor.onToken(ARRAY); }
 
 "class"     { return processor.onToken(CLASS); }
-"trait"     { return processor.onToken(TRAIT); }
-"object"    { return processor.onToken(OBJECT); }
-"enum"      { return processor.onToken(ENUM); }
 
 "abstract"  { return processor.onToken(ABSTRACT); }
 "final"     { return processor.onToken(FINAL); }
@@ -100,14 +97,8 @@ whitespace [ \t\f\u000B]
 "for"       { return processor.onToken(FOR); }
 "yield"     { return processor.onToken(YIELD); }
 "case"      { return processor.onToken(CASE); }
-"try"       { return processor.onToken(TRY); }
-"catch"     { return processor.onToken(CATCH); }
-"finally"   { return processor.onToken(FINALLY); }
-"throw"     { return processor.onToken(THROW); }
 "return"    { return processor.onToken(RETURN); }
-
 "extends"   { return processor.onToken(EXTENDS); }
-"with"      { return processor.onToken(WITH); }
 
 "new"       { return processor.onToken(NEW); }
 "super"     { return processor.onToken(SUPER); }

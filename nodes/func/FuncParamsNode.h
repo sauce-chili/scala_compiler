@@ -7,7 +7,9 @@
 #include "semantic/scopes/Scope.h"
 #include "../class/ClassParamsNode.h"
 
-class FuncParamsNode : public Node {
+#include <list>
+
+class FuncParamsNode: public Node {
 public:
     std::list<FuncParamNode *> *funcParams;
     Scope* argsScope; // должен быть тип  METHOD_ARGS

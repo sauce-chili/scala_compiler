@@ -4,15 +4,26 @@
 #include "SimpleExpr1Node.h"
 
 SimpleExprNode::SimpleExprNode() {
-    constr = nullptr;
+    fullId = nullptr;
+    arguments = nullptr;
+    simpleType = nullptr;
     blockStats = nullptr;
     simpleExpr1 = nullptr;
 }
 
-SimpleExprNode* SimpleExprNode::createConstrInvokeNode(ConstrInvokeNode* constr) {
+SimpleExprNode *SimpleExprNode::createNewObjectNode(IdNode *fullId, ArgumentExprsNode *arguments) {
     SimpleExprNode* node = new SimpleExprNode();
     node->type = _INSTANCE_CREATING;
-    node->constr = constr;
+    node->fullId = fullId;
+    node->arguments = arguments;
+    return node;
+}
+
+SimpleExprNode *SimpleExprNode::createNewArrayNode(SimpleTypeNode *simpleType, ArgumentExprsNode *arguments) {
+    SimpleExprNode* node = new SimpleExprNode();
+    node->type = _ARRAY_CREATING;
+    node->simpleType = simpleType;
+    node->arguments = arguments;
     return node;
 }
 
@@ -30,19 +41,18 @@ SimpleExprNode* SimpleExprNode::createSimpleExpr1Node(SimpleExpr1Node* simpleExp
     return node;
 }
 
-SimpleExprNode *SimpleExprNode::createArrayCreatingNode(SimpleExpr1Node *simpleExpr1) {
-    SimpleExprNode* node = new SimpleExprNode();
-    node->type = _ARRAY_CREATING;
-    node->simpleExpr1 = simpleExpr1;
-    return node;
-}
-
 SimpleExprNode *SimpleExprNode::copy() {
     SimpleExprNode* node = new SimpleExprNode();
     node->type = type;
 
-    if (constr) {
-        node->constr = constr->copy();
+    if (fullId) {
+        node->fullId = fullId->copy();
+    }
+    if (arguments) {
+        node->arguments = arguments->copy();
+    }
+    if (simpleType) {
+        node->simpleType = simpleType->copy();
     }
     if (blockStats) {
         node->blockStats = blockStats->copy();
@@ -57,7 +67,9 @@ string SimpleExprNode::toDot() const {
     string dot;
 
     addDotNode(dot);
-    addDotChild(dot, constr, "constr invoke");
+    addDotChild(dot, fullId, "new object's type");
+    addDotChild(dot, arguments, "arguments");
+    addDotChild(dot, simpleType, "type of array");
     addDotChild(dot, blockStats, "block statements");
     addDotChild(dot, simpleExpr1, "simple expr 1");
 
@@ -70,9 +82,11 @@ string SimpleExprNode::getDotLabel() const {
 
 list<Node *> SimpleExprNode::getChildren() const {
     list<Node *> children = {};
-    addChildIfNotNull(children, constr);
+    addChildIfNotNull(children, fullId);
     addChildIfNotNull(children, blockStats);
     addChildIfNotNull(children, simpleExpr1);
+    addChildIfNotNull(children, arguments);
+    addChildIfNotNull(children, simpleType);
     return children;
 }
 

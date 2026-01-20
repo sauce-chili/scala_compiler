@@ -3,19 +3,18 @@
 
 
 #include "../Node.h"
-#include "../class/ClassParentsNode.h"
-#include "../templates/TemplateStatsNode.h"
+#include "../class/ExtensionClassTemplateNode.h"
 
 class ClassTemplateOptNode: public Node {
 public:
+    ExtensionClassTemplateNode* extensionPartClassTemplate;
     TemplateStatsNode* templateStats;
-    ClassParentsNode* classParents;
     ModifiersNode* modifiers;
 
     ClassTemplateOptNode();
 
-    static ClassTemplateOptNode* addFuncParamToBackToList(TemplateStatsNode* templateStats);
-    static ClassTemplateOptNode* createClassTemplate(ClassParentsNode* classParents, TemplateStatsNode* templateStats);
+    static ClassTemplateOptNode* addFuncParamToBackToList(ExtensionClassTemplateNode* classTemplate, TemplateStatsNode* templateStats);
+    static ClassTemplateOptNode* createClassWithoutInherit(TemplateStatsNode* templateStats);
 
     ClassTemplateOptNode* copy();
     ClassTemplateOptNode* setModifiers(ModifiersNode* modifiers);

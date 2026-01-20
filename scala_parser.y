@@ -36,13 +36,9 @@
     ClassDefNode* classDef;
     ClassParamNode* classParam;
     ClassParamsNode* classParams;
-    ClassParentsNode* classParents;
+    ExtensionClassTemplateNode* extensionClassTemplate;
     DclNode* dcl;
     DefNode* def;
-    EnumCaseNode* enumCase;
-    EnumDefNode* enumDef;
-    EnumStatNode* enumStat;
-    EnumStatsNode* enumStats;
     ArgumentExprsNode* argumentExprs;
     AssignmentNode* assignment;
     ConstrExprNode* constrExpr;
@@ -61,7 +57,6 @@
     GeneratorNode* generator;
     IdNode* id;
     IdsNode* ids;
-    StableIdNode* stableId;
     ModifierNode* modifier;
     ModifiersNode* modifiers;
     BlockStatNode* blockStat;
@@ -69,16 +64,12 @@
     TopStatNode* topStat;
     TopStatSeqNode* topStatSeq;
     ClassTemplateOptNode* classTemplateOpt;
-    EnumTemplateNode* enumTemplate;
-    TemplateDefNode* tmplDef;
     TemplateStatNode* templateStat;
     TemplateStatsNode* templateStats;
-    TraitTemplateNode* traitTemplate;
-    TraitTemplateOptNode* traitTemplateOpt;
-    CompoundTypeNode* compoundType;
     SimpleTypeNode* simpleType;
     SimpleTypesNode* simpleTypes;
     VarDefsNode* varDefs;
+    TemplateDefNode* tmplDef;
 }
 
 
@@ -86,14 +77,13 @@
 
 %token IF ELSE
 %token FOR WHILE DO
-%token TRY CATCH FINALLY LEFT_ARROW
+%token LEFT_ARROW
 %token YIELD
 %token THROW
 %token VAL VAR
 %token NEW
 %token RETURN
-%token CLASS OBJECT DEF TRAIT ENUM
-%token WITH
+%token CLASS OBJECT DEF
 %token THIS SUPER
 
 %token PRIVATE PROTECTED OVERRIDE ABSTRACT FINAL SEALED EXTENDS
@@ -114,7 +104,7 @@
 
 %nonassoc LOW_PREC
 %nonassoc RETURN IF FOR NL
-%nonassoc ELSE WHILE DO TRY THROW VAL VAR NEW YIELD MATCH CASE
+%nonassoc ELSE WHILE DO VAL VAR NEW YIELD MATCH CASE
 %right '=' PLUS_ASSIGNMENT MINUS_ASSIGNMENT MUL_ASSIGNMENT DIV_ASSIGNMENT MOD_ASSIGNMENT
 %left '|' ID_VERTICAL_SIGN
 %left '^' ID_CIRCUMFLEX
@@ -131,8 +121,6 @@
 %left '.'
 %nonassoc ':'
 %nonassoc '(' '['
-%nonassoc CATCH
-%nonassoc FINALLY
 %nonassoc END_TEMPLATE
 
 %type <topStatSeq> topStatSeq
@@ -141,15 +129,13 @@
 %type <enumerators> enumerators
 %type <enumeratorPart> enumeratorPart
 %type <generator> generator
-%type <compoundType> compoundTypeO compoundType
 %type <infixExpr> infixExpr
 %type <prefixExpr> prefixExpr
 %type <simpleExpr> simpleExpr
 %type <simpleExpr1> simpleExpr1 literal
 %type <argumentExprs> argumentExprs
 %type <exprs> exprs
-%type <simpleType> simpleType
-%type <stableId> stableId
+%type <simpleType> simpleType simpleTypeO
 %type <blockStats> blockStats
 %type <blockStat> blockStat
 %type <ids> ids
@@ -167,20 +153,12 @@
 %type <def> def
 %type <funDef> funDef
 %type <constrExpr> constrExpr
-%type <tmplDef> tmplDef
 %type <classDef> classDef
-%type <enumDef> enumDef
 %type <classTemplateOpt> classTemplateOpt
-%type <traitTemplateOpt> traitTemplateOpt
-%type <enumTemplate> enumTemplate
-%type <classParents> classParents
-%type <traitTemplate> traitTemplate
-%type <enumStats> enumStats enumBody
-%type <enumStat> enumStat
-%type <enumCase> enumCase
+%type <extensionClassTemplate> extensionClassTemplate
 %type <topStat> topStat
-%type <simpleTypes> simpleTypes
 %type <id> fullID
+%type <tmplDef> tmplDef
 
 
 %start scalaFile
@@ -195,7 +173,6 @@ expr: IF '(' expr ')' nls expr ELSE expr { $$ = ExprNode::createIfElse($3, $6, $
     | IF '(' expr ')' nls expr           	{ $$ = ExprNode::createIf($3, $6); }
     | WHILE '(' expr ')' nls expr              { $$ = ExprNode::createWhile($3, $6); }
     | DO expr semio WHILE '(' expr ')'         { $$ = ExprNode::createDoWhile($2, $6); }
-    | THROW expr                               { $$ = ExprNode::createThrow($2); }
     | RETURN                                   { $$ = ExprNode::createReturn(); }
     | RETURN expr                              { $$ = ExprNode::createReturnExpr($2); }
     | FOR '(' enumerators ')' nls expr         { $$ = ExprNode::createFor($3, $6); }
@@ -216,14 +193,14 @@ enumerators: generator                       { $$ = new EnumeratorsNode($1); }
            ;
 
 enumeratorPart: generator                     { $$ = EnumeratorPartNode::createGeneratorEnumeratorPart($1); }
-              | fullID compoundTypeO '=' expr { $$ = EnumeratorPartNode::createVarDefEnumeratorPart($1, $2, $4); } // определение переменной
+              | fullID simpleTypeO '=' expr { $$ = EnumeratorPartNode::createVarDefEnumeratorPart($1, $2, $4); } // определение переменной
               ;
 
-generator: fullID compoundTypeO LEFT_ARROW expr { $$ = GeneratorNode::createGenerator($1, $2, $4); }
+generator: fullID simpleTypeO LEFT_ARROW expr { $$ = GeneratorNode::createGenerator($1, $2, $4); }
          ;
 
-compoundTypeO: /* empty */                { $$ = nullptr; }
-          | ':' compoundType              { $$ = $2; }
+simpleTypeO: /* empty */                { $$ = nullptr; }
+          | ':' simpleType              { $$ = $2; }
           ;
 
 infixExpr: prefixExpr { $$ = InfixExprNode::createInfixFromPrefix($1); }
@@ -275,10 +252,8 @@ prefixExpr: simpleExpr { $$ = PrefixExprNode::createPrefixExprNode($1, _NO_UNARY
           | '!' simpleExpr %prec ULOGNOT { $$ = PrefixExprNode::createPrefixExprNode($2, _NOT); }
           ;
 
-simpleExpr: NEW stableId argumentExprs { $$ = SimpleExprNode::createConstrInvokeNode(ConstrInvokeNode::createConstrInvokeNode($2, $3)); } // (бывший constrInvoke)
-	  | NEW stableId { $$ = SimpleExprNode::createConstrInvokeNode(ConstrInvokeNode::createConstrInvokeNode($2, nullptr)); } // (бывший constrInvoke)
-	  | NEW ARRAY '[' compoundType ']' argumentExprs { $$ = SimpleExprNode::createArrayCreatingNode(SimpleExpr1Node::createArrayWithTypeBuilderNode($4, $6)); }
-	  | NEW ARRAY argumentExprs { $$ = SimpleExprNode::createArrayCreatingNode(SimpleExpr1Node::createArrayBuilderNode($3)); } // argumentExprs принимает только 1 аргумент (размер массива)
+simpleExpr: NEW fullID argumentExprs { $$ = SimpleExprNode::createNewObjectNode($2, $3); } // (бывший constrInvoke)
+	  | NEW ARRAY '[' simpleType ']' argumentExprs { $$ = SimpleExprNode::createNewArrayNode($4, $6); }
           | '{' blockStats '}' { $$ = SimpleExprNode::createBlockStatsNode($2); } // бывший blockExpr
           | simpleExpr1        { $$ = SimpleExprNode::createSimpleExpr1Node($1); }
           ;
@@ -292,7 +267,7 @@ simpleExpr1: literal                   { $$ = $1; }
            | '(' expr ')'              { $$ = SimpleExpr1Node::createArgumentCallNode($2); }
            | '(' ')'                   { $$ = SimpleExpr1Node::createEmptyCallNode(); }
            | simpleExpr1 argumentExprs { $$ = SimpleExpr1Node::createMethodCallNode($1, $2); } // вызов метода
-           | ARRAY '[' compoundType ']' argumentExprs { $$ = SimpleExpr1Node::createArrayWithTypeBuilderNode($3, $5); }
+           | ARRAY '[' simpleType ']' argumentExprs { $$ = SimpleExpr1Node::createArrayWithTypeBuilderNode($3, $5); }
            | ARRAY argumentExprs       {$$ = SimpleExpr1Node::createArrayBuilderNode($2); }
            ;
 
@@ -304,19 +279,9 @@ exprs: /* empty */    { $$ = new ExprsNode(); }
      | exprs ',' expr { $$ = ExprsNode::addExprToList($1, $3); }
      ;
 
-compoundType: simpleType                   { $$ = CompoundTypeNode::addStableId(nullptr, $1); }
-            | compoundType WITH simpleType { $$ = CompoundTypeNode::addStableId($1, $3); }
-            ;
-
-simpleType: stableId                   { $$ = SimpleTypeNode::createStableIdNode($1); }
-          | ARRAY '[' compoundType ']' { $$ = SimpleTypeNode::createArrayWithCompoundTypeNode($3); }
+simpleType: fullID                   { $$ = SimpleTypeNode::createIdTypeNode($1); }
+          | ARRAY '[' simpleType ']' { $$ = SimpleTypeNode::createSimpleTypeNode($3); }
           ;
-
-stableId: fullID              { $$ = StableIdNode::createStableIdByFullId($1); }
-        | SUPER '.' fullID    { $$ = StableIdNode::createSuperCallStableId($3); }
-        | THIS '.' fullID     { $$ = StableIdNode::createThisCallStableIdBy($3); }
-        | stableId '.' fullID { $$ = StableIdNode::createRecursiveStableId($1, $3); }
-        ;
 
 blockStats: blockStat                 { $$ = BlockStatsNode::addBlockStatToList(nullptr, $1); }
           | blockStats semi blockStat { $$ = BlockStatsNode::addBlockStatToList($1, $3); }
@@ -342,7 +307,7 @@ funcParams: funcParam                { $$ = FuncParamsNode::addFuncParamToList(n
           | funcParams ',' funcParam { $$ = FuncParamsNode::addFuncParamToList($1, $3); }
           ;
 
-funcParam: fullID compoundType { $$ = FuncParamNode::createFuncParam($1, $2); }
+funcParam: fullID ':' simpleType { $$ = FuncParamNode::createFuncParam($1, $3); } // TODO ПРОВЕРИТЬ, ДВОЕТОЧИЯ НЕ БЫЛО
          ;
 
 /* --------------------- FUNC --------------------- */
@@ -357,8 +322,8 @@ classParams: classParam                 { $$ = ClassParamsNode::addClassParamToL
            | classParams ',' classParam { $$ = ClassParamsNode::addClassParamToList($1, $3); }
            ;
 
-classParam: modifiers VAL fullID ':' compoundType { $$ = ClassParamNode::createClassParam(_VAL_CLASS_PARAM, $1, $3, $5); }
-          | modifiers VAR fullID ':' compoundType { $$ = ClassParamNode::createClassParam(_VAR_CLASS_PARAM, $1, $3, $5); }
+classParam: modifiers VAL fullID ':' simpleType { $$ = ClassParamNode::createClassParam(_VAL_CLASS_PARAM, $1, $3, $5); }
+          | modifiers VAR fullID ':' simpleType { $$ = ClassParamNode::createClassParam(_VAR_CLASS_PARAM, $1, $3, $5); }
           ;
 
 modifiers: /* empty */        { $$ = new ModifiersNode(); }
@@ -381,7 +346,7 @@ accessModifier: PRIVATE   { $$ = ModifierNode::createModifier(_PRIVATE); }
 templateBody: nlo '{' templateStats '}' { $$ = TemplateStatsNode::addFuncParamToFrontToList($3, nullptr); }
             ;
 
-templateStats: templateStat                     { $$ = TemplateStatsNode::addFuncParamToBackToList(nullptr, $1);; }
+templateStats: templateStat                     { $$ = TemplateStatsNode::addFuncParamToBackToList(nullptr, $1); }
              | templateStats semi templateStat  { $$ = TemplateStatsNode::addFuncParamToBackToList($1, $3); }
              ;
 
@@ -392,9 +357,9 @@ templateStat: /* empty */   { $$ = nullptr; }
 
 /* --------------------- DECL --------------------- */
 
-dcl: VAL ids ':' compoundType { $$ = DclNode::createValDcl($2, $4); }
-   | VAR ids ':' compoundType { $$ = DclNode::createVarDcl($2, $4); }
-   | DEF funSig compoundTypeO { $$ = DclNode::createDefDcl($2, $3); }
+dcl: VAL ids ':' simpleType { $$ = DclNode::createValDcl($2, $4); }
+   | VAR ids ':' simpleType { $$ = DclNode::createVarDcl($2, $4); }
+   | DEF funSig simpleTypeO { $$ = DclNode::createDefDcl($2, $3); }
    ;
 
 funSig: fullID funcParamClause { $$ = FunSigNode::createFunSig($1, $2); }
@@ -404,16 +369,15 @@ funSig: fullID funcParamClause { $$ = FunSigNode::createFunSig($1, $2); }
 
 /* --------------------- DEFS --------------------- */
 
-varDefs: VAL ids compoundTypeO '=' expr { $$ = VarDefsNode::createVal($2, $3, $5); }
-       | VAR ids compoundTypeO '=' expr { $$ = VarDefsNode::createVar($2, $3, $5); }
+varDefs: VAL ids simpleTypeO '=' expr { $$ = VarDefsNode::createVal($2, $3, $5); }
+       | VAR ids simpleTypeO '=' expr { $$ = VarDefsNode::createVar($2, $3, $5); }
        ;
 
 def: varDefs    { $$ = DefNode::createVarDefs($1); }
    | DEF funDef { $$ = DefNode::createFunDef($2); }
-//   | tmplDef    { $$ = DefNode::createTmplDef($1); } // запрещает вложенные классы, трейты, перечисоения, имбо мы ебали возиться ещё и с их скоупами и таблицами
    ;
 
-funDef: funSig compoundTypeO '=' expr       { $$ = FunDefNode::createFunSigFunDef($1, $2, $4); }
+funDef: funSig simpleTypeO '=' expr       { $$ = FunDefNode::createFunSigFunDef($1, $2, $4); }
       | THIS funcParamClause '=' constrExpr { $$ = FunDefNode::createThisConstrCallFunDef($2, $4); }
       ;
 
@@ -422,10 +386,7 @@ constrExpr: THIS argumentExprs { $$ = ConstrExprNode::createConstrExpr($2, nullp
           | '{' THIS argumentExprs '}' { $$ = ConstrExprNode::createConstrExpr($3, nullptr, true); }
           ;
 
-tmplDef: CLASS classDef                 { $$ = TemplateDefNode::createClassDef($2); }
-       | OBJECT fullID classTemplateOpt { $$ = TemplateDefNode::createObjectDef($2, $3); }
-       | TRAIT fullID traitTemplateOpt  { $$ = TemplateDefNode::createTraitDef($2, $3); }
-       | ENUM enumDef                   { $$ = TemplateDefNode::createEnumDef($2); }
+tmplDef: CLASS classDef { $$ = TemplateDefNode::createClassDef($2); }
        ;
 
 classDef: fullID accessModifier classParamClause classTemplateOpt { $$ = ClassDefNode::createClassDef($1, $2, $3, $4); }
@@ -433,61 +394,23 @@ classDef: fullID accessModifier classParamClause classTemplateOpt { $$ = ClassDe
         | fullID classTemplateOpt                                 { $$ = ClassDefNode::createClassDef($1, nullptr, nullptr, $2); }
         ;
 
-enumDef: fullID accessModifier classParamClause enumTemplate { $$ = EnumDefNode::createWithAccessModifier($1, $2, $3, $4); }
-       | fullID classParamClause enumTemplate                { $$ = EnumDefNode::createWithClassParams($1, $2, $3); }
-       | fullID enumTemplate                                 { $$ = EnumDefNode::createEnumTemplate($1, $2 ); }
-       ;
-
-classTemplateOpt: /* empty */ %prec LOW_PREC { $$ = nullptr; }
-                | templateBody               { $$ = ClassTemplateOptNode::addFuncParamToBackToList($1); }
-	        | EXTENDS classParents %prec END_TEMPLATE { $$ = ClassTemplateOptNode::createClassTemplate($2, nullptr); }
-	        | EXTENDS classParents templateBody { $$ = ClassTemplateOptNode::createClassTemplate($2, $3); }
+classTemplateOpt: /* empty */ %prec LOW_PREC     { $$ = nullptr; } // TODO Мб тоже под нож
+                | EXTENDS extensionClassTemplate { $$ = ClassTemplateOptNode::addFuncParamToBackToList($2, nullptr); }
+                | templateBody                   { $$ = ClassTemplateOptNode::addFuncParamToBackToList(nullptr, $1); }
                 ;
 
-traitTemplateOpt: /* empty */ %prec LOW_PREC { $$ = nullptr; }
-                | EXTENDS traitTemplate      { $$ = TraitTemplateOptNode::createTraitTemplateOpt($2, nullptr); }
-                | templateBody               { $$ = TraitTemplateOptNode::createTraitTemplateOpt(nullptr, $1); }
-                ;
-
-enumTemplate: EXTENDS classParents enumBody { $$ = EnumTemplateNode::createWithClassParents($2, $3); }
-            | enumBody                      { $$ = EnumTemplateNode::createWithEnumBody($1); }
-            ;
-
-classParents: stableId argumentExprs simpleTypes { $$ = ClassParentsNode::createClassParents(ConstrInvokeNode::createConstrInvokeNode($1, $2), $3); } // (бывший constrInvoke)
-	    | stableId simpleTypes { $$ = ClassParentsNode::createClassParents(ConstrInvokeNode::createConstrInvokeNode($1, nullptr), $2); } // (бывший constrInvoke)
-	    ;
-
-traitTemplate: simpleType simpleTypes templateBody       { $$ = TraitTemplateNode::createTraitTemplate($1, $2, $3); }
-             | simpleType simpleTypes %prec END_TEMPLATE { $$ = TraitTemplateNode::createTraitTemplate($1, $2, nullptr); }
-             ;
-
-enumBody: nlo '{' enumStats '}' { $$ = $3; }
-	;
-
-enumStats: enumStat                { $$ = EnumStatsNode::addModifierToList(nullptr, $1); }
-	 | enumStats semi enumStat { $$ = EnumStatsNode::addModifierToList($1, $3); }
-	 ;
-
-enumStat: templateStat       { $$ = EnumStatNode::createWithTemplateStat($1); }
-	| modifiers enumCase { $$ = EnumStatNode::createWithEnumCase($1, $2); }
-	;
-
-enumCase: CASE fullID classParamClause EXTENDS classParents { $$ = EnumCaseNode::createClassParents(_CASE_WITH_EXTENDS, IdsNode::addIdToList(nullptr, $2), $3, $5); }
-	| CASE fullID classParamClause                      { $$ = EnumCaseNode::createClassParents(_CASE_WITH_PARAMS, IdsNode::addIdToList(nullptr, $2), $3, nullptr); }
-	| CASE fullID %prec END_TEMPLATE                    { $$ = EnumCaseNode::createClassParents(_CASE_WITH_IDS, IdsNode::addIdToList(nullptr, $2), nullptr, nullptr); }
-        | CASE ids ',' fullID                               { $$ = EnumCaseNode::createClassParents(_CASE_WITH_IDS, IdsNode::addIdToList($2, $4), nullptr, nullptr); } // Решает rr
-	;
+extensionClassTemplate: fullID argumentExprs templateBody       { $$ = ExtensionClassTemplateNode::createExtendWithConstrAndBody($1, $2, $3); }
+                      | fullID argumentExprs %prec END_TEMPLATE { $$ = ExtensionClassTemplateNode::createExtendWithConstr($1, $2); } // TODO Мб тоже под нож
+                      | fullID templateBody                     { $$ = ExtensionClassTemplateNode::createExtendWithBody($1, $2); }
+                      | fullID %prec END_TEMPLATE               { $$ = ExtensionClassTemplateNode::createEmptyExtend($1); } // TODO Мб тоже под нож
+                      ;
 
 topStatSeq: topStat                 { $$ = TopStatSeqNode::addModifierToList(nullptr, $1); }
 	  | topStatSeq semi topStat { $$ = TopStatSeqNode::addModifierToList($1, $3); }
           ;
 
-topStat: modifiers tmplDef { $$ = TopStatNode::createTopStat($1, $2); }
+topStat: modifiers tmplDef { $$ = TopStatNode::createClass($1, $2); }
        ;
-
-simpleTypes: /* empty */                 { $$ = nullptr; }
-           | simpleTypes WITH simpleType { $$ = SimpleTypesNode::addSimpleTypeToList($1, $3); }
-           ;
 
 /* --------------------- DEFS --------------------- */
 

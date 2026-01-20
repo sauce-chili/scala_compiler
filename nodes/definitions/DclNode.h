@@ -4,7 +4,6 @@
 
 #include "../Node.h"
 #include "../id/IdsNode.h"
-#include "../type/CompoundTypeNode.h"
 #include "../func/FunSigNode.h"
 #include "../modifier/ModifiersNode.h"
 
@@ -12,15 +11,15 @@ class DclNode: public Node {
 public:
     StatType type;
     IdsNode* ids;
-    CompoundTypeNode* compoundType;
+    SimpleTypeNode* simpleType;
     FunSigNode* funSig;
     ModifiersNode* modifiers;
 
     DclNode();
 
-    static DclNode* createVarDcl(IdsNode* ids, CompoundTypeNode* compoundType);
-    static DclNode* createValDcl(IdsNode* ids, CompoundTypeNode* compoundType);
-    static DclNode* createDefDcl(FunSigNode* funSig, CompoundTypeNode* compoundType);
+    static DclNode* createVarDcl(IdsNode* ids, SimpleTypeNode* simpleType);
+    static DclNode* createValDcl(IdsNode* ids, SimpleTypeNode* simpleType);
+    static DclNode* createDefDcl(FunSigNode* funSig, SimpleTypeNode* simpleType);
 
     DclNode* copy();
     bool containsVar(string name);

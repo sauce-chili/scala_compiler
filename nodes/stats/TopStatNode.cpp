@@ -4,13 +4,12 @@ TopStatNode::TopStatNode() {
     tmplDef = nullptr;
 }
 
-TopStatNode *TopStatNode::createTopStat(ModifiersNode *modifiers, TemplateDefNode *tmplDef) {
-    TopStatNode *node = new TopStatNode();
-    node->tmplDef = tmplDef;
-    node->tmplDef = tmplDef->setModifiers(modifiers);
+TopStatNode *TopStatNode::createClass(ModifiersNode *modifiers, TemplateDefNode* templateDef) {
+    TopStatNode* node = new TopStatNode();
+    node->tmplDef = templateDef;
+    node->tmplDef = templateDef->setModifiers(modifiers);
     return node;
 }
-
 
 TopStatNode *TopStatNode::copy() {
     TopStatNode* node = new TopStatNode();
@@ -26,8 +25,7 @@ string TopStatNode::toDot() const {
     string dot;
 
     addDotNode(dot);
-    // addDotChild(dot, modifiers, "modifiers_");
-    addDotChild(dot, tmplDef, "tmplDef_");
+    addDotChild(dot, tmplDef, "templateDef_");
 
     return dot;
 }

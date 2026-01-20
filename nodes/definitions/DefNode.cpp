@@ -28,6 +28,11 @@ DefNode *DefNode::createPrimaryConstructor(PrimaryConstructorNode *primaryConstr
     return node;
 }
 
+DefNode *DefNode::setModifiers(ModifiersNode *modifiers) {
+    this->modifiers = modifiers;
+    return this;
+}
+
 DefNode *DefNode::copy() {
     DefNode* node = new DefNode();
     node->type = type;
@@ -43,11 +48,6 @@ DefNode *DefNode::copy() {
     }
 
     return node;
-}
-
-DefNode *DefNode::setModifiers(ModifiersNode *modifiers) {
-    this->modifiers = modifiers;
-    return this;
 }
 
 string DefNode::toDot() const {

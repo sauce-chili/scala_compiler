@@ -7,6 +7,7 @@
 #include "nodes/func/FuncParamsNode.h"
 #include "nodes/func/FunDefNode.h"
 #include "nodes/templates/TemplateDefNode.h"
+#include "nodes/class/ClassDefNode.h"
 
 ScopeVisitor::ScopeVisitor() {
     currentScope = new Scope(nullptr, ScopeType::GLOBAL);
@@ -44,7 +45,7 @@ void ScopeVisitor::visitChildren(Node *node) {
 }
 
 void ScopeVisitor::handleClassScope(TemplateDefNode *node) {
-    std::string name = (node->fullId) ? node->fullId->name : "anon";
+    std::string name = (node->classDef->fullId) ? node->classDef->fullId->name : "anon";
 
     Scope *classScope = new Scope(currentScope, name);
     node->classScope = classScope;

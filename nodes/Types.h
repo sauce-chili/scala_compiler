@@ -113,6 +113,12 @@ enum Type {
     _UNIT
 };
 
+enum ClassExtensionTemplateType {
+    _PARENT_CONSTR_CALL_AND_THIS_BODY,
+    _THIS_BODY,
+    _PARENT_CONSTR_CALL,
+    _ONLY_PARENT_ID,
+};
 
 std::string modifierToString(ModifierType m);
 std::string simpleExpr1ToString(SimpleExpr1Type t);
@@ -124,6 +130,7 @@ std::string classParamTypeToString(ClassParamType t);
 std::string classEnumCaseTypeToString(EnumCaseType t);
 std::string definitionTypeToString(DefinitionType t);
 std::string exprTypeToString(ExprType t);
+std::string classExtensionTemplateTypeToString(ClassExtensionTemplateType t);
 
 
 #endif //SCALA_LEXER_TYPES_H

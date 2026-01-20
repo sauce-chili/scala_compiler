@@ -2,20 +2,17 @@
 #define SCALA_LEXER_SIMPLETYPENODE_H
 
 #include "../Node.h"
-#include "../id/StableIdNode.h"
-#include "CompoundTypeNode.h"
-
-class CompoundTypeNode;
+#include "../id/IdNode.h"
 
 class SimpleTypeNode: public Node {
 public:
-    StableIdNode* stableId;
-    CompoundTypeNode* compoundType;
+    IdNode* fullId;
+    SimpleTypeNode* simpleType;
 
     SimpleTypeNode();
 
-    static SimpleTypeNode* createStableIdNode(StableIdNode* stableId);
-    static SimpleTypeNode* createArrayWithCompoundTypeNode(CompoundTypeNode* compoundType);
+    static SimpleTypeNode* createIdTypeNode(IdNode* fullId);
+    static SimpleTypeNode* createSimpleTypeNode(SimpleTypeNode* simpleType);
 
     SimpleTypeNode* copy();
 

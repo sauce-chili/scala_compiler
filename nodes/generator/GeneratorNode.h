@@ -4,20 +4,20 @@
 
 #include "../Node.h"
 #include "../id/IdNode.h"
-#include "../type/CompoundTypeNode.h"
 #include "../exprs/ExprNode.h"
+#include "../type/SimpleTypeNode.h"
 
 class GeneratorNode: public Node {
 public:
     IdNode* fullId;
-    CompoundTypeNode* compoundType;
+    SimpleTypeNode* simpleType;
     ExprNode* expr;
 
     GeneratorNode();
 
     GeneratorNode* copy();
 
-    static GeneratorNode* createGenerator(IdNode* fullId, CompoundTypeNode* compoundType, ExprNode* expr);
+    static GeneratorNode* createGenerator(IdNode* fullId, SimpleTypeNode* simpleType, ExprNode* expr);
 
     string toDot() const override;
     string getDotLabel() const override;

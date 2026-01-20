@@ -12,7 +12,7 @@ public:
 
     TopStatNode();
 
-    static TopStatNode* createTopStat(ModifiersNode* modifiers, TemplateDefNode* tmplDef);
+    static TopStatNode* createClass(ModifiersNode* modifiers, TemplateDefNode* templateDef);
 
     void toFieldsFromPrimaryConstructor();
     void initializeBaseConstructorFromFields() const;

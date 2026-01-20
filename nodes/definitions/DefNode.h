@@ -5,8 +5,6 @@
 #include "../Node.h"
 #include "../var/VarDefsNode.h"
 #include "../func/FunDefNode.h"
-#include "../templates/TemplateDefNode.h"
-#include "../modifier/ModifiersNode.h"
 #include "../class/PrimaryConstructorNode.h"
 
 class DefNode: public Node {
@@ -22,15 +20,14 @@ public:
 
     DefNode();
 
-    DefNode* copy();
-
     static DefNode* createVarDefs(VarDefsNode* varDefs);
     static DefNode* createFunDef(FunDefNode* funDef);
-
     static DefNode* createPrimaryConstructor(PrimaryConstructorNode* primaryConstructor);
 
     DefNode* setModifiers(ModifiersNode* modifiers);
     bool containsVar(string name);
+
+    DefNode* copy();
 
     string toDot() const override;
     string getDotLabel() const override;
