@@ -1,24 +1,14 @@
 #include "TopStatNode.h"
 
 TopStatNode::TopStatNode() {
+    templateDef = nullptr;
     tmplDef = nullptr;
 }
 
-TopStatNode *TopStatNode::createTopStat(ModifiersNode *modifiers, TemplateDefNode *tmplDef) {
-    TopStatNode *node = new TopStatNode();
-    node->tmplDef = tmplDef;
-    node->tmplDef = tmplDef->setModifiers(modifiers);
-    return node;
-}
-
-
-TopStatNode *TopStatNode::copy() {
+TopStatNode *TopStatNode::createClass(ModifiersNode *modifiers, TemplateDefNode* templateDef) {
     TopStatNode* node = new TopStatNode();
-
-    if (tmplDef) {
-        node->tmplDef = tmplDef->copy();
-    }
-
+    node->templateDef = templateDef;
+    node->templateDef = templateDef->setModifiers(modifiers);
     return node;
 }
 
@@ -26,8 +16,7 @@ string TopStatNode::toDot() const {
     string dot;
 
     addDotNode(dot);
-    // addDotChild(dot, modifiers, "modifiers_");
-    addDotChild(dot, tmplDef, "tmplDef_");
+    addDotChild(dot, templateDef, "templateDef_");
 
     return dot;
 }

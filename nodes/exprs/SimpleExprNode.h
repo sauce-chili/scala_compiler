@@ -3,14 +3,18 @@
 
 #include "../Node.h"
 
-class ConstrInvokeNode;
+class IdNode;
+class ArgumentExprsNode;
+class SimpleTypeNode;
 class SimpleExpr1Node;
 class BlockStatsNode;
 
 class SimpleExprNode: public Node {
 public:
     SimpleExprType type;
-    ConstrInvokeNode* constr;
+    IdNode* fullId;
+    ArgumentExprsNode* arguments;
+    SimpleTypeNode* simpleType;
     BlockStatsNode* blockStats;
     SimpleExpr1Node* simpleExpr1;
 
@@ -18,10 +22,10 @@ public:
 
     SimpleExprNode* copy();
 
-    static SimpleExprNode* createConstrInvokeNode(ConstrInvokeNode* constr);
+    static SimpleExprNode* createNewObjectNode(IdNode* fullId, ArgumentExprsNode* arguments);
+    static SimpleExprNode* createNewArrayNode(SimpleTypeNode* simpleType, ArgumentExprsNode* arguments);
     static SimpleExprNode* createBlockStatsNode(BlockStatsNode* blockStats);
     static SimpleExprNode* createSimpleExpr1Node(SimpleExpr1Node* simpleExpr1);
-    static SimpleExprNode* createArrayCreatingNode(SimpleExpr1Node* simpleExpr1);
 
     string toDot() const override;
     string getDotLabel() const override;

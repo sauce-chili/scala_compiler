@@ -2,7 +2,7 @@
 #include "ArgumentExprsNode.h"
 #include "SimpleExprNode.h"
 #include "../id/IdNode.h"
-#include "../type/CompoundTypeNode.h"
+#include "../type/SimpleTypeNode.h"
 
 SimpleExpr1Node::SimpleExpr1Node() {
     intValue = 0;
@@ -16,7 +16,7 @@ SimpleExpr1Node::SimpleExpr1Node() {
     argumentExprs = nullptr;
     simpleExpr1 = nullptr;
     identifier = nullptr;
-    compoundType = nullptr;
+    simpleType = nullptr;
 }
 
 SimpleExpr1Node* SimpleExpr1Node::createIntNode(int value) {
@@ -116,11 +116,11 @@ SimpleExpr1Node *SimpleExpr1Node::createPlainThisNode() {
     return node;
 }
 
-SimpleExpr1Node *SimpleExpr1Node::createArrayWithTypeBuilderNode(CompoundTypeNode *compoundType,
+SimpleExpr1Node *SimpleExpr1Node::createArrayWithTypeBuilderNode(SimpleTypeNode *simpleType,
                                                                  ArgumentExprsNode *argumentExprs) {
     SimpleExpr1Node* node = new SimpleExpr1Node();
     node->type = _ARRAY_WITH_TYPE_BUILDER;
-    node->compoundType = compoundType;
+    node->simpleType = simpleType;
     node->argumentExprs = argumentExprs;
     return node;
 }
@@ -156,8 +156,8 @@ SimpleExpr1Node *SimpleExpr1Node::copy() {
     if (identifier) {
         node->identifier = identifier->copy();
     }
-    if (compoundType) {
-        node->compoundType = compoundType->copy();
+    if (simpleType) {
+        node->simpleType = simpleType->copy();
     }
 
     return node;
@@ -172,6 +172,7 @@ string SimpleExpr1Node::toDot() const {
     addDotChild(dot, argumentExprs, "argument exprs");
     addDotChild(dot, simpleExpr1, "simple expr 1");
     addDotChild(dot, identifier, "identifier");
+    addDotChild(dot, simpleType, "simpleType");
 
     return dot;
 }
@@ -198,6 +199,6 @@ list<Node *> SimpleExpr1Node::getChildren() const {
     addChildIfNotNull(children, argumentExprs);
     addChildIfNotNull(children, simpleExpr1);
     addChildIfNotNull(children, identifier);
-    addChildIfNotNull(children, compoundType);
+    addChildIfNotNull(children, simpleType);
     return children;
 }

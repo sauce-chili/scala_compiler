@@ -2,24 +2,24 @@
 
 VarDefsNode::VarDefsNode() {
     ids = nullptr;
-    compoundType = nullptr;
+    simpleType = nullptr;
     expr = nullptr;
 }
 
-VarDefsNode *VarDefsNode::createVal(IdsNode* ids, CompoundTypeNode* compoundType, ExprNode* expr) {
+VarDefsNode *VarDefsNode::createVal(IdsNode* ids, SimpleTypeNode* simpleType, ExprNode* expr) {
     VarDefsNode* node = new VarDefsNode();
     node->type = _VAL_DECL;
     node->ids = ids;
-    node->compoundType = compoundType;
+    node->simpleType = simpleType;
     node->expr = expr;
     return node;
 }
 
-VarDefsNode *VarDefsNode::createVar(IdsNode* ids, CompoundTypeNode* compoundType, ExprNode* expr) {
+VarDefsNode *VarDefsNode::createVar(IdsNode* ids, SimpleTypeNode* simpleType, ExprNode* expr) {
     VarDefsNode* node = new VarDefsNode();
     node->type = _VAR_DECL;
     node->ids = ids;
-    node->compoundType = compoundType;
+    node->simpleType = simpleType;
     node->expr = expr;
     return node;
 }
@@ -31,8 +31,8 @@ VarDefsNode *VarDefsNode::copy() {
     if (ids) {
         node->ids = ids->copy();
     }
-    if (compoundType) {
-        node->compoundType = compoundType->copy();
+    if (simpleType) {
+        node->simpleType = simpleType->copy();
     }
     if (expr) {
         node->expr = expr->copy();
@@ -46,7 +46,7 @@ string VarDefsNode::toDot() const {
 
     addDotNode(dot);
     addDotChild(dot, ids, "Ids");
-    addDotChild(dot, compoundType, "Compound Type");
+    addDotChild(dot, simpleType, "Simple type");
     addDotChild(dot, expr, "Expr");
 
     return dot;

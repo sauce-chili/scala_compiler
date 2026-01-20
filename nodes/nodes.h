@@ -12,7 +12,6 @@
 // ===== id =====
 #include "id/IdNode.h"
 #include "id/IdsNode.h"
-#include "id/StableIdNode.h"
 
 // ===== modifier =====
 #include "modifier/ModifierNode.h"
@@ -21,7 +20,6 @@
 // ===== type =====
 #include "type/SimpleTypeNode.h"
 #include "type/SimpleTypesNode.h"
-#include "type/CompoundTypeNode.h"
 
 // ===== exprs =====
 #include "exprs/ExprNode.h"
@@ -65,24 +63,13 @@
 #include "class/ClassDefNode.h"
 #include "class/ClassParamNode.h"
 #include "class/ClassParamsNode.h"
-#include "class/ClassParentsNode.h"
+#include "class/ExtensionClassTemplateNode.h"
 #include "class/ConstrInvokeNode.h"
-
-// ===== enum =====
-#include "enum/EnumCaseNode.h"
-#include "enum/EnumDefNode.h"
-#include "enum/EnumStatNode.h"
-#include "enum/EnumStatsNode.h"
 
 // ===== templates =====
 #include "templates/ClassTemplateOptNode.h"
-#include "templates/EnumTemplateNode.h"
 #include "templates/TemplateDefNode.h"
 #include "templates/TemplateStatNode.h"
 #include "templates/TemplateStatsNode.h"
-
-// ===== trait =====
-#include "trait/TraitTemplateNode.h"
-#include "trait/TraitTemplateOptNode.h"
 
 #endif // SCALA_LEXER_NODES_H

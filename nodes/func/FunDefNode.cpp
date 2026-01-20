@@ -2,16 +2,16 @@
 
 FunDefNode::FunDefNode() {
     funSig = nullptr;
-    compoundType = nullptr;
+    simpleType = nullptr;
     constrExpr = nullptr;
     expr = nullptr;
     funcParams = nullptr;
 }
 
-FunDefNode *FunDefNode::createFunSigFunDef(FunSigNode *funSig, CompoundTypeNode *compoundType, ExprNode *expr) {
-    FunDefNode *node = new FunDefNode();
+FunDefNode *FunDefNode::createFunSigFunDef(FunSigNode *funSig, SimpleTypeNode* simpleType, ExprNode *expr) {
+    FunDefNode* node = new FunDefNode();
     node->funSig = funSig;
-    node->compoundType = compoundType;
+    node->simpleType = simpleType;
     node->expr = expr;
     return node;
 }
@@ -29,8 +29,8 @@ FunDefNode *FunDefNode::copy() {
     if (funSig) {
         node->funSig = funSig->copy();
     }
-    if (compoundType) {
-        node->compoundType = compoundType->copy();
+    if (simpleType) {
+        node->simpleType = simpleType->copy();
     }
     if (constrExpr) {
         node->constrExpr = constrExpr->copy();
@@ -50,7 +50,7 @@ string FunDefNode::toDot() const {
 
     addDotNode(dot);
     addDotChild(dot, funSig, "funSig_");
-    addDotChild(dot, compoundType, "compoundType_");
+    addDotChild(dot, simpleType, "simpleType_");
     addDotChild(dot, expr, "expr_");
     addDotChild(dot, funcParams, "funcParams_");
     addDotChild(dot, constrExpr, "constrExpr_");
@@ -70,7 +70,7 @@ list<Node *> FunDefNode::getChildren() const {
     list<Node *> children = {};
     addChildIfNotNull(children, funSig);
     addChildIfNotNull(children, funcParams);
-    addChildIfNotNull(children, compoundType);
+    addChildIfNotNull(children, simpleType);
     addChildIfNotNull(children, expr);
     addChildIfNotNull(children, constrExpr);
     return children;

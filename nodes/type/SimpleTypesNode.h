@@ -5,6 +5,8 @@
 #include "../Node.h"
 #include "SimpleTypeNode.h"
 
+#include <list>
+
 class SimpleTypesNode: public Node {
 public:
     std::list<SimpleTypeNode*> *simpleTypes;

@@ -2,13 +2,13 @@
 
 FuncParamNode::FuncParamNode() {
     fullId = nullptr;
-    compoundType = nullptr;
+    simpleType = nullptr;
 }
 
-FuncParamNode *FuncParamNode::createFuncParam(IdNode *fullId, CompoundTypeNode *compoundType) {
-    FuncParamNode *node = new FuncParamNode();
+FuncParamNode *FuncParamNode::createFuncParam(IdNode *fullId, SimpleTypeNode* simpleType) {
+    FuncParamNode* node = new FuncParamNode();
     node->fullId = fullId;
-    node->compoundType = compoundType;
+    node->simpleType = simpleType;
     return node;
 }
 
@@ -30,7 +30,7 @@ string FuncParamNode::toDot() const {
 
     addDotNode(dot);
     addDotChild(dot, fullId, "fullId_");
-    addDotChild(dot, compoundType, "compoundType_");
+    addDotChild(dot, simpleType, "simpleType_");
 
     return dot;
 }

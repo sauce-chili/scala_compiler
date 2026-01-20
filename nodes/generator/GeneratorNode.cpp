@@ -2,14 +2,14 @@
 
 GeneratorNode::GeneratorNode() {
     fullId = nullptr;
-    compoundType = nullptr;
+    simpleType = nullptr;
     expr = nullptr;
 }
 
-GeneratorNode *GeneratorNode::createGenerator(IdNode *fullId, CompoundTypeNode *compoundType, ExprNode *expr) {
+GeneratorNode *GeneratorNode::createGenerator(IdNode *fullId, SimpleTypeNode* simpleType, ExprNode *expr) {
     GeneratorNode* node = new GeneratorNode();
     node->fullId = fullId;
-    node->compoundType = compoundType;
+    node->simpleType = simpleType;
     node->expr = expr;
     return node;
 }
@@ -33,7 +33,7 @@ string GeneratorNode::toDot() const {
 
     addDotNode(dot);
     addDotChild(dot, fullId, "fullId_");
-    addDotChild(dot, compoundType, "compoundType_");
+    addDotChild(dot, simpleType, "simpleType_");
     addDotChild(dot, expr, "expr_");
 
     return dot;

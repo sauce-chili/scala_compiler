@@ -9,7 +9,7 @@ class EnumeratorPartNode: public Node {
 public:
     GeneratorNode* generator;
     IdNode* fullId;
-    CompoundTypeNode* compoundType;
+    SimpleTypeNode* simpleType;
     ExprNode* expr;
 
     EnumeratorPartNode();
@@ -17,7 +17,7 @@ public:
     EnumeratorPartNode* copy();
 
     static EnumeratorPartNode* createGeneratorEnumeratorPart(GeneratorNode* generator);
-    static EnumeratorPartNode* createVarDefEnumeratorPart(IdNode* fullId, CompoundTypeNode* compoundType, ExprNode* expr);
+    static EnumeratorPartNode* createVarDefEnumeratorPart(IdNode* fullId, SimpleTypeNode* simpleType, ExprNode* expr);
 
     string toDot() const override;
     string getDotLabel() const override;

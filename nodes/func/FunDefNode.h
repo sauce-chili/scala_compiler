@@ -8,14 +8,14 @@
 class FunDefNode: public Node {
 public:
     FunSigNode* funSig;
-    CompoundTypeNode* compoundType;
+    SimpleTypeNode* simpleType;
     ConstrExprNode* constrExpr;
     ExprNode* expr;
     FuncParamsNode* funcParams;
 
     FunDefNode();
 
-    static FunDefNode* createFunSigFunDef(FunSigNode* funSig, CompoundTypeNode* compoundType, ExprNode* expr);
+    static FunDefNode* createFunSigFunDef(FunSigNode* funSig, SimpleTypeNode* simpleType, ExprNode* expr);
     static FunDefNode* createThisConstrCallFunDef(FuncParamsNode* funcParams, ConstrExprNode* constrExpr);
 
     FunDefNode* copy();
