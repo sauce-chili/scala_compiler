@@ -16,6 +16,7 @@ public:
     ModifiersNode* copy();
 
     static ModifiersNode* addModifierToList(ModifiersNode *list, ModifierNode *modifier);
+    //static void initializeModifiers(Node* node);
 
     string toDot() const override;
     string getDotLabel() const override;

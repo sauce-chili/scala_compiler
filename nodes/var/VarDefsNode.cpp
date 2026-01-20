@@ -46,7 +46,7 @@ string VarDefsNode::toDot() const {
 
     addDotNode(dot);
     addDotChild(dot, ids, "Ids");
-    addDotChild(dot, compoundType, "Array compound");
+    addDotChild(dot, compoundType, "Compound Type");
     addDotChild(dot, expr, "Expr");
 
     return dot;

@@ -1,8 +1,10 @@
 #include "ClassTemplateOptNode.h"
+#include "../modifier/ModifiersNode.h"
 
 ClassTemplateOptNode::ClassTemplateOptNode() {
     templateStats = nullptr;
     classParents  = nullptr;
+    modifiers = nullptr;
 }
 
 ClassTemplateOptNode* ClassTemplateOptNode::addFuncParamToBackToList(TemplateStatsNode* templateStats) {
@@ -50,5 +52,10 @@ list<Node *> ClassTemplateOptNode::getChildren() const {
     addChildIfNotNull(children, classParents);
     addChildIfNotNull(children, templateStats);
     return children;
+}
+
+ClassTemplateOptNode *ClassTemplateOptNode::setModifiers(ModifiersNode *modifiers) {
+    this->modifiers = modifiers;
+    return this;
 }
 

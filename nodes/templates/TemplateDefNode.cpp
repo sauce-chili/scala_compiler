@@ -9,7 +9,6 @@ TemplateDefNode::TemplateDefNode() {
     classTemplateOpt = nullptr;
     traitTemplateOpt = nullptr;
     enumDef = nullptr;
-    modifiers = nullptr;
 }
 
 TemplateDefNode *TemplateDefNode::createClassDef(ClassDefNode *classDef) {
@@ -74,7 +73,6 @@ string TemplateDefNode::toDot() const {
     addDotChild(dot, classTemplateOpt, "classTemplateOpt_");
     addDotChild(dot, traitTemplateOpt, "traitTemplateOpt_");
     addDotChild(dot, enumDef, "enumDef_");
-    addDotChild(dot, modifiers, "modifiers_");
 
     return dot;
 }
@@ -84,10 +82,32 @@ string TemplateDefNode::getDotLabel() const {
 }
 
 TemplateDefNode * TemplateDefNode::setModifiers(ModifiersNode *modifiers) {
-    this->modifiers = modifiers;
+    if (classDef) {
+        classDef->setModifiers(modifiers);
+    } else if (classTemplateOpt) {
+        classTemplateOpt->setModifiers(modifiers);
+    } else if (traitTemplateOpt) {
+        traitTemplateOpt->setModifiers(modifiers);
+    } else if (enumDef) {
+        enumDef->setModifiers(modifiers);
+    }
+
     return this;
 }
 
+ModifiersNode * TemplateDefNode::getModifiers() const {
+    if (classDef) {
+        return classDef->modifiers;
+    } else if (classTemplateOpt) {
+        return classTemplateOpt->modifiers;
+    } else if (traitTemplateOpt) {
+        return traitTemplateOpt->modifiers;
+    } else if (enumDef) {
+        return enumDef->modifiers;
+    }
+
+    return nullptr;
+}
 
 std::list<Node*> TemplateDefNode::getChildren() const {
     std::list<Node*> children;
@@ -96,7 +116,7 @@ std::list<Node*> TemplateDefNode::getChildren() const {
     addChildIfNotNull(children, classTemplateOpt);
     addChildIfNotNull(children, traitTemplateOpt);
     addChildIfNotNull(children, enumDef);
-    addChildIfNotNull(children, modifiers);
     return children;
 }
+
 

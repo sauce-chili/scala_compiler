@@ -137,6 +137,8 @@ ExprNode *ExprNode::copy() {
         }
     }
 
+    node->type = type;
+
     if (tryExpr) {
         node->tryExpr = tryExpr->copy();
     }

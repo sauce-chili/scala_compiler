@@ -3,7 +3,6 @@
 DefNode::DefNode() {
     varDefs = nullptr;
     funDef = nullptr;
-    tmplDef = nullptr;
     modifiers = nullptr;
     primaryConstructor = nullptr;
 }
@@ -19,13 +18,6 @@ DefNode *DefNode::createFunDef(FunDefNode *funDef) {
     DefNode* node = new DefNode();
     node->type = _FUN_DEFINITION;
     node->funDef = funDef;
-    return node;
-}
-
-DefNode *DefNode::createTmplDef(TemplateDefNode *tmplDef) {
-    DefNode* node = new DefNode();
-    node->type = _TEMPLATE_DEFINITION;
-    node->tmplDef = tmplDef;
     return node;
 }
 
@@ -46,9 +38,6 @@ DefNode *DefNode::copy() {
     if (funDef) {
         node->funDef = funDef->copy();
     }
-    if (tmplDef) {
-        node->tmplDef = tmplDef->copy();
-    }
     if (modifiers) {
         node->modifiers = modifiers->copy();
     }
@@ -67,7 +56,6 @@ string DefNode::toDot() const {
     addDotNode(dot);
     addDotChild(dot, varDefs, "varDefs_");
     addDotChild(dot, funDef, "funDef_");
-    addDotChild(dot, tmplDef, "tmplDef_");
     addDotChild(dot, primaryConstructor, "primaryConstructor_");
 
     return dot;
@@ -88,6 +76,5 @@ list<Node *> DefNode::getChildren() const {
     addChildIfNotNull(children, modifiers);
     addChildIfNotNull(children, varDefs);
     addChildIfNotNull(children, funDef);
-    addChildIfNotNull(children, tmplDef); // не поддерживаем
     return children;
 }

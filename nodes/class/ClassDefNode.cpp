@@ -11,9 +11,7 @@ ClassDefNode *ClassDefNode::createClassDef(IdNode *fullId, ModifierNode *modifie
                                            ClassTemplateOptNode *classTemplateOpt) {
     ClassDefNode* node = new ClassDefNode();
     node->fullId = fullId;
-    if (!modifier) {
-        modifier = ModifierNode::createModifier(_PUBLIC);
-    }
+    modifier = ModifierNode::createModifier(_PUBLIC);
     node->primaryConstructModifier = modifier;
     node->classParams = classParams;
     node->classTemplateOpt = classTemplateOpt;
@@ -47,6 +45,7 @@ string ClassDefNode::toDot() const {
     addDotChild(dot, primaryConstructModifier, "primary_constructor_modifier_");
     addDotChild(dot, classParams, "classParams_");
     addDotChild(dot, classTemplateOpt, "classTemplateOpt_");
+    addDotChild(dot, modifiers, "modifiers_");
 
     return dot;
 }
@@ -61,5 +60,13 @@ list<Node *> ClassDefNode::getChildren() const {
     addChildIfNotNull(children, primaryConstructModifier); // TODO пофиксить
     addChildIfNotNull(children, classParams);
     addChildIfNotNull(children, classTemplateOpt);
+    addChildIfNotNull(children, modifiers);
     return children;
+}
+
+ClassDefNode *ClassDefNode::setModifiers(ModifiersNode *modifiers) {
+    if (modifiers) {
+        this->modifiers = modifiers;
+    }
+    return this;
 }

@@ -14,7 +14,6 @@ public:
     DefinitionType type;
     VarDefsNode* varDefs;
     FunDefNode* funDef;
-    TemplateDefNode* tmplDef;
     ModifiersNode* modifiers;
     /**
      * Искусственный узел
@@ -27,7 +26,6 @@ public:
 
     static DefNode* createVarDefs(VarDefsNode* varDefs);
     static DefNode* createFunDef(FunDefNode* funDef);
-    static DefNode* createTmplDef(TemplateDefNode* tmplDef);
 
     static DefNode* createPrimaryConstructor(PrimaryConstructorNode* primaryConstructor);
 

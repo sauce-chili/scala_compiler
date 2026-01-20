@@ -15,7 +15,6 @@ class EnumDefNode;
 
 class TemplateDefNode: public Node {
 public:
-    ModifiersNode* modifiers;
     StatType type;
     ClassDefNode* classDef;
     IdNode* fullId;
@@ -37,6 +36,7 @@ public:
     string getDotLabel() const override;
 
     TemplateDefNode* setModifiers(ModifiersNode* modifiers);
+    ModifiersNode * getModifiers() const;
     void validateModifiers() const;
 
     list<Node *> getChildren() const override;

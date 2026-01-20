@@ -16,7 +16,7 @@ void TopStatSeqNode::convertAst() {
         if (!tsn->tmplDef) continue;
         if (!tsn->tmplDef->classDef) continue;
 
-        tsn->initializeClassModifiers();
+        //ModifiersNode::initializeModifiers(tsn);
         tsn->tmplDef->classDef->validatePrimaryConstructorModifiers();
         tsn->tmplDef->validateModifiers();
         tsn->toFieldsFromPrimaryConstructor();
@@ -24,15 +24,25 @@ void TopStatSeqNode::convertAst() {
     }
 }
 
-void TopStatNode::initializeClassModifiers() {
-    ModifiersNode* modifiers = tmplDef->modifiers;
-    if (!modifiers || modifiers->modifiers->empty()) {
-        tmplDef->modifiers = modifiers->addModifierToList(modifiers, ModifierNode::createModifier(ModifierType::_PUBLIC));
-    }
-
-    ClassDefNode *currentClass = tmplDef->classDef;
-    currentClass->primaryConstructModifier = currentClass->primaryConstructModifier ? currentClass->primaryConstructModifier : ModifierNode::createModifier(ModifierType::_PUBLIC);
-}
+//void ModifiersNode::initializeModifiers(Node* node) {
+//    if (!node) return;
+//
+//    if (auto* mods = dynamic_cast<ModifiersNode*>(node)) {
+//        if (!mods->modifiers || mods->modifiers->empty()) {
+//            if (!mods->modifiers) {
+//                mods->modifiers = new std::list<ModifierNode *>();
+//            }
+//
+////            mods->modifiers->push_back(
+////                    ModifierNode::createModifier(_PUBLIC)
+////            );
+//        }
+//    }
+//
+//    for (Node* child : node->getChildren()) {
+//        initializeModifiers(child);
+//    }
+//}
 
 void TopStatNode::toFieldsFromPrimaryConstructor() {
     if (!tmplDef) return;
@@ -65,12 +75,10 @@ void TopStatNode::toFieldsFromPrimaryConstructor() {
         } else {
             stat->dcl = DclNode::createValDcl(ids, p->compoundType->copy());
         }
-        stat->dcl->modifiers = stat->dcl->modifiers->addModifierToList(stat->dcl->modifiers, ModifierNode::createModifier(_PUBLIC));
+        stat->dcl->modifiers = p->modifiers->copy();
 
         currentClass->classTemplateOpt->templateStats->templateStats->push_front(stat);
     }
-
-    currentClass->classParams = new ClassParamsNode();
 }
 
 void TopStatNode::initializeBaseConstructorFromFields() const {
@@ -82,7 +90,9 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
     if (!currentClass->classTemplateOpt) return;
     if (!currentClass->classTemplateOpt->templateStats) return;
 
-    if (!currentClass->classParams) currentClass->classParams = new ClassParamsNode();
+    if (!currentClass->classParams) {
+        currentClass->classParams = new ClassParamsNode();
+    }
 
     // Сущность конструктора
     TemplateStatNode *baseConstructor = new TemplateStatNode();
@@ -92,6 +102,11 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
     SuperConstructorCallNode *superCall;
     if (currentClass->classTemplateOpt->classParents && currentClass->classTemplateOpt->classParents->constr && currentClass->classTemplateOpt->classParents->constr->arguments) {
         superCall = new SuperConstructorCallNode(currentClass->classTemplateOpt->classParents->constr->arguments->copy());
+        currentClass->classTemplateOpt->classParents->simpleTypes = SimpleTypesNode::addSimpleTypeToList(
+                currentClass->classTemplateOpt->classParents->simpleTypes,
+                SimpleTypeNode::createStableIdNode(currentClass->classTemplateOpt->classParents->constr->stableId->copy())
+        );
+        currentClass->classTemplateOpt->classParents->constr = nullptr;
     } else {
         superCall = new SuperConstructorCallNode(new ArgumentExprsNode(new ExprsNode()));
     }
@@ -105,23 +120,19 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
         BlockStatNode *stat;
         if (p->def->varDefs->type == StatType::_VAR_DECL) {
             stat = BlockStatNode::createVarDefsNode(
-                    VarDefsNode::createVar(p->def->varDefs->ids, p->def->varDefs->compoundType, p->def->varDefs->expr));
+                    VarDefsNode::createVar(p->def->varDefs->ids->copy(), p->def->varDefs->compoundType->copy(), p->def->varDefs->expr->copy()));
         } else {
             stat = BlockStatNode::createVarDefsNode(
-                    VarDefsNode::createVal(p->def->varDefs->ids, p->def->varDefs->compoundType, p->def->varDefs->expr));
+                    VarDefsNode::createVal(p->def->varDefs->ids->copy(), p->def->varDefs->compoundType->copy(), p->def->varDefs->expr->copy()));
         }
+        p->def->varDefs->expr = nullptr;
         BlockStatsNode::addBlockStatToList(blockStats, stat);
     }
 
     PrimaryConstructorNode *primaryConstructorNode = new PrimaryConstructorNode(params, blockStats, superCall);
+    currentClass->classParams = new ClassParamsNode();
     baseConstructor->def = DefNode::createPrimaryConstructor(primaryConstructorNode);
     currentClass->classTemplateOpt->templateStats->templateStats->push_front(baseConstructor);
-
-    if (currentClass->classTemplateOpt->classParents
-    && currentClass->classTemplateOpt->classParents->constr
-    && currentClass->classTemplateOpt->classParents->constr->arguments) {
-        currentClass->classTemplateOpt->classParents->constr->arguments = nullptr;
-    }
 }
 
 void TemplateDefNode::validateModifiers() const {
@@ -136,7 +147,7 @@ void TemplateDefNode::validateModifiers() const {
 void TemplateDefNode::validateClassModifiers() const {
     string prevAccess;
     string prevInherit;
-    for (ModifierNode* m: *modifiers->modifiers) {
+    for (ModifierNode* m: *this->getModifiers()->modifiers) {
         if (m->isAccessModifier()) {
             if (!prevAccess.empty()) {
                 throw SemanticError::InvalidCombinationOfModifiers(0, prevAccess + " " + modifierToString(m->type));
