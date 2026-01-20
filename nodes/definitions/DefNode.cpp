@@ -3,7 +3,6 @@
 DefNode::DefNode() {
     varDefs = nullptr;
     funDef = nullptr;
-    tmplDef = nullptr;
 }
 
 DefNode *DefNode::createVarDefs(VarDefsNode *varDefs) {
@@ -20,20 +19,12 @@ DefNode *DefNode::createFunDef(FunDefNode *funDef) {
     return node;
 }
 
-DefNode *DefNode::createTmplDef(TemplateDefNode *tmplDef) {
-    DefNode* node = new DefNode();
-    node->type = _TEMPLATE_DEFINITION;
-    node->tmplDef = tmplDef;
-    return node;
-}
-
 string DefNode::toDot() const {
     string dot;
 
     addDotNode(dot);
     addDotChild(dot, varDefs, "varDefs_");
     addDotChild(dot, funDef, "funDef_");
-    addDotChild(dot, tmplDef, "tmplDef_");
 
     return dot;
 }

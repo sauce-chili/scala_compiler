@@ -39,14 +39,9 @@
     ExtensionClassTemplateNode* extensionClassTemplate;
     DclNode* dcl;
     DefNode* def;
-    EnumCaseNode* enumCase;
-    EnumDefNode* enumDef;
-    EnumStatNode* enumStat;
-    EnumStatsNode* enumStats;
     ArgumentExprsNode* argumentExprs;
     AssignmentNode* assignment;
     ConstrExprNode* constrExpr;
-    createConstrInvokeNode* constrInvoke;
     ExprNode* expr;
     ExprsNode* exprs;
     InfixExprNode* infixExpr;
@@ -88,7 +83,7 @@
 %token VAL VAR
 %token NEW
 %token RETURN
-%token CLASS OBJECT DEF TRAIT ENUM
+%token CLASS OBJECT DEF
 %token THIS SUPER
 
 %token PRIVATE PROTECTED OVERRIDE ABSTRACT FINAL SEALED EXTENDS
@@ -163,7 +158,6 @@
 %type <extensionClassTemplate> extensionClassTemplate
 %type <topStat> topStat
 %type <id> fullID
-%type <constrInvoke> classParents
 %type <tmplDef> tmplDef
 
 
@@ -258,8 +252,8 @@ prefixExpr: simpleExpr { $$ = PrefixExprNode::createPrefixExprNode($1, _NO_UNARY
           | '!' simpleExpr %prec ULOGNOT { $$ = PrefixExprNode::createPrefixExprNode($2, _NOT); }
           ;
 
-simpleExpr: NEW fullID argumentExprs { $$ = SimpleExprNode::createConstrInvokeNode(ConstrInvokeNode::createConstrInvokeNode($2, $3)); } // (бывший constrInvoke)
-	  | NEW ARRAY '[' simpleType ']' argumentExprs { $$ = SimpleExprNode::createArrayCreatingNode(SimpleExpr1Node::createArrayWithTypeBuilderNode($4, $6)); }
+simpleExpr: NEW fullID argumentExprs { $$ = SimpleExprNode::createNewObjectNode($2, $3); } // (бывший constrInvoke)
+	  | NEW ARRAY '[' simpleType ']' argumentExprs { $$ = SimpleExprNode::createNewArrayNode($4, $6); }
           | '{' blockStats '}' { $$ = SimpleExprNode::createBlockStatsNode($2); } // бывший blockExpr
           | simpleExpr1        { $$ = SimpleExprNode::createSimpleExpr1Node($1); }
           ;
@@ -404,17 +398,17 @@ classTemplateOpt: /* empty */ %prec LOW_PREC     { $$ = nullptr; } // TODO Мб 
                 | templateBody                   { $$ = ClassTemplateOptNode::addFuncParamToBackToList(nullptr, $1); }
                 ;
 
-extensionClassTemplate: fullID argumentExprs templateBody       { $$ = ClassTemplateNode::createExtendWithConstrAndBody($1, $2, $3); }
-	              | fullID templateBody                     { $$ = ClassTemplateNode::createExtendWithBody($1, $2); }
-                      | fullID argumentExprs %prec END_TEMPLATE { $$ = ClassTemplateNode::createExtendWithConstr($1, $2); } // TODO Мб тоже под нож
-                      | fullID %prec END_TEMPLATE               { $$ = ClassTemplateNode::createEmptyExtend($1); } // TODO Мб тоже под нож
+extensionClassTemplate: fullID argumentExprs templateBody       { $$ = ExtensionClassTemplateNode::createExtendWithConstrAndBody($1, $2, $3); }
+	              | fullID templateBody                     { $$ = ExtensionClassTemplateNode::createExtendWithBody($1, $2); }
+                      | fullID argumentExprs %prec END_TEMPLATE { $$ = ExtensionClassTemplateNode::createExtendWithConstr($1, $2); } // TODO Мб тоже под нож
+                      | fullID %prec END_TEMPLATE               { $$ = ExtensionClassTemplateNode::createEmptyExtend($1); } // TODO Мб тоже под нож
                       ;
 
 topStatSeq: topStat                 { $$ = TopStatSeqNode::addModifierToList(nullptr, $1); }
 	  | topStatSeq semi topStat { $$ = TopStatSeqNode::addModifierToList($1, $3); }
           ;
 
-topStat: modifiers tmplDef { $$ = TopStatNode::createClass($1, $3); }
+topStat: modifiers tmplDef { $$ = TopStatNode::createClass($1, $2); }
        ;
 
 /* --------------------- DEFS --------------------- */

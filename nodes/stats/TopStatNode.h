@@ -4,16 +4,16 @@
 
 #include "../Node.h"
 #include "../modifier/ModifiersNode.h"
-#include "../class/ClassDefNode.h"
+#include "../templates/TemplateDefNode.h"
 
 class TopStatNode: public Node {
 public:
     ModifiersNode* modifiers;
-    ClassDefNode* classDef;
+    TemplateDefNode* templateDef;
 
     TopStatNode();
 
-    static TopStatNode* createClass(ModifiersNode* modifiers, ClassDefNode* classDef);
+    static TopStatNode* createClass(ModifiersNode* modifiers, TemplateDefNode* templateDef);
 
     string toDot() const override;
     string getDotLabel() const override;

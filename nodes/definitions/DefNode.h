@@ -11,13 +11,11 @@ public:
     DefinitionType type;
     VarDefsNode* varDefs;
     FunDefNode* funDef;
-    TemplateDefNode* tmplDef;
 
     DefNode();
 
     static DefNode* createVarDefs(VarDefsNode* varDefs);
     static DefNode* createFunDef(FunDefNode* funDef);
-    static DefNode* createTmplDef(TemplateDefNode* tmplDef);
 
     string toDot() const override;
     string getDotLabel() const override;

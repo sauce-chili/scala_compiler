@@ -4,15 +4,26 @@
 #include "SimpleExpr1Node.h"
 
 SimpleExprNode::SimpleExprNode() {
-    constr = nullptr;
+    fullId = nullptr;
+    arguments = nullptr;
+    simpleType = nullptr;
     blockStats = nullptr;
     simpleExpr1 = nullptr;
 }
 
-SimpleExprNode* SimpleExprNode::createConstrInvokeNode(ConstrInvokeNode* constr) {
+SimpleExprNode *SimpleExprNode::createNewObjectNode(IdNode *fullId, ArgumentExprsNode *arguments) {
     SimpleExprNode* node = new SimpleExprNode();
     node->type = _INSTANCE_CREATING;
-    node->constr = constr;
+    node->fullId = fullId;
+    node->arguments = arguments;
+    return node;
+}
+
+SimpleExprNode *SimpleExprNode::createNewArrayNode(SimpleTypeNode *simpleType, ArgumentExprsNode *arguments) {
+    SimpleExprNode* node = new SimpleExprNode();
+    node->type = _ARRAY_CREATING;
+    node->simpleType = simpleType;
+    node->arguments = arguments;
     return node;
 }
 
@@ -30,18 +41,13 @@ SimpleExprNode* SimpleExprNode::createSimpleExpr1Node(SimpleExpr1Node* simpleExp
     return node;
 }
 
-SimpleExprNode *SimpleExprNode::createArrayCreatingNode(SimpleExpr1Node *simpleExpr1) {
-    SimpleExprNode* node = new SimpleExprNode();
-    node->type = _ARRAY_CREATING;
-    node->simpleExpr1 = simpleExpr1;
-    return node;
-}
-
 string SimpleExprNode::toDot() const {
     string dot;
 
     addDotNode(dot);
-    addDotChild(dot, constr, "constr invoke");
+    addDotChild(dot, fullId, "new object's type");
+    addDotChild(dot, arguments, "arguments");
+    addDotChild(dot, simpleType, "type of array");
     addDotChild(dot, blockStats, "block statements");
     addDotChild(dot, simpleExpr1, "simple expr 1");
 

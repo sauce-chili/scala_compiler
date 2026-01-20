@@ -2,13 +2,13 @@
 
 TopStatNode::TopStatNode() {
     modifiers = nullptr;
-    classDef = nullptr;
+    templateDef = nullptr;
 }
 
-TopStatNode *TopStatNode::createClass(ModifiersNode *modifiers, ClassDefNode* classDef) {
+TopStatNode *TopStatNode::createClass(ModifiersNode *modifiers, TemplateDefNode* templateDef) {
     TopStatNode* node = new TopStatNode();
     node->modifiers = modifiers;
-    node->classDef = classDef;
+    node->templateDef = templateDef;
     return node;
 }
 
@@ -17,7 +17,7 @@ string TopStatNode::toDot() const {
 
     addDotNode(dot);
     addDotChild(dot, modifiers, "modifiers_");
-    addDotChild(dot, classDef, "classDef_");
+    addDotChild(dot, templateDef, "templateDef_");
 
     return dot;
 }

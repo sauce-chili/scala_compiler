@@ -2,6 +2,7 @@
 #include "ArgumentExprsNode.h"
 #include "SimpleExprNode.h"
 #include "../id/IdNode.h"
+#include "../type/SimpleTypeNode.h"
 
 SimpleExpr1Node::SimpleExpr1Node() {
     intValue = 0;
@@ -15,7 +16,7 @@ SimpleExpr1Node::SimpleExpr1Node() {
     argumentExprs = nullptr;
     simpleExpr1 = nullptr;
     identifier = nullptr;
-    compoundType = nullptr;
+    simpleType = nullptr;
 }
 
 SimpleExpr1Node* SimpleExpr1Node::createIntNode(int value) {
@@ -115,11 +116,11 @@ SimpleExpr1Node *SimpleExpr1Node::createPlainThisNode() {
     return node;
 }
 
-SimpleExpr1Node *SimpleExpr1Node::createArrayWithTypeBuilderNode(CompoundTypeNode *compoundType,
+SimpleExpr1Node *SimpleExpr1Node::createArrayWithTypeBuilderNode(SimpleTypeNode *simpleType,
                                                                  ArgumentExprsNode *argumentExprs) {
     SimpleExpr1Node* node = new SimpleExpr1Node();
     node->type = _ARRAY_WITH_TYPE_BUILDER;
-    node->compoundType = compoundType;
+    node->simpleType = simpleType;
     node->argumentExprs = argumentExprs;
     return node;
 }
@@ -140,6 +141,7 @@ string SimpleExpr1Node::toDot() const {
     addDotChild(dot, argumentExprs, "argument exprs");
     addDotChild(dot, simpleExpr1, "simple expr 1");
     addDotChild(dot, identifier, "identifier");
+    addDotChild(dot, simpleType, "simpleType");
 
     return dot;
 }
