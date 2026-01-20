@@ -7,12 +7,12 @@
 
 class ConstrInvokeNode: public Node {
 public:
-    StableIdNode* stableId;
+    IdNode* fullId;
     ArgumentExprsNode* arguments;
 
     ConstrInvokeNode();
 
-    static ConstrInvokeNode* createConstrInvokeNode(StableIdNode* stableId, ArgumentExprsNode* arguments);
+    static ConstrInvokeNode* createConstrInvokeNode(IdNode* fullId, ArgumentExprsNode* arguments);
 
     string toDot() const override;
     string getDotLabel() const override;

@@ -5,6 +5,8 @@
 #include "../Node.h"
 #include "FuncParamNode.h"
 
+#include <list>
+
 class FuncParamsNode: public Node {
 public:
     std::list<FuncParamNode*> *funcParams;

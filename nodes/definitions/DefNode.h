@@ -5,7 +5,6 @@
 #include "../Node.h"
 #include "../var/VarDefsNode.h"
 #include "../func/FunDefNode.h"
-#include "../templates/TemplateDefNode.h"
 
 class DefNode: public Node {
 public:

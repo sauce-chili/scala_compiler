@@ -4,16 +4,16 @@
 
 #include "../Node.h"
 #include "nodes/id/IdNode.h"
-#include "nodes/type/CompoundTypeNode.h"
+#include "../type/SimpleTypeNode.h"
 
 class FuncParamNode: public Node {
 public:
     IdNode* fullId;
-    CompoundTypeNode* compoundType;
+    SimpleTypeNode* simpleType;
 
     FuncParamNode();
 
-    static FuncParamNode* createFuncParam(IdNode* fullId, CompoundTypeNode* compoundType);
+    static FuncParamNode* createFuncParam(IdNode* fullId, SimpleTypeNode* simpleType);
 
     string toDot() const override;
     string getDotLabel() const override;

@@ -4,22 +4,22 @@
 
 #include "../Node.h"
 #include "../Types.h."
+#include "../type/SimpleTypeNode.h"
 #include "../id/IdsNode.h"
-#include "../type/CompoundTypeNode.h"
 #include "../exprs/ExprNode.h"
 
 
 class VarDefsNode: public Node {
 public:
     IdsNode* ids;
-    CompoundTypeNode* compoundType;
+    SimpleTypeNode* simpleType;
     ExprNode* expr;
     StatType type;
 
     VarDefsNode();
 
-    static VarDefsNode* createVal(IdsNode* ids, CompoundTypeNode* compoundType, ExprNode* expr);
-    static VarDefsNode* createVar(IdsNode* ids, CompoundTypeNode* compoundType, ExprNode* expr);
+    static VarDefsNode* createVal(IdsNode* ids, SimpleTypeNode* simpleType, ExprNode* expr);
+    static VarDefsNode* createVar(IdsNode* ids, SimpleTypeNode* simpleType, ExprNode* expr);
 
     string toDot() const override;
     string getDotLabel() const override;

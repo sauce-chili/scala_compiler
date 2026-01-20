@@ -5,14 +5,14 @@
 #include "../Node.h"
 #include "../modifier/ModifiersNode.h"
 #include "../id/IdNode.h"
-#include "../type/CompoundTypeNode.h"
+#include "../type/SimpleTypeNode.h"
 
 class ClassParamNode: public Node {
 public:
     ClassParamType type;
     ModifiersNode* modifiers;
     IdNode* fullId;
-    CompoundTypeNode* compoundType;
+    SimpleTypeNode* simpleType;
 
     ClassParamNode();
 
@@ -20,7 +20,7 @@ public:
             ClassParamType type,
             ModifiersNode* modifiers,
             IdNode* fullId,
-            CompoundTypeNode* compoundType
+            SimpleTypeNode* simpleType
     );
 
     string toDot() const override;

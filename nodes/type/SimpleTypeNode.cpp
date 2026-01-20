@@ -1,19 +1,19 @@
 #include "SimpleTypeNode.h"
 
 SimpleTypeNode::SimpleTypeNode() {
-    stableId = nullptr;
-    compoundType = nullptr;
+    fullId = nullptr;
+    simpleType = nullptr;
 }
 
-SimpleTypeNode *SimpleTypeNode::createStableIdNode(StableIdNode *stableId) {
+SimpleTypeNode *SimpleTypeNode::createIdTypeNode(IdNode *fullId) {
     SimpleTypeNode* node = new SimpleTypeNode();
-    node->stableId = stableId;
+    node->fullId = fullId;
     return node;
 }
 
-SimpleTypeNode *SimpleTypeNode::createArrayWithCompoundTypeNode(CompoundTypeNode *compoundType) {
+SimpleTypeNode *SimpleTypeNode::createSimpleTypeNode(SimpleTypeNode *simpleType) {
     SimpleTypeNode* node = new SimpleTypeNode();
-    node->compoundType = compoundType;
+    node->simpleType = simpleType;
     return node;
 }
 
@@ -21,12 +21,12 @@ string SimpleTypeNode::toDot() const {
     string dot;
 
     addDotNode(dot);
-    addDotChild(dot, stableId, "Stable id");
-    addDotChild(dot, compoundType, "Array compound");
+    addDotChild(dot, fullId, "id");
+    addDotChild(dot, simpleType, "Array simple type");
 
     return dot;
 }
 
 string SimpleTypeNode::getDotLabel() const {
-    return this->stableId ? "Simple type is stable id" : "Simple type is array";
+    return this->fullId ? "Simple type is id" : "Simple type is array";
 }

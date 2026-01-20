@@ -5,7 +5,7 @@ ClassTemplateOptNode::ClassTemplateOptNode() {
     templateStats = nullptr;
 }
 
-ClassTemplateOptNode* ClassTemplateOptNode::addFuncParamToBackToList(ClassTemplateNode* classTemplate, TemplateStatsNode* templateStats) {
+ClassTemplateOptNode* ClassTemplateOptNode::addFuncParamToBackToList(ExtensionClassTemplateNode* classTemplate, TemplateStatsNode* templateStats) {
     ClassTemplateOptNode* node = new ClassTemplateOptNode();
     node->classTemplate = classTemplate;
     node->templateStats = templateStats;

@@ -36,8 +36,7 @@
     ClassDefNode* classDef;
     ClassParamNode* classParam;
     ClassParamsNode* classParams;
-    ClassParentsNode* classParents;
-    ClassTemplateNode* classTemplate;
+    ExtensionClassTemplateNode* extensionClassTemplate;
     DclNode* dcl;
     DefNode* def;
     EnumCaseNode* enumCase;
@@ -47,6 +46,7 @@
     ArgumentExprsNode* argumentExprs;
     AssignmentNode* assignment;
     ConstrExprNode* constrExpr;
+    createConstrInvokeNode* constrInvoke;
     ExprNode* expr;
     ExprsNode* exprs;
     InfixExprNode* infixExpr;
@@ -69,14 +69,12 @@
     TopStatNode* topStat;
     TopStatSeqNode* topStatSeq;
     ClassTemplateOptNode* classTemplateOpt;
-    EnumTemplateNode* enumTemplate;
     TemplateStatNode* templateStat;
     TemplateStatsNode* templateStats;
-    TraitTemplateNode* traitTemplate;
-    TraitTemplateOptNode* traitTemplateOpt;
     SimpleTypeNode* simpleType;
     SimpleTypesNode* simpleTypes;
     VarDefsNode* varDefs;
+    TemplateDefNode* tmplDef;
 }
 
 
@@ -142,7 +140,7 @@
 %type <simpleExpr1> simpleExpr1 literal
 %type <argumentExprs> argumentExprs
 %type <exprs> exprs
-%type <simpleType> simpleType
+%type <simpleType> simpleType simpleTypeO
 %type <blockStats> blockStats
 %type <blockStat> blockStat
 %type <ids> ids
@@ -162,10 +160,11 @@
 %type <constrExpr> constrExpr
 %type <classDef> classDef
 %type <classTemplateOpt> classTemplateOpt
-%type <classTemplate> classTemplate
-%type <classParents> classParents
+%type <extensionClassTemplate> extensionClassTemplate
 %type <topStat> topStat
 %type <id> fullID
+%type <constrInvoke> classParents
+%type <tmplDef> tmplDef
 
 
 %start scalaFile
@@ -261,7 +260,6 @@ prefixExpr: simpleExpr { $$ = PrefixExprNode::createPrefixExprNode($1, _NO_UNARY
 
 simpleExpr: NEW fullID argumentExprs { $$ = SimpleExprNode::createConstrInvokeNode(ConstrInvokeNode::createConstrInvokeNode($2, $3)); } // (бывший constrInvoke)
 	  | NEW ARRAY '[' simpleType ']' argumentExprs { $$ = SimpleExprNode::createArrayCreatingNode(SimpleExpr1Node::createArrayWithTypeBuilderNode($4, $6)); }
-	  | NEW ARRAY argumentExprs { $$ = SimpleExprNode::createArrayCreatingNode(SimpleExpr1Node::createArrayBuilderNode($3)); } // argumentExprs принимает только 1 аргумент (размер массива)
           | '{' blockStats '}' { $$ = SimpleExprNode::createBlockStatsNode($2); } // бывший blockExpr
           | simpleExpr1        { $$ = SimpleExprNode::createSimpleExpr1Node($1); }
           ;
@@ -287,8 +285,8 @@ exprs: /* empty */    { $$ = new ExprsNode(); }
      | exprs ',' expr { $$ = ExprsNode::addExprToList($1, $3); }
      ;
 
-simpleType: fullID                   { $$ = SimpleTypeNode::createStableIdNode($1); }
-          | ARRAY '[' simpleType ']' { $$ = SimpleTypeNode::createArrayWithCompoundTypeNode($3); }
+simpleType: fullID                   { $$ = SimpleTypeNode::createIdTypeNode($1); }
+          | ARRAY '[' simpleType ']' { $$ = SimpleTypeNode::createSimpleTypeNode($3); }
           ;
 
 blockStats: blockStat                 { $$ = BlockStatsNode::addBlockStatToList(nullptr, $1); }
@@ -314,7 +312,7 @@ funcParams: funcParam                { $$ = FuncParamsNode::addFuncParamToList(n
           | funcParams ',' funcParam { $$ = FuncParamsNode::addFuncParamToList($1, $3); }
           ;
 
-funcParam: fullID simpleType { $$ = FuncParamNode::createFuncParam($1, $2); }
+funcParam: fullID ':' simpleType { $$ = FuncParamNode::createFuncParam($1, $3); } // TODO ПРОВЕРИТЬ, ДВОЕТОЧИЯ НЕ БЫЛО
          ;
 
 /* --------------------- FUNC --------------------- */
@@ -353,7 +351,7 @@ accessModifier: PRIVATE   { $$ = ModifierNode::createModifier(_PRIVATE); }
 templateBody: nlo '{' templateStats '}' { $$ = TemplateStatsNode::addFuncParamToFrontToList($3, nullptr); }
             ;
 
-templateStats: templateStat                     { $$ = TemplateStatsNode::addFuncParamToBackToList(nullptr, $1);; }
+templateStats: templateStat                     { $$ = TemplateStatsNode::addFuncParamToBackToList(nullptr, $1); }
              | templateStats semi templateStat  { $$ = TemplateStatsNode::addFuncParamToBackToList($1, $3); }
              ;
 
@@ -393,29 +391,30 @@ constrExpr: THIS argumentExprs { $$ = ConstrExprNode::createConstrExpr($2, nullp
           | '{' THIS argumentExprs '}' { $$ = ConstrExprNode::createConstrExpr($3, nullptr, true); }
           ;
 
+tmplDef: CLASS classDef { $$ = TemplateDefNode::createClassDef($2); }
+       ;
+
 classDef: fullID accessModifier classParamClause classTemplateOpt { $$ = ClassDefNode::createClassDef($1, $2, $3, $4); }
         | fullID classParamClause classTemplateOpt                { $$ = ClassDefNode::createClassDef($1, nullptr, $2, $3); }
         | fullID classTemplateOpt                                 { $$ = ClassDefNode::createClassDef($1, nullptr, nullptr, $2); }
         ;
 
-classTemplateOpt: /* empty */ %prec LOW_PREC { $$ = nullptr; }
-                | EXTENDS classTemplate      { $$ = ClassTemplateOptNode::addFuncParamToBackToList($2, nullptr); }
-                | templateBody               { $$ = ClassTemplateOptNode::addFuncParamToBackToList(nullptr, $1); }
+classTemplateOpt: /* empty */ %prec LOW_PREC     { $$ = nullptr; } // TODO Мб тоже под нож
+                | EXTENDS extensionClassTemplate { $$ = ClassTemplateOptNode::addFuncParamToBackToList($2, nullptr); }
+                | templateBody                   { $$ = ClassTemplateOptNode::addFuncParamToBackToList(nullptr, $1); }
                 ;
 
-classTemplate: classParents templateBody       { $$ = ClassTemplateNode::createClassTemplate($1, $2); }
-             | classParents %prec END_TEMPLATE { $$ = ClassTemplateNode::createClassTemplate($1, nullptr); }
-             ;
-
-classParents: fullID argumentExprs { $$ = ClassParentsNode::createClassParents(ConstrInvokeNode::createConstrInvokeNode($1, $2), $3); } // (бывший constrInvoke)
-	    | fullID { $$ = ClassParentsNode::createClassParents(ConstrInvokeNode::createConstrInvokeNode($1, nullptr), $2); } // (бывший constrInvoke)
-	    ;
+extensionClassTemplate: fullID argumentExprs templateBody       { $$ = ClassTemplateNode::createExtendWithConstrAndBody($1, $2, $3); }
+	              | fullID templateBody                     { $$ = ClassTemplateNode::createExtendWithBody($1, $2); }
+                      | fullID argumentExprs %prec END_TEMPLATE { $$ = ClassTemplateNode::createExtendWithConstr($1, $2); } // TODO Мб тоже под нож
+                      | fullID %prec END_TEMPLATE               { $$ = ClassTemplateNode::createEmptyExtend($1); } // TODO Мб тоже под нож
+                      ;
 
 topStatSeq: topStat                 { $$ = TopStatSeqNode::addModifierToList(nullptr, $1); }
 	  | topStatSeq semi topStat { $$ = TopStatSeqNode::addModifierToList($1, $3); }
           ;
 
-topStat: modifiers CLASS classDef { $$ = TopStatNode::createTopStat($1, $2); }
+topStat: modifiers tmplDef { $$ = TopStatNode::createClass($1, $3); }
        ;
 
 /* --------------------- DEFS --------------------- */

@@ -3,7 +3,7 @@
 EnumeratorPartNode::EnumeratorPartNode() {
     generator = nullptr;
     fullId = nullptr;
-    compoundType = nullptr;
+    simpleType = nullptr;
     expr = nullptr;
 }
 
@@ -13,10 +13,10 @@ EnumeratorPartNode *EnumeratorPartNode::createGeneratorEnumeratorPart(GeneratorN
     return node;
 }
 
-EnumeratorPartNode *EnumeratorPartNode::createVarDefEnumeratorPart(IdNode *fullId, CompoundTypeNode *compoundType, ExprNode *expr) {
+EnumeratorPartNode *EnumeratorPartNode::createVarDefEnumeratorPart(IdNode *fullId, SimpleTypeNode* simpleType, ExprNode *expr) {
     EnumeratorPartNode* node = new EnumeratorPartNode();
     node->fullId = fullId;
-    node->compoundType = compoundType;
+    node->simpleType = simpleType;
     node->expr = expr;
     return node;
 }
@@ -27,7 +27,7 @@ string EnumeratorPartNode::toDot() const {
     addDotNode(dot);
     addDotChild(dot, generator, "generator_");
     addDotChild(dot, fullId, "fullId_");
-    addDotChild(dot, compoundType, "compoundType_");
+    addDotChild(dot, simpleType, "simpleType_");
     addDotChild(dot, expr, "expr_");
 
     return dot;

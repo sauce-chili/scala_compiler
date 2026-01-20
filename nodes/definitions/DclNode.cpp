@@ -2,31 +2,31 @@
 
 DclNode::DclNode() {
     ids = nullptr;
-    compoundType = nullptr;
+    simpleType = nullptr;
     funSig = nullptr;
 }
 
-DclNode *DclNode::createVarDcl(IdsNode *ids, CompoundTypeNode *compoundType) {
+DclNode *DclNode::createVarDcl(IdsNode *ids, SimpleTypeNode* simpleType) {
     DclNode* node = new DclNode();
     node->type = _VAR_DECL;
     node->ids = ids;
-    node->compoundType = compoundType;
+    node->simpleType = simpleType;
     return node;
 }
 
-DclNode *DclNode::createValDcl(IdsNode *ids, CompoundTypeNode *compoundType) {
+DclNode *DclNode::createValDcl(IdsNode *ids, SimpleTypeNode* simpleType) {
     DclNode* node = new DclNode();
     node->type = _VAL_DECL;
     node->ids = ids;
-    node->compoundType = compoundType;
+    node->simpleType = simpleType;
     return node;
 }
 
-DclNode *DclNode::createDefDcl(FunSigNode *funSig, CompoundTypeNode *compoundType) {
+DclNode *DclNode::createDefDcl(FunSigNode *funSig, SimpleTypeNode* simpleType) {
     DclNode* node = new DclNode();
     node->type = _FUN_DEF;
     node->funSig = funSig;
-    node->compoundType = compoundType;
+    node->simpleType = simpleType;
     return node;
 }
 
@@ -36,7 +36,7 @@ string DclNode::toDot() const {
     addDotNode(dot);
     addDotChild(dot, ids, "ids_");
     addDotChild(dot, funSig, "funSig_");
-    addDotChild(dot, compoundType, "compoundType_");
+    addDotChild(dot, simpleType, "simpleType_");
 
     return dot;
 }

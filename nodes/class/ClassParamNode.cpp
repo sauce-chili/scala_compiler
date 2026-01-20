@@ -3,16 +3,16 @@
 ClassParamNode::ClassParamNode() {
     modifiers = nullptr;
     fullId = nullptr;
-    compoundType = nullptr;
+    simpleType = nullptr;
 }
 
 ClassParamNode *ClassParamNode::createClassParam(ClassParamType type, ModifiersNode *modifiers, IdNode *fullId,
-                                                 CompoundTypeNode *compoundType) {
+                                                 SimpleTypeNode* simpleType) {
     ClassParamNode* node = new ClassParamNode();
     node->type = type;
     node->modifiers = modifiers;
     node->fullId = fullId;
-    node->compoundType = compoundType;
+    node->simpleType = simpleType;
     return node;
 }
 
@@ -22,7 +22,7 @@ string ClassParamNode::toDot() const {
     addDotNode(dot);
     addDotChild(dot, modifiers, "modifiers");
     addDotChild(dot, fullId, "fullId");
-    addDotChild(dot, compoundType, "Compound type");
+    addDotChild(dot, simpleType, "Simple type");
 
     return dot;
 }

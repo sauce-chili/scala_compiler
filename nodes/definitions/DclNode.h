@@ -4,21 +4,20 @@
 
 #include "../Node.h"
 #include "../id/IdsNode.h"
-#include "../type/CompoundTypeNode.h"
 #include "../func/FunSigNode.h"
 
 class DclNode: public Node {
 public:
     StatType type;
     IdsNode* ids;
-    CompoundTypeNode* compoundType;
+    SimpleTypeNode* simpleType;
     FunSigNode* funSig;
 
     DclNode();
 
-    static DclNode* createVarDcl(IdsNode* ids, CompoundTypeNode* compoundType);
-    static DclNode* createValDcl(IdsNode* ids, CompoundTypeNode* compoundType);
-    static DclNode* createDefDcl(FunSigNode* funSig, CompoundTypeNode* compoundType);
+    static DclNode* createVarDcl(IdsNode* ids, SimpleTypeNode* simpleType);
+    static DclNode* createValDcl(IdsNode* ids, SimpleTypeNode* simpleType);
+    static DclNode* createDefDcl(FunSigNode* funSig, SimpleTypeNode* simpleType);
 
     string toDot() const override;
     string getDotLabel() const override;
