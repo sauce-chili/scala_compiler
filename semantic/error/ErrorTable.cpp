@@ -1,6 +1,6 @@
 #include "ErrorTable.h"
 
-std::list<SemanticError*> ErrorTable::errors;
+std::list<SemanticError *> ErrorTable::errors;
 
 void ErrorTable::addErrorToList(SemanticError *error) {
     errors.push_back(error);
@@ -16,4 +16,6 @@ std::string ErrorTable::getErrors() {
     return messages;
 }
 
-
+void ErrorTable::clear() {
+    errors.clear();
+}

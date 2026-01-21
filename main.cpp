@@ -3,6 +3,7 @@
 #include <string>
 
 #include "nodes/stats/TopStatSeqNode.h"
+#include "semantic/SemanticAnalyzer.h"
 #include "utils/output/dot.cpp"
 #include "semantic/error/SemanticError.h"
 
@@ -17,13 +18,13 @@ int yyparse(TopStatSeqNode **root);
 int yylex();
 
 extern "C" {
-    extern FILE *real_in;
-    extern int real_lineno;
+extern FILE *real_in;
+extern int real_lineno;
 }
 
 extern int yydebug;
 
-extern const char* get_bison_token_name(int token);
+extern const char *get_bison_token_name(int token);
 
 void yyerror(TopStatSeqNode **out_root, const char *s) {
     // Можно использовать внешнюю переменную yylineno, если она объявлена
@@ -37,6 +38,8 @@ void print_help(const char *prog_name) {
     std::cout << "  SCALA_MODE  : 'lexer' (only tokens) or 'parser' (default)\n";
     std::cout << "  SCALA_DEBUG : '1' to enable verbose debug output\n";
 }
+
+int runCompile(TopStatSeqNode *root);
 
 int main(int argc, char **argv) {
     if (argc < 2) {
@@ -74,7 +77,8 @@ int main(int argc, char **argv) {
             int token = yylex();
             if (token == 0) break; // 0 означает EOF
             // Вывод строка | имя токена(ELSE, +, IF и тд), ID токена
-            std::cout<< real_lineno << " | " << "Token: " << get_bison_token_name(token) << " (" << token << ")" << std::endl;
+            std::cout << real_lineno << " | " << "Token: " << get_bison_token_name(token) << " (" << token << ")" <<
+                    std::endl;
         }
     } else {
         std::cout << "--- Running in PARSER mode ---" << std::endl;
@@ -82,13 +86,6 @@ int main(int argc, char **argv) {
         TopStatSeqNode *root = nullptr;
 
         int result = yyparse(&root);
-
-        try {
-            root->convertAst();
-        } catch (SemanticError& e) {
-            std::cerr << e.getErrorMessage() << std::endl;
-            return 1;
-        }
 
         if (result == 0) {
             std::cout << "Parsing completed successfully!" << std::endl;
@@ -98,11 +95,25 @@ int main(int argc, char **argv) {
             } else {
                 std::cout << "AST Root not created at address: " << root << std::endl;
             }
+            runCompile(root);
         } else {
             std::cerr << "Parsing failed." << std::endl;
         }
     }
 
     fclose(input_file);
+    return 0;
+}
+
+
+int runCompile(TopStatSeqNode *root) {
+    SemanticAnalyzer analyzer;
+    try {
+        root->convertAst();
+    } catch (SemanticError &e) {
+        std::cerr << e.getErrorMessage() << std::endl;
+        return 1;
+    }
+    analyzer.analyze(root);
     return 0;
 }

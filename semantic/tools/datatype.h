@@ -2,54 +2,86 @@
 #define COMPILER_DATATYPE_H
 
 #include <iostream>
+#include <memory>
 #include <vector>
 #include "tools.h"
+#include "nodes/Node.h"
 
 
-using  namespace  std;
+class SimpleTypeNode;
+using namespace std;
+
+#define ARR_SIZE_UNSPECIFIED -1
 
 class DataType {
 public:
-    enum Type {
-        unit_, int_, float_, char_, bool_, string_, class_, array_, undefined_
+    enum class Kind {
+        Undefined, Unit, Int, Float, Char, Bool, String, Class, Array
     };
 
-    Type type;
-    Type arrType; // тип значений которые хранятся в массиве
-    int arrDeep = 0; // 1 - одномерный массив, 2 - двумерный массив и т.д.
-    vector<int> arrLength; // -1 - undefined
-    vector<string> qualId; // полный путь до класса т. е.  последнее слово в массиве название класса - остальное путь
-    string id; // мб лучше это использовать имя класса
-    vector<DataType> arrTypes;
-    DataType();
-    DataType(Type type);
-    static DataType ArrayDataType(Type arrType, int arrDeep);
-    static DataType ArrayDataType(Type arrType, int arrDeep, vector<int> arrLength);
-    static DataType QualIdDataType(vector<string> qualId);
-    static DataType StructDataType(string id);
-    string toString();
-    string toConstTableFormat() const;
-    static string TypeToString(Type type);
-    bool isEquals(const DataType &other);
-    bool isUndefined();
-    void addArrType(DataType arrType);
-    static bool isCanConvert(DataType first, DataType second);
-    static bool isEquals(vector<DataType> types);
-    DataType getArrDataType() const;
+    Kind kind = Kind::Undefined;
 
-    bool isSimple();
+    // для Class
+    // полный путь: scala.collection.mutable.ArrayBuffer
+    vector<string> qualId; // хз может нахуй не нужно
+    string className = "<unspecified>";
+
+    // тип значений которые хранятся в массиве
+    DataType *elementType; // тип элемента, Array[Array[Int]]
+    int arrSize = ARR_SIZE_UNSPECIFIED;
+
+    DataType() = default;
+
+    DataType(Kind kind) : kind(kind) {
+    };
+
+    bool operator==(const DataType &other) const;
+
+    static DataType makePrimitive(Kind k) {
+        return DataType(k);
+    }
+
+    static DataType makeClass(const vector<string> &qid) {
+        DataType t;
+        t.kind = Kind::Class;
+        t.qualId = qid;
+        t.className = qid.back();
+        return t;
+    }
+
+    static DataType makeClass(string className) {
+        DataType t;
+        t.kind = Kind::Class;
+        t.className = className;
+        return t;
+    }
+
+    static DataType makeArray(DataType &elem, int size = ARR_SIZE_UNSPECIFIED) {
+        DataType t;
+        t.kind = Kind::Array;
+        t.elementType = &elem;
+        t.arrSize = size;
+        return t;
+    }
+
+    string toString();
+
+    string toConstTableFormat() const;
+
+    bool isUndefined();
+
+    DataType arrayElementType() const;
+
+    const DataType &deepArrayType() const;
+
+    int arraySize() const;
+
+    bool isPrimitive();
 
     bool isClass();
-    bool isInt();
-    bool isFloat();
-    bool isVoid();
-    bool isArray();
-    bool isChar();
-    bool isString();
-    bool isBool();
+
+    static DataType createFromNode(SimpleTypeNode *node);
 };
-
-
 
 
 #endif //COMPILER_DATATYPE_H

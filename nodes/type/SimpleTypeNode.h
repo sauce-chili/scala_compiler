@@ -7,7 +7,7 @@
 class SimpleTypeNode: public Node {
 public:
     IdNode* fullId;
-    SimpleTypeNode* simpleType;
+    SimpleTypeNode* arrayElemType;
 
     SimpleTypeNode();
 

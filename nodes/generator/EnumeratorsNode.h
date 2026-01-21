@@ -5,9 +5,12 @@
 #include "GeneratorNode.h"
 #include "EnumeratorPartNode.h"
 
+class Scope;
+
 class EnumeratorsNode: public Node {
 public:
     GeneratorNode* generator;
+    Scope* scope;
     std::list<EnumeratorPartNode*> *enumerators;
 
     EnumeratorsNode(GeneratorNode* generator);

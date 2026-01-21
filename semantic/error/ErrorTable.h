@@ -11,6 +11,8 @@ public:
     static void addErrorToList(SemanticError *error);
 
     static std::string getErrors();
+
+    static void clear();
 };
 
 

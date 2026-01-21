@@ -6,7 +6,7 @@ TemplateDefNode::TemplateDefNode() {
 }
 
 TemplateDefNode *TemplateDefNode::createClassDef(ClassDefNode *classDef) {
-    TemplateDefNode* node = new TemplateDefNode();
+    TemplateDefNode *node = new TemplateDefNode();
     node->type = _CLASS;
     node->classDef = classDef;
     return node;
@@ -25,7 +25,7 @@ string TemplateDefNode::getDotLabel() const {
     return "Template definition of " + statTypeToString(type);
 }
 
-TemplateDefNode * TemplateDefNode::setModifiers(ModifiersNode *modifiers) {
+TemplateDefNode *TemplateDefNode::setModifiers(ModifiersNode *modifiers) {
     if (classDef) {
         classDef->setModifiers(modifiers);
     }
@@ -34,7 +34,7 @@ TemplateDefNode * TemplateDefNode::setModifiers(ModifiersNode *modifiers) {
 }
 
 TemplateDefNode *TemplateDefNode::copy() {
-    TemplateDefNode* node = new TemplateDefNode();
+    TemplateDefNode *node = new TemplateDefNode();
     node->type = type;
 
     if (classDef) {
@@ -44,7 +44,7 @@ TemplateDefNode *TemplateDefNode::copy() {
     return node;
 }
 
-ModifiersNode * TemplateDefNode::getModifiers() const {
+ModifiersNode *TemplateDefNode::getModifiers() const {
     if (classDef) {
         return classDef->modifiers;
     }
@@ -52,11 +52,9 @@ ModifiersNode * TemplateDefNode::getModifiers() const {
     return nullptr;
 }
 
-std::list<Node*> TemplateDefNode::getChildren() const {
-    std::list<Node*> children;
+std::list<Node *> TemplateDefNode::getChildren() const {
+    std::list<Node *> children = {};
     addChildIfNotNull(children, classDef);
 
     return children;
 }
-
-

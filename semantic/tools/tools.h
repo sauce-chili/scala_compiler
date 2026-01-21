@@ -6,9 +6,11 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <list>
+#include <cstdint>
+
 #include "nodes/Types.h"
 
+class ModifiersNode;
 using namespace std;
 
 vector<string> split(const string &str, char separator);
@@ -17,13 +19,68 @@ vector<string> split(const string &str, char separator);
 
 class Modifiers {
 public:
+    vector<ModifierType> modifiers;
 
-public:
     string toString();
 
     bool isEquals(const Modifiers &other);
 
-    std::list<ModifierType> *modifiers;
+    vector<ModifierType> accessModifiers();
+
+    vector<ModifierType> overrideModifiers();
+
+    vector<ModifierType> inheritModifiers();
+
+    static bool isAccessModifier(ModifierType type);
+
+    static bool isOverrideModifier(ModifierType type);
+
+    static bool isInheritModifier(ModifierType type);
+
+    static Modifiers createFromModifiersNode(const ModifiersNode &modifiersNode);
+
+    Modifiers(vector<ModifierType> modifiers) : modifiers(modifiers) {
+    };
+};
+
+class Exception {
+    static vector<Exception> exceptions;
+
+    string message;
+    int line;
+
+public:
+    enum ExceptionType {
+        UNEXPECTED,
+        TYPE_ERROR,
+        NOT_EXIST,
+    };
+
+    static int counter;
+    ExceptionType exceptionType;
+
+    string getMessage();
+
+    Exception(ExceptionType exceptionType, const string &message);
+
+    Exception(ExceptionType exceptionType, const string &message, int line);
+};
+
+typedef std::uint8_t byte_t;
+
+struct bytearray_t {
+    size_t length;
+    byte_t *bytes;
+
+    bytearray_t() {
+        length = 0;
+        bytes = nullptr;
+    }
+
+    bytearray_t(size_t length, byte_t *content) : length(length), bytes(content) {
+    }
+
+    void reverseByteOrder();
 };
 
 #endif //COMPILER_TOOLS_H

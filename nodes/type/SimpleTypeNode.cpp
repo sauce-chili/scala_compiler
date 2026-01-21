@@ -2,7 +2,7 @@
 
 SimpleTypeNode::SimpleTypeNode() {
     fullId = nullptr;
-    simpleType = nullptr;
+    arrayElemType = nullptr;
 }
 
 SimpleTypeNode *SimpleTypeNode::createIdTypeNode(IdNode *fullId) {
@@ -13,7 +13,7 @@ SimpleTypeNode *SimpleTypeNode::createIdTypeNode(IdNode *fullId) {
 
 SimpleTypeNode *SimpleTypeNode::createSimpleTypeNode(SimpleTypeNode *simpleType) {
     SimpleTypeNode* node = new SimpleTypeNode();
-    node->simpleType = simpleType;
+    node->arrayElemType = simpleType;
     return node;
 }
 
@@ -23,8 +23,8 @@ SimpleTypeNode *SimpleTypeNode::copy() {
     if (fullId) {
         node->fullId = fullId->copy();
     }
-    if (simpleType) {
-        node->simpleType = simpleType->copy();
+    if (arrayElemType) {
+        node->arrayElemType = arrayElemType->copy();
     }
 
     return node;
@@ -35,7 +35,7 @@ string SimpleTypeNode::toDot() const {
 
     addDotNode(dot);
     addDotChild(dot, fullId, "id");
-    addDotChild(dot, simpleType, "Array simple type");
+    addDotChild(dot, arrayElemType, "Array simple type");
 
     return dot;
 }
@@ -47,6 +47,6 @@ string SimpleTypeNode::getDotLabel() const {
 list<Node *> SimpleTypeNode::getChildren() const {
     list<Node *> children = {};
     addChildIfNotNull(children, fullId);
-    addChildIfNotNull(children, simpleType);
+    addChildIfNotNull(children, arrayElemType);
     return children;
 }

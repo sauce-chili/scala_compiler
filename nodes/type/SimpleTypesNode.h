@@ -7,6 +7,9 @@
 
 #include <list>
 
+/**
+ * @deprecated
+ */
 class SimpleTypesNode: public Node {
 public:
     std::list<SimpleTypeNode*> *simpleTypes;

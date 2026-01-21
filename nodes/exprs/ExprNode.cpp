@@ -5,7 +5,7 @@
 #include "../exprs/AssignmentNode.h"
 
 ExprNode::ExprNode() {
-    exprs = new std::list<ExprNode*>;
+    exprs = new std::list<ExprNode *>;
     tryExpr = nullptr;
     enumerators = nullptr;
     infixExpr = nullptr;
@@ -13,7 +13,7 @@ ExprNode::ExprNode() {
 }
 
 ExprNode *ExprNode::createIfElse(ExprNode *cond, ExprNode *trueB, ExprNode *falseB) {
-    ExprNode* node = new ExprNode();
+    ExprNode *node = new ExprNode();
     node->type = _IF_ELSE;
     node->exprs->push_back(cond);
     node->exprs->push_back(trueB);
@@ -22,7 +22,7 @@ ExprNode *ExprNode::createIfElse(ExprNode *cond, ExprNode *trueB, ExprNode *fals
 }
 
 ExprNode *ExprNode::createIf(ExprNode *cond, ExprNode *expr) {
-    ExprNode* node = new ExprNode();
+    ExprNode *node = new ExprNode();
     node->type = _IF;
     node->exprs->push_back(cond);
     node->exprs->push_back(expr);
@@ -30,7 +30,7 @@ ExprNode *ExprNode::createIf(ExprNode *cond, ExprNode *expr) {
 }
 
 ExprNode *ExprNode::createWhile(ExprNode *cond, ExprNode *expr) {
-    ExprNode* node = new ExprNode();
+    ExprNode *node = new ExprNode();
     node->type = _WHILE;
     node->exprs->push_back(cond);
     node->exprs->push_back(expr);
@@ -38,14 +38,14 @@ ExprNode *ExprNode::createWhile(ExprNode *cond, ExprNode *expr) {
 }
 
 ExprNode *ExprNode::createTry(TryExprNode *tryExpr) {
-    ExprNode* node = new ExprNode();
+    ExprNode *node = new ExprNode();
     node->type = _TRY;
     node->tryExpr = tryExpr;
     return node;
 }
 
 ExprNode *ExprNode::createDoWhile(ExprNode *cond, ExprNode *expr) {
-    ExprNode* node = new ExprNode();
+    ExprNode *node = new ExprNode();
     node->type = _DO_WHILE;
     node->exprs->push_back(cond);
     node->exprs->push_back(expr);
@@ -53,27 +53,27 @@ ExprNode *ExprNode::createDoWhile(ExprNode *cond, ExprNode *expr) {
 }
 
 ExprNode *ExprNode::createThrow(ExprNode *expr) {
-    ExprNode* node = new ExprNode();
+    ExprNode *node = new ExprNode();
     node->type = _THROW;
     node->exprs->push_back(expr);
     return node;
 }
 
 ExprNode *ExprNode::createReturn() {
-    ExprNode* node = new ExprNode();
+    ExprNode *node = new ExprNode();
     node->type = _RETURN_EMPTY;
     return node;
 }
 
 ExprNode *ExprNode::createReturnExpr(ExprNode *expr) {
-    ExprNode* node = new ExprNode();
+    ExprNode *node = new ExprNode();
     node->type = _RETURN_EXPR;
     node->exprs->push_back(expr);
     return node;
 }
 
 ExprNode *ExprNode::createFor(EnumeratorsNode *enumerators, ExprNode *expr) {
-    ExprNode* node = new ExprNode();
+    ExprNode *node = new ExprNode();
     node->type = _FOR_WITHOUT_YIELD;
     node->exprs->push_back(expr);
     node->enumerators = enumerators;
@@ -81,7 +81,7 @@ ExprNode *ExprNode::createFor(EnumeratorsNode *enumerators, ExprNode *expr) {
 }
 
 ExprNode *ExprNode::createForYield(EnumeratorsNode *enumerators, ExprNode *expr) {
-    ExprNode* node = new ExprNode();
+    ExprNode *node = new ExprNode();
     node->type = _FOR_WITH_YIELD;
     node->exprs->push_back(expr);
     node->enumerators = enumerators;
@@ -89,14 +89,14 @@ ExprNode *ExprNode::createForYield(EnumeratorsNode *enumerators, ExprNode *expr)
 }
 
 ExprNode *ExprNode::createInfix(InfixExprNode *infixExpr) {
-    ExprNode* node = new ExprNode();
+    ExprNode *node = new ExprNode();
     node->type = _INFIX;
     node->infixExpr = infixExpr;
     return node;
 }
 
 ExprNode *ExprNode::createAssignment(AssignmentNode *assignment) {
-    ExprNode* node = new ExprNode();
+    ExprNode *node = new ExprNode();
     node->type = _ASSIGNMENT;
     node->assignment = assignment;
     return node;
@@ -111,7 +111,7 @@ string ExprNode::toDot() const {
     addDotChild(dot, infixExpr, "infixExpr_");
     addDotChild(dot, assignment, "assignment_");
     if (!exprs->empty()) {
-        for (const auto *it : *exprs) {
+        for (const auto *it: *exprs) {
             addDotChild(dot, it, "expr_" + to_string(it->id));
         }
     }
@@ -156,11 +156,52 @@ ExprNode *ExprNode::copy() {
 
 list<Node *> ExprNode::getChildren() const {
     list<Node *> children = {};
-    for (ExprNode* exprNode : *exprs) {
-        addChildIfNotNull(children, exprNode);
+
+    switch (type) {
+        case _FOR_WITHOUT_YIELD:
+        case _FOR_WITH_YIELD:
+            addChildIfNotNull(children, enumerators);
+            if (exprs) {
+                for (auto *e: *exprs) addChildIfNotNull(children, e);
+            }
+            break;
+        case _IF_ELSE:
+            // [0] - cond, [1] - then, [2] - else
+            if (exprs) {
+                for (auto *e: *exprs) addChildIfNotNull(children, e);
+            }
+            break;
+        // [0] - cond, [1] - body
+        case _IF:
+        case _WHILE:
+        case _DO_WHILE:
+            if (exprs) {
+                for (auto *e: *exprs) addChildIfNotNull(children, e);
+            }
+            break;
+        case _TRY: // уже не поддерживается
+            addChildIfNotNull(children, tryExpr);
+            break;
+        case _INFIX:
+            addChildIfNotNull(children, infixExpr);
+            break;
+        case _ASSIGNMENT:
+            addChildIfNotNull(children, assignment);
+            break;
+        case _RETURN_EXPR:
+        case _THROW:
+            if (exprs && !exprs->empty()) {
+                addChildIfNotNull(children, exprs->front());
+            }
+            break;
+        default:
+            // Для остальных случаев (пр. _RETURN_EMPTY)
+            // или если в будущем появятся простые списки выражений.
+            if (exprs) {
+                for (auto *e: *exprs) addChildIfNotNull(children, e);
+            }
+            break;
     }
-    addChildIfNotNull(children, enumerators);
-    addChildIfNotNull(children, infixExpr);
-    addChildIfNotNull(children, assignment);
+
     return children;
 }

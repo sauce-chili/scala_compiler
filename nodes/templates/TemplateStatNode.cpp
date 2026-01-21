@@ -16,8 +16,7 @@ TemplateStatNode *TemplateStatNode::createDefTemplate(ModifiersNode *modifiers, 
 
 TemplateStatNode *TemplateStatNode::createDclTemplate(ModifiersNode *modifiers, DclNode *dcl) {
     TemplateStatNode* node = new TemplateStatNode();
-    node->dcl = dcl;
-    node->dcl->setModifiers(modifiers);
+    node->dcl = dcl->setModifiers(modifiers);
     return node;
 }
 

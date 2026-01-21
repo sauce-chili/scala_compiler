@@ -4,6 +4,7 @@
 
 #ifndef SCALA_LEXER_SCOPEVISITOR_H
 #define SCALA_LEXER_SCOPEVISITOR_H
+#include "nodes/exprs/ExprNode.h"
 #include "scopes/Scope.h"
 
 
@@ -14,23 +15,21 @@ class FuncParamsNode;
 class Node;
 class TemplateDefNode;
 
-class ScopeVisitor {
+class ScopeAttachVisitor {
     Scope *currentScope;
 
     void visit(Node *node);
 
     void visitChildren(Node *node);
 
-    void handleClassScope(TemplateDefNode *node);
-
-    void handleFuncParamsScope(FuncParamsNode *node);
-
     void handleFunDef(FunDefNode *node);
 
-    void handleBlockScope(BlockStatsNode *node);
+    void handleBlockStats(BlockStatsNode *node);
+
+    void handleForExpression(ExprNode *node);
 
 public:
-    ScopeVisitor();
+    ScopeAttachVisitor();
 
     void visitTree(TopStatSeqNode *topStatSeq);
 };

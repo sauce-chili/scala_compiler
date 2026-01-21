@@ -1,287 +1,111 @@
 #include <string>
 #include "datatype.h"
 #include "tools.h"
-#include "semantic/error/SemanticError.h"
+#include "nodes/type/SimpleTypeNode.h"
 
-DataType::DataType(DataType::Type type) {
-    this->type = type;
-}
+bool DataType::operator==(const DataType &other) const {
+    if (kind != other.kind) return false;
 
-DataType DataType::ArrayDataType(DataType::Type arrType, int arrDeep) {
-    DataType dataType = DataType(array_);
-    dataType.arrType = arrType;
-    dataType.arrDeep = arrDeep; //
-    if (arrDeep < 0) {
-        cout << "array deep incorrect";
+    switch (kind) {
+        case Kind::Array:
+            return arrSize == other.arrSize &&
+                   *this->elementType == *other.elementType;
+
+        case Kind::Class:
+            return qualId == other.qualId;
+
+        default:
+            return true;
     }
-    return dataType;
-}
-
-DataType DataType::ArrayDataType(DataType::Type arrType, int arrDeep, vector<int> arrLength) {
-
-    DataType dataType = ArrayDataType(arrType, arrDeep);
-    dataType.arrLength = arrLength;
-    return dataType;
-}
-
-DataType DataType::QualIdDataType(vector<string> qualId) {
-    DataType dataType = DataType(class_);
-    dataType.qualId = qualId;
-    return dataType;
-}
-
-DataType::DataType() {
-    this->type = undefined_;
 }
 
 string DataType::toString() {
-    string res = "";
-
-    switch (type) {
-
-        case unit_:
-            res += varName(void_);
-            break;
-        case int_:
-            res += varName(int_);
-            break;
-        case float_:
-            res += varName(float_);
-            break;
-        case char_:
-            res += varName(char_);
-            break;
-        case bool_:
-            res += varName(bool_);
-            break;
-        case string_:
-            res += varName(string_);
-            break;
-        case class_:
-            res += varName(class_);
-            res += " name " + id;
-            break;
-        case array_:
-            res += "array_ " + TypeToString(this->arrType) + " " + id;
-            res += "deep: " + to_string(this->arrDeep);
-            res += " len: ";
-            for (auto elem: arrLength) res += to_string(elem) + " ";
-            break;
-        case undefined_:
-            res += varName(undefined_);
-            break;
+    switch (kind) {
+        case Kind::Int: return "Int";
+        case Kind::Float: return "Float";
+        case Kind::Bool: return "Bool";
+        case Kind::Char: return "Char";
+        case Kind::String: return "String";
+        case Kind::Unit: return "Unit";
+        case Kind::Class: {
+            if (qualId.empty()) {
+                return className;
+            } else {
+                string s;
+                for (int i = 0; i < qualId.size(); i++) {
+                    if (i) s += ".";
+                    s += qualId[i];
+                }
+                return s;
+            }
+        }
+        case Kind::Array: return "Array[" + elementType->toString() + "]";
+        case Kind::Undefined: return "<Undefined>";
     }
 
-    return res;
-}
-
-DataType DataType::StructDataType(string id) {
-    DataType dataType = DataType(class_);
-    dataType.id = id;
-    return dataType;
-}
-
-string DataType::TypeToString(DataType::Type type) {
-    string res = "";
-    switch (type) {
-
-        case unit_:
-            res = varName(void_);
-            break;
-        case int_:
-            res = varName(int_);
-            break;
-        case float_:
-            res = varName(float_);
-            break;
-        case char_:
-            res = varName(char_);
-            break;
-        case bool_:
-            res = varName(bool_);
-            break;
-        case string_:
-            res = varName(string_);
-            break;
-        case class_:
-            res = varName(class_);
-            break;
-        case array_:
-            res = varName(array_);
-            break;
-        case undefined_:
-            res = varName(undefined_);
-            break;
-    }
-
-    return res;
-}
-
-bool DataType::isEquals(const DataType &other) {
-    bool res = true;
-    res = res && this->type == other.type;
-
-    switch (this->type) {
-
-        case unit_:
-        case int_:
-        case float_:
-        case char_:
-        case bool_:
-        case string_:
-        case undefined_:
-            break;
-        case class_:
-            res = res && this->id == other.id;
-            break;
-        case array_:
-            res = res && this->arrType == other.arrType;
-            res = res && this->arrDeep == other.arrDeep;
-            res = res && this->arrLength == other.arrLength;
-            break;
-    }
-    return res;
-}
-
-bool DataType::isUndefined() {
-    return this->type == undefined_;
-}
-
-void DataType::addArrType(DataType arrType) {
-    if (this->type != DataType::array_) {
-        throw SemanticError::ExprNotArray(0);
-    } else {
-        this->arrType = arrType.type;
-        this->id = arrType.id;
-    }
-}
-
-bool DataType::isEquals(vector<DataType> types) {
-    if (types.size() == 0) {
-        return true;
-    }
-
-    DataType type = types.front();
-
-    bool res = true;
-
-    for (auto elem: types) {
-        res = res && elem.isEquals(type);
-    }
-
-    return res;
-}
-
-DataType DataType::getArrDataType() const {
-    DataType dataType = *this;
-    if (this->type != array_) {
-        throw SemanticError::ExprNotArray(0);
-    }
-
-    dataType.arrDeep--;
-    dataType.arrLength.pop_back();
-
-    if (dataType.arrDeep == 0) {
-        dataType.type = dataType.arrType;
-    }
-
-    return dataType;
-}
-
-bool DataType::isCanConvert(DataType first, DataType second) {
-
-    if (first.type == second.type && first.type != class_ && first.type != array_ && first.type != unit_) {
-        return true;
-    }
-
-    if (first.type == int_ && second.type == float_) {
-        return true;
-    }
-
-    if (first.type == int_ && second.type == char_) {
-        return true;
-    }
-
-    if (first.type == float_ && second.type == int_) {
-        return true;
-    }
-
-    if (first.type == char_ && second.type == int_) {
-        return true;
-    }
-
-    return false;
+    return "<error>";
 }
 
 string DataType::toConstTableFormat() const {
-    string res;
-    switch (type) {
+    return ""; // возможно будет переработан
+}
 
-        case unit_:
-            res = "V";
-            break;
-        case int_:
-            res = "I";
-            break;
-        case float_:
-            res = "F";
-            break;
-        case char_:
-            res = "C";
-            break;
-        case bool_:
-            res = "I";
-            break;
-        case string_:
-            res = "Ljava/lang/String;";
-            break;
-        case class_:
-            res = "L" + id + ";";
-            break;
-        case array_:
-            res += "[";
-            res += getArrDataType().toConstTableFormat();
-            break;
-        case undefined_:
-            throw SemanticError::NullSemanticType(0);
+bool DataType::isUndefined() {
+    return this->kind == Kind::Undefined;
+}
+
+DataType DataType::arrayElementType() const {
+    return std::move(*elementType);
+}
+
+const DataType &DataType::deepArrayType() const {
+    const DataType *current = this;
+
+    while (current->kind == Kind::Array && current->elementType) {
+        current = current->elementType;
     }
 
-    return res;
+    return *current;
 }
+
+int DataType::arraySize() const {
+    return arrSize;
+}
+
 
 bool DataType::isClass() {
-    return  this->type == DataType::class_ ||
-               this->type == DataType::array_ && this->arrType == DataType::class_;
+    return kind == Kind::Class;
 }
 
-bool DataType::isSimple() {
-    return this->type != array_ && this->type != class_ && this->type != string_;
+DataType DataType::createFromNode(SimpleTypeNode *typeNode) {
+    if (!typeNode) return DataType(Kind::Undefined);
+
+    //  массив Array[T]
+    if (typeNode->arrayElemType) {
+        DataType innerType = createFromNode(typeNode->arrayElemType);
+        return DataType::makeArray(innerType);
+    }
+
+    // Это именованный тип (Int, String, MyClass)
+    if (typeNode->fullId) {
+        std::string name = typeNode->fullId->name;
+
+        if (name == "Int") return DataType::makePrimitive(Kind::Int);
+        if (name == "Double") return DataType::makePrimitive(Kind::Float);
+        if (name == "Boolean") return DataType::makePrimitive(Kind::Bool);
+        if (name == "String") return DataType::makePrimitive(Kind::String);
+        if (name == "Char") return DataType::makePrimitive(Kind::Char);
+        if (name == "Unit") return DataType::makePrimitive(Kind::Unit);
+
+        // Пользовательский класс
+        return DataType::makeClass(name);
+    }
+
+    return DataType(Kind::Undefined);
 }
 
-bool DataType::isInt() {
-    return this->type == int_;
-}
-
-bool DataType::isFloat() {
-    return this->type == float_;
-}
-
-bool DataType::isVoid() {
-    return this->type == unit_;
-}
-
-bool DataType::isString() {
-    return this->type == string_;
-}
-
-bool DataType::isChar() {
-    return this->type == char_;
-}
-
-bool DataType::isArray() {
-    return this->type == array_;
-}
-
-bool DataType::isBool() {
-    return this->type == bool_;
+bool DataType::isPrimitive() {
+    return kind == Kind::Int || kind == Kind::Float ||
+           kind == Kind::Char || kind == Kind::Bool ||
+           kind == Kind::String || kind == Kind::Unit;
 }

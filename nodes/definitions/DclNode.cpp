@@ -31,8 +31,9 @@ DclNode *DclNode::createDefDcl(FunSigNode *funSig, SimpleTypeNode* simpleType) {
     return node;
 }
 
+
 DclNode *DclNode::setModifiers(ModifiersNode *modifiers) {
-    this->modifiers = modifiers;
+    this->modifiers = modifiers->copy();
     return this;
 }
 
@@ -78,7 +79,6 @@ string DclNode::toDot() const {
 string DclNode::getDotLabel() const {
     return "Declaration " + statTypeToString(type);
 }
-
 
 list<Node *> DclNode::getChildren() const {
     list<Node *> children = {};

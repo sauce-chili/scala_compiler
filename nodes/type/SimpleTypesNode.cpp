@@ -61,5 +61,6 @@ list<Node *> SimpleTypesNode::getChildren() const {
     for (Node* node: *simpleTypes) {
         addChildIfNotNull(children, node);
     }
+    return children;
 }
 

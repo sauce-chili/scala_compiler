@@ -28,8 +28,8 @@ DefNode *DefNode::createPrimaryConstructor(PrimaryConstructorNode *primaryConstr
     return node;
 }
 
-DefNode *DefNode::setModifiers(ModifiersNode *modifiers) {
-    this->modifiers = modifiers;
+DefNode * DefNode::setModifiers(ModifiersNode *modifiers) {
+    this->modifiers = modifiers->copy();
     return this;
 }
 

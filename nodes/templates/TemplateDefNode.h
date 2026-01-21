@@ -5,7 +5,6 @@
 #include "nodes/modifier/ModifiersNode.h"
 #include "../semantic/scopes/Scope.h"
 
-class Scope;
 class ClassDefNode;
 class ClassTemplateOptNode;
 class IdNode;
@@ -15,7 +14,6 @@ class TemplateDefNode: public Node {
 public:
     StatType type;
     ClassDefNode* classDef;
-    Scope* classScope; // тип класс, сразу назначать имя
 
     TemplateDefNode();
 
