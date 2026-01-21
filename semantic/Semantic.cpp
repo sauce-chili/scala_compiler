@@ -16,13 +16,21 @@ void TopStatSeqNode::convertAst() {
         if (!tsn->tmplDef) continue;
         if (!tsn->tmplDef->classDef) continue;
 
-        //ModifiersNode::initializeModifiers(tsn);
+        tsn->tmplDef->classDef->normalizeBody();
         tsn->tmplDef->classDef->validatePrimaryConstructorModifiers();
         tsn->tmplDef->validateModifiers();
         tsn->toFieldsFromPrimaryConstructor();
         tsn->initializeBaseConstructorFromFields();
     }
 }
+
+void ClassDefNode::normalizeBody() const {
+    if (classTemplateOpt && classTemplateOpt->extensionPartClassTemplate && classTemplateOpt->extensionPartClassTemplate->templateStats) {
+        classTemplateOpt->templateStats = classTemplateOpt->extensionPartClassTemplate->templateStats;
+        classTemplateOpt->extensionPartClassTemplate->templateStats = nullptr;
+    }
+}
+
 
 //void ModifiersNode::initializeModifiers(Node* node) {
 //    if (!node) return;
@@ -55,12 +63,6 @@ void TopStatNode::toFieldsFromPrimaryConstructor() {
     if (currentClass->classParams->classParams->empty()) return;
 
     if (!currentClass->classTemplateOpt) throw std::runtime_error("No class template");
-
-    // Переносим тело класса из ноды наследования в ноду класса
-    if (currentClass->classTemplateOpt->extensionPartClassTemplate && currentClass->classTemplateOpt->extensionPartClassTemplate->templateStats) {
-        currentClass->classTemplateOpt->templateStats = currentClass->classTemplateOpt->extensionPartClassTemplate->templateStats;
-        currentClass->classTemplateOpt->extensionPartClassTemplate->templateStats = nullptr;
-    }
 
     TemplateStatsNode* classBody = currentClass->classTemplateOpt->templateStats;
     if (!classBody) {
@@ -242,7 +244,10 @@ void TemplateStatNode::validateMethodModifiers() const {
             prevAccess = modifierToString(m->type);
         } else if (m->isInheritModifier()) {
             if (m->type == _SEALED) {
-                throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type));
+                throw SemanticError::InvalidCombinationOfModifiers(0, "values cannot be sealed");
+            }
+            if (m->type == _ABSTRACT) {
+                throw SemanticError::InvalidCombinationOfModifiers(0, "abstract modifier can be used only for classes; it should be omitted for abstract members");
             }
             if (!prevInherit.empty()) {
                 throw SemanticError::InvalidCombinationOfModifiers(0, prevInherit + " " + modifierToString(m->type));

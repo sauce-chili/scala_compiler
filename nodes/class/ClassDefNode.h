@@ -31,6 +31,7 @@ public:
 
     list<Node *> getChildren() const override;
     ClassDefNode* setModifiers(ModifiersNode* modifiers);
+    void normalizeBody() const;
 
     void validatePrimaryConstructorModifiers() const;
     void validatePrimaryConstructorParametersModifiers() const;
