@@ -42,7 +42,7 @@ string BlockStatNode::toDot() const {
 }
 
 string BlockStatNode::getDotLabel() const {
-    return "Block stats";
+    return "Block stat";
 }
 
 list<Node *> BlockStatNode::getChildren() const {

@@ -23,6 +23,7 @@ void TopStatSeqNode::convertAst() {
         tsn->tmplDef->validateModifiers();
         tsn->toFieldsFromPrimaryConstructor();
         tsn->initializeBaseConstructorFromFields();
+        tsn->secondaryConstructorsToMethods();
     }
 }
 
@@ -32,27 +33,6 @@ void ClassDefNode::normalizeBody() const {
         classTemplateOpt->extensionPartClassTemplate->templateStats = nullptr;
     }
 }
-
-
-//void ModifiersNode::initializeModifiers(Node* node) {
-//    if (!node) return;
-//
-//    if (auto* mods = dynamic_cast<ModifiersNode*>(node)) {
-//        if (!mods->modifiers || mods->modifiers->empty()) {
-//            if (!mods->modifiers) {
-//                mods->modifiers = new std::list<ModifierNode *>();
-//            }
-//
-////            mods->modifiers->push_back(
-////                    ModifierNode::createModifier(_PUBLIC)
-////            );
-//        }
-//    }
-//
-//    for (Node* child : node->getChildren()) {
-//        initializeModifiers(child);
-//    }
-//}
 
 void TopStatNode::toFieldsFromPrimaryConstructor() {
     if (!tmplDef) return;
@@ -106,11 +86,9 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
 
     // Сущность конструктора
     TemplateStatNode *baseConstructor = new TemplateStatNode();
-    // Скобки с параметрами
-    FuncParamsNode *params = new FuncParamsNode(currentClass->classParams);
     // Вызов родительского конструктора (будет всегда, как минимум Object)
     BlockStatNode *superCall;
-    SimpleExpr1Node* superConstructorName = SimpleExpr1Node::createIdNode(IdNode::createId("<super>"));
+    SimpleExpr1Node* superConstructorName = SimpleExpr1Node::createIdNode(IdNode::createId("super"));
     if (currentClass->classTemplateOpt->extensionPartClassTemplate && currentClass->classTemplateOpt->extensionPartClassTemplate->argumentExprs) {
         superCall = BlockStatNode::createSimpleExpr1(SimpleExpr1Node::createMethodCallNode(
                 superConstructorName, currentClass->classTemplateOpt->extensionPartClassTemplate->argumentExprs->copy())
@@ -126,6 +104,7 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
     }
     // Поля класса
     BlockStatsNode *blockStats = BlockStatsNode::addBlockStatToList(nullptr, nullptr);
+    BlockStatsNode::addBlockStatToList(blockStats, superCall);
     for (TemplateStatNode* p: *(currentClass->classTemplateOpt->templateStats->templateStats)) {
         if (!p) continue;
         if (p->dcl) continue;
@@ -144,12 +123,13 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
         BlockStatsNode::addBlockStatToList(blockStats, stat);
     }
 
-    FunSigNode *primaryConstrSignature = FunSigNode::createFunSig(IdNode::createId("<initP>"), new FuncParamsNode(currentClass->classParams->copy()));
+    FunSigNode *primaryConstrSignature = FunSigNode::createFunSig(IdNode::createId("this"), new FuncParamsNode(currentClass->classParams->copy()));
     FunDefNode *primaryConstructorNode = FunDefNode::createFunSigFunDef(
             primaryConstrSignature,
-            SimpleTypeNode::createIdTypeNode(IdNode::createId("<Undefined>")),
+            SimpleTypeNode::createIdTypeNode(IdNode::createId("void")),
             BlockStatNode::createExpr(SimpleExprNode::createBlockStatsNode(blockStats))
     );
+    primaryConstructorNode->primaryConstructor = true;
     currentClass->classParams = new ClassParamsNode();
     baseConstructor->def = DefNode::createFunDef(primaryConstructorNode);
     currentClass->classTemplateOpt->templateStats->templateStats->push_front(baseConstructor);
@@ -349,5 +329,46 @@ void TemplateStatNode::validateSecondaryConstructorModifiers() const {
         } else if (m->isOverrideModifier()) {
             throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type));
         }
+    }
+}
+
+void TopStatNode::secondaryConstructorsToMethods() {
+    if (!tmplDef) return;
+    if (!tmplDef->classDef) return;
+
+    ClassDefNode *currentClass = tmplDef->classDef;
+
+    if (!currentClass->classTemplateOpt) return;
+    if (!currentClass->classTemplateOpt->templateStats) return;
+
+    SimpleExpr1Node* otherConstructorName = SimpleExpr1Node::createIdNode(IdNode::createId("this"));
+    SimpleTypeNode* constrReturnType = SimpleTypeNode::createIdTypeNode(IdNode::createId("void"));
+    for (TemplateStatNode* p: *(currentClass->classTemplateOpt->templateStats->templateStats)) {
+        if (!p) continue;
+        if (p->dcl) continue;
+        if (!p->def->funDef) continue;
+        if (!p->def->funDef->constrExpr) continue;
+        if (!p->def->funDef->funcParams) continue;
+
+        // Собираем тело конструктора: склеиваем вызов другого конструктора с остальным содержимым тела конструктора
+        BlockStatsNode *blockStats = BlockStatsNode::addBlockStatToList(nullptr, nullptr);
+        BlockStatNode *otherConstructorCall = BlockStatNode::createSimpleExpr1(SimpleExpr1Node::createMethodCallNode(
+                otherConstructorName->copy(), p->def->funDef->constrExpr->argumentExprs->copy())
+        );
+        BlockStatsNode::addBlockStatToList(blockStats, otherConstructorCall);
+        for (BlockStatNode* bs: *(p->def->funDef->constrExpr->blockStats->copy()->blockStats)) {
+            BlockStatsNode::addBlockStatToList(blockStats, bs);
+        }
+        ExprNode* bodyOfConstructor = BlockStatNode::createExpr(SimpleExprNode::createBlockStatsNode(blockStats));
+
+        FunSigNode *constrSignature = FunSigNode::createFunSig(IdNode::createId("this"), p->def->funDef->funcParams->copy());
+        p->def->funDef->funcParams = nullptr;
+        FunDefNode *constructorNode = FunDefNode::createFunSigFunDef(
+                constrSignature,
+                constrReturnType->copy(),
+                bodyOfConstructor
+        );
+        p->def->funDef->constrExpr = nullptr;
+        p->def->funDef = constructorNode;
     }
 }
