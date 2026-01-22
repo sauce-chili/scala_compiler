@@ -135,7 +135,6 @@
 %type <simpleExpr1> simpleExpr1 literal
 %type <argumentExprs> argumentExprs
 %type <exprs> exprs
-%type <simpleType> simpleType simpleTypeO
 %type <blockStats> blockStats
 %type <blockStat> blockStat
 %type <ids> ids
@@ -193,15 +192,11 @@ enumerators: generator                       { $$ = new EnumeratorsNode($1); }
            ;
 
 enumeratorPart: generator                     { $$ = EnumeratorPartNode::createGeneratorEnumeratorPart($1); }
-              | fullID simpleTypeO '=' expr { $$ = EnumeratorPartNode::createVarDefEnumeratorPart($1, $2, $4); } // определение переменной
+              | fullID simpleType '=' expr { $$ = EnumeratorPartNode::createVarDefEnumeratorPart($1, $2, $4); } // определение переменной
               ;
 
-generator: fullID simpleTypeO LEFT_ARROW expr { $$ = GeneratorNode::createGenerator($1, $2, $4); }
+generator: fullID simpleType LEFT_ARROW expr { $$ = GeneratorNode::createGenerator($1, $2, $4); }
          ;
-
-simpleTypeO: /* empty */                { $$ = nullptr; }
-          | ':' simpleType              { $$ = $2; }
-          ;
 
 infixExpr: prefixExpr { $$ = InfixExprNode::createInfixFromPrefix($1); }
          | infixExpr '+' nlo infixExpr  { $$ = InfixExprNode::createFromInfixes($1, IdNode::createOperator("+"), $4); }
@@ -359,7 +354,7 @@ templateStat: /* empty */   { $$ = nullptr; }
 
 dcl: VAL ids ':' simpleType { $$ = DclNode::createValDcl($2, $4); }
    | VAR ids ':' simpleType { $$ = DclNode::createVarDcl($2, $4); }
-   | DEF funSig simpleTypeO { $$ = DclNode::createDefDcl($2, $3); }
+   | DEF funSig simpleType { $$ = DclNode::createDefDcl($2, $3); }
    ;
 
 funSig: fullID funcParamClause { $$ = FunSigNode::createFunSig($1, $2); }
@@ -369,15 +364,15 @@ funSig: fullID funcParamClause { $$ = FunSigNode::createFunSig($1, $2); }
 
 /* --------------------- DEFS --------------------- */
 
-varDefs: VAL ids simpleTypeO '=' expr { $$ = VarDefsNode::createVal($2, $3, $5); }
-       | VAR ids simpleTypeO '=' expr { $$ = VarDefsNode::createVar($2, $3, $5); }
+varDefs: VAL ids simpleType '=' expr { $$ = VarDefsNode::createVal($2, $3, $5); }
+       | VAR ids simpleType '=' expr { $$ = VarDefsNode::createVar($2, $3, $5); }
        ;
 
 def: varDefs    { $$ = DefNode::createVarDefs($1); }
    | DEF funDef { $$ = DefNode::createFunDef($2); }
    ;
 
-funDef: funSig simpleTypeO '=' expr       { $$ = FunDefNode::createFunSigFunDef($1, $2, $4); }
+funDef: funSig simpleType '=' expr       { $$ = FunDefNode::createFunSigFunDef($1, $2, $4); }
       | THIS funcParamClause '=' constrExpr { $$ = FunDefNode::createThisConstrCallFunDef($2, $4); }
       ;
 
