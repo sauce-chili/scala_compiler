@@ -11,7 +11,7 @@ public:
     ClassExtensionTemplateType type;
     IdNode* fullId;
     ArgumentExprsNode* argumentExprs;
-    TemplateStatsNode* templateStats;
+    TemplateStatsNode* templateStats; // Первым преобразованием в дереве (ClassDefNode::normalizeBody) перенеслось в classTemplateOpt для удобства анализа
 
     ExtensionClassTemplateNode();
 
