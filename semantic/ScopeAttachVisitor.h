@@ -14,6 +14,7 @@ class FunDefNode;
 class FuncParamsNode;
 class Node;
 class TemplateDefNode;
+class PrimaryConstructorNode;
 
 class ScopeAttachVisitor {
     Scope *currentScope;

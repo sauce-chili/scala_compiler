@@ -7,6 +7,8 @@
 #include "nodes/class/ClassParamNode.h"
 #include "nodes/class/ClassParamsNode.h"
 #include "semantic/error/SemanticError.h"
+#include "nodes/exprs/InfixExprNode.h"
+#include "nodes/exprs/SimpleExpr1Node.h"
 
 #include <stdexcept>
 
@@ -107,14 +109,20 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
     // Скобки с параметрами
     FuncParamsNode *params = new FuncParamsNode(currentClass->classParams);
     // Вызов родительского конструктора (будет всегда, как минимум Object)
-    SuperConstructorCallNode *superCall;
+    BlockStatNode *superCall;
+    SimpleExpr1Node* superConstructorName = SimpleExpr1Node::createIdNode(IdNode::createId("<super>"));
     if (currentClass->classTemplateOpt->extensionPartClassTemplate && currentClass->classTemplateOpt->extensionPartClassTemplate->argumentExprs) {
-        superCall = new SuperConstructorCallNode(currentClass->classTemplateOpt->extensionPartClassTemplate->argumentExprs->copy());
+        superCall = BlockStatNode::createSimpleExpr1(SimpleExpr1Node::createMethodCallNode(
+                superConstructorName, currentClass->classTemplateOpt->extensionPartClassTemplate->argumentExprs->copy())
+        );
+
         // Убираем скобки с аргументами конструктора родителя
         currentClass->classTemplateOpt->extensionPartClassTemplate->fullId = currentClass->classTemplateOpt->extensionPartClassTemplate->fullId;
         currentClass->classTemplateOpt->extensionPartClassTemplate->argumentExprs = nullptr;
     } else {
-        superCall = new SuperConstructorCallNode(new ArgumentExprsNode(new ExprsNode()));
+        superCall = BlockStatNode::createSimpleExpr1(SimpleExpr1Node::createMethodCallNode(
+                superConstructorName, nullptr)
+        );
     }
     // Поля класса
     BlockStatsNode *blockStats = BlockStatsNode::addBlockStatToList(nullptr, nullptr);
@@ -136,9 +144,14 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
         BlockStatsNode::addBlockStatToList(blockStats, stat);
     }
 
-    PrimaryConstructorNode *primaryConstructorNode = new PrimaryConstructorNode(params, blockStats, superCall);
+    FunSigNode *primaryConstrSignature = FunSigNode::createFunSig(IdNode::createId("<initP>"), new FuncParamsNode(currentClass->classParams->copy()));
+    FunDefNode *primaryConstructorNode = FunDefNode::createFunSigFunDef(
+            primaryConstrSignature,
+            SimpleTypeNode::createIdTypeNode(IdNode::createId("<Undefined>")),
+            BlockStatNode::createExpr(SimpleExprNode::createBlockStatsNode(blockStats))
+    );
     currentClass->classParams = new ClassParamsNode();
-    baseConstructor->def = DefNode::createPrimaryConstructor(primaryConstructorNode);
+    baseConstructor->def = DefNode::createFunDef(primaryConstructorNode);
     currentClass->classTemplateOpt->templateStats->templateStats->push_front(baseConstructor);
 }
 

@@ -6,6 +6,8 @@
 
 class VarDefsNode;
 class ExprNode;
+class SimpleExpr1Node;
+class SimpleExprNode;
 
 class BlockStatNode: public Node {
 public:
@@ -16,6 +18,9 @@ public:
 
     static BlockStatNode* createVarDefsNode(VarDefsNode* varDefs);
     static BlockStatNode* createExprNode(ExprNode* expr);
+
+    static BlockStatNode* createSimpleExpr1(SimpleExpr1Node* simpleExpr1);
+    static ExprNode* createExpr(SimpleExprNode* simpleExpr);
 
     BlockStatNode* copy();
 

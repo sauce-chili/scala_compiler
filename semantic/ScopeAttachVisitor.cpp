@@ -4,7 +4,6 @@
 
 #include "ScopeAttachVisitor.h"
 
-#include "nodes/func/FuncParamsNode.h"
 #include "nodes/func/FunDefNode.h"
 #include "nodes/generator/EnumeratorsNode.h"
 #include "nodes/templates/TemplateDefNode.h"

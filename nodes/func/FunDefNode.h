@@ -12,6 +12,7 @@ public:
     ConstrExprNode* constrExpr;
     ExprNode* expr;
     FuncParamsNode* funcParams;
+    bool primaryConstructor = false;
 
     FunDefNode();
 

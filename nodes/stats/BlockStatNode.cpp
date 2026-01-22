@@ -1,5 +1,6 @@
 #include "BlockStatNode.h"
 #include "../var/VarDefsNode.h"
+#include "../exprs/InfixExprNode.h"
 
 BlockStatNode::BlockStatNode() {
     varDefs = nullptr;
@@ -49,5 +50,27 @@ list<Node *> BlockStatNode::getChildren() const {
     addChildIfNotNull(children, varDefs);
     addChildIfNotNull(children, expr);
     return children;
+}
+
+BlockStatNode *BlockStatNode::createSimpleExpr1(SimpleExpr1Node* simpleExpr1) {
+    InfixExprNode* infix = InfixExprNode::createInfixFromPrefix(
+            PrefixExprNode::createPrefixExprNode(
+                    SimpleExprNode::createSimpleExpr1Node(
+                            simpleExpr1
+                    )
+                    , _NO_UNARY_OPERATOR )
+    );
+
+    return createExprNode(ExprNode::createInfix(infix));
+}
+
+ExprNode *BlockStatNode::createExpr(SimpleExprNode* simpleExpr) {
+    InfixExprNode* infix = InfixExprNode::createInfixFromPrefix(
+            PrefixExprNode::createPrefixExprNode(
+                    simpleExpr
+                    , _NO_UNARY_OPERATOR )
+    );
+
+    return createExprNode(ExprNode::createInfix(infix))->expr;
 }
 
