@@ -171,8 +171,8 @@ public:
     // -----------------------------------------------------------------------------------------------------------------
 
     ClassMetaInfo(string name, Modifiers modifiers, ClassDefNode *classNode) : name(name),
-                                                                               classNode(classNode),
-                                                                               modifiers(modifiers) {
+                                                                               modifiers(modifiers),
+                                                                               classNode(classNode) {
     };
 
     // возвращают соотвественный объект если подобного нет
@@ -213,6 +213,35 @@ public:
 
 protected:
     uint16_t constantCounter = 1;
+};
+
+class RtlClassMetaInfo : public ClassMetaInfo {
+    static RtlClassMetaInfo* String;
+    static RtlClassMetaInfo* Integer;
+    static RtlClassMetaInfo* Console;
+    static RtlClassMetaInfo* Unit;
+    static RtlClassMetaInfo* Char;
+    static RtlClassMetaInfo* Double;
+    static RtlClassMetaInfo* Boolean;
+
+    std::string javaDescriptor = "java/lang/";
+    std::string scalaDescriptor = "Lscala/runtime/";
+
+    enum Lang {
+        _SCALA,
+        _JAVA
+    };
+
+    Lang langOfDescriptor;
+
+    string jvmDescriptor() {
+        return langOfDescriptor == _SCALA ? scalaDescriptor : javaDescriptor
+               + this->name + ";";
+    }
+
+    RtlClassMetaInfo(std::string name, ClassDefNode *classNode, Lang langOfDescriptor): ClassMetaInfo(name, Modifiers({}), classNode) {
+        this->langOfDescriptor = langOfDescriptor;
+    }
 };
 
 #endif //SCALA_LEXER_TABLES_H
