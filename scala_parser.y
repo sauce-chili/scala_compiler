@@ -158,6 +158,8 @@
 %type <topStat> topStat
 %type <id> fullID
 %type <tmplDef> tmplDef
+%type <simpleType> simpleType
+
 
 
 %start scalaFile
@@ -364,15 +366,15 @@ funSig: fullID funcParamClause { $$ = FunSigNode::createFunSig($1, $2); }
 
 /* --------------------- DEFS --------------------- */
 
-varDefs: VAL ids simpleType '=' expr { $$ = VarDefsNode::createVal($2, $3, $5); }
-       | VAR ids simpleType '=' expr { $$ = VarDefsNode::createVar($2, $3, $5); }
+varDefs: VAL ids ':' simpleType '=' expr { $$ = VarDefsNode::createVal($2, $4, $6); }
+       | VAR ids ':' simpleType '=' expr { $$ = VarDefsNode::createVar($2, $4, $6); }
        ;
 
 def: varDefs    { $$ = DefNode::createVarDefs($1); }
    | DEF funDef { $$ = DefNode::createFunDef($2); }
    ;
 
-funDef: funSig simpleType '=' expr       { $$ = FunDefNode::createFunSigFunDef($1, $2, $4); }
+funDef: funSig ':' simpleType '=' expr       { $$ = FunDefNode::createFunSigFunDef($1, $3, $5); }
       | THIS funcParamClause '=' constrExpr { $$ = FunDefNode::createThisConstrCallFunDef($2, $4); }
       ;
 
