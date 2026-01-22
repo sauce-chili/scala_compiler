@@ -59,6 +59,13 @@ Modifiers Modifiers::createFromModifiersNode(const ModifiersNode &modifiersNode)
     return Modifiers(modifiers);
 }
 
+bool Modifiers::hasModifier(ModifierType type) const {
+    for (auto m : modifiers) {
+        if (m == type) return true;
+    }
+    return false;
+}
+
 
 bool Modifiers::isAccessModifier(ModifierType type) {
     switch (type) {

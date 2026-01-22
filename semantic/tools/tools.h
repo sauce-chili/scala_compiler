@@ -41,6 +41,8 @@ public:
 
     Modifiers(vector<ModifierType> modifiers) : modifiers(modifiers) {
     };
+
+    bool hasModifier(ModifierType type) const ;
 };
 
 class Exception {

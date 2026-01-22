@@ -10,10 +10,17 @@
 class TopStatSeqNode;
 
 class SemanticAnalyzer {
+    void linkInheritanceHierarchy();
+    void validateInheritanceCycles();
+    void validateOverrides();
 public:
     bool analyze(TopStatSeqNode* root);
 
-    void exportMethodsToCSV(const std::string& filename);
+    void exportContextToCSV(const std::string& filename);
+    void exportClassesToCSV(const std::string& path);
+    void exportMethodsToCSV(const std::string& path);
+    void exportFieldsToCSV(const std::string& path);
+
 };
 
 

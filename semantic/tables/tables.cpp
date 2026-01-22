@@ -4,6 +4,7 @@
 
 #include "tables.hpp"
 
+#include "nodes/class/ClassDefNode.h"
 #include "nodes/definitions/DclNode.h"
 #include "nodes/func/FunDefNode.h"
 #include "nodes/var/VarDefsNode.h"
@@ -53,40 +54,117 @@ vector<DataType *> MethodMetaInfo::getArgsTypes() {
     return argsTypes;
 }
 
-optional<FieldMetaInfo *> ClassMetaInfo::resolveField(string fieldName) {
-    if (fields.find(fieldName) == fields.end()) {
-        return nullopt;
+bool ClassMetaInfo::amSubclassOf(const ClassMetaInfo* other) const {
+    const ClassMetaInfo* curr = this;
+    while (curr) {
+        if (curr == other) return true;
+        curr = curr->parent;
     }
-    return optional{fields.at(fieldName)};
+    return false;
 }
 
-optional<MethodMetaInfo *> ClassMetaInfo::resolveMethod(string methodName, vector<DataType *> argTypes) {
-    if (methods.find(methodName) == methods.end()) {
-        return nullopt;
-    }
+optional<FieldMetaInfo *> ClassMetaInfo::resolveField(const string& fieldName,
+                                                      const ClassMetaInfo* accessContext,
+                                                      bool lookupPrivate) {
+    // 1. Ищем поле в текущем классе
+    if (fields.find(fieldName) != fields.end()) {
+        FieldMetaInfo* field = fields.at(fieldName);
 
-    vector<MethodMetaInfo *> methodsSignature = methods.at(methodName);
+        // Если включен режим принудительного поиска (lookupPrivate = true), отдаем сразу
+        if (lookupPrivate) return optional{field};
 
-    for (auto const m: methodsSignature) {
-        vector<DataType *> existingArgs = m->getArgsTypes();
+        // Public: видят все
+        bool isPub = !field->isPrivate() && !field->isProtected(); // тк в скале нет публик и все по умолчанию публик
+        if (isPub) {
+            return optional{field};
+        }
 
-        bool countArgsEquals = existingArgs.size() == argTypes.size();
-        bool typesArgsEquals = std::equal(existingArgs.begin(), existingArgs.end(),
-                                          argTypes.begin(),
-                                          [](const DataType *a, const DataType *b) {
-                                              return *a == *b;
-                                          });
+        // Private: видит только сам класс
+        if (field->isPrivate()) {
+            if (accessContext == this) return optional{field};
+            return nullopt;
+        }
 
-        bool signatureEquals = typesArgsEquals && countArgsEquals;
-
-        if (signatureEquals) {
-            return optional{m};
+        // Protected: видит сам класс и наследники
+        if (field->isProtected()) {
+            // Если контекст определен и является наследником текущего класса (или им самим)
+            if (accessContext && accessContext->amSubclassOf(this)) {
+                return optional{field};
+            }
+            return nullopt;
         }
     }
 
-    // TODO после связавание предка с родителем дописать обращение к родителю
+    // Если не нашли или не подошло, ищем у родителя
+    // При рекурсивном вызове передаем тот же accessContext (кто изначально спрашивал)
+    if (parent) {
+        return parent->resolveField(fieldName, accessContext, lookupPrivate);
+    }
 
     return nullopt;
+}
+
+optional<MethodMetaInfo *> ClassMetaInfo::resolveMethod(const string& methodName,
+                                                        const vector<DataType *>& argTypes,
+                                                        const ClassMetaInfo* accessFrom,
+                                                        bool lookupPrivate) {
+    // Ищем метод в текущем классе
+    if (methods.find(methodName) != methods.end()) {
+        vector<MethodMetaInfo *> methodsSignature = methods.at(methodName);
+
+        for (auto const m: methodsSignature) {
+            // Проверка сигнатуры
+            vector<DataType *> existingArgs = m->getArgsTypes();
+            bool countArgsEquals = existingArgs.size() == argTypes.size();
+            bool typesArgsEquals = std::equal(existingArgs.begin(), existingArgs.end(),
+                                              argTypes.begin(),
+                                              [](const DataType *a, const DataType *b) {
+                                                  return *a == *b;
+                                              });
+
+            if (countArgsEquals && typesArgsEquals) {
+                // Метод найден, проверяем доступ
+                if (lookupPrivate) return optional{m};
+
+                // Public
+                if (!m->isPrivate() && !m->isProtected()) return optional{m};
+
+                // Private
+                if (m->isPrivate()) {
+                    if (accessFrom == this) return optional{m};
+                    continue; // Ищем дальше (перегрузка) или выходим
+                }
+
+                // Protected
+                if (m->isProtected()) {
+                    if (accessFrom && accessFrom->amSubclassOf(this)) return optional{m};
+                    continue;
+                }
+            }
+        }
+    }
+
+    // Ищем у родителя
+    if (parent) {
+        return parent->resolveMethod(methodName, argTypes, accessFrom, lookupPrivate);
+    }
+
+    return nullopt;
+}
+
+optional<string> ClassMetaInfo::getParentName() {
+    if (parent) return parent->name;
+
+    if (!classNode->classTemplateOpt) return nullopt;
+    auto* ext = classNode->classTemplateOpt->extensionPartClassTemplate;
+    if (ext && ext->fullId) {
+        return optional{ext->fullId->name};
+    }
+    return nullopt;
+}
+
+uint16_t ClassMetaInfo::getConstantCounter() {
+    return constantCounter;
 }
 
 optional<FieldMetaInfo *> ClassMetaInfo::addField(VarDefsNode *varDefsNode, Modifiers modifiers) {
@@ -151,28 +229,28 @@ optional<MethodMetaInfo *> ClassMetaInfo::addMethod(FunDefNode *funDefNode, Modi
     string methodName = funDefNode->funSig->fullId->name;
 
     // Сбор временных аргументов для получения их типов
-    vector<ArgMetaInfo*> tempArgs;
-    vector<DataType*> signatureTypes; // Указатели на типы для проверки
+    vector<ArgMetaInfo *> tempArgs;
+    vector<DataType *> signatureTypes; // Указатели на типы для проверки
 
     int tempCounter = 0;
     if (funDefNode->funSig->params && funDefNode->funSig->params->funcParams) {
         for (auto *paramNode: *funDefNode->funSig->params->funcParams) {
-             ArgMetaInfo* arg = new ArgMetaInfo();
-             arg->name = paramNode->fullId->name;
-             arg->dataType = DataType::createFromNode(paramNode->simpleType);
-             arg->number = tempCounter++;
-             arg->isVal = true; // Аргументы в Scala неизменяемы (val)
+            ArgMetaInfo *arg = new ArgMetaInfo();
+            arg->name = paramNode->fullId->name;
+            arg->dataType = DataType::createFromNode(paramNode->simpleType);
+            arg->number = tempCounter++;
+            arg->isVal = true; // Аргументы в Scala неизменяемы (val)
 
-             tempArgs.push_back(arg);
-             // Сохраняем указатель на тип для передачи в resolveMethod
-             signatureTypes.push_back(&tempArgs.back()->dataType);
+            tempArgs.push_back(arg);
+            // Сохраняем указатель на тип для передачи в resolveMethod
+            signatureTypes.push_back(&tempArgs.back()->dataType);
         }
     }
 
     // Проверка дубликатов через resolveMethod
-    if (this->resolveMethod(methodName, signatureTypes).has_value()) {
+    if (this->resolveMethod(methodName, signatureTypes, this).has_value()) {
         string sigStr = methodName + "(";
-        for(size_t i = 0; i < signatureTypes.size(); ++i) {
+        for (size_t i = 0; i < signatureTypes.size(); ++i) {
             sigStr += signatureTypes[i]->toString();
             if (i < signatureTypes.size() - 1) sigStr += ", ";
         }
@@ -181,7 +259,7 @@ optional<MethodMetaInfo *> ClassMetaInfo::addMethod(FunDefNode *funDefNode, Modi
         ErrorTable::addErrorToList(new SemanticError(SemanticError::MethodAlreadyExists(0, sigStr)));
 
         // Очищаем память временных аргументов, так как метод не создан
-        for(auto* a : tempArgs) delete a;
+        for (auto *a: tempArgs) delete a;
         return std::nullopt;
     }
 
@@ -195,7 +273,7 @@ optional<MethodMetaInfo *> ClassMetaInfo::addMethod(FunDefNode *funDefNode, Modi
     method->localVarCounter = tempCounter;
 
     // Переносим аргументы в структуру метода
-    for(auto* arg : tempArgs) {
+    for (auto *arg: tempArgs) {
         arg->methodMetaInfo = method;
         method->args.push_back(arg);
     }
@@ -210,8 +288,8 @@ optional<MethodMetaInfo *> ClassMetaInfo::addMethod(DclNode *funDclNode) {
     string methodName = funDclNode->funSig->fullId->name;
 
     // Сбор типов аргументов (аналогично addMethod для Def)
-    vector<ArgMetaInfo*> tempArgs;
-    vector<DataType*> signatureTypes;
+    vector<ArgMetaInfo *> tempArgs;
+    vector<DataType *> signatureTypes;
     int tempCounter = 0;
 
     if (funDclNode->funSig->params && funDclNode->funSig->params->funcParams) {
@@ -228,11 +306,12 @@ optional<MethodMetaInfo *> ClassMetaInfo::addMethod(DclNode *funDclNode) {
     }
 
     // Проверка дубликатов
-    if (this->resolveMethod(methodName, signatureTypes).has_value()) {
+    if (this->resolveMethod(methodName, signatureTypes, this).has_value()) {
         string sigStr = methodName + "(...)";
-        ErrorTable::addErrorToList(new SemanticError(SemanticError::MethodAlreadyExists(funDclNode->funSig->fullId->id, sigStr)));
+        ErrorTable::addErrorToList(
+            new SemanticError(SemanticError::MethodAlreadyExists(funDclNode->funSig->fullId->id, sigStr)));
 
-        for(auto* a : tempArgs) delete a;
+        for (auto *a: tempArgs) delete a;
         return std::nullopt;
     }
 
@@ -244,7 +323,7 @@ optional<MethodMetaInfo *> ClassMetaInfo::addMethod(DclNode *funDclNode) {
     method->modifiers = Modifiers::createFromModifiersNode(*funDclNode->modifiers);
     method->localVarCounter = tempCounter;
 
-    for(auto* arg : tempArgs) {
+    for (auto *arg: tempArgs) {
         arg->methodMetaInfo = method;
         method->args.push_back(arg);
     }

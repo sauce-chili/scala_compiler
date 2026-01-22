@@ -11,7 +11,7 @@
 #include <stdexcept>
 
 void TopStatSeqNode::convertAst() {
-    for (TopStatNode* tsn: *(topStats)) {
+    for (TopStatNode *tsn: *(topStats)) {
         if (!tsn) continue;
         if (!tsn->tmplDef) continue;
         if (!tsn->tmplDef->classDef) continue;
@@ -57,17 +57,19 @@ void TopStatNode::toFieldsFromPrimaryConstructor() {
     if (!currentClass->classTemplateOpt) throw std::runtime_error("No class template");
 
     // Переносим тело класса из ноды наследования в ноду класса
-    if (currentClass->classTemplateOpt->extensionPartClassTemplate && currentClass->classTemplateOpt->extensionPartClassTemplate->templateStats) {
-        currentClass->classTemplateOpt->templateStats = currentClass->classTemplateOpt->extensionPartClassTemplate->templateStats;
+    if (currentClass->classTemplateOpt->extensionPartClassTemplate && currentClass->classTemplateOpt->
+        extensionPartClassTemplate->templateStats) {
+        currentClass->classTemplateOpt->templateStats = currentClass->classTemplateOpt->extensionPartClassTemplate->
+                templateStats;
         currentClass->classTemplateOpt->extensionPartClassTemplate->templateStats = nullptr;
     }
 
-    TemplateStatsNode* classBody = currentClass->classTemplateOpt->templateStats;
+    TemplateStatsNode *classBody = currentClass->classTemplateOpt->templateStats;
     if (!classBody) {
         classBody = new TemplateStatsNode();
     }
 
-    for (ClassParamNode* p: *(currentClass->classParams->classParams)) {
+    for (ClassParamNode *p: *(currentClass->classParams->classParams)) {
         if (!p) continue;
         if (classBody->containsVar(p->fullId->name)) {
             throw SemanticError::VarRedefinition(0, p->fullId->name);
@@ -106,29 +108,32 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
     FuncParamsNode *params = new FuncParamsNode(currentClass->classParams);
     // Вызов родительского конструктора (будет всегда, как минимум Object)
     SuperConstructorCallNode *superCall;
-    if (currentClass->classTemplateOpt->extensionPartClassTemplate && currentClass->classTemplateOpt->extensionPartClassTemplate->argumentExprs) {
-        superCall = new SuperConstructorCallNode(currentClass->classTemplateOpt->extensionPartClassTemplate->argumentExprs->copy());
+    if (currentClass->classTemplateOpt->extensionPartClassTemplate && currentClass->classTemplateOpt->
+        extensionPartClassTemplate->argumentExprs) {
+        superCall = new SuperConstructorCallNode(
+            currentClass->classTemplateOpt->extensionPartClassTemplate->argumentExprs->copy());
         // Убираем скобки с аргументами конструктора родителя
-        currentClass->classTemplateOpt->extensionPartClassTemplate->fullId = currentClass->classTemplateOpt->extensionPartClassTemplate->fullId;
+        currentClass->classTemplateOpt->extensionPartClassTemplate->fullId = currentClass->classTemplateOpt->
+                extensionPartClassTemplate->fullId;
         currentClass->classTemplateOpt->extensionPartClassTemplate->argumentExprs = nullptr;
     } else {
         superCall = new SuperConstructorCallNode(new ArgumentExprsNode(new ExprsNode()));
     }
     // Поля класса
     BlockStatsNode *blockStats = BlockStatsNode::addBlockStatToList(nullptr, nullptr);
-    for (TemplateStatNode* p: *(currentClass->classTemplateOpt->templateStats->templateStats)) {
+    for (TemplateStatNode *p: *(currentClass->classTemplateOpt->templateStats->templateStats)) {
         if (!p) continue;
         if (p->dcl) continue;
         if (!p->def->varDefs) continue;
 
         BlockStatNode *stat;
-        SimpleTypeNode* typeOfVars = p->def->varDefs->simpleType ? p->def->varDefs->simpleType->copy() : nullptr;
+        SimpleTypeNode *typeOfVars = p->def->varDefs->simpleType ? p->def->varDefs->simpleType->copy() : nullptr;
         if (p->def->varDefs->type == StatType::_VAR_DECL) {
             stat = BlockStatNode::createVarDefsNode(
-                    VarDefsNode::createVar(p->def->varDefs->ids->copy(), typeOfVars, p->def->varDefs->expr->copy()));
+                VarDefsNode::createVar(p->def->varDefs->ids->copy(), typeOfVars, p->def->varDefs->expr->copy()));
         } else {
             stat = BlockStatNode::createVarDefsNode(
-                    VarDefsNode::createVal(p->def->varDefs->ids->copy(), typeOfVars, p->def->varDefs->expr->copy()));
+                VarDefsNode::createVal(p->def->varDefs->ids->copy(), typeOfVars, p->def->varDefs->expr->copy()));
         }
         p->def->varDefs->expr = nullptr;
         BlockStatsNode::addBlockStatToList(blockStats, stat);
@@ -150,7 +155,7 @@ void TemplateDefNode::validateModifiers() const {
 void TemplateDefNode::validateClassModifiers() const {
     string prevAccess;
     string prevInherit;
-    for (ModifierNode* m: *this->getModifiers()->modifiers) {
+    for (ModifierNode *m: *this->getModifiers()->modifiers) {
         if (m->isAccessModifier()) {
             if (!prevAccess.empty()) {
                 throw SemanticError::InvalidCombinationOfModifiers(0, prevAccess + " " + modifierToString(m->type));
@@ -168,7 +173,7 @@ void TemplateDefNode::validateClassModifiers() const {
 }
 
 void TemplateStatsNode::validateModifiers() const {
-    for (TemplateStatNode* ts: *templateStats) {
+    for (TemplateStatNode *ts: *templateStats) {
         if (ts) {
             ts->validateModifiers();
         }
@@ -182,7 +187,7 @@ void TemplateStatNode::validateModifiers() const {
 }
 
 void TemplateStatNode::validateVarModifiers() const {
-    ModifiersNode* modifiers;
+    ModifiersNode *modifiers;
     if (dcl && (dcl->type == _VAL_DECL || dcl->type == _VAR_DECL)) {
         modifiers = dcl->modifiers;
     } else if (def && def->varDefs) {
@@ -194,7 +199,7 @@ void TemplateStatNode::validateVarModifiers() const {
     string prevAccess;
     string prevInherit;
     bool overrided = false;
-    for (ModifierNode* m: *modifiers->modifiers) {
+    for (ModifierNode *m: *modifiers->modifiers) {
         if (m->isAccessModifier()) {
             if (!prevAccess.empty()) {
                 throw SemanticError::InvalidCombinationOfModifiers(0, prevAccess + " " + modifierToString(m->type));
@@ -214,7 +219,8 @@ void TemplateStatNode::validateVarModifiers() const {
             }
 
             if (overrided) {
-                throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type) + " " + modifierToString(m->type));
+                throw SemanticError::InvalidCombinationOfModifiers(
+                    0, modifierToString(m->type) + " " + modifierToString(m->type));
             }
             overrided = true;
         }
@@ -222,7 +228,7 @@ void TemplateStatNode::validateVarModifiers() const {
 }
 
 void TemplateStatNode::validateMethodModifiers() const {
-    ModifiersNode* modifiers;
+    ModifiersNode *modifiers;
     if (dcl && dcl->funSig) {
         modifiers = dcl->modifiers;
     } else if (def && def->funDef && def->funDef->funSig) {
@@ -234,7 +240,7 @@ void TemplateStatNode::validateMethodModifiers() const {
     string prevAccess;
     string prevInherit;
     bool overrided = false;
-    for (ModifierNode* m: *modifiers->modifiers) {
+    for (ModifierNode *m: *modifiers->modifiers) {
         if (m->isAccessModifier()) {
             if (!prevAccess.empty()) {
                 throw SemanticError::InvalidCombinationOfModifiers(0, prevAccess + " " + modifierToString(m->type));
@@ -244,13 +250,17 @@ void TemplateStatNode::validateMethodModifiers() const {
             if (m->type == _SEALED) {
                 throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type));
             }
+            if (m->type == _ABSTRACT) {
+                throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type));
+            }
             if (!prevInherit.empty()) {
                 throw SemanticError::InvalidCombinationOfModifiers(0, prevInherit + " " + modifierToString(m->type));
             }
             prevInherit = modifierToString(m->type);
         } else if (m->isOverrideModifier()) {
             if (overrided) {
-                throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type) + " " + modifierToString(m->type));
+                throw SemanticError::InvalidCombinationOfModifiers(
+                    0, modifierToString(m->type) + " " + modifierToString(m->type));
             }
             overrided = true;
         }
@@ -277,7 +287,7 @@ void ClassDefNode::validatePrimaryConstructorParametersModifiers() const {
     string prevAccess;
     string prevInherit;
     bool overrided = false;
-    for (ClassParamNode* cp: *classParams->classParams) {
+    for (ClassParamNode *cp: *classParams->classParams) {
         for (ModifierNode *m: *cp->modifiers->modifiers) {
             if (m->isAccessModifier()) {
                 if (!prevAccess.empty()) {
@@ -289,7 +299,8 @@ void ClassDefNode::validatePrimaryConstructorParametersModifiers() const {
                     throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type));
                 }
                 if (!prevInherit.empty()) {
-                    throw SemanticError::InvalidCombinationOfModifiers(0, prevInherit + " " + modifierToString(m->type));
+                    throw SemanticError::InvalidCombinationOfModifiers(
+                        0, prevInherit + " " + modifierToString(m->type));
                 }
                 prevInherit = modifierToString(m->type);
             } else if (m->isOverrideModifier()) {
@@ -298,7 +309,8 @@ void ClassDefNode::validatePrimaryConstructorParametersModifiers() const {
                 }
 
                 if (overrided) {
-                    throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type) + " " + modifierToString(m->type));
+                    throw SemanticError::InvalidCombinationOfModifiers(
+                        0, modifierToString(m->type) + " " + modifierToString(m->type));
                 }
                 overrided = true;
             }
@@ -312,7 +324,7 @@ void ClassDefNode::validatePrimaryConstructorParametersModifiers() const {
 }
 
 void TemplateStatNode::validateSecondaryConstructorModifiers() const {
-    ModifiersNode* modifiers;
+    ModifiersNode *modifiers;
     if (def && def->funDef && def->funDef->constrExpr) {
         modifiers = def->modifiers;
     } else {
@@ -320,7 +332,7 @@ void TemplateStatNode::validateSecondaryConstructorModifiers() const {
     }
 
     string prevAccess;
-    for (ModifierNode* m: *modifiers->modifiers) {
+    for (ModifierNode *m: *modifiers->modifiers) {
         if (m->isAccessModifier()) {
             if (!prevAccess.empty()) {
                 throw SemanticError::InvalidCombinationOfModifiers(0, prevAccess + " " + modifierToString(m->type));

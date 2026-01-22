@@ -85,6 +85,11 @@ public:
 
     FieldMetaInfo() : modifiers({}) {
     };
+
+    bool isPrivate() const { return modifiers.hasModifier(_PRIVATE); }
+    bool isProtected() const { return modifiers.hasModifier(_PROTECTED); }
+    bool isFinal() const { return modifiers.hasModifier(_FINAL); }
+    bool isOverride() const { return modifiers.hasModifier(_OVERRIDE); }
 };
 
 class MethodVarMetaInfo : public VarMetaInfo {
@@ -142,6 +147,11 @@ public:
 
     MethodMetaInfo() : modifiers({}) {
     } ;
+
+    bool isPrivate() const { return modifiers.hasModifier(_PRIVATE); }
+    bool isProtected() const { return modifiers.hasModifier(_PROTECTED); }
+    bool isFinal() const { return modifiers.hasModifier(_FINAL); }
+    bool isOverride() const { return modifiers.hasModifier(_OVERRIDE); }
 };
 
 class ClassMetaInfo : public BytesMetaInfo, public JvmDescriptorOwner {
@@ -177,13 +187,29 @@ public:
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    virtual optional<FieldMetaInfo *> resolveField(string fieldName);
+    bool amSubclassOf(const ClassMetaInfo* other) const;
 
-    virtual optional<MethodMetaInfo *> resolveMethod(string methodName, vector<DataType *> argTypes);
+    virtual optional<FieldMetaInfo *> resolveField(const string& fieldName,
+                                                   const ClassMetaInfo* accessContext,
+                                                   bool lookupPrivate = false);
+
+    virtual optional<MethodMetaInfo *> resolveMethod(const string& methodName,
+                                                     const vector<DataType *>& argTypes,
+                                                     const ClassMetaInfo* accessFrom,
+                                                     bool lookupPrivate = false);
 
     string jvmDescriptor() {
         return "Lvstu/scala/code" + this->name + ";";
     }
+
+    optional<string> getParentName();
+
+    uint16_t getConstantCounter();
+
+    bool isPrivate() const { return modifiers.hasModifier(_PRIVATE); }
+    bool isProtected() const { return modifiers.hasModifier(_PROTECTED); }
+    bool isFinal() const { return modifiers.hasModifier(_FINAL); }
+    bool isOverride() const { return modifiers.hasModifier(_OVERRIDE); }
 
 protected:
     uint16_t constantCounter = 1;
