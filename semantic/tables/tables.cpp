@@ -155,7 +155,7 @@ optional<MethodMetaInfo *> ClassMetaInfo::resolveMethod(const string& methodName
 optional<string> ClassMetaInfo::getParentName() {
     if (parent) return parent->name;
 
-    if (!classNode->classTemplateOpt) return nullopt;
+    if (!classNode || !classNode->classTemplateOpt) return nullopt;
     auto* ext = classNode->classTemplateOpt->extensionPartClassTemplate;
     if (ext && ext->fullId) {
         return optional{ext->fullId->name};
@@ -330,4 +330,70 @@ optional<MethodMetaInfo *> ClassMetaInfo::addMethod(DclNode *funDclNode) {
 
     this->methods[methodName].push_back(method);
     return method;
+}
+
+RtlClassMetaInfo* RtlClassMetaInfo::String = nullptr;
+RtlClassMetaInfo* RtlClassMetaInfo::Integer = nullptr;
+RtlClassMetaInfo* RtlClassMetaInfo::SbtIn = nullptr;
+RtlClassMetaInfo* RtlClassMetaInfo::Unit = nullptr;
+RtlClassMetaInfo* RtlClassMetaInfo::Char = nullptr;
+RtlClassMetaInfo* RtlClassMetaInfo::Double = nullptr;
+RtlClassMetaInfo* RtlClassMetaInfo::Boolean = nullptr;
+
+static std::unordered_map<std::string, RtlClassMetaInfo*> rtlClassMap;
+
+void RtlClassMetaInfo::initializeRtlClasses() {
+    String = RtlClassMetaInfo::initString();
+    Integer = RtlClassMetaInfo::initInteger();
+    Double = RtlClassMetaInfo::initDouble();
+    Boolean = RtlClassMetaInfo::initBoolean();
+    Char = RtlClassMetaInfo::initChar();
+    Unit = RtlClassMetaInfo::initUnit();
+    SbtIn = RtlClassMetaInfo::initSbtIn();
+
+    rtlClassMap["String"] = String;
+    rtlClassMap["Int"] = Integer;
+    rtlClassMap["Double"] = Double;
+    rtlClassMap["Boolean"] = Boolean;
+    rtlClassMap["Char"] = Char;
+    rtlClassMap["Unit"] = Unit;
+    rtlClassMap["SbtIn"] = SbtIn;
+
+    std::cout << "RTL classes initialized successfully." << std::endl;
+}
+
+RtlClassMetaInfo* RtlClassMetaInfo::getRtlClassInfo(const std::string& typeName) {
+    auto it = rtlClassMap.find(typeName);
+    if (it != rtlClassMap.end()) {
+        return it->second;
+    }
+    return nullptr;
+}
+
+RtlClassMetaInfo* RtlClassMetaInfo::initString() {
+    return new RtlClassMetaInfo("String", _JAVA);
+}
+
+RtlClassMetaInfo* RtlClassMetaInfo::initInteger() {
+    return new RtlClassMetaInfo("Int", _JAVA);
+}
+
+RtlClassMetaInfo* RtlClassMetaInfo::initSbtIn() {
+    return new RtlClassMetaInfo("SbtIn", _JAVA);
+}
+
+RtlClassMetaInfo* RtlClassMetaInfo::initUnit() {
+    return new RtlClassMetaInfo("Unit", _SCALA);
+}
+
+RtlClassMetaInfo* RtlClassMetaInfo::initChar() {
+    return new RtlClassMetaInfo("Char", _JAVA);
+}
+
+RtlClassMetaInfo* RtlClassMetaInfo::initDouble() {
+    return new RtlClassMetaInfo("Double", _JAVA);
+}
+
+RtlClassMetaInfo* RtlClassMetaInfo::initBoolean() {
+    return new RtlClassMetaInfo("Boolean", _JAVA);
 }

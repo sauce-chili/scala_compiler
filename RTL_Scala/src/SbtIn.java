@@ -12,12 +12,12 @@ import java.io.EOFException;
  * Методы используют типы из rtl (rtl.String, rtl.Int, rtl.Float, rtl.Char, rtl.Boolean).
  * Методы ввода кидают RuntimeException(EOFException) при EOF (кроме readLine — она возвращает null).
  */
-public final class Console extends Any {
+public final class SbtIn extends Any {
     private static final BufferedReader IN = new BufferedReader(new InputStreamReader(System.in));
     private static final PrintStream OUT = System.out;
     private static final PrintStream ERR = System.err;
 
-    private Console() { /* static only */ }
+    private SbtIn() { /* static only */ }
 
     /* -------------------- Input -------------------- */
 
@@ -148,7 +148,7 @@ public final class Console extends Any {
 
     /**
      * Форматированный вывод.
-     * Пример: Console.printf(new rtl.String("x=%d y=%s\n"), new rtl.Int(10), new rtl.String("hi"));
+     * Пример: SbtIn.printf(new rtl.String("x=%d y=%s\n"), new rtl.Int(10), new rtl.String("hi"));
      * Форматирует через java.lang.String.format; аргументы приводятся через their toString().
      */
     public static rtl.Unit printf(rtl.String format, Any... args) {

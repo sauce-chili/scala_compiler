@@ -27,3 +27,21 @@ optional<ClassMetaInfo *> SemanticContext::addClass(ClassDefNode *classDefNode) 
 
     return clsMeta;
 }
+
+optional<ClassMetaInfo *> SemanticContext::addClass(ClassMetaInfo *classMetaInfo) {
+    if (!classMetaInfo) return nullopt;
+
+    string clsName = classMetaInfo->name;
+
+    if (classes.find(clsName) != classes.end()) {
+        ErrorTable::addErrorToList(new SemanticError(SemanticError::ClassRedefinition(0, clsName)));
+        return nullopt;
+    }
+
+    Modifiers mods = Modifiers({_PUBLIC});
+    classMetaInfo->modifiers = mods;
+
+    classes[clsName] = classMetaInfo;
+
+    return classMetaInfo;
+}

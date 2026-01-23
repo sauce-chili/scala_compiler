@@ -174,6 +174,8 @@ public:
                                                                                modifiers(modifiers),
                                                                                classNode(classNode) {
     };
+    ClassMetaInfo(string name, Modifiers modifiers) : name(name), modifiers(modifiers) {
+    };
 
     // возвращают соотвественный объект если подобного нет
     // по 2 перегрузки, тк добавляем не только определения, но и декларации(к-ые затем будем анализировать)
@@ -216,9 +218,10 @@ protected:
 };
 
 class RtlClassMetaInfo : public ClassMetaInfo {
+public:
     static RtlClassMetaInfo* String;
     static RtlClassMetaInfo* Integer;
-    static RtlClassMetaInfo* Console;
+    static RtlClassMetaInfo* SbtIn;
     static RtlClassMetaInfo* Unit;
     static RtlClassMetaInfo* Char;
     static RtlClassMetaInfo* Double;
@@ -239,9 +242,23 @@ class RtlClassMetaInfo : public ClassMetaInfo {
                + this->name + ";";
     }
 
-    RtlClassMetaInfo(std::string name, ClassDefNode *classNode, Lang langOfDescriptor): ClassMetaInfo(name, Modifiers({}), classNode) {
+    RtlClassMetaInfo(std::string name, Lang langOfDescriptor): ClassMetaInfo(name, Modifiers({})) {
         this->langOfDescriptor = langOfDescriptor;
     }
+
+    static RtlClassMetaInfo* getRtlClassInfo(const std::string& typeName);
+
+public:
+    static void initializeRtlClasses();
+
+private:
+    static RtlClassMetaInfo* initString();
+    static RtlClassMetaInfo* initInteger();
+    static RtlClassMetaInfo* initSbtIn();
+    static RtlClassMetaInfo* initUnit();
+    static RtlClassMetaInfo* initChar();
+    static RtlClassMetaInfo* initDouble();
+    static RtlClassMetaInfo* initBoolean();
 };
 
 #endif //SCALA_LEXER_TABLES_H

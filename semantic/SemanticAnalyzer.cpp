@@ -266,3 +266,14 @@ void SemanticAnalyzer::validateOverrides() {
         }
     }
 }
+
+SemanticAnalyzer::SemanticAnalyzer() {
+    RtlClassMetaInfo::initializeRtlClasses();
+    ctx().addClass(RtlClassMetaInfo::String);
+    ctx().addClass(RtlClassMetaInfo::Integer);
+    ctx().addClass(RtlClassMetaInfo::SbtIn);
+    ctx().addClass(RtlClassMetaInfo::Char);
+    ctx().addClass(RtlClassMetaInfo::Double);
+    ctx().addClass(RtlClassMetaInfo::Boolean);
+    ctx().addClass(RtlClassMetaInfo::Unit);
+}

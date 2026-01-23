@@ -24,6 +24,11 @@ public:
      */
     optional<ClassMetaInfo *> addClass(ClassDefNode *classDefNode);
 
+    /**
+     * Возвращает созданный класс, если такого нет
+     */
+    optional<ClassMetaInfo *> addClass(ClassMetaInfo *classMetaInfo);
+
     static SemanticContext &instance() {
         static SemanticContext instance;
         return instance;

@@ -13,6 +13,7 @@ class SemanticAnalyzer {
     void linkInheritanceHierarchy();
     void validateInheritanceCycles();
     void validateOverrides();
+
 public:
     bool analyze(TopStatSeqNode* root);
 
@@ -21,6 +22,7 @@ public:
     void exportMethodsToCSV(const std::string& path);
     void exportFieldsToCSV(const std::string& path);
 
+    SemanticAnalyzer();
 };
 
 
