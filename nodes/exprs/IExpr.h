@@ -9,7 +9,7 @@
 class IExpr {
 public:
     virtual DataType getDataType() = 0;
-    virtual getExprType() = 0;
+    virtual int getExprType() = 0;
 };
 
 #endif //SCALA_LEXER_IEXPR_H
