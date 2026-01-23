@@ -11,6 +11,7 @@ public:
     InfixExprNode *left, *right;
     IdNode* fullId;
     PrefixExprNode* prefixExpr;
+    bool visited = false;
 
     InfixExprNode();
 
@@ -18,6 +19,8 @@ public:
 
     static InfixExprNode* createInfixFromPrefix(PrefixExprNode* prefixExpr);
     static InfixExprNode* createFromInfixes(InfixExprNode *left, IdNode* fullId, InfixExprNode *right);
+
+    void normalizeInfix();
 
     string toDot() const override;
     string getDotLabel() const override;

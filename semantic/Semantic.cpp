@@ -12,6 +12,8 @@
 
 #include <stdexcept>
 
+void normalizeInfixes(Node* node);
+
 void TopStatSeqNode::convertAst() {
     for (TopStatNode* tsn: *(topStats)) {
         if (!tsn) continue;
@@ -24,6 +26,7 @@ void TopStatSeqNode::convertAst() {
         tsn->toFieldsFromPrimaryConstructor();
         tsn->initializeBaseConstructorFromFields();
         tsn->secondaryConstructorsToMethods();
+        normalizeInfixes(tsn);
     }
 }
 
@@ -370,5 +373,36 @@ void TopStatNode::secondaryConstructorsToMethods() {
         );
         p->def->funDef->constrExpr = nullptr;
         p->def->funDef = constructorNode;
+    }
+}
+
+void normalizeInfixes(Node* node) {
+    if (!node) return;
+
+    if (auto inf = dynamic_cast<InfixExprNode*>(node)) {
+        inf->normalizeInfix();
+    }
+
+    auto children = node->getChildren();
+    for (Node* child : children) {
+        normalizeInfixes(child);
+    }
+}
+
+static bool isRightAssoc(const std::string &name) {
+    return !name.empty() && name.back() == ':';
+}
+
+void InfixExprNode::normalizeInfix() {
+    if (visited) return;
+    if (right) right->normalizeInfix();
+    if (left) left->normalizeInfix();
+    visited = true;
+    if (!left || !right) return;
+
+    if (isRightAssoc(fullId->name)) {
+        InfixExprNode* tmp = left;
+        left = right;
+        right = tmp;
     }
 }
