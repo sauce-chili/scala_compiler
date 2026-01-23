@@ -194,10 +194,10 @@ enumerators: generator                       { $$ = new EnumeratorsNode($1); }
            ;
 
 enumeratorPart: generator                     { $$ = EnumeratorPartNode::createGeneratorEnumeratorPart($1); }
-              | fullID simpleType '=' expr { $$ = EnumeratorPartNode::createVarDefEnumeratorPart($1, $2, $4); } // определение переменной
+              | fullID ':' simpleType '=' expr { $$ = EnumeratorPartNode::createVarDefEnumeratorPart($1, $3, $5); } // определение переменной
               ;
 
-generator: fullID simpleType LEFT_ARROW expr { $$ = GeneratorNode::createGenerator($1, $2, $4); }
+generator: fullID ':' simpleType LEFT_ARROW expr { $$ = GeneratorNode::createGenerator($1, $3, $5); }
          ;
 
 infixExpr: prefixExpr { $$ = InfixExprNode::createInfixFromPrefix($1); }
@@ -356,7 +356,7 @@ templateStat: /* empty */   { $$ = nullptr; }
 
 dcl: VAL ids ':' simpleType { $$ = DclNode::createValDcl($2, $4); }
    | VAR ids ':' simpleType { $$ = DclNode::createVarDcl($2, $4); }
-   | DEF funSig simpleType { $$ = DclNode::createDefDcl($2, $3); }
+   | DEF funSig ':' simpleType { $$ = DclNode::createDefDcl($2, $4); }
    ;
 
 funSig: fullID funcParamClause { $$ = FunSigNode::createFunSig($1, $2); }

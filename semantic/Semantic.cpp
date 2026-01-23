@@ -2,15 +2,19 @@
 #include "nodes/class/ClassDefNode.h"
 #include "nodes/definitions/DclNode.h"
 #include "nodes/definitions/DefNode.h"
-#include "nodes/exprs/ArgumentExprsNode.h"
 #include "nodes/stats/TopStatNode.h"
 #include "nodes/class/ClassParamNode.h"
 #include "nodes/class/ClassParamsNode.h"
 #include "semantic/error/SemanticError.h"
 #include "nodes/exprs/InfixExprNode.h"
+#include "nodes/exprs/ExprNode.h"
 #include "nodes/exprs/SimpleExpr1Node.h"
 
+#include <iostream>
 #include <stdexcept>
+
+void normalizeInfixes(Node* node);
+void transformInfixes(Node* node);
 
 void TopStatSeqNode::convertAst() {
     for (TopStatNode* tsn: *(topStats)) {
@@ -24,6 +28,8 @@ void TopStatSeqNode::convertAst() {
         tsn->toFieldsFromPrimaryConstructor();
         tsn->initializeBaseConstructorFromFields();
         tsn->secondaryConstructorsToMethods();
+        normalizeInfixes(tsn);
+        transformInfixes(tsn);
     }
 }
 
@@ -371,4 +377,90 @@ void TopStatNode::secondaryConstructorsToMethods() {
         p->def->funDef->constrExpr = nullptr;
         p->def->funDef = constructorNode;
     }
+}
+
+void normalizeInfixes(Node* node) {
+    if (!node) return;
+
+    if (auto inf = dynamic_cast<InfixExprNode*>(node)) {
+        inf->normalizeInfix();
+    }
+
+    auto children = node->getChildren();
+    for (Node* child : children) {
+        normalizeInfixes(child);
+    }
+}
+
+static bool isRightAssoc(const std::string &name) {
+    return !name.empty() && name.back() == ':';
+}
+
+void InfixExprNode::normalizeInfix() {
+    if (visited) return;
+    if (right) right->normalizeInfix();
+    if (left) left->normalizeInfix();
+    visited = true;
+    if (!left || !right) return;
+
+    if (isRightAssoc(fullId->name)) {
+        InfixExprNode* tmp = left;
+        left = right;
+        right = tmp;
+    }
+}
+
+void transformInfixes(Node* node) {
+    if (!node) return;
+
+    if (auto inf = dynamic_cast<InfixExprNode*>(node)) {
+        if (!inf->visitedForInfixOpTransform) {
+            inf->transformInfixOperationToMethodCall();
+        }
+    }
+
+    auto children = node->getChildren();
+    for (Node* child : children) {
+        transformInfixes(child);
+    }
+}
+
+void InfixExprNode::transformInfixOperationToMethodCall() {
+    if (visitedForInfixOpTransform) return;
+    visitedForInfixOpTransform = true;
+    if (!left || !right) return;
+
+    right->transformInfixOperationToMethodCall();
+    left->transformInfixOperationToMethodCall();
+
+    std::cout << "start\n";
+
+    prefixExpr = new PrefixExprNode();
+    prefixExpr->type = left->prefixExpr ? left->prefixExpr->type : _NO_UNARY_OPERATOR;
+
+    prefixExpr->simpleExpr = new SimpleExprNode();
+    prefixExpr->simpleExpr->type = _SIMPLE_EXPR_1;
+
+    prefixExpr->simpleExpr->simpleExpr1 = new SimpleExpr1Node();
+    prefixExpr->simpleExpr->simpleExpr1->type = _METHOD_CALL;
+    prefixExpr->simpleExpr->simpleExpr1->simpleExpr1 = new SimpleExpr1Node();
+    prefixExpr->simpleExpr->simpleExpr1->simpleExpr1->simpleExpr = left->prefixExpr->simpleExpr;
+    prefixExpr->simpleExpr->simpleExpr1->simpleExpr1 = SimpleExpr1Node::createIdNode(fullId->copy());
+    prefixExpr->simpleExpr->simpleExpr1->simpleExpr1->type = _EXPRESSION_FIELD_ACCESS;
+    prefixExpr->simpleExpr->simpleExpr1->simpleExpr1->simpleExpr = new SimpleExprNode();
+    prefixExpr->simpleExpr->simpleExpr1->simpleExpr1->simpleExpr->type = _SIMPLE_EXPR_1;
+    prefixExpr->simpleExpr->simpleExpr1->simpleExpr1->simpleExpr->simpleExpr1 = new SimpleExpr1Node();
+    prefixExpr->simpleExpr->simpleExpr1->simpleExpr1->simpleExpr->simpleExpr1 = left->prefixExpr->simpleExpr->simpleExpr1;
+
+    ExprNode* argument = ExprNode::createInfix(right ? right : InfixExprNode::createInfixFromPrefix(right->prefixExpr));
+    ExprsNode* argumentAsList = new ExprsNode(argument);
+    prefixExpr->simpleExpr->simpleExpr1->argumentExprs = new ArgumentExprsNode(
+            argumentAsList
+    );
+
+    left = nullptr;
+    right = nullptr;
+    fullId = nullptr;
+
+    std::cout << "end\n";
 }

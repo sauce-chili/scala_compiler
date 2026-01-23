@@ -12,12 +12,18 @@ public:
     IdNode* fullId;
     PrefixExprNode* prefixExpr;
 
+    bool visited = false;
+    bool visitedForInfixOpTransform = false;
+
     InfixExprNode();
 
     InfixExprNode* copy();
 
     static InfixExprNode* createInfixFromPrefix(PrefixExprNode* prefixExpr);
     static InfixExprNode* createFromInfixes(InfixExprNode *left, IdNode* fullId, InfixExprNode *right);
+
+    void transformInfixOperationToMethodCall();
+    void normalizeInfix();
 
     string toDot() const override;
     string getDotLabel() const override;
