@@ -14,7 +14,7 @@ int BufferedYYLex::getNextToken() {
         return _lex();
     }
 
-    TokenInfo& t = _buffer.front();
+    TokenInfo t = _buffer.front();
     _buffer.pop_front();
     yylval = t.value;
     return t.type;
