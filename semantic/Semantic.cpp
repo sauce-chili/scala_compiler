@@ -452,7 +452,7 @@ void InfixExprNode::transformInfixOperationToMethodCall() {
     prefixExpr->simpleExpr->simpleExpr1->simpleExpr1->simpleExpr->simpleExpr1 = new SimpleExpr1Node();
     prefixExpr->simpleExpr->simpleExpr1->simpleExpr1->simpleExpr->simpleExpr1 = left->prefixExpr->simpleExpr->simpleExpr1;
 
-    ExprNode* argument = ExprNode::createInfix(right ? right : InfixExprNode::createInfixFromPrefix(right->prefixExpr));
+    ExprNode* argument = ExprNode::createInfix(right);
     ExprsNode* argumentAsList = new ExprsNode(argument);
     prefixExpr->simpleExpr->simpleExpr1->argumentExprs = new ArgumentExprsNode(
             argumentAsList

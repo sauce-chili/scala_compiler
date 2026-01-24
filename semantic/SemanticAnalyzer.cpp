@@ -23,7 +23,7 @@ void SemanticAnalyzer::exportClassesToCSV(const std::string& path) {
     std::ofstream clsFile(path + "/classes.csv");
     if (!clsFile.is_open()) return;
 
-    clsFile << "Modifiers,ClassName,ParentName,ConstantCount,MethodCount,FieldCount\n";
+    clsFile << "Modifiers,ClassName,JvmName,ParentName,ConstantCount,MethodCount,FieldCount\n";
 
     for (auto const& [name, info] : ctx().classes) {
         if (!info) continue;
@@ -36,6 +36,7 @@ void SemanticAnalyzer::exportClassesToCSV(const std::string& path) {
 
         clsFile << "\"" << cleanMods(info->modifiers) << "\","
                 << name << ","
+                << info->jvmName << ","
                 << (info->parent ? info->parent->name : "None") << ","
                 << info->getConstantCounter() << "," // Счетчик констант из ClassMetaInfo
                 << methodCount << ","
@@ -48,7 +49,7 @@ void SemanticAnalyzer::exportMethodsToCSV(const std::string& path) {
     std::ofstream mthFile(path + "/methods.csv");
     if (!mthFile.is_open()) return;
 
-    mthFile << "Modifiers,MethodName,ArgTypes,ReturnType,ClassName,VarCount\n";
+    mthFile << "Modifiers,MethodName,JvmName,ArgTypes,ReturnType,ClassName,VarCount\n";
 
     for (auto const& [cName, cInfo] : ctx().classes) {
         for (auto const& [mName, mList] : cInfo->methods) {
@@ -63,6 +64,7 @@ void SemanticAnalyzer::exportMethodsToCSV(const std::string& path) {
 
                 mthFile << "\"" << cleanMods(m->modifiers) << "\","
                         << mName << ","
+                        << m->jvmName << ','
                         << "\"" << args << "\","
                         << m->returnType.toString() << ","
                         << cName << ","
@@ -77,12 +79,13 @@ void SemanticAnalyzer::exportFieldsToCSV(const std::string& path) {
     std::ofstream fldFile(path + "/fields.csv");
     if (!fldFile.is_open()) return;
 
-    fldFile << "Modifiers,FieldName,Type,IsInitialized,ClassName\n";
+    fldFile << "Modifiers,FieldName,JvmName,Type,IsInitialized,ClassName\n";
 
     for (auto const& [cName, cInfo] : ctx().classes) {
         for (auto const& [fName, fInfo] : cInfo->fields) {
             fldFile << "\"" << cleanMods(fInfo->modifiers) << "\","
                     << fName << ","
+                    << fInfo->jvmName << ","
                     << fInfo->dataType.toString() << ","
                     << (fInfo->isInit ? "true" : "false") << ","
                     << cName << "\n";

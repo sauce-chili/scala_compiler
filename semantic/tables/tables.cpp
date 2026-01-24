@@ -3,6 +3,7 @@
 //
 
 #include "tables.hpp"
+#include "../NameTransformer.h"
 
 #include "nodes/class/ClassDefNode.h"
 #include "nodes/definitions/DclNode.h"
@@ -183,6 +184,7 @@ optional<FieldMetaInfo *> ClassMetaInfo::addField(VarDefsNode *varDefsNode, Modi
 
         auto *field = new FieldMetaInfo();
         field->name = name;
+        field->jvmName = NameTransformer::encode(name);
         field->dataType = type;
         field->isVal = isVal;
         field->isInit = (varDefsNode->expr != nullptr);
@@ -212,6 +214,7 @@ optional<FieldMetaInfo *> ClassMetaInfo::addField(DclNode *varDclNode) {
 
         auto *field = new FieldMetaInfo();
         field->name = name;
+        field->jvmName = NameTransformer::encode(name);
         field->dataType = type;
         field->isVal = isVal;
         field->classMetaInfo = this;
@@ -237,6 +240,7 @@ optional<MethodMetaInfo *> ClassMetaInfo::addMethod(FunDefNode *funDefNode, Modi
         for (auto *paramNode: *funDefNode->funSig->params->funcParams) {
             ArgMetaInfo *arg = new ArgMetaInfo();
             arg->name = paramNode->fullId->name;
+            arg->jvmName = NameTransformer::encode(name);
             arg->dataType = DataType::createFromNode(paramNode->simpleType);
             arg->number = tempCounter++;
             arg->isVal = true; // Аргументы в Scala неизменяемы (val)
@@ -266,6 +270,7 @@ optional<MethodMetaInfo *> ClassMetaInfo::addMethod(FunDefNode *funDefNode, Modi
     // Метод уникален, создаем MetaInfo
     MethodMetaInfo *method = new MethodMetaInfo();
     method->name = methodName;
+    method->jvmName = NameTransformer::encode(methodName);
     method->classMetaInfo = this;
     method->body = funDefNode->expr;
     method->returnType = DataType::createFromNode(funDefNode->simpleType);
@@ -296,6 +301,7 @@ optional<MethodMetaInfo *> ClassMetaInfo::addMethod(DclNode *funDclNode) {
         for (auto *paramNode: *funDclNode->funSig->params->funcParams) {
             ArgMetaInfo *arg = new ArgMetaInfo();
             arg->name = paramNode->fullId->name;
+            arg->jvmName = NameTransformer::encode(name);
             arg->dataType = DataType::createFromNode(paramNode->simpleType);
             arg->number = tempCounter++;
             arg->isVal = true;
@@ -318,6 +324,7 @@ optional<MethodMetaInfo *> ClassMetaInfo::addMethod(DclNode *funDclNode) {
     // Регистрация метода
     MethodMetaInfo *method = new MethodMetaInfo();
     method->name = methodName;
+    method->jvmName = NameTransformer::encode(methodName);
     method->classMetaInfo = this;
     method->returnType = DataType::createFromNode(funDclNode->simpleType);
     method->modifiers = Modifiers::createFromModifiersNode(*funDclNode->modifiers);

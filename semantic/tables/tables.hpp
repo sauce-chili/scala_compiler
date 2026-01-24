@@ -12,6 +12,7 @@
 #include "semantic/scopes/Scope.h"
 #include "semantic/tools/datatype.h"
 #include "semantic/tools/tools.h"
+#include "semantic/NameTransformer.h"
 
 class Scope;
 class FunDefNode;
@@ -55,6 +56,7 @@ public:
 class VarMetaInfo : public BytesMetaInfo {
 public:
     string name;
+    string jvmName;
     DataType dataType;
     ExprNode *value;
     bool isInit;
@@ -62,6 +64,7 @@ public:
 
     VarMetaInfo(string name, const DataType &type, ExprNode *value, bool val)
         : name(name),
+          jvmName(NameTransformer::encode(name)),
           dataType(type),
           value(value),
           isVal(val),
@@ -127,6 +130,7 @@ class ConstantMetaInfo : public BytesMetaInfo {
 class MethodMetaInfo : public BytesMetaInfo {
 public:
     string name;
+    string jvmName;
     ClassMetaInfo *classMetaInfo = nullptr;
     Modifiers modifiers;
     DataType returnType;
@@ -157,6 +161,7 @@ public:
 class ClassMetaInfo : public BytesMetaInfo, public JvmDescriptorOwner {
 public:
     string name;
+    string jvmName;
     Modifiers modifiers;
     ClassDefNode *classNode = nullptr;
     ClassMetaInfo *parent = nullptr; // заполняется позже, когда все классы будут занесены в контекст
@@ -171,10 +176,14 @@ public:
     // -----------------------------------------------------------------------------------------------------------------
 
     ClassMetaInfo(string name, Modifiers modifiers, ClassDefNode *classNode) : name(name),
+                                                                               jvmName(NameTransformer::encode(name)),
                                                                                modifiers(modifiers),
                                                                                classNode(classNode) {
     };
-    ClassMetaInfo(string name, Modifiers modifiers) : name(name), modifiers(modifiers) {
+    ClassMetaInfo(string name, Modifiers modifiers) :
+                                                      name(name),
+                                                      jvmName(NameTransformer::encode(name)),
+                                                      modifiers(modifiers) {
     };
 
     // возвращают соотвественный объект если подобного нет

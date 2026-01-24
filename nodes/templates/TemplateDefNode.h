@@ -2,8 +2,7 @@
 #define SCALA_LEXER_TEMPLATEDEFNODE_H
 
 #include "../Node.h"
-#include "nodes/modifier/ModifiersNode.h"
-#include "../semantic/scopes/Scope.h"
+#include "../modifier/ModifiersNode.h"
 
 class ClassDefNode;
 class ClassTemplateOptNode;
