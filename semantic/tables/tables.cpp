@@ -117,7 +117,7 @@ optional<MethodMetaInfo *> ClassMetaInfo::resolveMethod(const string& methodName
             vector<DataType *> existingArgs = m->getArgsTypes();
             bool countArgsEquals = existingArgs.size() == argTypes.size();
             bool typesArgsEquals = std::equal(existingArgs.begin(), existingArgs.end(),
-                                              argTypes.begin(),
+                                              argTypes.begin(), argTypes.end(),
                                               [](const DataType *a, const DataType *b) {
                                                   return *a == *b;
                                               });

@@ -26,22 +26,6 @@ ExtensionClassTemplateNode::createExtendWithBody(IdNode *fullId, TemplateStatsNo
     return node;
 }
 
-ExtensionClassTemplateNode *
-ExtensionClassTemplateNode::createExtendWithConstr(IdNode *fullId, ArgumentExprsNode *argumentExprs) {
-    ExtensionClassTemplateNode* node = new ExtensionClassTemplateNode();
-    node->type = _PARENT_CONSTR_CALL;
-    node->fullId = fullId;
-    node->argumentExprs = argumentExprs;
-    return node;
-}
-
-ExtensionClassTemplateNode *ExtensionClassTemplateNode::createEmptyExtend(IdNode *fullId) {
-    ExtensionClassTemplateNode* node = new ExtensionClassTemplateNode();
-    node->type = _ONLY_PARENT_ID;
-    node->fullId = fullId;
-    return node;
-}
-
 ExtensionClassTemplateNode *ExtensionClassTemplateNode::copy() {
     ExtensionClassTemplateNode* copied = new ExtensionClassTemplateNode();
 

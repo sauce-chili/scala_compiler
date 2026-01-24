@@ -116,8 +116,6 @@ enum Type {
 enum ClassExtensionTemplateType {
     _PARENT_CONSTR_CALL_AND_THIS_BODY,
     _THIS_BODY,
-    _PARENT_CONSTR_CALL,
-    _ONLY_PARENT_ID,
 };
 
 std::string modifierToString(ModifierType m);
