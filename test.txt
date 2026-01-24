@@ -1,8 +1,8 @@
-private class MyClass (private override val x: Char, val y: Int) extends A(x) {
+private class MyClass (private override val x: Char, val y: Int) {
     protected override val z: Unit = 10
     val d: Double
 
-    abstract private def myFunc(x: Int) = {
+    private def myFunc(x: Int): Int = {
         return;
     }
 }

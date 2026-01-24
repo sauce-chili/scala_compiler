@@ -65,11 +65,11 @@ void TopStatNode::toFieldsFromPrimaryConstructor() {
         //if (currentClass->classTemplateOpt->classParents->constr->arguments->contains()) {} // аргументы могут содержать вырадения по типу x + y
 
         TemplateStatNode *stat = new TemplateStatNode();
-        IdsNode *ids = IdsNode::addIdToList(nullptr, p->fullId->copy());
+        IdNode *id = p->fullId->copy();
         if (p->type == ClassParamType::_VAR_CLASS_PARAM) {
-            stat->dcl = DclNode::createVarDcl(ids, p->simpleType->copy());
+            stat->dcl = DclNode::createVarDcl(id, p->simpleType->copy());
         } else {
-            stat->dcl = DclNode::createValDcl(ids, p->simpleType->copy());
+            stat->dcl = DclNode::createValDcl(id, p->simpleType->copy());
         }
         stat->dcl->modifiers = p->modifiers->copy();
 
@@ -120,10 +120,10 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
         SimpleTypeNode* typeOfVars = p->def->varDefs->simpleType ? p->def->varDefs->simpleType->copy() : nullptr;
         if (p->def->varDefs->type == StatType::_VAR_DECL) {
             stat = BlockStatNode::createVarDefsNode(
-                    VarDefsNode::createVar(p->def->varDefs->ids->copy(), typeOfVars, p->def->varDefs->expr->copy()));
+                    VarDefsNode::createVar(p->def->varDefs->fullId->copy(), typeOfVars, p->def->varDefs->expr->copy()));
         } else {
             stat = BlockStatNode::createVarDefsNode(
-                    VarDefsNode::createVal(p->def->varDefs->ids->copy(), typeOfVars, p->def->varDefs->expr->copy()));
+                    VarDefsNode::createVal(p->def->varDefs->fullId->copy(), typeOfVars, p->def->varDefs->expr->copy()));
         }
         p->def->varDefs->expr = nullptr;
         BlockStatsNode::addBlockStatToList(blockStats, stat);

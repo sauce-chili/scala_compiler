@@ -92,7 +92,7 @@ std::string classEnumCaseTypeToString(EnumCaseType t) {
     switch (t) {
         case _CASE_WITH_EXTENDS: return "Case with extends";
         case _CASE_WITH_PARAMS:  return "Case with params";
-        case _CASE_WITH_IDS:     return "Case with ids list";
+        case _CASE_WITH_IDS:     return "Case with fullId";
 
         default:                 return "Unknown enum case";
     }

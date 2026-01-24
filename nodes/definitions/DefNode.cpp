@@ -59,7 +59,7 @@ string DefNode::getDotLabel() const {
 bool DefNode::containsVar(string name) {
     if (!varDefs) return false;
 
-    return varDefs->ids->contains(name);
+    return varDefs->fullId->name == name;
 }
 
 list<Node *> DefNode::getChildren() const {
