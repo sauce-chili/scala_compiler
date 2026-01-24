@@ -131,8 +131,6 @@ std::string exprTypeToString(ExprType t) {
 std::string classExtensionTemplateTypeToString(ClassExtensionTemplateType t) {
     switch (t) {
         case _PARENT_CONSTR_CALL_AND_THIS_BODY: return "Parent constructor with class body";
-        case _PARENT_CONSTR_CALL:               return "Parent constructor";
-        case _ONLY_PARENT_ID:                   return "Parent name only";
         case _THIS_BODY:                        return "class body";
 
         default:                                return "Unknown class extension template type";

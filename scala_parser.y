@@ -386,15 +386,12 @@ classDef: fullID accessModifier classParamClause classTemplateOpt { $$ = ClassDe
         | fullID classTemplateOpt                                 { $$ = ClassDefNode::createClassDef($1, nullptr, nullptr, $2); }
         ;
 
-classTemplateOpt: /* empty */ %prec LOW_PREC     { $$ = nullptr; } // TODO Мб тоже под нож
-                | EXTENDS extensionClassTemplate { $$ = ClassTemplateOptNode::addFuncParamToBackToList($2, nullptr); }
+classTemplateOpt: EXTENDS extensionClassTemplate { $$ = ClassTemplateOptNode::addFuncParamToBackToList($2, nullptr); }
                 | templateBody                   { $$ = ClassTemplateOptNode::addFuncParamToBackToList(nullptr, $1); }
                 ;
 
 extensionClassTemplate: fullID argumentExprs templateBody       { $$ = ExtensionClassTemplateNode::createExtendWithConstrAndBody($1, $2, $3); }
-                      | fullID argumentExprs %prec END_TEMPLATE { $$ = ExtensionClassTemplateNode::createExtendWithConstr($1, $2); } // TODO Мб тоже под нож
                       | fullID templateBody                     { $$ = ExtensionClassTemplateNode::createExtendWithBody($1, $2); }
-                      | fullID %prec END_TEMPLATE               { $$ = ExtensionClassTemplateNode::createEmptyExtend($1); } // TODO Мб тоже под нож
                       ;
 
 topStatSeq: topStat                 { $$ = TopStatSeqNode::addModifierToList(nullptr, $1); }

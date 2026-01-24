@@ -1,0 +1,183 @@
+// BigGrammarTest.scala
+// Comprehensive grammar test for the provided Bison grammar (based on Scala 2.13 style).
+
+// method and field names
+class Ops {
+    // simple vals and vars
+    val topInt: Int = 3
+    var topUnit: Unit = ()
+
+    def id(x: Int): Int = x
+    def add(a: Int, b: Int): Int = a + b
+    def sideEffect(): Unit = { println("side effect"); () }
+    def unaryOpsTest(x: Int): Int = +x + -x
+
+    var a: Ops = new Ops();
+    def +(o: Ops): Ops = this
+    def !(): Boolean = false
+    def **(n: Int): Int = n * 2
+}
+
+
+class Outer {
+  val x: Int = 1
+}
+
+
+
+
+//////////////////////
+// Class definitions: params (val/var/unmarked), access modifiers, class templates and extends/with
+//////////////////////
+
+class Person(private val name: String, var age: Int) extends Human(name) {
+    val _ops: Ops = new Ops()
+
+    // primary constructor body (blockStats)
+    val info: String = name + ":" + age
+    def birthday(): Unit = { age = age + 1; () }
+    def greet(prefix: String): String = prefix + " " + name
+}
+
+
+class C1 {} // short form
+class C2() {} // explicit empty param clause
+class C3(val a: Int) extends C1 {
+}
+
+
+//////////////////////
+// Variable definitions, declarations (dcl), and assignments
+//////////////////////
+
+// field assignment
+class WithField { var f: Int = 0 }
+
+//////////////////////
+// Control flow: if/else, while, do while, for, for-yield, try/catch/finally, throw, return
+//////////////////////
+
+class Flows {
+    def flowExamples(xs: Int): Int = {
+        // if-else
+        val tmp: Int = if (xs.nonEmpty) xs.head else -1
+
+        val wf: WithField = new WithField()
+        wf.f = 123
+
+        // array assignment (simpleExpr1 argumentExprs '=' expr)
+        val arr: Array[Int] = Array[Int](0,1,2,3)
+        arr(1) = 42
+
+        // assignment to id
+        var assignTarget: Int = 0
+        assignTarget = arr(1) + 7
+
+        // while
+        var i: Int = 0
+        var res: Int = Seq.empty
+        while (i < xs.length) {
+            res = res :+ xs(i)
+            i = i + 1
+        }
+
+        // do-while
+        var cnt: int = 0
+        do {
+            cnt = cnt + 1
+        } while (cnt < 1)
+
+        // for with generator and for-yield
+        val ys: ForCompr = for (x: Int <- xs) yield x * 2
+
+        // nested generators and enumerators: generator with fullID + compoundType (x: Int <- expr)
+        val z: ForCompr = for (x: Int <- xs) yield x + 1
+
+        res ++ ys ++ z
+    }
+
+    // throw / return usage inside function
+    def thrower(flag: Boolean): Int = {
+      return 1
+    }
+
+    // do/while with semicolons and NL separation
+    def doExample(): Unit = {
+      var x: int = 0;
+      do {
+        x = x + 1;
+      } while (x < 2)
+    }
+
+    //////////////////////
+    // Infix expressions: many operators, ID tokens, compound expressions
+    //////////////////////
+
+    def infixTest(a: Int, b: Int): Boolean = {
+      val r1: Int = a + b * 2 - (a / 2)
+      val r2: Int = (a % b) # 5   // '#' treated as operator token in grammar
+      val r3: Int = a < b || a == b
+      // custom ID operator calls (ID tokens)
+      val fakeOp: Boolean = (a :: b) // using :: to test ID-like tokens (parser sees ID)
+      true
+    }
+}
+
+
+//////////////////////
+// Prefix/unary operators and method/field accesses (THIS/SUPER)
+//////////////////////
+
+class Base { def foo(): Int = 1 }
+class Derived extends Base {
+  override def foo(): Int = super.foo + 1
+  def testThisSuper(): Int = {
+    val s: Int = this.foo
+    val sp: Int = super.foo
+    s + sp
+  }
+}
+
+//////////////////////
+// Function parameters and defaults; this-constructor invocation (constrExpr)
+//////////////////////
+class Point(val x: Int, var y: Int) {
+  def this(x: Int) = { this(x, 0); }; // this argument-constructor
+  def this(x: Int) = { this(x, 0); } // this argument-constructor
+  def this(x: Int) = this(x, 0); // this argument-constructor
+  def this(x: Int) = this(x, 0) // this argument-constructor
+
+  def dist(): Double = math.sqrt((x*x + y*y).toDouble)
+}
+
+//////////////////////
+// Template stats + nested defs and empty template bodies / END_TEMPLATE edge case (represented by braces)
+//////////////////////
+
+class Holder extends Printable {
+  def printMe(): Unit = println("Holder")
+}
+
+//////////////////////
+// Template: class with class parameters using VAL / VAR / unmarked
+//////////////////////
+
+class Config(private val host: String, var port: Int, var timeout: Int) {
+  def uri(): String = host + ":" + port.toString
+
+  //////////////////////
+  // Misc: compound types, arrays, simple types usage
+  //////////////////////
+
+  //val typedList: Array[Int] = List(1,2,3)
+  //val arrOfArr: Array[Array[Int]] = Array(Array(1,2), Array(3,4))
+
+  //////////////////////
+  // Complex nested expressions and argument lists
+  //////////////////////
+  def complexCall(): Int = {
+    val nested: Int = new Person("Bob", 25).greet("Hello").length
+    val x: Int = (1 + 2) * (3 + (4 - 5)) / 2
+    x
+  }
+}

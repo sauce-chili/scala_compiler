@@ -362,8 +362,10 @@ void TopStatNode::secondaryConstructorsToMethods() {
                 otherConstructorName->copy(), p->def->funDef->constrExpr->argumentExprs->copy())
         );
         BlockStatsNode::addBlockStatToList(blockStats, otherConstructorCall);
-        for (BlockStatNode* bs: *(p->def->funDef->constrExpr->blockStats->copy()->blockStats)) {
-            BlockStatsNode::addBlockStatToList(blockStats, bs);
+        if (p->def->funDef->constrExpr->blockStats) {
+            for (BlockStatNode *bs: *(p->def->funDef->constrExpr->blockStats->blockStats)) {
+                BlockStatsNode::addBlockStatToList(blockStats, bs->copy());
+            }
         }
         ExprNode* bodyOfConstructor = BlockStatNode::createExpr(SimpleExprNode::createBlockStatsNode(blockStats));
 
@@ -425,6 +427,8 @@ void transformInfixes(Node* node) {
     }
 }
 
+static int iter = 1;
+
 void InfixExprNode::transformInfixOperationToMethodCall() {
     if (visitedForInfixOpTransform) return;
     visitedForInfixOpTransform = true;
@@ -433,7 +437,7 @@ void InfixExprNode::transformInfixOperationToMethodCall() {
     right->transformInfixOperationToMethodCall();
     left->transformInfixOperationToMethodCall();
 
-    std::cout << "start\n";
+    std::cout << "start " + to_string((iter++)) + "\n";
 
     prefixExpr = new PrefixExprNode();
     prefixExpr->type = left->prefixExpr ? left->prefixExpr->type : _NO_UNARY_OPERATOR;
