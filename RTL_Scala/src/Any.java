@@ -17,16 +17,7 @@ public abstract class Any {
     /**
      * Проверка типа (аналог isInstanceOf[T]).
      */
-    public Boolean isInstanceOf(Class<?> cls) {
+    public Boolean isInstanceOf(Any cls) {
         return Boolean.valueOf(cls.isInstance(this));
-    }
-
-    /**
-     * Приведение типа (аналог asInstanceOf[T]).
-     * Бросит ClassCastException если несовместимы.
-     */
-    @SuppressWarnings("unchecked")
-    public <T extends Any> T asInstanceOf(Class<T> cls) {
-        return (T) cls.cast(this);
     }
 }

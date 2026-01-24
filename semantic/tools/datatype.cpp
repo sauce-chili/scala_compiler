@@ -22,6 +22,7 @@ bool DataType::operator==(const DataType &other) const {
 string DataType::toString() {
     switch (kind) {
         case Kind::Int: return "Int";
+        case Kind::Any: return "Any";
         case Kind::Float: return "Float";
         case Kind::Bool: return "Bool";
         case Kind::Char: return "Char";

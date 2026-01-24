@@ -62,8 +62,9 @@ void SemanticAnalyzer::exportMethodsToCSV(const std::string& path) {
                 }
                 args += ")";
 
+                std::string methodName = m->name;
                 mthFile << "\"" << cleanMods(m->modifiers) << "\","
-                        << mName << ","
+                        << methodName << ","
                         << m->jvmName << ','
                         << "\"" << args << "\","
                         << m->returnType.toString() << ","
@@ -272,6 +273,7 @@ void SemanticAnalyzer::validateOverrides() {
 
 SemanticAnalyzer::SemanticAnalyzer() {
     RtlClassMetaInfo::initializeRtlClasses();
+    ctx().addClass(RtlClassMetaInfo::Any);
     ctx().addClass(RtlClassMetaInfo::String);
     ctx().addClass(RtlClassMetaInfo::Integer);
     ctx().addClass(RtlClassMetaInfo::SbtIn);

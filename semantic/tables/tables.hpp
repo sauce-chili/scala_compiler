@@ -228,6 +228,7 @@ protected:
 
 class RtlClassMetaInfo : public ClassMetaInfo {
 public:
+    static RtlClassMetaInfo* Any;
     static RtlClassMetaInfo* String;
     static RtlClassMetaInfo* Integer;
     static RtlClassMetaInfo* SbtIn;
@@ -261,6 +262,7 @@ public:
     static void initializeRtlClasses();
 
 private:
+    static RtlClassMetaInfo* initAny();
     static RtlClassMetaInfo* initString();
     static RtlClassMetaInfo* initInteger();
     static RtlClassMetaInfo* initSbtIn();

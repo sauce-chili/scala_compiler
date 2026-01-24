@@ -3,7 +3,6 @@
 //
 
 #include "tables.hpp"
-#include "../NameTransformer.h"
 
 #include "nodes/class/ClassDefNode.h"
 #include "nodes/definitions/DclNode.h"
@@ -340,6 +339,7 @@ optional<MethodMetaInfo *> ClassMetaInfo::addMethod(DclNode *funDclNode) {
 }
 
 RtlClassMetaInfo* RtlClassMetaInfo::String = nullptr;
+RtlClassMetaInfo* RtlClassMetaInfo::Any = nullptr;
 RtlClassMetaInfo* RtlClassMetaInfo::Integer = nullptr;
 RtlClassMetaInfo* RtlClassMetaInfo::SbtIn = nullptr;
 RtlClassMetaInfo* RtlClassMetaInfo::Unit = nullptr;
@@ -351,6 +351,7 @@ static std::unordered_map<std::string, RtlClassMetaInfo*> rtlClassMap;
 
 void RtlClassMetaInfo::initializeRtlClasses() {
     String = RtlClassMetaInfo::initString();
+    Any = RtlClassMetaInfo::initAny();
     Integer = RtlClassMetaInfo::initInteger();
     Double = RtlClassMetaInfo::initDouble();
     Boolean = RtlClassMetaInfo::initBoolean();
@@ -359,6 +360,7 @@ void RtlClassMetaInfo::initializeRtlClasses() {
     SbtIn = RtlClassMetaInfo::initSbtIn();
 
     rtlClassMap["String"] = String;
+    rtlClassMap["Any"] = Any;
     rtlClassMap["Int"] = Integer;
     rtlClassMap["Double"] = Double;
     rtlClassMap["Boolean"] = Boolean;
@@ -375,6 +377,40 @@ RtlClassMetaInfo* RtlClassMetaInfo::getRtlClassInfo(const std::string& typeName)
         return it->second;
     }
     return nullptr;
+}
+
+RtlClassMetaInfo *RtlClassMetaInfo::initAny() {
+    string className = "Any";
+
+    RtlClassMetaInfo* rec = new RtlClassMetaInfo(className, _SCALA);
+
+    rec->parent = nullptr;
+
+    rec->modifiers.modifiers.push_back(_PUBLIC);
+    rec->modifiers.modifiers.push_back(_ABSTRACT);
+
+    MethodMetaInfo* toScalaString = new MethodMetaInfo();
+    toScalaString->modifiers.modifiers.push_back(_PUBLIC);
+    toScalaString->returnType = DataType::Kind::String;
+    toScalaString->name = "toScalaString";
+    toScalaString->jvmName = NameTransformer::encode(toScalaString->name);
+    toScalaString->args = vector<ArgMetaInfo*>();
+    rec->methods[className].push_back(toScalaString);
+
+    MethodMetaInfo* isInstanceOf = new MethodMetaInfo();
+    isInstanceOf->modifiers.modifiers.push_back(_PUBLIC);
+    isInstanceOf->returnType = DataType::Kind::Bool;
+    isInstanceOf->name = "isInstanceOf";
+    isInstanceOf->jvmName = NameTransformer::encode(isInstanceOf->name);
+    isInstanceOf->args = vector<ArgMetaInfo*>();
+    ArgMetaInfo* isInstanceOfArg1= new ArgMetaInfo();
+    isInstanceOfArg1->name = "cls";
+    isInstanceOfArg1->jvmName = NameTransformer::encode(isInstanceOfArg1->name);
+    isInstanceOfArg1->dataType = DataType::Kind::Any;
+    isInstanceOf->args.push_back(isInstanceOfArg1);
+    rec->methods[className].push_back(isInstanceOf);
+
+    return rec;
 }
 
 RtlClassMetaInfo* RtlClassMetaInfo::initString() {

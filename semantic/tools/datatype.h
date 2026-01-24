@@ -16,7 +16,7 @@ using namespace std;
 class DataType {
 public:
     enum class Kind {
-        Undefined, Unit, Int, Float, Char, Bool, String, Class, Array
+        Undefined, Unit, Int, Float, Char, Bool, String, Class, Array, Any
     };
 
     Kind kind = Kind::Undefined;
