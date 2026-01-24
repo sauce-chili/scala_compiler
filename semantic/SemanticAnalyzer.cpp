@@ -265,7 +265,7 @@ void SemanticAnalyzer::validateOverrides() {
         // Методы
         for (auto& [methodName, methodList] : info->methods) {
             for (auto* methodInfo : methodList) {
-                checkMethodOverride(info, methodName, methodInfo);
+                checkMethodOverride(info, methodInfo->name, methodInfo);
             }
         }
     }
@@ -273,6 +273,7 @@ void SemanticAnalyzer::validateOverrides() {
 
 SemanticAnalyzer::SemanticAnalyzer() {
     RtlClassMetaInfo::initializeRtlClasses();
+    ctx().addClass(RtlClassMetaInfo::Object);
     ctx().addClass(RtlClassMetaInfo::Any);
     ctx().addClass(RtlClassMetaInfo::String);
     ctx().addClass(RtlClassMetaInfo::Integer);

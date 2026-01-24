@@ -38,7 +38,7 @@ optional<ClassMetaInfo *> SemanticContext::addClass(ClassMetaInfo *classMetaInfo
         return nullopt;
     }
 
-    Modifiers mods = Modifiers({_PUBLIC});
+    Modifiers mods = classMetaInfo->modifiers.modifiers.empty() ? Modifiers({_PUBLIC}) : classMetaInfo-> modifiers;
     classMetaInfo->modifiers = mods;
 
     classes[clsName] = classMetaInfo;

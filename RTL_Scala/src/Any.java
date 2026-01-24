@@ -17,7 +17,7 @@ public abstract class Any {
     /**
      * Проверка типа (аналог isInstanceOf[T]).
      */
-    public Boolean isInstanceOf(Any cls) {
+    public Boolean isInstanceOf(Object cls) {
         return Boolean.valueOf(cls.isInstance(this));
     }
 }
