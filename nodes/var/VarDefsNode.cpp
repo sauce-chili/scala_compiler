@@ -1,24 +1,24 @@
 #include "VarDefsNode.h"
 
 VarDefsNode::VarDefsNode() {
-    ids = nullptr;
+    fullId = nullptr;
     simpleType = nullptr;
     expr = nullptr;
 }
 
-VarDefsNode *VarDefsNode::createVal(IdsNode* ids, SimpleTypeNode* simpleType, ExprNode* expr) {
+VarDefsNode *VarDefsNode::createVal(IdNode* fullId, SimpleTypeNode* simpleType, ExprNode* expr) {
     VarDefsNode* node = new VarDefsNode();
     node->type = _VAL_DECL;
-    node->ids = ids;
+    node->fullId = fullId;
     node->simpleType = simpleType;
     node->expr = expr;
     return node;
 }
 
-VarDefsNode *VarDefsNode::createVar(IdsNode* ids, SimpleTypeNode* simpleType, ExprNode* expr) {
+VarDefsNode *VarDefsNode::createVar(IdNode* fullId, SimpleTypeNode* simpleType, ExprNode* expr) {
     VarDefsNode* node = new VarDefsNode();
     node->type = _VAR_DECL;
-    node->ids = ids;
+    node->fullId = fullId;
     node->simpleType = simpleType;
     node->expr = expr;
     return node;
@@ -28,8 +28,8 @@ VarDefsNode *VarDefsNode::copy() {
     VarDefsNode* node = new VarDefsNode();
     node->type = type;
 
-    if (ids) {
-        node->ids = ids->copy();
+    if (fullId) {
+        node->fullId = fullId->copy();
     }
     if (simpleType) {
         node->simpleType = simpleType->copy();
@@ -45,7 +45,7 @@ string VarDefsNode::toDot() const {
     string dot;
 
     addDotNode(dot);
-    addDotChild(dot, ids, "Ids");
+    addDotChild(dot, fullId, "Id");
     addDotChild(dot, simpleType, "Simple type");
     addDotChild(dot, expr, "Expr");
 
@@ -58,7 +58,7 @@ string VarDefsNode::getDotLabel() const {
 
 list<Node *> VarDefsNode::getChildren() const {
     list<Node *> children = {};
-    addChildIfNotNull(children, ids);
+    addChildIfNotNull(children, fullId);
     addChildIfNotNull(children, simpleType);
     addChildIfNotNull(children, expr);
     return children;

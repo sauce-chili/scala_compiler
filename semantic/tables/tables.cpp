@@ -168,21 +168,19 @@ uint16_t ClassMetaInfo::getConstantCounter() {
 }
 
 optional<FieldMetaInfo *> ClassMetaInfo::addField(VarDefsNode *varDefsNode, Modifiers modifiers) {
-    if (!varDefsNode || !varDefsNode->ids) return std::nullopt;
+    if (!varDefsNode || !varDefsNode->fullId) return std::nullopt;
 
     DataType type = DataType::createFromNode(varDefsNode->simpleType);
     bool isVal = (varDefsNode->type == _VAL_DECL);
 
-    for (auto *idNode: *varDefsNode->ids->ids) {
-        string name = idNode->name;
+    string fieldName = varDefsNode->fullId->name;
 
-        if (fields.count(name)) {
-            ErrorTable::addErrorToList(new SemanticError(SemanticError::FieldRedefinition(0, name)));
-            continue;
-        }
+    if (fields.count(fieldName)) {
+        ErrorTable::addErrorToList(new SemanticError(SemanticError::FieldRedefinition(0, fieldName)));
+    } else {
 
         auto *field = new FieldMetaInfo();
-        field->name = name;
+        field->name = fieldName;
         field->jvmName = NameTransformer::encode(name);
         field->dataType = type;
         field->isVal = isVal;
@@ -191,28 +189,26 @@ optional<FieldMetaInfo *> ClassMetaInfo::addField(VarDefsNode *varDefsNode, Modi
         field->modifiers = modifiers;
         field->value = varDefsNode->expr; // Expression stored for later analysis
 
-        this->fields[name] = field;
+        this->fields[fieldName] = field;
     }
+
     return std::nullopt;
 }
 
 optional<FieldMetaInfo *> ClassMetaInfo::addField(DclNode *varDclNode) {
-    if (!varDclNode || !varDclNode->ids) return std::nullopt;
+    if (!varDclNode || !varDclNode->fullId) return std::nullopt;
 
     DataType type = DataType::createFromNode(varDclNode->simpleType);
     bool isVal = (varDclNode->type == _VAL_DECL);
     Modifiers mods = Modifiers::createFromModifiersNode(*varDclNode->modifiers);
 
-    for (auto *idNode: *varDclNode->ids->ids) {
-        string name = idNode->name;
+    string className = varDclNode->fullId->name;
 
-        if (fields.count(name)) {
-            ErrorTable::addErrorToList(new SemanticError(SemanticError::FieldRedefinition(0, name)));
-            continue;
-        }
-
+    if (fields.count(className)) {
+        ErrorTable::addErrorToList(new SemanticError(SemanticError::FieldRedefinition(0, className)));
+    } else {
         auto *field = new FieldMetaInfo();
-        field->name = name;
+        field->name = className;
         field->jvmName = NameTransformer::encode(name);
         field->dataType = type;
         field->isVal = isVal;
@@ -220,8 +216,9 @@ optional<FieldMetaInfo *> ClassMetaInfo::addField(DclNode *varDclNode) {
         field->modifiers = mods;
         field->isInit = false;
 
-        this->fields[name] = field;
+        this->fields[className] = field;
     }
+
     return std::nullopt;
 }
 

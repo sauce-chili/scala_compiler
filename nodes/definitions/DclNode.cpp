@@ -1,24 +1,24 @@
 #include "DclNode.h"
 
 DclNode::DclNode() {
-    ids = nullptr;
+    fullId = nullptr;
     simpleType = nullptr;
     funSig = nullptr;
     modifiers = nullptr;
 }
 
-DclNode *DclNode::createVarDcl(IdsNode *ids, SimpleTypeNode* simpleType) {
+DclNode *DclNode::createVarDcl(IdNode *fullId, SimpleTypeNode* simpleType) {
     DclNode* node = new DclNode();
     node->type = _VAR_DECL;
-    node->ids = ids;
+    node->fullId = fullId;
     node->simpleType = simpleType;
     return node;
 }
 
-DclNode *DclNode::createValDcl(IdsNode *ids, SimpleTypeNode* simpleType) {
+DclNode *DclNode::createValDcl(IdNode *fullId, SimpleTypeNode* simpleType) {
     DclNode* node = new DclNode();
     node->type = _VAL_DECL;
-    node->ids = ids;
+    node->fullId = fullId;
     node->simpleType = simpleType;
     return node;
 }
@@ -42,8 +42,8 @@ DclNode *DclNode::copy() {
 
     node->type = type;
 
-    if (ids) {
-        node->ids = ids->copy();
+    if (fullId) {
+        node->fullId = fullId->copy();
     }
     if (simpleType) {
         node->simpleType = simpleType->copy();
@@ -62,14 +62,14 @@ bool DclNode::containsVar(string name) {
 
     if (type != _VAL_DECL && type != _VAR_DECL) return false;
 
-    return ids->contains(name);
+    return fullId->name == name;
 }
 
 string DclNode::toDot() const {
     string dot;
 
     addDotNode(dot);
-    addDotChild(dot, ids, "ids_");
+    addDotChild(dot, fullId, "ids_");
     addDotChild(dot, funSig, "funSig_");
     addDotChild(dot, simpleType, "simpleType_");
 
@@ -83,7 +83,7 @@ string DclNode::getDotLabel() const {
 list<Node *> DclNode::getChildren() const {
     list<Node *> children = {};
     addChildIfNotNull(children, modifiers);
-    addChildIfNotNull(children, ids);
+    addChildIfNotNull(children, fullId);
     addChildIfNotNull(children, simpleType);
     addChildIfNotNull(children, funSig);
     return children;

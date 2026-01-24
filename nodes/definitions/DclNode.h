@@ -3,22 +3,21 @@
 
 
 #include "../Node.h"
-#include "../id/IdsNode.h"
 #include "../func/FunSigNode.h"
 #include "../modifier/ModifiersNode.h"
 
 class DclNode: public Node {
 public:
     StatType type;
-    IdsNode* ids;
+    IdNode* fullId;
     SimpleTypeNode* simpleType;
     FunSigNode* funSig;
     ModifiersNode* modifiers;
 
     DclNode();
 
-    static DclNode* createVarDcl(IdsNode* ids, SimpleTypeNode* simpleType);
-    static DclNode* createValDcl(IdsNode* ids, SimpleTypeNode* simpleType);
+    static DclNode* createVarDcl(IdNode* fullId, SimpleTypeNode* simpleType);
+    static DclNode* createValDcl(IdNode* fullId, SimpleTypeNode* simpleType);
     static DclNode* createDefDcl(FunSigNode* funSig, SimpleTypeNode* simpleType);
 
     DclNode* copy();

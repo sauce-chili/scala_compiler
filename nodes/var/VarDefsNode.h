@@ -5,21 +5,20 @@
 #include "../Node.h"
 #include "../Types.h."
 #include "../type/SimpleTypeNode.h"
-#include "../id/IdsNode.h"
 #include "../exprs/ExprNode.h"
 
 
 class VarDefsNode: public Node {
 public:
-    IdsNode* ids;
+    IdNode* fullId;
     SimpleTypeNode* simpleType;
     ExprNode* expr;
     StatType type;
 
     VarDefsNode();
 
-    static VarDefsNode* createVal(IdsNode* ids, SimpleTypeNode* simpleType, ExprNode* expr);
-    static VarDefsNode* createVar(IdsNode* ids, SimpleTypeNode* simpleType, ExprNode* expr);
+    static VarDefsNode* createVal(IdNode* fullId, SimpleTypeNode* simpleType, ExprNode* expr);
+    static VarDefsNode* createVar(IdNode* fullId, SimpleTypeNode* simpleType, ExprNode* expr);
 
     VarDefsNode* copy();
 

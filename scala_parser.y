@@ -56,7 +56,6 @@
     EnumeratorsNode* enumerators;
     GeneratorNode* generator;
     IdNode* id;
-    IdsNode* ids;
     ModifierNode* modifier;
     ModifiersNode* modifiers;
     BlockStatNode* blockStat;
@@ -137,7 +136,6 @@
 %type <exprs> exprs
 %type <blockStats> blockStats
 %type <blockStat> blockStat
-%type <ids> ids
 %type <funcParams> funcParamClause funcParams
 %type <funcParam> funcParam
 %type <classParams> classParamClause classParams
@@ -289,10 +287,6 @@ blockStat: /* empty */ { $$ = nullptr; }
          | expr        { $$ = BlockStatNode::createExprNode($1); }
          ;
 
-ids: fullID         { $$ = IdsNode::addIdToList(nullptr, $1); }
-   | ids ',' fullID { $$ = IdsNode::addIdToList($1, $3); }
-   ;
-
 
 /* --------------------- FUNC --------------------- */
 
@@ -354,8 +348,8 @@ templateStat: /* empty */   { $$ = nullptr; }
 
 /* --------------------- DECL --------------------- */
 
-dcl: VAL ids ':' simpleType { $$ = DclNode::createValDcl($2, $4); }
-   | VAR ids ':' simpleType { $$ = DclNode::createVarDcl($2, $4); }
+dcl: VAL fullID ':' simpleType { $$ = DclNode::createValDcl($2, $4); }
+   | VAR fullID ':' simpleType { $$ = DclNode::createVarDcl($2, $4); }
    | DEF funSig ':' simpleType { $$ = DclNode::createDefDcl($2, $4); }
    ;
 
@@ -366,8 +360,8 @@ funSig: fullID funcParamClause { $$ = FunSigNode::createFunSig($1, $2); }
 
 /* --------------------- DEFS --------------------- */
 
-varDefs: VAL ids ':' simpleType '=' expr { $$ = VarDefsNode::createVal($2, $4, $6); }
-       | VAR ids ':' simpleType '=' expr { $$ = VarDefsNode::createVar($2, $4, $6); }
+varDefs: VAL fullID ':' simpleType '=' expr { $$ = VarDefsNode::createVal($2, $4, $6); }
+       | VAR fullID ':' simpleType '=' expr { $$ = VarDefsNode::createVar($2, $4, $6); }
        ;
 
 def: varDefs    { $$ = DefNode::createVarDefs($1); }
