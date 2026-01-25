@@ -439,8 +439,8 @@ RtlClassMetaInfo* RtlClassMetaInfo::initString() {
     constructor->modifiers.modifiers.push_back(_PUBLIC);
     constructor->returnType = DataType::Kind::Class;
     constructor->returnType.className = "Object";
-    constructor->name = "<init>";
-    constructor->jvmName = NameTransformer::encode(constructor->name);
+    constructor->name = "this";
+    constructor->jvmName = "<init>";
     constructor->args = vector<ArgMetaInfo*>();
     ArgMetaInfo* constructorArg = new ArgMetaInfo();
     constructorArg->name = "value";
@@ -625,8 +625,8 @@ RtlClassMetaInfo* RtlClassMetaInfo::initInteger() {
     constructor->modifiers.modifiers.push_back(_PUBLIC);
     constructor->returnType = DataType::Kind::Class;
     constructor->returnType.className = "Object";
-    constructor->name = "<init>";
-    constructor->jvmName = NameTransformer::encode(constructor->name);
+    constructor->name = "this";
+    constructor->jvmName = "<init>";
     constructor->args = vector<ArgMetaInfo*>();
     ArgMetaInfo* constructorArg = new ArgMetaInfo();
     constructorArg->name = "value";
@@ -1091,8 +1091,8 @@ RtlClassMetaInfo* RtlClassMetaInfo::initStdIn() {
     constructor->modifiers.modifiers.push_back(_PUBLIC);
     constructor->returnType = DataType::Kind::Class;
     constructor->returnType.className = "Object";
-    constructor->name = "<init>";
-    constructor->jvmName = NameTransformer::encode(constructor->name);
+    constructor->name = "this";
+    constructor->jvmName = "<init>";
     constructor->args = vector<ArgMetaInfo*>();
     rec->methods[constructor->name].push_back(constructor);
 
@@ -1186,8 +1186,8 @@ RtlClassMetaInfo* RtlClassMetaInfo::initUnit() {
     constructor->modifiers.modifiers.push_back(_PUBLIC);
     constructor->returnType = DataType::Kind::Class;
     constructor->returnType.className = "Object";
-    constructor->name = "<init>";
-    constructor->jvmName = NameTransformer::encode(constructor->name);
+    constructor->name = "this";
+    constructor->jvmName = "<init>";
     constructor->args = vector<ArgMetaInfo*>();
     rec->methods[constructor->name].push_back(constructor);
 
@@ -1257,8 +1257,8 @@ RtlClassMetaInfo* RtlClassMetaInfo::initChar() {
     constructor->modifiers.modifiers.push_back(_PUBLIC);
     constructor->returnType = DataType::Kind::Class;
     constructor->returnType.className = "Object";
-    constructor->name = "<init>";
-    constructor->jvmName = NameTransformer::encode(constructor->name);
+    constructor->name = "this";
+    constructor->jvmName = "<init>";
     constructor->args = vector<ArgMetaInfo*>();
     ArgMetaInfo* constructorArg = new ArgMetaInfo();
     constructorArg->name = "value";
@@ -1362,8 +1362,8 @@ RtlClassMetaInfo* RtlClassMetaInfo::initDouble() {
     constructor->modifiers.modifiers.push_back(_PUBLIC);
     constructor->returnType = DataType::Kind::Class;
     constructor->returnType.className = "Object";
-    constructor->name = "<init>";
-    constructor->jvmName = NameTransformer::encode(constructor->name);
+    constructor->name = "this";
+    constructor->jvmName = "<init>";
     constructor->args = vector<ArgMetaInfo*>();
     ArgMetaInfo* constructorArg = new ArgMetaInfo();
     constructorArg->name = "value";
@@ -1776,8 +1776,8 @@ RtlClassMetaInfo* RtlClassMetaInfo::initBoolean() {
     constructor->modifiers.modifiers.push_back(_PUBLIC);
     constructor->returnType = DataType::Kind::Class;
     constructor->returnType.className = "Object";
-    constructor->name = "<init>";
-    constructor->jvmName = NameTransformer::encode(constructor->name);
+    constructor->name = "this";
+    constructor->jvmName = "<init>";
     constructor->args = vector<ArgMetaInfo*>();
     ArgMetaInfo* constructor1= new ArgMetaInfo();
     constructor1->name = "v";
@@ -2126,8 +2126,8 @@ RtlClassMetaInfo *RtlClassMetaInfo::initPredef() {
     constructor->modifiers.modifiers.push_back(_PUBLIC);
     constructor->returnType = DataType::Kind::Class;
     constructor->returnType.className = "Object";
-    constructor->name = "<init>";
-    constructor->jvmName = NameTransformer::encode(constructor->name);
+    constructor->name = "this";
+    constructor->jvmName = "<init>";
     constructor->args = vector<ArgMetaInfo*>();
     rec->methods[constructor->name].push_back(constructor);
 
