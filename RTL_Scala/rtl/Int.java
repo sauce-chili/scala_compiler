@@ -16,22 +16,27 @@ public final class Int extends Any {
     public Int $minus(Int other) { return new Int(this.value - other.value); }
     public Int mul(Int other)    { return new Int(this.value * other.value); }
     public Int $times(Int other) { return new Int(this.value * other.value); }
+
     public Int div(Int other) {
         if (other.value == 0) throw new ArithmeticException("Division by zero");
         return new Int(this.value / other.value);
     }
+
     public Int $div(Int other) {
         if (other.value == 0) throw new ArithmeticException("Division by zero");
         return new Int(this.value / other.value);
     }
+
     public Int mod(Int other) {
         if (other.value == 0) throw new ArithmeticException("Division by zero");
         return new Int(this.value % other.value);
     }
+
     public Int $percent(Int other) {
         if (other.value == 0) throw new ArithmeticException("Division by zero");
         return new Int(this.value % other.value);
     }
+
     public Int neg() { return new Int(-this.value); }
 
     public Boolean lt(Int other)          { return Boolean.valueOf(this.value < other.value); }
@@ -49,7 +54,10 @@ public final class Int extends Any {
 
     public Double toFloat() { return new Double((double) this.value); }
     public Char toChar() { return new Char((char) this.value); }
-    public String toStringValue() { return new String(java.lang.Integer.toString(this.value)); }
+
+    public String toStringValue() {
+        return new String(java.lang.Integer.toString(this.value));
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -57,10 +65,12 @@ public final class Int extends Any {
     }
 
     @Override
-    public int hashCode() { return Integer.hashCode(value); }
+    public int hashCode() {
+        return java.lang.Integer.hashCode(value);
+    }
 
     @Override
-    public String toString() {
-        return Integer.toString(value);
+    public java.lang.String toString() {
+        return java.lang.Integer.toString(value);
     }
 }

@@ -1,6 +1,7 @@
 package rtl;
 
 public abstract class Object {
+
     public java.lang.String toJvmString() {
         return super.toString();
     }
@@ -9,15 +10,16 @@ public abstract class Object {
         return new String(toJvmString());
     }
 
+    @Override
     public java.lang.String toString() {
-        return ToString().toJvmString();
+        return ToString().nativeValue();
     }
 
     public abstract boolean equals(Object other);
     public abstract int hashCode();
 
     public Boolean notEquals(Object other) {
-        return new Boolean(equals(other).not().getBoolean());
+        return new Boolean(!equals(other));
     }
 
     public Boolean is(Object other) {
@@ -25,6 +27,6 @@ public abstract class Object {
     }
 
     public Boolean isNot(Object other) {
-        return new Boolean(is(other).not().getBoolean());
+        return new Boolean(this != other);
     }
 }

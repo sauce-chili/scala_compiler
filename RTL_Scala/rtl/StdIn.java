@@ -1,6 +1,11 @@
 package rtl;
 
-public final class StdIn {
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.EOFException;
+
+public final class StdIn extends Any {
 
     private static final BufferedReader IN =
             new BufferedReader(new InputStreamReader(System.in));
@@ -8,7 +13,7 @@ public final class StdIn {
     public StdIn() {}
 
     /** Read a full line. Returns null on EOF. */
-    public String readLine() {
+    public java.lang.String readLine() {
         try {
             return IN.readLine();
         } catch (IOException e) {
@@ -18,11 +23,11 @@ public final class StdIn {
 
     /** Read boolean from a line. Throws EOFException on EOF. */
     public boolean readBoolean() {
-        String s = readLine();
+        java.lang.String s = readLine();
         if (s == null)
             throw new RuntimeException(new EOFException("Console has reached end of input"));
 
-        String lower = s.toLowerCase();
+        java.lang.String lower = s.toLowerCase();
         return lower.equals("true")
                 || lower.equals("t")
                 || lower.equals("yes")
@@ -31,7 +36,7 @@ public final class StdIn {
 
     /** Read a char from a line. Throws EOFException on EOF. */
     public char readChar() {
-        String s = readLine();
+        java.lang.String s = readLine();
         if (s == null)
             throw new RuntimeException(new EOFException("Console has reached end of input"));
         return s.charAt(0);
@@ -39,7 +44,7 @@ public final class StdIn {
 
     /** Read an int from a line. Throws EOFException on EOF. */
     public int readInt() {
-        String s = readLine();
+        java.lang.String s = readLine();
         if (s == null)
             throw new RuntimeException(new EOFException("Console has reached end of input"));
         return Integer.parseInt(s);
@@ -47,9 +52,19 @@ public final class StdIn {
 
     /** Read a double from a line. Throws EOFException on EOF. */
     public double readDouble() {
-        String s = readLine();
+        java.lang.String s = readLine();
         if (s == null)
             throw new RuntimeException(new EOFException("Console has reached end of input"));
-        return Double.parseDouble(s);
+        return java.lang.Double.parseDouble(s);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof StdIn;
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
     }
 }

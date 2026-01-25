@@ -27,24 +27,42 @@ public final class Double extends Any {
     public Boolean $greater(Double other) { return Boolean.valueOf(this.value > other.value); }
     public Boolean ge(Double other) { return Boolean.valueOf(this.value >= other.value); }
     public Boolean $greater$eq(Double other) { return Boolean.valueOf(this.value >= other.value); }
-    public Boolean eq(Double other) { return Boolean.valueOf(Double.compare(this.value, other.value) == 0); }
-    public Boolean $eq$eq(Double other) { return Boolean.valueOf(Double.compare(this.value, other.value) == 0); }
-    public Boolean ne(Double other) { return Boolean.valueOf(Double.compare(this.value, other.value) != 0); }
-    public Boolean $bang$eq(Double other) { return Boolean.valueOf(Double.compare(this.value, other.value) != 0); }
+
+    public Boolean eq(Double other) {
+        return Boolean.valueOf(java.lang.Double.compare(this.value, other.value) == 0);
+    }
+
+    public Boolean $eq$eq(Double other) {
+        return Boolean.valueOf(java.lang.Double.compare(this.value, other.value) == 0);
+    }
+
+    public Boolean ne(Double other) {
+        return Boolean.valueOf(java.lang.Double.compare(this.value, other.value) != 0);
+    }
+
+    public Boolean $bang$eq(Double other) {
+        return Boolean.valueOf(java.lang.Double.compare(this.value, other.value) != 0);
+    }
 
     public Int toInt() { return new Int((int) this.value); }
-    public String toStringValue() { return new String(java.lang.Double.toString(this.value)); }
 
-    @Override
-    public boolean equals(Object o) {
-        return (o instanceof Double) && Double.compare(((Double)o).value, this.value) == 0;
+    public String toStringValue() {
+        return new String(java.lang.Double.toString(this.value));
     }
 
     @Override
-    public int hashCode() { return Double.hashCode(value); }
+    public boolean equals(Object o) {
+        return (o instanceof Double)
+            && java.lang.Double.compare(((Double)o).value, this.value) == 0;
+    }
 
     @Override
-    public String toString() {
+    public int hashCode() {
+        return java.lang.Double.hashCode(value);
+    }
+
+    @Override
+    public java.lang.String toString() {
         return java.lang.Double.toString(value);
     }
 }

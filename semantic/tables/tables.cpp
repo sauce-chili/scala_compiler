@@ -1142,6 +1142,32 @@ RtlClassMetaInfo* RtlClassMetaInfo::initStdIn() {
     readDouble->args = vector<ArgMetaInfo*>();
     rec->methods[readDouble->name].push_back(readDouble);
 
+    MethodMetaInfo* equals = new MethodMetaInfo();
+    equals->classMetaInfo = StdIn;
+    equals->modifiers.modifiers.push_back(_PUBLIC);
+    equals->modifiers.modifiers.push_back(_OVERRIDE);
+    equals->returnType = DataType::Kind::Bool;
+    equals->name = "equals";
+    equals->jvmName = NameTransformer::encode(equals->name);
+    equals->args = vector<ArgMetaInfo*>();
+    ArgMetaInfo* equalsArg = new ArgMetaInfo();
+    equalsArg->name = "o";
+    equalsArg->jvmName = NameTransformer::encode(equalsArg->name);
+    equalsArg->dataType = DataType::Kind::Class;
+    equalsArg->dataType.className = "Object";
+    equals->args.push_back(equalsArg);
+    rec->methods[equals->name].push_back(equals);
+
+    MethodMetaInfo* hashCode = new MethodMetaInfo();
+    hashCode->classMetaInfo = StdIn;
+    hashCode->modifiers.modifiers.push_back(_PUBLIC);
+    hashCode->modifiers.modifiers.push_back(_OVERRIDE);
+    hashCode->returnType = DataType::Kind::Int;
+    hashCode->name = "hashCode";
+    hashCode->jvmName = NameTransformer::encode(hashCode->name);
+    hashCode->args = vector<ArgMetaInfo*>();
+    rec->methods[hashCode->name].push_back(hashCode);
+
     return rec;
 }
 
@@ -1201,6 +1227,17 @@ RtlClassMetaInfo* RtlClassMetaInfo::initUnit() {
     toString->jvmName = NameTransformer::encode(toString->name);
     toString->args = vector<ArgMetaInfo*>();
     rec->methods[toString->name].push_back(toString);
+
+    MethodMetaInfo* toScalaString = new MethodMetaInfo();
+    toScalaString->classMetaInfo = Unit;
+    toScalaString->modifiers.modifiers.push_back(_PUBLIC);
+    toScalaString->modifiers.modifiers.push_back(_OVERRIDE);
+    toScalaString->returnType = DataType::Kind::Class;
+    toScalaString->returnType.className = "String";
+    toScalaString->name = "toScalaString";
+    toScalaString->jvmName = NameTransformer::encode(toScalaString->name);
+    toScalaString->args = vector<ArgMetaInfo*>();
+    rec->methods[toScalaString->name].push_back(toScalaString);
 
     return rec;
 }
@@ -1295,6 +1332,17 @@ RtlClassMetaInfo* RtlClassMetaInfo::initChar() {
     toString->jvmName = NameTransformer::encode(toString->name);
     toString->args = vector<ArgMetaInfo*>();
     rec->methods[toString->name].push_back(toString);
+
+    MethodMetaInfo* toScalaString = new MethodMetaInfo();
+    toScalaString->classMetaInfo = Char;
+    toScalaString->modifiers.modifiers.push_back(_PUBLIC);
+    toScalaString->modifiers.modifiers.push_back(_OVERRIDE);
+    toScalaString->returnType = DataType::Kind::Class;
+    toScalaString->returnType.className = "String";
+    toScalaString->name = "toScalaString";
+    toScalaString->jvmName = NameTransformer::encode(toScalaString->name);
+    toScalaString->args = vector<ArgMetaInfo*>();
+    rec->methods[toScalaString->name].push_back(toScalaString);
 
     return rec;
 }
@@ -1725,7 +1773,7 @@ RtlClassMetaInfo* RtlClassMetaInfo::initBoolean() {
 
     MethodMetaInfo* constructor = new MethodMetaInfo();
     constructor->classMetaInfo = Boolean;
-    constructor->modifiers.modifiers.push_back(_PRIVATE);
+    constructor->modifiers.modifiers.push_back(_PUBLIC);
     constructor->returnType = DataType::Kind::Class;
     constructor->returnType.className = "Object";
     constructor->name = "<init>";
@@ -1932,6 +1980,17 @@ RtlClassMetaInfo* RtlClassMetaInfo::initBoolean() {
     toString->args = vector<ArgMetaInfo*>();
     rec->methods[toString->name].push_back(toString);
 
+    MethodMetaInfo* toScalaString = new MethodMetaInfo();
+    toScalaString->classMetaInfo = Boolean;
+    toScalaString->modifiers.modifiers.push_back(_PUBLIC);
+    toScalaString->modifiers.modifiers.push_back(_OVERRIDE);
+    toScalaString->returnType = DataType::Kind::Class;
+    toScalaString->returnType.className = "String";
+    toScalaString->name = "toScalaString";
+    toScalaString->jvmName = NameTransformer::encode(toScalaString->name);
+    toScalaString->args = vector<ArgMetaInfo*>();
+    rec->methods[toScalaString->name].push_back(toScalaString);
+
     return rec;
 }
 
@@ -2110,6 +2169,32 @@ RtlClassMetaInfo *RtlClassMetaInfo::initPredef() {
     printlnArg->dataType.className = "Object";
     println1->args.push_back(printlnArg);
     rec->methods[println1->name].push_back(println1);
+
+    MethodMetaInfo* equals = new MethodMetaInfo();
+    equals->classMetaInfo = Predef;
+    equals->modifiers.modifiers.push_back(_PUBLIC);
+    equals->modifiers.modifiers.push_back(_OVERRIDE);
+    equals->returnType = DataType::Kind::Bool;
+    equals->name = "equals";
+    equals->jvmName = NameTransformer::encode(equals->name);
+    equals->args = vector<ArgMetaInfo*>();
+    ArgMetaInfo* equalsArg1= new ArgMetaInfo();
+    equalsArg1->name = "o";
+    equalsArg1->jvmName = NameTransformer::encode(equalsArg1->name);
+    equalsArg1->dataType = DataType::Kind::Class;
+    equalsArg1->dataType.className = "Object";
+    equals->args.push_back(equalsArg1);
+    rec->methods[equals->name].push_back(equals);
+
+    MethodMetaInfo* hashCode = new MethodMetaInfo();
+    hashCode->classMetaInfo = Predef;
+    hashCode->modifiers.modifiers.push_back(_PUBLIC);
+    hashCode->modifiers.modifiers.push_back(_OVERRIDE);
+    hashCode->returnType = DataType::Kind::Int;
+    hashCode->name = "hashCode";
+    hashCode->jvmName = NameTransformer::encode(hashCode->name);
+    hashCode->args = vector<ArgMetaInfo*>();
+    rec->methods[hashCode->name].push_back(hashCode);
 
     return rec;
 }

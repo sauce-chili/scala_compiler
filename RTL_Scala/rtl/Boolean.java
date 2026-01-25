@@ -7,7 +7,13 @@ public final class Boolean extends Any {
 
     private final boolean value;
 
-    private Boolean(boolean v) { this.value = v; }
+    public Boolean(boolean v) {
+        this.value = v;
+    }
+
+    public static Boolean valueOf(boolean v) {
+        return new Boolean(v);
+    }
 
     public boolean booleanValue() { return value; }
 
@@ -33,7 +39,12 @@ public final class Boolean extends Any {
     }
 
     @Override
-    public String toString() {
+    public java.lang.String toString() {
         return value ? "true" : "false";
     }
+
+    @Override
+     public String toScalaString() {
+        return new String(value ? "true" : "false");
+     }
 }

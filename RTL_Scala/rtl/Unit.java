@@ -19,7 +19,12 @@ public final class Unit extends Any {
     }
 
     @Override
-    public String toString() {
+    public java.lang.String toString() {
         return "Unit";
+    }
+
+    @Override
+    public String toScalaString() {
+        return new String("Unit");
     }
 }

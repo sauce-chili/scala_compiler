@@ -63,21 +63,21 @@ public final class Array extends Any {
     @Override
     public int hashCode() {
         return Arrays.hashCode(elements);
-
+    }
 
     public Boolean notEquals(Any other) {
-        return Boolean.valueOf(!this.equals(other));
+        return new Boolean(!this.equals(other));
     }
 
     public Boolean is(Any other) {
-        return Boolean.valueOf(this == other);
+        return new Boolean(this == other);
     }
 
     public Boolean isNot(Any other) {
-        return Boolean.valueOf(this != other);
+        return new Boolean(this != other);
     }
 
     public Boolean isInstanceOf(Object cls) {
-        return Boolean.valueOf(cls.isInstance(this));
+        return new Boolean(cls.getClass().isInstance(this));
     }
 }
