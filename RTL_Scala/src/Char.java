@@ -8,8 +8,6 @@ public final class Char extends Any {
 
     public Char(char value) { this.value = value; }
 
-    public static Char valueOf(char c) { return new Char(c); }
-
     public char charValue() { return value; }
 
     public Int toInt() { return new Int((int) value); }

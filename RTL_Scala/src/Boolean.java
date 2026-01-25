@@ -11,10 +11,16 @@ public final class Boolean extends Any {
 
     public boolean booleanValue() { return value; }
 
-    public Boolean and(Boolean other) { return valueOf(this.value && other.value); }
-    public Boolean or(Boolean other)  { return valueOf(this.value || other.value); }
-    public Boolean xor(Boolean other) { return valueOf(this.value ^ other.value); }
-    public Boolean not()              { return valueOf(!this.value); }
+    public Boolean and(Boolean other)      { return valueOf(this.value && other.value); }
+    public Boolean $amp(Boolean other)     { return valueOf(this.value && other.value); }
+    public Boolean $amp$amp(Boolean other) { return valueOf(this.value && other.value); }
+    public Boolean or(Boolean other)       { return valueOf(this.value || other.value); }
+    public Boolean $bar(Boolean other)     { return valueOf(this.value || other.value); }
+    public Boolean $bar$bar(Boolean other) { return valueOf(this.value || other.value); }
+    public Boolean xor(Boolean other)      { return valueOf(this.value ^ other.value); }
+    public Boolean $up(Boolean other)      { return valueOf(this.value ^ other.value); }
+    public Boolean not()                   { return valueOf(!this.value); }
+    public Boolean $bang()                 { return valueOf(!this.value); }
 
     @Override
     public boolean equals(Object o) {

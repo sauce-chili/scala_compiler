@@ -12,7 +12,7 @@
 #include "semantic/scopes/Scope.h"
 #include "semantic/tools/datatype.h"
 #include "semantic/tools/tools.h"
-#include "semantic/NameTransformer.h"
+#include "semantic/tools/NameTransformer.h"
 
 class Scope;
 class FunDefNode;
@@ -232,11 +232,13 @@ public:
     static RtlClassMetaInfo* Object;
     static RtlClassMetaInfo* String;
     static RtlClassMetaInfo* Integer;
-    static RtlClassMetaInfo* SbtIn;
+    static RtlClassMetaInfo* StdIn;
+    static RtlClassMetaInfo* Predef;
     static RtlClassMetaInfo* Unit;
     static RtlClassMetaInfo* Char;
     static RtlClassMetaInfo* Double;
     static RtlClassMetaInfo* Boolean;
+    static RtlClassMetaInfo* Array;
 
     std::string javaDescriptor = "java/lang/";
     std::string scalaDescriptor = "Lscala/runtime/";
@@ -267,11 +269,13 @@ private:
     static RtlClassMetaInfo* initObject();
     static RtlClassMetaInfo* initString();
     static RtlClassMetaInfo* initInteger();
-    static RtlClassMetaInfo* initSbtIn();
+    static RtlClassMetaInfo* initStdIn();
+    static RtlClassMetaInfo* initPredef();
     static RtlClassMetaInfo* initUnit();
     static RtlClassMetaInfo* initChar();
     static RtlClassMetaInfo* initDouble();
     static RtlClassMetaInfo* initBoolean();
+    static RtlClassMetaInfo* initArray();
 };
 
 #endif //SCALA_LEXER_TABLES_H

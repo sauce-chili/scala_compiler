@@ -23,7 +23,7 @@ string DataType::toString() {
     switch (kind) {
         case Kind::Int: return "Int";
         case Kind::Any: return "Any";
-        case Kind::Float: return "Float";
+        case Kind::Double: return "Double";
         case Kind::Bool: return "Bool";
         case Kind::Char: return "Char";
         case Kind::String: return "String";
@@ -92,7 +92,7 @@ DataType DataType::createFromNode(SimpleTypeNode *typeNode) {
         std::string name = typeNode->fullId->name;
 
         if (name == "Int") return DataType::makePrimitive(Kind::Int);
-        if (name == "Double") return DataType::makePrimitive(Kind::Float);
+        if (name == "Double") return DataType::makePrimitive(Kind::Double);
         if (name == "Boolean") return DataType::makePrimitive(Kind::Bool);
         if (name == "String") return DataType::makePrimitive(Kind::String);
         if (name == "Char") return DataType::makePrimitive(Kind::Char);
@@ -106,7 +106,7 @@ DataType DataType::createFromNode(SimpleTypeNode *typeNode) {
 }
 
 bool DataType::isPrimitive() {
-    return kind == Kind::Int || kind == Kind::Float ||
+    return kind == Kind::Int || kind == Kind::Double ||
            kind == Kind::Char || kind == Kind::Bool ||
            kind == Kind::String || kind == Kind::Unit;
 }

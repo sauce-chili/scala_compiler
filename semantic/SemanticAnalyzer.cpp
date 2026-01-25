@@ -277,9 +277,11 @@ SemanticAnalyzer::SemanticAnalyzer() {
     ctx().addClass(RtlClassMetaInfo::Any);
     ctx().addClass(RtlClassMetaInfo::String);
     ctx().addClass(RtlClassMetaInfo::Integer);
-    ctx().addClass(RtlClassMetaInfo::SbtIn);
+    ctx().addClass(RtlClassMetaInfo::StdIn);
+    ctx().addClass(RtlClassMetaInfo::Predef);
     ctx().addClass(RtlClassMetaInfo::Char);
     ctx().addClass(RtlClassMetaInfo::Double);
     ctx().addClass(RtlClassMetaInfo::Boolean);
     ctx().addClass(RtlClassMetaInfo::Unit);
+    ctx().addClass(RtlClassMetaInfo::Array);
 }
