@@ -130,9 +130,10 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
     }
 
     FunSigNode *primaryConstrSignature = FunSigNode::createFunSig(IdNode::createId("this"), new FuncParamsNode(currentClass->classParams->copy()));
+    // Конструкторы не имеют явного типа возврата в Scala
     FunDefNode *primaryConstructorNode = FunDefNode::createFunSigFunDef(
             primaryConstrSignature,
-            SimpleTypeNode::createIdTypeNode(IdNode::createId("void")),
+            nullptr,
             BlockStatNode::createExpr(SimpleExprNode::createBlockStatsNode(blockStats))
     );
     primaryConstructorNode->primaryConstructor = true;
@@ -348,7 +349,8 @@ void TopStatNode::secondaryConstructorsToMethods() {
     if (!currentClass->classTemplateOpt->templateStats) return;
 
     SimpleExpr1Node* otherConstructorName = SimpleExpr1Node::createIdNode(IdNode::createId("this"));
-    SimpleTypeNode* constrReturnType = SimpleTypeNode::createIdTypeNode(IdNode::createId("void"));
+    // Конструкторы в Scala не имеют явного типа возврата, но для внутреннего представления используем Unit
+    SimpleTypeNode* constrReturnType = nullptr;
     for (TemplateStatNode* p: *(currentClass->classTemplateOpt->templateStats->templateStats)) {
         if (!p) continue;
         if (p->dcl) continue;
