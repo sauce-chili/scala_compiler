@@ -1,10 +1,7 @@
 #ifndef COMPILER_DATATYPE_H
 #define COMPILER_DATATYPE_H
 
-#include <iostream>
-#include <memory>
 #include <vector>
-#include "tools.h"
 #include "nodes/Node.h"
 
 
@@ -27,13 +24,35 @@ public:
     string className = "<unspecified>";
 
     // тип значений которые хранятся в массиве
-    DataType *elementType; // тип элемента, Array[Array[Int]]
+    DataType *elementType = nullptr; // тип элемента, Array[Array[Int]]
     int arrSize = ARR_SIZE_UNSPECIFIED;
 
     DataType() = default;
 
-    DataType(Kind kind) : kind(kind) {
-    };
+    DataType(Kind kind) : kind(kind) {}
+
+    DataType(const DataType &other)
+        : kind(other.kind),
+          qualId(other.qualId),
+          className(other.className),
+          elementType(other.elementType ? new DataType(*other.elementType) : nullptr),
+          arrSize(other.arrSize) {}
+
+    DataType &operator=(const DataType &other) {
+        if (this != &other) {
+            delete elementType;
+            kind = other.kind;
+            qualId = other.qualId;
+            className = other.className;
+            elementType = other.elementType ? new DataType(*other.elementType) : nullptr;
+            arrSize = other.arrSize;
+        }
+        return *this;
+    }
+
+    ~DataType() {
+        delete elementType;
+    }
 
     bool operator==(const DataType &other) const;
 
@@ -80,10 +99,10 @@ public:
         return t;
     }
 
-    static DataType makeArray(DataType &elem, int size = ARR_SIZE_UNSPECIFIED) {
+    static DataType makeArray(const DataType &elem, int size = ARR_SIZE_UNSPECIFIED) {
         DataType t;
         t.kind = Kind::Array;
-        t.elementType = &elem;
+        t.elementType = new DataType(elem);
         t.arrSize = size;
         return t;
     }
