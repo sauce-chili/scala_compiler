@@ -1,0 +1,6 @@
+Modifiers,ValVar,Name,Type,IsInit,HasValue
+"public",val,x,Int,true,true
+"public",var,y,String,true,true
+"public",val,z,Boolean,false,false
+"private",var,count,Int,true,true
+"protected",val,name,String,true,true
