@@ -33,7 +33,6 @@
 
 // ===== generator =====
 #include "generator/GeneratorNode.h"
-#include "generator/EnumeratorPartNode.h"
 #include "generator/EnumeratorsNode.h"
 
 // ===== try =====

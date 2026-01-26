@@ -3,22 +3,18 @@
 
 #include "../Node.h"
 #include "GeneratorNode.h"
-#include "EnumeratorPartNode.h"
 
 class Scope;
 
 class EnumeratorsNode: public Node {
 public:
     GeneratorNode* generator;
-    Scope* scope;
-    std::list<EnumeratorPartNode*> *enumerators;
+    Scope* scope = nullptr;
 
     EnumeratorsNode(GeneratorNode* generator);
     EnumeratorsNode();
 
     EnumeratorsNode* copy();
-
-    static EnumeratorsNode* addModifierToList(EnumeratorsNode *list, EnumeratorPartNode *enumeratorPart);
 
     string toDot() const override;
     string getDotLabel() const override;

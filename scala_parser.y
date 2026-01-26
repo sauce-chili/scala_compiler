@@ -52,7 +52,6 @@
     FuncParamsNode* funcParams;
     FunDefNode* funDef;
     FunSigNode* funSig;
-    EnumeratorPartNode* enumeratorPart;
     EnumeratorsNode* enumerators;
     GeneratorNode* generator;
     IdNode* id;
@@ -101,7 +100,6 @@
 
 %token NL
 
-%nonassoc LOW_PREC
 %nonassoc RETURN IF FOR NL
 %nonassoc ELSE WHILE DO VAL VAR NEW YIELD MATCH CASE
 %right '=' PLUS_ASSIGNMENT MINUS_ASSIGNMENT MUL_ASSIGNMENT DIV_ASSIGNMENT MOD_ASSIGNMENT
@@ -120,13 +118,11 @@
 %left '.'
 %nonassoc ':'
 %nonassoc '(' '['
-%nonassoc END_TEMPLATE
 
 %type <topStatSeq> topStatSeq
 %type <expr> expr
 %type <assignment> assignment
 %type <enumerators> enumerators
-%type <enumeratorPart> enumeratorPart
 %type <generator> generator
 %type <infixExpr> infixExpr
 %type <prefixExpr> prefixExpr
@@ -175,9 +171,6 @@ expr: IF '(' expr ')' nls expr ELSE expr { $$ = ExprNode::createIfElse($3, $6, $
     | RETURN                                   { $$ = ExprNode::createReturn(); }
     | RETURN expr                              { $$ = ExprNode::createReturnExpr($2); }
     | FOR '(' enumerators ')' nls expr         { $$ = ExprNode::createFor($3, $6); }
-    | FOR '(' enumerators ')' nls YIELD expr   { $$ = ExprNode::createForYield($3, $7); }
-    | FOR '{' enumerators '}' nls expr         { $$ = ExprNode::createFor($3, $6); }
-    | FOR '{' enumerators '}' nls YIELD expr   { $$ = ExprNode::createForYield($3, $7); }
     | infixExpr                                { $$ = ExprNode::createInfix($1); }
     | assignment                               { $$ = ExprNode::createAssignment($1); }
     ;
@@ -187,13 +180,8 @@ assignment: fullID '=' expr                    { $$ = AssignmentNode::createIdAs
           | simpleExpr1 argumentExprs '=' expr { $$ = AssignmentNode::createArrayAssignment($1, $2, $4); } // запись в массив
           ;
 
-enumerators: generator                       { $$ = new EnumeratorsNode($1); }
-           | enumerators semi enumeratorPart { $$ = EnumeratorsNode::addModifierToList($1, $3); }
+enumerators: generator { $$ = new EnumeratorsNode($1); }
            ;
-
-enumeratorPart: generator                     { $$ = EnumeratorPartNode::createGeneratorEnumeratorPart($1); }
-              | fullID ':' simpleType '=' expr { $$ = EnumeratorPartNode::createVarDefEnumeratorPart($1, $3, $5); } // определение переменной
-              ;
 
 generator: fullID ':' simpleType LEFT_ARROW expr { $$ = GeneratorNode::createGenerator($1, $3, $5); }
          ;
@@ -298,7 +286,7 @@ funcParams: funcParam                { $$ = FuncParamsNode::addFuncParamToList(n
           | funcParams ',' funcParam { $$ = FuncParamsNode::addFuncParamToList($1, $3); }
           ;
 
-funcParam: fullID ':' simpleType { $$ = FuncParamNode::createFuncParam($1, $3); } // TODO ПРОВЕРИТЬ, ДВОЕТОЧИЯ НЕ БЫЛО
+funcParam: fullID ':' simpleType { $$ = FuncParamNode::createFuncParam($1, $3); }
          ;
 
 /* --------------------- FUNC --------------------- */
