@@ -14,6 +14,9 @@ string EnumeratorsNode::toDot() const {
 }
 
 string EnumeratorsNode::getDotLabel() const {
+    if (scope) {
+        return "Enumerators\\nscopeId: " + to_string(scope->scopeId);
+    }
     return "Enumerators";
 }
 

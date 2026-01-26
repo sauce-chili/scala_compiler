@@ -53,6 +53,9 @@ string BlockStatsNode::toDot() const {
 }
 
 string BlockStatsNode::getDotLabel() const {
+    if (blockScope) {
+        return "Block stats\\nscopeId: " + to_string(blockScope->scopeId);
+    }
     return "Block stats";
 }
 
