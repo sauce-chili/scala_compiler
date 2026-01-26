@@ -19,7 +19,7 @@ public:
         Undefined, Unit, Int, Double, Char, Bool, String, Class, Array, Any
     };
 
-    Kind kind = Kind::Undefined;
+    Kind kind = Kind::Undefined; // НЕЛЬЗЯ использовать за пределами этого класса
 
     // для Class
     // полный путь: scala.collection.mutable.ArrayBuffer
@@ -39,6 +39,30 @@ public:
 
     static DataType makePrimitive(Kind k) {
         return DataType(k);
+    }
+
+    static DataType makeInt() {
+        return DataType(Kind::Int);
+    }
+
+    static DataType makeDouble() {
+        return DataType(Kind::Double);
+    }
+
+    static DataType makeBoolean() {
+        return DataType(Kind::Bool);
+    }
+
+    static DataType makeChar() {
+        return DataType(Kind::Char);
+    }
+
+    static DataType makeString() {
+        return DataType(Kind::String);
+    }
+
+    static DataType makeUnit() {
+        return DataType(Kind::Unit);
     }
 
     static DataType makeClass(const vector<string> &qid) {
@@ -68,17 +92,15 @@ public:
 
     string toConstTableFormat() const;
 
-    bool isUndefined();
-
     DataType arrayElementType() const;
 
     const DataType &deepArrayType() const;
 
     int arraySize() const;
 
-    bool isPrimitive();
+    bool isPrimitive() const;
 
-    bool isClass();
+    bool isClass() const;
 
     static DataType createFromNode(SimpleTypeNode *node);
 };

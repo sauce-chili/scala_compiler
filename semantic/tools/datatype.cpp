@@ -51,10 +51,6 @@ string DataType::toConstTableFormat() const {
     return ""; // возможно будет переработан
 }
 
-bool DataType::isUndefined() {
-    return this->kind == Kind::Undefined;
-}
-
 DataType DataType::arrayElementType() const {
     return std::move(*elementType);
 }
@@ -74,7 +70,7 @@ int DataType::arraySize() const {
 }
 
 
-bool DataType::isClass() {
+bool DataType::isClass() const {
     return kind == Kind::Class;
 }
 
@@ -105,7 +101,7 @@ DataType DataType::createFromNode(SimpleTypeNode *typeNode) {
     return DataType(Kind::Undefined);
 }
 
-bool DataType::isPrimitive() {
+bool DataType::isPrimitive() const {
     return kind == Kind::Int || kind == Kind::Double ||
            kind == Kind::Char || kind == Kind::Bool ||
            kind == Kind::String || kind == Kind::Unit;
