@@ -7,11 +7,18 @@
 #include <fstream>
 #include <algorithm>
 #include <iostream>
-
+#include <filesystem>
 
 #include "ClassMemberGatherVisitor.h"
+#include "ScopeAttachVisitor.h"
+#include "LocalVarGatherVisitor.h"
+#include "SemanticContext.h"
 #include "error/ErrorTable.h"
 #include "tables/tables.hpp"
+#include "utils/output/dot.cpp"
+#include "utils/output/tree_converter.cpp"
+
+namespace fs = std::filesystem;
 
 static std::string cleanMods(Modifiers m) {
     std::string s = m.toString();
@@ -19,86 +26,177 @@ static std::string cleanMods(Modifiers m) {
     return s.empty() ? "public" : s;
 }
 
-void SemanticAnalyzer::exportClassesToCSV(const std::string& path) {
-    std::ofstream clsFile(path + "/classes.csv");
-    if (!clsFile.is_open()) return;
-
-    clsFile << "Modifiers,ClassName,JvmName,ParentName,ConstantCount,MethodCount,FieldCount\n";
-
-    for (auto const& [name, info] : ctx().classes) {
-        if (!info) continue;
-
-        // Считаем общее количество методов (включая все перегрузки)
-        int methodCount = 0;
-        for (auto const& [mName, mList] : info->methods) {
-            methodCount += mList.size();
-        }
-
-        clsFile << "\"" << cleanMods(info->modifiers) << "\","
-                << name << ","
-                << info->jvmName << ","
-                << (info->parent ? info->parent->name : "None") << ","
-                << info->getConstantCounter() << "," // Счетчик констант из ClassMetaInfo
-                << methodCount << ","
-                << info->fields.size() << "\n";
+static std::string scopeTypeToString(ScopeType type) {
+    switch (type) {
+        case ScopeType::BLOCK: return "BLOCK";
+        case ScopeType::FOR: return "FOR";
+        default: return "UNKNOWN";
     }
-    clsFile.close();
 }
 
-void SemanticAnalyzer::exportMethodsToCSV(const std::string& path) {
-    std::ofstream mthFile(path + "/methods.csv");
-    if (!mthFile.is_open()) return;
+static std::string makeMethodFileName(MethodMetaInfo* m) {
+    std::string fileName = m->name;
+    for (auto* arg : m->args) {
+        fileName += "_" + arg->dataType.toString();
+    }
+    std::replace(fileName.begin(), fileName.end(), '[', '_');
+    std::replace(fileName.begin(), fileName.end(), ']', '_');
+    std::replace(fileName.begin(), fileName.end(), ',', '_');
+    std::replace(fileName.begin(), fileName.end(), ' ', '_');
+    return fileName + ".csv";
+}
 
-    mthFile << "Modifiers,MethodName,JvmName,ArgTypes,ReturnType,ClassName,VarCount\n";
+static void prepareExportDir(const std::string& path) {
+    fs::path exportPath(path);
+    if (fs::exists(exportPath)) {
+        fs::remove_all(exportPath);
+    }
+    fs::create_directories(exportPath);
+}
 
-    for (auto const& [cName, cInfo] : ctx().classes) {
-        for (auto const& [mName, mList] : cInfo->methods) {
-            for (auto* m : mList) {
-                // Формируем строку типов аргументов: (Int, String)
-                std::string args = "(";
-                for (size_t i = 0; i < m->args.size(); ++i) {
-                    args += m->args[i]->dataType.toString();
-                    if (i < m->args.size() - 1) args += ", ";
-                }
-                args += ")";
+static void exportClassInfo(const std::string& classDir, ClassMetaInfo* info) {
+    std::ofstream file(classDir + "/class_info.csv");
+    if (!file.is_open()) return;
 
-                std::string methodName = m->name;
-                mthFile << "\"" << cleanMods(m->modifiers) << "\","
-                        << methodName << ","
-                        << m->jvmName << ','
-                        << "\"" << args << "\","
-                        << m->returnType.toString() << ","
-                        << cName << ","
-                        << m->localVarCounter << "\n"; // Количество переменных (number)
+    int methodCount = 0;
+    for (auto const& [mName, mList] : info->methods) {
+        methodCount += static_cast<int>(mList.size());
+    }
+
+    file << "Modifiers,Name,JvmName,Parent,FieldCount,MethodCount,ConstantCount\n";
+    file << "\"" << cleanMods(info->modifiers) << "\","
+         << info->name << ","
+         << info->jvmName << ","
+         << (info->parent ? info->parent->name : "-") << ","
+         << info->fields.size() << ","
+         << methodCount << ","
+         << info->getConstantCounter() << "\n";
+    file.close();
+}
+
+static void exportClassFields(const std::string& classDir, ClassMetaInfo* info) {
+    std::ofstream file(classDir + "/fields.csv");
+    if (!file.is_open()) return;
+
+    file << "Modifiers,ValVar,Name,JvmName,Type,IsInit,HasValue\n";
+
+    for (auto const& [fName, fInfo] : info->fields) {
+        file << "\"" << cleanMods(fInfo->modifiers) << "\","
+             << (fInfo->isVal ? "val" : "var") << ","
+             << fName << ","
+             << fInfo->jvmName << ","
+             << fInfo->dataType.toString() << ","
+             << (fInfo->isInit ? "true" : "false") << ","
+             << (fInfo->value ? "true" : "false") << "\n";
+    }
+    file.close();
+}
+
+static void exportClassMethods(const std::string& classDir, ClassMetaInfo* info) {
+    std::ofstream file(classDir + "/methods.csv");
+    if (!file.is_open()) return;
+
+    file << "Modifiers,MethodName,JvmName,ArgTypes,ReturnType,LocalVarCount\n";
+
+    for (auto const& [mName, mList] : info->methods) {
+        for (auto* m : mList) {
+            std::string args = "(";
+            for (size_t i = 0; i < m->args.size(); ++i) {
+                args += m->args[i]->dataType.toString();
+                if (i < m->args.size() - 1) args += ", ";
+            }
+            args += ")";
+
+            file << "\"" << cleanMods(m->modifiers) << "\","
+                 << mName << ","
+                 << m->jvmName << ','
+                 << "\"" << args << "\","
+                 << m->returnType.toString() << ","
+                 << m->localVarCounter << "\n";
+        }
+    }
+    file.close();
+}
+
+static void exportMethodLocalVars(const std::string& localVarsDir, MethodMetaInfo* method) {
+    std::string fileName = localVarsDir + "/" + makeMethodFileName(method);
+    std::ofstream file(fileName);
+    if (!file.is_open()) return;
+
+    file << "Category,ValVar,Name,JvmName,Type,IsInit,HasValue,Number,ScopeId,ScopeType\n";
+
+    // Сначала аргументы
+    for (auto* arg : method->args) {
+        file << "ARG,"
+             << (arg->isVal ? "val" : "var") << ","
+             << arg->name << ","
+             << arg->jvmName << ","
+             << arg->dataType.toString() << ","
+             << (arg->isInit ? "true" : "false") << ","
+             << (arg->value ? "true" : "false") << ","
+             << arg->number << ","
+             << "-,-\n";
+    }
+
+    // Локальные переменные (сортируем по number)
+    std::vector<LocalVarMetaInfo*> allLocals;
+    for (auto& [varName, scopeMap] : method->localVars) {
+        for (auto& [scopeId, localVar] : scopeMap) {
+            allLocals.push_back(localVar);
+        }
+    }
+
+    std::sort(allLocals.begin(), allLocals.end(),
+              [](LocalVarMetaInfo* a, LocalVarMetaInfo* b) { return a->number < b->number; });
+
+    for (auto* local : allLocals) {
+        file << "LOCAL,"
+             << (local->isVal ? "val" : "var") << ","
+             << local->name << ","
+             << local->jvmName << ","
+             << local->dataType.toString() << ","
+             << (local->isInit ? "true" : "false") << ","
+             << (local->value ? "true" : "false") << ","
+             << local->number << ","
+             << (local->scope ? std::to_string(local->scope->scopeId) : "-") << ","
+             << (local->scope ? scopeTypeToString(local->scope->type) : "-") << "\n";
+    }
+    file.close();
+}
+
+void SemanticAnalyzer::exportContext(const std::string& basePath) {
+    std::string exportDir = basePath + "/out_export";
+    prepareExportDir(exportDir);
+
+    for (auto const& [className, classInfo] : ctx().classes) {
+        if (!classInfo) continue;
+        // Пропускаем RTL классы
+        if (classInfo->isRTL()) continue;
+
+        // Создаём папку для класса
+        std::string classDir = exportDir + "/" + className;
+        fs::create_directories(classDir);
+
+        // Экспортируем информацию о классе
+        exportClassInfo(classDir, classInfo);
+
+        // Экспортируем поля
+        exportClassFields(classDir, classInfo);
+
+        // Экспортируем методы
+        exportClassMethods(classDir, classInfo);
+
+        // Создаём папку для локальных переменных
+        std::string localVarsDir = classDir + "/local_vars";
+        fs::create_directories(localVarsDir);
+
+        // Экспортируем локальные переменные для каждого метода
+        for (auto const& [mName, mList] : classInfo->methods) {
+            for (auto* method : mList) {
+                exportMethodLocalVars(localVarsDir, method);
             }
         }
     }
-    mthFile.close();
-}
-
-void SemanticAnalyzer::exportFieldsToCSV(const std::string& path) {
-    std::ofstream fldFile(path + "/fields.csv");
-    if (!fldFile.is_open()) return;
-
-    fldFile << "Modifiers,FieldName,JvmName,Type,IsInitialized,ClassName\n";
-
-    for (auto const& [cName, cInfo] : ctx().classes) {
-        for (auto const& [fName, fInfo] : cInfo->fields) {
-            fldFile << "\"" << cleanMods(fInfo->modifiers) << "\","
-                    << fName << ","
-                    << fInfo->jvmName << ","
-                    << fInfo->dataType.toString() << ","
-                    << (fInfo->isInit ? "true" : "false") << ","
-                    << cName << "\n";
-        }
-    }
-    fldFile.close();
-}
-
-void SemanticAnalyzer::exportContextToCSV(const std::string& path) {
-    exportClassesToCSV(path);
-    exportMethodsToCSV(path);
-    exportFieldsToCSV(path);
 }
 
 static void checkFieldOverride(ClassMetaInfo* info, const std::string& name, FieldMetaInfo* field) {
@@ -186,7 +284,10 @@ static void checkMethodOverride(ClassMetaInfo* info, const std::string& name, Me
 bool SemanticAnalyzer::analyze(TopStatSeqNode *root) {
     if (!root) return false;
 
-    // Сбор деклараций
+    // Инициализация RTL классов
+    ctx().ensureRtlInitialized();
+
+    // Сбор деклараций классов, методов, полей
     ClassMemberGatherVisitor gatherVisitor;
     gatherVisitor.visitTree(root);
 
@@ -195,24 +296,56 @@ bool SemanticAnalyzer::analyze(TopStatSeqNode *root) {
         return false;
     }
 
-    // связывание дочерних и родительских классов
-    linkInheritanceHierarchy();
-    // Проверка циклов наследования
-    validateInheritanceCycles();
-    // Валидация переопределений
-    validateOverrides();
+    // Расстановка скоупов в AST
+    ScopeAttachVisitor scopeVisitor;
+    scopeVisitor.visitTree(root);
+
+    createDotTree(root, "after_scope_attach.txt");
+
+    // Сбор локальных переменных
+    LocalVarGatherVisitor localVarVisitor;
+    localVarVisitor.visitTree(root);
 
     if (!ErrorTable::errors.empty()) {
-        std::cerr << "Semantic errors:" << std::endl << ErrorTable::getErrors() << std::endl;
+        std::cerr << "Errors after local var gather:" << std::endl << ErrorTable::getErrors() << std::endl;
         return false;
     }
 
-    exportContextToCSV(".");
+    // Связывание дочерних и родительских классов
+    linkInheritanceHierarchy();
+
+    // Проверка циклов наследования
+    validateInheritanceCycles();
+    // Валидация переопределений (override/final)
+    validateOverrides();
+    // Проверяем что абстрактные методы реализованы
+    validateAbstractMethods();
+    // Проверяем что абстрактные поля переопределены
+    validateAbstractFields();
+
+    // 9. Проверяем наличие main метода
+    // validateMainMethod();
+
+    if (!ErrorTable::errors.empty()) {
+        std::cerr << "Semantic errors after validation:" << std::endl << ErrorTable::getErrors() << std::endl;
+        return false;
+    }
+
+    if (!ErrorTable::errors.empty()) {
+        std::cerr << "Semantic errors after type check:" << std::endl << ErrorTable::getErrors() << std::endl;
+        return false;
+    }
+
+    exportContext(".");
+    createScalaCode(root, "./generated.scala");
     return true;
 }
 
 void SemanticAnalyzer::linkInheritanceHierarchy() {
     for (auto& [name, info] : ctx().classes) {
+        // Пропускаем RTL классы
+        if (info->isRTL()) continue;
+
         optional<std::string> parentNameOpt = info->getParentName();
 
         if (parentNameOpt.has_value()) {
@@ -239,9 +372,10 @@ void SemanticAnalyzer::linkInheritanceHierarchy() {
 
 void SemanticAnalyzer::validateInheritanceCycles() {
     for (auto& [name, info] : ctx().classes) {
+        // Пропускаем RTL классы
+        if (info->isRTL()) continue;
+
         ClassMetaInfo* curr = info->parent;
-        // Простой алгоритм проверки циклов (можно оптимизировать через DFS/цвета,
-        // но для дерева наследования достаточно прохода вверх)
         while (curr) {
             if (curr == info) {
                 ErrorTable::addErrorToList(new SemanticError(
@@ -258,6 +392,9 @@ void SemanticAnalyzer::validateInheritanceCycles() {
 
 void SemanticAnalyzer::validateOverrides() {
     for (auto& [className, info] : ctx().classes) {
+        // Пропускаем RTL классы
+        if (info->isRTL()) continue;
+
         // Поля
         for (auto& [fieldName, fieldInfo] : info->fields) {
             checkFieldOverride(info, fieldName, fieldInfo);
@@ -272,16 +409,155 @@ void SemanticAnalyzer::validateOverrides() {
 }
 
 SemanticAnalyzer::SemanticAnalyzer() {
-    RtlClassMetaInfo::initializeRtlClasses();
-    ctx().addClass(RtlClassMetaInfo::Object);
-    ctx().addClass(RtlClassMetaInfo::Any);
-    ctx().addClass(RtlClassMetaInfo::String);
-    ctx().addClass(RtlClassMetaInfo::Integer);
-    ctx().addClass(RtlClassMetaInfo::StdIn);
-    ctx().addClass(RtlClassMetaInfo::Predef);
-    ctx().addClass(RtlClassMetaInfo::Char);
-    ctx().addClass(RtlClassMetaInfo::Double);
-    ctx().addClass(RtlClassMetaInfo::Boolean);
-    ctx().addClass(RtlClassMetaInfo::Unit);
-    ctx().addClass(RtlClassMetaInfo::Array);
+    // RTL классы инициализируются через ctx().ensureRtlInitialized() в analyze()
+}
+
+void SemanticAnalyzer::validateAbstractFields() {
+    for (auto& [className, classInfo] : ctx().classes) {
+        // Пропускаем RTL классы
+        if (classInfo->isRTL()) continue;
+
+        bool isAbstractClass = classInfo->modifiers.hasModifier(_ABSTRACT);
+
+        // Проверка унаследованных абстрактных полей (только для конкретных классов)
+        if (!isAbstractClass && classInfo->parent) {
+            ClassMetaInfo* currParent = classInfo->parent;
+
+            while (currParent) {
+                for (auto& [pFieldName, pField] : currParent->fields) {
+                    // Абстрактное поле - это поле без инициализации в абстрактном классе
+                    if (!pField->isInit && currParent->modifiers.hasModifier(_ABSTRACT)) {
+                        // Проверяем что поле переопределено в текущем классе
+                        auto fieldOpt = classInfo->fields.find(pFieldName);
+                        if (fieldOpt == classInfo->fields.end()) {
+                            ErrorTable::addErrorToList(new SemanticError(
+                                SemanticError::AbstractFieldNotOverride(
+                                    classInfo->classNode->id,
+                                    "Field '" + pFieldName + "' is abstract in '" + currParent->name + "' but not overridden in '" + className + "'"
+                                )
+                            ));
+                        } else if (!fieldOpt->second->isInit) {
+                            ErrorTable::addErrorToList(new SemanticError(
+                                SemanticError::AbstractFieldNotOverride(
+                                    classInfo->classNode->id,
+                                    "Field '" + pFieldName + "' must be initialized in '" + className + "'"
+                                )
+                            ));
+                        }
+                    }
+                }
+                currParent = currParent->parent;
+            }
+        }
+    }
+}
+
+// TODO возврщать список классов-кандидатов
+void SemanticAnalyzer::validateMainMethod() {
+    int mainCount = 0;
+    ClassMetaInfo* mainClass = nullptr;
+
+    for (auto& [className, classInfo] : ctx().classes) {
+        // Пропускаем RTL классы
+        if (classInfo->isRTL()) continue;
+
+        // main должен быть в final классе без параметров конструктора
+        if (!classInfo->isFinal()) continue;
+
+        // Ищем метод main(Array[String]): Unit
+        auto mainIt = classInfo->methods.find("main");
+        if (mainIt != classInfo->methods.end()) {
+            for (auto* method : mainIt->second) {
+                // Проверяем сигнатуру: один аргумент Array[String], возврат Unit
+                if (method->args.size() == 1) {
+                    DataType& argType = method->args[0]->dataType;
+                    if (argType.kind == DataType::Kind::Array) {
+                        DataType* elemType = argType.elementType;
+                        if (elemType && elemType->kind == DataType::Kind::String) {
+                            if (method->returnType.kind == DataType::Kind::Unit) {
+                                mainCount++;
+                                mainClass = classInfo;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (mainCount == 0) {
+        ErrorTable::addErrorToList(new SemanticError(
+            SemanticError::MainMethodNotDefined(0)
+        ));
+    } else if (mainCount > 1) {
+        ErrorTable::addErrorToList(new SemanticError(
+            SemanticError::MethodAlreadyExists(0, "Multiple main methods found")
+        ));
+    }
+}
+
+void SemanticAnalyzer::validateAbstractMethods() {
+    for (auto& [className, classInfo] : ctx().classes) {
+        // Пропускаем RTL классы
+        if (classInfo->isRTL()) continue;
+
+        bool isAbstractClass = classInfo->modifiers.hasModifier(_ABSTRACT);
+
+        // 1. Проверка локальных методов текущего класса
+        for (auto& [methodName, methodList] : classInfo->methods) {
+            for (auto* method : methodList) {
+                // Если у метода нет тела (nullptr), он абстрактный.
+                if (method->body == nullptr) {
+                    if (!isAbstractClass) {
+                        // Ошибка: Класс должен быть абстрактным
+                        ErrorTable::addErrorToList(new SemanticError(
+                            SemanticError::AbstractMethodNotImplemented(
+                                classInfo->classNode->id,
+                                "Class '" + className + "' must be declared abstract because it declares abstract method '" + methodName + "'"
+                            )
+                        ));
+                    }
+                }
+            }
+        }
+
+        // 2. Проверка унаследованных методов (только для КОНКРЕТНЫХ классов)
+        // Если класс абстрактный, он имеет право не реализовывать методы родителя.
+        if (!isAbstractClass && classInfo->parent) {
+            ClassMetaInfo* currParent = classInfo->parent;
+
+            // Поднимаемся по иерархии вверх
+            while (currParent) {
+                for (auto& [pMethodName, pMethodList] : currParent->methods) {
+                    for (auto* pMethod : pMethodList) {
+                        // Нашли абстрактный метод у родителя
+                        if (pMethod->body == nullptr) {
+                            // Пытаемся найти реализацию этого метода в нашем классе (или в промежуточных родителях)
+                            // resolveMethod ищет снизу вверх (child -> parent -> grandParent)
+                            auto implementationOpt = classInfo->resolveMethod(pMethodName, pMethod->getArgsTypes(), classInfo);
+
+                            bool implemented = false;
+                            if (implementationOpt.has_value()) {
+                                MethodMetaInfo* implementation = implementationOpt.value();
+                                // Если найденный метод имеет тело, значит он реализован
+                                if (implementation->body != nullptr) {
+                                    implemented = true;
+                                }
+                            }
+
+                            if (!implemented) {
+                                ErrorTable::addErrorToList(new SemanticError(
+                                    SemanticError::AbstractMethodNotImplemented(
+                                        classInfo->classNode->id,
+                                        "Class '" + className + "' must be declared abstract because it does not implement abstract member '" + pMethodName + "' from class '" + currParent->name + "'"
+                                    )
+                                ));
+                            }
+                        }
+                    }
+                }
+                currParent = currParent->parent;
+            }
+        }
+    }
 }

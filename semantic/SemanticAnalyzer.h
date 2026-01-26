@@ -13,14 +13,13 @@ class SemanticAnalyzer {
     void linkInheritanceHierarchy();
     void validateInheritanceCycles();
     void validateOverrides();
+    void validateAbstractMethods();
+    void validateAbstractFields();
+    void validateMainMethod();
 
 public:
     bool analyze(TopStatSeqNode* root);
-
-    void exportContextToCSV(const std::string& filename);
-    void exportClassesToCSV(const std::string& path);
-    void exportMethodsToCSV(const std::string& path);
-    void exportFieldsToCSV(const std::string& path);
+    void exportContext(const std::string& basePath);
 
     SemanticAnalyzer();
 };
