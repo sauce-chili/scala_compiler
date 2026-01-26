@@ -18,7 +18,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 # Автоматически находим все исходники узлов и вспомогательных классов лексера
 file(GLOB_RECURSE NODE_SOURCES "nodes/*.cpp")
 file(GLOB_RECURSE LEXER_UTILS_SOURCES "lexer/*.cpp")
-file(GLOB_RECURSE SEMANTIC "semantic/*cpp")
+file(GLOB_RECURSE SEMANTIC "semantic/*.cpp")
 
 # Настройка BISON
 # Добавлен флаг -d (или --defines), чтобы генерировать заголовочный файл .h
