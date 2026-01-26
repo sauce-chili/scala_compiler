@@ -99,10 +99,6 @@ int main(int argc, char **argv) {
         } else {
             std::cerr << "Parsing failed." << std::endl;
         }
-
-        if (root) {
-            createDotTree(root, "after_transform.txt");
-        }
     }
 
     fclose(input_file);
