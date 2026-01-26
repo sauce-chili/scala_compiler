@@ -9,6 +9,26 @@
 #include "nodes/class/ClassDefNode.h"
 #include "tables/tables.hpp"
 
+void SemanticContext::ensureRtlInitialized() {
+    if (!rtlInitialized) {
+        rtlInitialized = true;
+        RtlClassMetaInfo::initializeRtlClasses();
+    }
+}
+
+optional<ClassMetaInfo *> SemanticContext::addRTL(RtlClassMetaInfo *rtlClass) {
+    if (!rtlClass) return nullopt;
+
+    string clsName = rtlClass->name;
+
+    // RTL классы не должны вызывать ошибку редефиниции - они первичны
+    if (classes.find(clsName) != classes.end()) {
+        throw std::logic_error("Переопредление RTL класса");
+    }
+
+    classes[clsName] = rtlClass;
+    return rtlClass;
+}
 
 optional<ClassMetaInfo *> SemanticContext::addClass(ClassDefNode *classDefNode) {
     if (!classDefNode || !classDefNode->fullId) return nullopt;

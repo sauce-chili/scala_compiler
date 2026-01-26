@@ -8,6 +8,7 @@
 #include <string>
 #include <unordered_map>
 
+class RtlClassMetaInfo;
 class ClassDefNode;
 using namespace std;
 
@@ -15,6 +16,7 @@ class ClassMetaInfo;
 
 class SemanticContext {
     SemanticContext() = default;
+    bool rtlInitialized = false;
 
 public:
     unordered_map<string, ClassMetaInfo *> classes;
@@ -28,6 +30,16 @@ public:
      * Возвращает созданный класс, если такого нет
      */
     optional<ClassMetaInfo *> addClass(ClassMetaInfo *classMetaInfo);
+
+    /**
+     * Добавляет RTL класс в контекст
+     */
+    optional<ClassMetaInfo*> addRTL(RtlClassMetaInfo* rtlClass);
+
+    /**
+     * Инициализирует RTL классы (вызывается один раз)
+     */
+    void ensureRtlInitialized();
 
     static SemanticContext &instance() {
         static SemanticContext instance;
