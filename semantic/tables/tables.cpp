@@ -9,8 +9,6 @@
 #include "nodes/func/FunDefNode.h"
 #include "nodes/var/VarDefsNode.h"
 #include "semantic/SemanticContext.h"
-#include "semantic/error/ErrorTable.h"
-#include "semantic/error/SemanticError.h"
 
 class DefNode;
 class DclNode;
@@ -54,6 +52,67 @@ vector<DataType *> MethodMetaInfo::getArgsTypes() {
     return argsTypes;
 }
 
+optional<LocalVarMetaInfo *> MethodMetaInfo::addLocalVar(VarDefsNode *varDefsNode, Scope* scope) {
+    if (!varDefsNode || !varDefsNode->fullId || !scope) return nullopt;
+
+    string varName = varDefsNode->fullId->name;
+
+    // Проверяем: не определена ли уже переменная с таким именем в ТЕКУЩЕМ скоупе
+    auto& byName = localVars[varName];
+    if (byName.find(scope->scopeId) != byName.end()) {
+        // Переменная уже определена в этом скоупе
+        return nullopt;
+    }
+
+    DataType type = DataType::createFromNode(varDefsNode->simpleType);
+    bool isVal = (varDefsNode->type == _VAL_DECL);
+
+    // Создаем LocalVarMetaInfo
+    LocalVarMetaInfo* localVar = new LocalVarMetaInfo();
+    localVar->name = varName;
+    localVar->jvmName = NameTransformer::encode(varName);
+    localVar->dataType = type;
+    localVar->value = varDefsNode->expr;
+    localVar->isVal = isVal;
+    localVar->isInit = (varDefsNode->expr != nullptr);
+    localVar->scope = scope;
+    localVar->methodMetaInfo = this;
+    localVar->number = localVarCounter++;
+
+    // Добавляем в таблицу
+    localVars[varName][scope->scopeId] = localVar;
+
+    return localVar;
+}
+
+optional<LocalVarMetaInfo *> MethodMetaInfo::addGeneratorVar(GeneratorNode *generatorNode, Scope *scope) {
+    if (!generatorNode || !generatorNode->fullId || !scope) return nullopt;
+
+    string varName = generatorNode->fullId->name;
+
+    // Проверяем: не определена ли уже переменная с таким именем в ТЕКУЩЕМ скоупе
+    auto& byName = localVars[varName];
+    if (byName.find(scope->scopeId) != byName.end()) {
+        return nullopt;
+    }
+
+    DataType type = DataType::createFromNode(generatorNode->simpleType);
+
+    LocalVarMetaInfo* localVar = new LocalVarMetaInfo();
+    localVar->name = varName;
+    localVar->jvmName = NameTransformer::encode(varName);
+    localVar->dataType = type;
+    localVar->value = nullptr; // значение пишется каждый раз
+    localVar->isVal = true; // В for-генераторах переменные всегда val
+    localVar->isInit = true;
+    localVar->scope = scope;
+    localVar->methodMetaInfo = this;
+    localVar->number = localVarCounter++;
+
+    localVars[varName][scope->scopeId] = localVar;
+    return localVar;
+}
+
 bool ClassMetaInfo::amSubclassOf(const ClassMetaInfo* other) const {
     const ClassMetaInfo* curr = this;
     while (curr) {
@@ -63,8 +122,12 @@ bool ClassMetaInfo::amSubclassOf(const ClassMetaInfo* other) const {
     return false;
 }
 
+bool ClassMetaInfo::isRTL() const {
+    return dynamic_cast<const RtlClassMetaInfo*>(this) != nullptr;
+}
+
 optional<FieldMetaInfo *> ClassMetaInfo::resolveField(const string& fieldName,
-                                                      const ClassMetaInfo* accessContext,
+                                                      const ClassMetaInfo* accessFrom,
                                                       bool lookupPrivate) {
     // 1. Ищем поле в текущем классе
     if (fields.find(fieldName) != fields.end()) {
@@ -81,14 +144,14 @@ optional<FieldMetaInfo *> ClassMetaInfo::resolveField(const string& fieldName,
 
         // Private: видит только сам класс
         if (field->isPrivate()) {
-            if (accessContext == this) return optional{field};
+            if (accessFrom == this) return optional{field};
             return nullopt;
         }
 
         // Protected: видит сам класс и наследники
         if (field->isProtected()) {
             // Если контекст определен и является наследником текущего класса (или им самим)
-            if (accessContext && accessContext->amSubclassOf(this)) {
+            if (accessFrom && accessFrom->amSubclassOf(this)) {
                 return optional{field};
             }
             return nullopt;
@@ -98,7 +161,7 @@ optional<FieldMetaInfo *> ClassMetaInfo::resolveField(const string& fieldName,
     // Если не нашли или не подошло, ищем у родителя
     // При рекурсивном вызове передаем тот же accessContext (кто изначально спрашивал)
     if (parent) {
-        return parent->resolveField(fieldName, accessContext, lookupPrivate);
+        return parent->resolveField(fieldName, accessFrom, lookupPrivate);
     }
 
     return nullopt;
@@ -168,68 +231,67 @@ uint16_t ClassMetaInfo::getConstantCounter() {
 }
 
 optional<FieldMetaInfo *> ClassMetaInfo::addField(VarDefsNode *varDefsNode, Modifiers modifiers) {
-    if (!varDefsNode || !varDefsNode->fullId) return std::nullopt;
+    if (!varDefsNode || !varDefsNode->fullId) return nullopt;
+
+    string fieldName = varDefsNode->fullId->name;
+
+    // Поле уже существует - возвращаем nullopt, вызывающая сторона добавит ошибку
+    if (fields.count(fieldName)) {
+        return nullopt;
+    }
 
     DataType type = DataType::createFromNode(varDefsNode->simpleType);
     bool isVal = (varDefsNode->type == _VAL_DECL);
 
-    string fieldName = varDefsNode->fullId->name;
+    auto *field = new FieldMetaInfo();
+    field->name = fieldName;
+    field->jvmName = NameTransformer::encode(fieldName);
+    field->dataType = type;
+    field->isVal = isVal;
+    field->isInit = (varDefsNode->expr != nullptr);
+    field->classMetaInfo = this;
+    field->modifiers = modifiers;
+    field->value = varDefsNode->expr;
 
-    if (fields.count(fieldName)) {
-        ErrorTable::addErrorToList(new SemanticError(SemanticError::FieldRedefinition(0, fieldName)));
-    } else {
-
-        auto *field = new FieldMetaInfo();
-        field->name = fieldName;
-        field->jvmName = NameTransformer::encode(name);
-        field->dataType = type;
-        field->isVal = isVal;
-        field->isInit = (varDefsNode->expr != nullptr);
-        field->classMetaInfo = this;
-        field->modifiers = modifiers;
-        field->value = varDefsNode->expr; // Expression stored for later analysis
-
-        this->fields[fieldName] = field;
-    }
-
-    return std::nullopt;
+    this->fields[fieldName] = field;
+    return field;
 }
 
 optional<FieldMetaInfo *> ClassMetaInfo::addField(DclNode *varDclNode) {
-    if (!varDclNode || !varDclNode->fullId) return std::nullopt;
+    if (!varDclNode || !varDclNode->fullId) return nullopt;
+
+    string fieldName = varDclNode->fullId->name;
+
+    // Поле уже существует - возвращаем nullopt
+    if (fields.count(fieldName)) {
+        return nullopt;
+    }
 
     DataType type = DataType::createFromNode(varDclNode->simpleType);
     bool isVal = (varDclNode->type == _VAL_DECL);
     Modifiers mods = Modifiers::createFromModifiersNode(*varDclNode->modifiers);
 
-    string className = varDclNode->fullId->name;
+    auto *field = new FieldMetaInfo();
+    field->name = fieldName;
+    field->jvmName = NameTransformer::encode(fieldName);
+    field->dataType = type;
+    field->isVal = isVal;
+    field->classMetaInfo = this;
+    field->modifiers = mods;
+    field->isInit = false;
 
-    if (fields.count(className)) {
-        ErrorTable::addErrorToList(new SemanticError(SemanticError::FieldRedefinition(0, className)));
-    } else {
-        auto *field = new FieldMetaInfo();
-        field->name = className;
-        field->jvmName = NameTransformer::encode(name);
-        field->dataType = type;
-        field->isVal = isVal;
-        field->classMetaInfo = this;
-        field->modifiers = mods;
-        field->isInit = false;
-
-        this->fields[className] = field;
-    }
-
-    return std::nullopt;
+    this->fields[fieldName] = field;
+    return field;
 }
 
 optional<MethodMetaInfo *> ClassMetaInfo::addMethod(FunDefNode *funDefNode, Modifiers modifiers) {
-    if (!funDefNode || !funDefNode->funSig || !funDefNode->funSig->fullId) return std::nullopt;
+    if (!funDefNode || !funDefNode->funSig || !funDefNode->funSig->fullId) return nullopt;
 
     string methodName = funDefNode->funSig->fullId->name;
 
     // Сбор временных аргументов для получения их типов
     vector<ArgMetaInfo *> tempArgs;
-    vector<DataType *> signatureTypes; // Указатели на типы для проверки
+    vector<DataType *> signatureTypes;
 
     int tempCounter = 0;
     if (funDefNode->funSig->params && funDefNode->funSig->params->funcParams) {
@@ -239,28 +301,17 @@ optional<MethodMetaInfo *> ClassMetaInfo::addMethod(FunDefNode *funDefNode, Modi
             arg->jvmName = NameTransformer::encode(name);
             arg->dataType = DataType::createFromNode(paramNode->simpleType);
             arg->number = tempCounter++;
-            arg->isVal = true; // Аргументы в Scala неизменяемы (val)
+            arg->isVal = true;
 
             tempArgs.push_back(arg);
-            // Сохраняем указатель на тип для передачи в resolveMethod
             signatureTypes.push_back(&tempArgs.back()->dataType);
         }
     }
 
-    // Проверка дубликатов через resolveMethod
+    // Проверка дубликатов - возвращаем nullopt, вызывающая сторона добавит ошибку
     if (this->resolveMethod(methodName, signatureTypes, this).has_value()) {
-        string sigStr = methodName + "(";
-        for (size_t i = 0; i < signatureTypes.size(); ++i) {
-            sigStr += signatureTypes[i]->toString();
-            if (i < signatureTypes.size() - 1) sigStr += ", ";
-        }
-        sigStr += ")";
-
-        ErrorTable::addErrorToList(new SemanticError(SemanticError::MethodAlreadyExists(0, sigStr)));
-
-        // Очищаем память временных аргументов, так как метод не создан
         for (auto *a: tempArgs) delete a;
-        return std::nullopt;
+        return nullopt;
     }
 
     // Метод уникален, создаем MetaInfo
@@ -307,12 +358,8 @@ optional<MethodMetaInfo *> ClassMetaInfo::addMethod(DclNode *funDclNode) {
         }
     }
 
-    // Проверка дубликатов
+    // Проверка дубликатов - возвращаем nullopt, вызывающая сторона добавит ошибку
     if (this->resolveMethod(methodName, signatureTypes, this).has_value()) {
-        string sigStr = methodName + "(...)";
-        ErrorTable::addErrorToList(
-            new SemanticError(SemanticError::MethodAlreadyExists(funDclNode->funSig->fullId->id, sigStr)));
-
         for (auto *a: tempArgs) delete a;
         return std::nullopt;
     }
@@ -335,6 +382,22 @@ optional<MethodMetaInfo *> ClassMetaInfo::addMethod(DclNode *funDclNode) {
     return method;
 }
 
+LocalVarMetaInfo::LocalVarMetaInfo() : MethodVarMetaInfo() {
+    scope = nullptr;
+}
+
+std::string VarMetaInfo::toString() {
+    return name + ": " + dataType.toString();
+}
+
+void VarMetaInfo::setDataType(DataType type) {
+    dataType = type;
+}
+
+bool VarMetaInfo::operator==(const VarMetaInfo& other) {
+    return name == other.name && dataType == other.dataType;
+}
+
 RtlClassMetaInfo* RtlClassMetaInfo::Object = nullptr;
 RtlClassMetaInfo* RtlClassMetaInfo::Any = nullptr;
 RtlClassMetaInfo* RtlClassMetaInfo::String = nullptr;
@@ -347,40 +410,50 @@ RtlClassMetaInfo* RtlClassMetaInfo::Double = nullptr;
 RtlClassMetaInfo* RtlClassMetaInfo::Boolean = nullptr;
 RtlClassMetaInfo* RtlClassMetaInfo::Array = nullptr;
 
-static std::unordered_map<std::string, RtlClassMetaInfo*> rtlClassMap;
-
 void RtlClassMetaInfo::initializeRtlClasses() {
+    // Инициализируем RTL классы в правильном порядке (учитываем зависимости)
     Object = RtlClassMetaInfo::initObject();
-    String = RtlClassMetaInfo::initString();
-    Any = RtlClassMetaInfo::initAny();
-    Integer = RtlClassMetaInfo::initInteger();
-    Double = RtlClassMetaInfo::initDouble();
-    Boolean = RtlClassMetaInfo::initBoolean();
-    Char = RtlClassMetaInfo::initChar();
-    Unit = RtlClassMetaInfo::initUnit();
-    StdIn = RtlClassMetaInfo::initStdIn();
-    Predef = RtlClassMetaInfo::initPredef();
-    Array = RtlClassMetaInfo::initArray();
+    ctx().addRTL(Object);
 
-    rtlClassMap["Object"] = Object;
-    rtlClassMap["String"] = String;
-    rtlClassMap["Any"] = Any;
-    rtlClassMap["Int"] = Integer;
-    rtlClassMap["Double"] = Double;
-    rtlClassMap["Boolean"] = Boolean;
-    rtlClassMap["Char"] = Char;
-    rtlClassMap["Unit"] = Unit;
-    rtlClassMap["StdIn"] = StdIn;
-    rtlClassMap["Predef"] = Predef;
-    rtlClassMap["Array"] = Array;
+    Any = RtlClassMetaInfo::initAny();
+    ctx().addRTL(Any);
+
+    String = RtlClassMetaInfo::initString();
+    ctx().addRTL(String);
+
+    Integer = RtlClassMetaInfo::initInteger();
+    ctx().addRTL(Integer);
+
+    Double = RtlClassMetaInfo::initDouble();
+    ctx().addRTL(Double);
+
+    Boolean = RtlClassMetaInfo::initBoolean();
+    ctx().addRTL(Boolean);
+
+    Char = RtlClassMetaInfo::initChar();
+    ctx().addRTL(Char);
+
+    Unit = RtlClassMetaInfo::initUnit();
+    ctx().addRTL(Unit);
+
+    StdIn = RtlClassMetaInfo::initStdIn();
+    ctx().addRTL(StdIn);
+
+    Predef = RtlClassMetaInfo::initPredef();
+    ctx().addRTL(Predef);
+
+    Array = RtlClassMetaInfo::initArray();
+    ctx().addRTL(Array);
 
     std::cout << "RTL classes initialized successfully." << std::endl;
 }
 
 RtlClassMetaInfo* RtlClassMetaInfo::getRtlClassInfo(const std::string& typeName) {
-    auto it = rtlClassMap.find(typeName);
-    if (it != rtlClassMap.end()) {
-        return it->second;
+    // Ищем в контексте
+    auto it = ctx().classes.find(typeName);
+    if (it != ctx().classes.end()) {
+        // Проверяем, является ли это RTL классом
+        return dynamic_cast<RtlClassMetaInfo*>(it->second);
     }
     return nullptr;
 }

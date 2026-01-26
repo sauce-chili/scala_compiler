@@ -4,11 +4,13 @@
 
 #ifndef SCALA_LEXER_TABLES_H
 #define SCALA_LEXER_TABLES_H
+#include <inttypes.h>
 #include <list>
 #include <optional>
 #include <unordered_map>
 
 #include "tables.hpp"
+#include "nodes/generator/GeneratorNode.h"
 #include "semantic/scopes/Scope.h"
 #include "semantic/tools/datatype.h"
 #include "semantic/tools/tools.h"
@@ -156,6 +158,9 @@ public:
     bool isProtected() const { return modifiers.hasModifier(_PROTECTED); }
     bool isFinal() const { return modifiers.hasModifier(_FINAL); }
     bool isOverride() const { return modifiers.hasModifier(_OVERRIDE); }
+
+    virtual optional<LocalVarMetaInfo *> addLocalVar(VarDefsNode *varDefsNode, Scope *scope);
+    virtual optional<LocalVarMetaInfo *> addGeneratorVar(GeneratorNode *generatorNode, Scope *scope);
 };
 
 class ClassMetaInfo : public BytesMetaInfo, public JvmDescriptorOwner {
@@ -198,16 +203,74 @@ public:
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    bool amSubclassOf(const ClassMetaInfo* other) const;
+    /**
+     * Проверяет, является ли текущий класс подклассом (наследником) указанного класса.
+     *
+     * Метод проходит вверх по иерархии наследования (через указатели `parent`),
+     * чтобы выяснить, присутствует ли `other` среди предков текущего класса.
+     *
+     * Особенности:
+     * - Реализует рефлексивность: класс считается подклассом самого себя (возвращает true, если `this == other`).
+     *
+     * @param other Указатель на мета-информацию потенциального родительского класса.
+     * @return true Если текущий класс наследуется от `other` или является им.
+     * @return false Если конец иерархии достигнут, а совпадение не найдено.
+ */
+    bool amSubclassOf(const ClassMetaInfo *other) const;
 
-    virtual optional<FieldMetaInfo *> resolveField(const string& fieldName,
-                                                   const ClassMetaInfo* accessContext,
-                                                   bool lookupPrivate = false);
+    /**
+     * Ищет поле с указанным именем в текущем классе и вверх по иерархии наследования.
+     * Метод учитывает модификаторы доступа поля и контекст, из которого происходит обращение.
+     *
+     * Алгоритм поиска:
+     * 1. Ищет поле в текущем классе.
+     * 2. Если поле найдено:
+     *  - Если `lookupPrivate == true`, возвращает поле игнорируя права доступа.
+     *  - Если поле Public: возвращает поле.
+     *  - Если поле Private: возвращает поле только если `accessFrom` совпадает с текущим классом.
+     *  - Если поле Protected: возвращает поле, если `accessFrom` является наследником текущего класса.
+     * 3. Если поле не найдено или недоступно, поиск рекурсивно продолжается в родительском классе (`parent`).
+     *
+     * @param fieldName     Имя искомого поля.
+     * @param accessFrom    Мета-информация о классе, который запрашивает доступ (контекст вызова).
+     * Может быть `nullptr`, если контекст неизвестен.
+     * @param lookupPrivate Флаг принудительного поиска. Если `true`, игнорирует проверки видимости
+     * (полезно для отладки или системных вызовов).
+     * @return std::optional<FieldMetaInfo*> Указатель на мета-информацию о поле, если оно найдено и доступно,
+     * иначе `std::nullopt`.
+     */
+    virtual optional<FieldMetaInfo *> resolveField(
+        const string &fieldName,
+        const ClassMetaInfo *accessFrom,
+        bool lookupPrivate = false
+    );
 
-    virtual optional<MethodMetaInfo *> resolveMethod(const string& methodName,
-                                                     const vector<DataType *>& argTypes,
-                                                     const ClassMetaInfo* accessFrom,
-                                                     bool lookupPrivate = false);
+    /**
+     * Ищет метод по имени и сигнатуре аргументов в текущем классе и иерархии наследования.
+     * Поддерживает перегрузку методов (overloading) и проверку прав доступа.
+     *
+     * Алгоритм поиска:
+     * 1. Получает список всех методов с именем `methodName` в текущем классе.
+     * 2. Перебирает кандидатов, проверяя точное совпадение количества и типов аргументов (`argTypes`).
+     * 3. Если подходящий кандидат найден:
+     *  - Проверяет права доступа (Public/Private/Protected) аналогично логике полей.
+     *  - Если метод приватный и контекст не позволяет доступ, поиск продолжается (на случай перегрузок) или завершается.
+     * 4. Если подходящий метод не найден в текущем классе, поиск рекурсивно уходит к родителю (`parent`).
+     *
+     * @param methodName    Имя искомого метода.
+     * @param argTypes      Список типов аргументов для разрешения перегрузки (Signature matching).
+     * @param accessFrom    Мета-информация о классе, запрашивающем доступ. Необходим для проверки
+     * `protected` и `private` методов.
+     * @param lookupPrivate Флаг принудительного поиска, отключающий проверки видимости.
+     * @return std::optional<MethodMetaInfo *> Указатель на мета-информацию о методе, если он найден,
+     * соответствует сигнатуре и доступен. Иначе `std::nullopt`.
+     */
+    virtual optional<MethodMetaInfo *> resolveMethod(
+        const string &methodName,
+        const vector<DataType *> &argTypes,
+        const ClassMetaInfo *accessFrom,
+        bool lookupPrivate = false
+    );
 
     string jvmDescriptor() {
         return "Lvstu/scala/code" + this->name + ";";
@@ -221,6 +284,11 @@ public:
     bool isProtected() const { return modifiers.hasModifier(_PROTECTED); }
     bool isFinal() const { return modifiers.hasModifier(_FINAL); }
     bool isOverride() const { return modifiers.hasModifier(_OVERRIDE); }
+
+    /**
+     * Проверяет, является ли класс RTL классом (встроенным в runtime)
+     */
+    bool isRTL() const;
 
 protected:
     uint16_t constantCounter = 1;
