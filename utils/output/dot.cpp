@@ -1,8 +1,7 @@
 #include <iostream>
 #include <fstream>
 
-
-void createDotTree(TopStatSeqNode* root, const std::string& filename) {
+inline void createDotTree(TopStatSeqNode* root, const std::string& filename) {
     if (root == nullptr) {
         std::cerr << "Error: root == nullptr\n";
         return;
