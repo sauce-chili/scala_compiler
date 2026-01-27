@@ -40,8 +40,8 @@ public:
     static SimpleExpr1Node* createSuperFieldAccessNode(IdNode* identifier);
     static SimpleExpr1Node* createThisFieldAccessNode(IdNode* identifier);
     static SimpleExpr1Node* createSimpleExprFieldAccessNode(IdNode* identifier, SimpleExprNode* expr);
-    static SimpleExpr1Node* createArgumentCallNode(ExprNode* expr);
-    static SimpleExpr1Node* createEmptyCallNode();
+    static SimpleExpr1Node* createParenthesizedExprNode(ExprNode* expr);
+    static SimpleExpr1Node* createUnitLiteralNode();
     static SimpleExpr1Node* createPlainThisNode();
     static SimpleExpr1Node* createArrayWithTypeBuilderNode(SimpleTypeNode* simpleType, ArgumentExprsNode* argumentExprs);
     static SimpleExpr1Node* createArrayBuilderNode(ArgumentExprsNode* argumentExprs);

@@ -580,14 +580,14 @@ private:
                     out << "." << node->identifier->name;
                 }
                 break;
-            case _ARGUMENT_CALL:
+            case _PARENTHESIZED_EXPR:
                 out << "(";
                 if (node->expr) {
                     generateExpr(node->expr);
                 }
                 out << ")";
                 break;
-            case _EMPTY_CALL:
+            case _UNIT_LITERAL:
                 out << "()";
                 break;
             case _METHOD_CALL:

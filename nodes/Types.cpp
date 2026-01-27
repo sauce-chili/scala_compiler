@@ -20,8 +20,8 @@ std::string simpleExpr1ToString(SimpleExpr1Type t) {
         case _SUPER_FIELD_ACCESS:      return "Super field access";
         case _THIS_FIELD_ACCESS:       return "This field access";
         case _EXPRESSION_FIELD_ACCESS: return "Expression field access";
-        case _ARGUMENT_CALL:           return "Argument call";
-        case _EMPTY_CALL:              return "Empty call";
+        case _PARENTHESIZED_EXPR:      return "Parenthesized expression";
+        case _UNIT_LITERAL:            return "Unit literal";
         case _METHOD_CALL:             return "Method call";
         case _ARRAY_BUILDER:           return "Array builder";
         case _ARRAY_WITH_TYPE_BUILDER: return "Array with type builder";

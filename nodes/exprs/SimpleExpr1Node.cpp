@@ -97,16 +97,16 @@ SimpleExpr1Node *SimpleExpr1Node::createSimpleExprFieldAccessNode(IdNode* identi
     return node;
 }
 
-SimpleExpr1Node* SimpleExpr1Node::createArgumentCallNode(ExprNode* expr) {
+SimpleExpr1Node* SimpleExpr1Node::createParenthesizedExprNode(ExprNode* expr) {
     SimpleExpr1Node* node = new SimpleExpr1Node();
-    node->type = _ARGUMENT_CALL;
+    node->type = _PARENTHESIZED_EXPR;
     node->expr = expr;
     return node;
 }
 
-SimpleExpr1Node* SimpleExpr1Node::createEmptyCallNode() {
+SimpleExpr1Node* SimpleExpr1Node::createUnitLiteralNode() {
     SimpleExpr1Node* node = new SimpleExpr1Node();
-    node->type = _EMPTY_CALL;
+    node->type = _UNIT_LITERAL;
     return node;
 }
 
