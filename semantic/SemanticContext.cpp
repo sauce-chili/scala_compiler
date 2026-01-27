@@ -36,7 +36,6 @@ optional<ClassMetaInfo *> SemanticContext::addClass(ClassDefNode *classDefNode) 
     string clsName = classDefNode->fullId->name;
 
     if (classes.find(clsName) != classes.end()) {
-        ErrorTable::addErrorToList(new SemanticError(SemanticError::ClassRedefinition(0, clsName)));
         return nullopt;
     }
 
