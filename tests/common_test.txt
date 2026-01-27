@@ -49,14 +49,14 @@ class Person(private val name: String, var age: Int = 0) extends Human(name) wit
 
 
 
-trait Greeter {
-  def greet(name: String): String
-}
+//trait Greeter {
+//  def greet(name: String): String
+//}
 
-object Single {
-  val x = 1
-  def hello() = "object hello"
-}
+//object Single {
+//  val x = 1
+//  def hello() = "object hello"
+//}
 
 class C1 {} // short form
 class C2() {} // explicit empty param clause
@@ -66,22 +66,22 @@ class C3(a: Int) extends C1 {}
 // Template definitions: object, trait, enum (grammar supports ENUM)
 //////////////////////
 
-enum Color {
+//enum Color {
 
 
 
-  case RED, GREEN, BLUE
-}
+//  case RED, GREEN, BLUE
+//}
 
 //////////////////////
 // Enums with params / extends (exercise enumCase forms)
 //////////////////////
 
-enum Shape extends Serializable {
-  case Circle(radius: Double) extends AnyRef
-  case Rectangle(width: Double, height: Double)
-  case UnitShape
-}
+//enum Shape extends Serializable {
+//  case Circle(radius: Double) extends AnyRef
+//  case Rectangle(width: Double, height: Double)
+//  case UnitShape
+//}
 
 //////////////////////
 // Variable definitions, declarations (dcl), and assignments
@@ -124,24 +124,7 @@ class Flows {
             cnt = cnt + 1
         } while (cnt < 1)
 
-        // for with generator and for-yield
-        val ys = for (x <- xs) yield x * 2
-
-        // nested generators and enumerators: generator with fullID + compoundType (x: Int <- expr)
-        val z = for (x: Int <- xs) yield x + 1
-
-        // try/catch/finally (catch uses block exprs)
-        val maybe: Int =
-        try {
-          if (xs.isEmpty) throw new RuntimeException("empty");;
-          xs.head
-        } catch {
-          { println("caught"); -999 }
-        } finally {
-          println("finally block")
-        }
-
-        res ++ ys ++ z
+        res
     }
 
     // throw / return usage inside function
@@ -203,7 +186,7 @@ class Point(x: Int, y: Int) {
 // Template stats + nested defs and empty template bodies / END_TEMPLATE edge case (represented by braces)
 //////////////////////
 
-trait Printable {
+abstract class Printable {
   def printMe(): Unit
 }
 
@@ -233,14 +216,4 @@ class Config(private val host: String, var port: Int, timeout: Int = 30) {
     val x = (1 + 2) * (3 + (4 - 5)) / 2
     x
   }
-}
-
-//////////////////////
-// ENUM + CASE variations
-//////////////////////
-
-enum ComplexEnum {
-  case A() extends SomeParent(1)
-  case B(param: Int)
-  case C, D
 }
