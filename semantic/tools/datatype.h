@@ -13,7 +13,7 @@ using namespace std;
 class DataType {
 public:
     enum class Kind {
-        Undefined, Unit, Int, Double, Char, Bool, String, Class, Array, Any
+        Undefined, Unit, Int, Double, Char, Bool, String, Class, Array, Any, Null
     };
 
     Kind kind = Kind::Undefined; // НЕЛЬЗЯ использовать за пределами этого класса
@@ -107,7 +107,7 @@ public:
         return t;
     }
 
-    string toString();
+    string toString() const;
 
     string toConstTableFormat() const;
 
@@ -121,7 +121,18 @@ public:
 
     bool isClass() const;
 
+    bool isNull() const;
+
+    /**
+     * Проверяет можно ли присвоить значение данного типа переменной целевого типа.
+     * Учитывает: точное совпадение, Any принимает всё, null совместим со ссылочными типами,
+     * числовое расширение (Int -> Double), наследование классов, ковариантность массивов.
+     */
+    bool isAssignableTo(const DataType& target) const;
+
     static DataType createFromNode(SimpleTypeNode *node);
+
+    static DataType makeNull();
 };
 
 

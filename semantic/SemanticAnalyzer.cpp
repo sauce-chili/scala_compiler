@@ -12,6 +12,8 @@
 #include "ClassMemberGatherVisitor.h"
 #include "ScopeAttachVisitor.h"
 #include "LocalVarGatherVisitor.h"
+#include "TypeExistenceValidator.h"
+#include "TypeCheckVisitor.h"
 #include "SemanticContext.h"
 #include "error/ErrorTable.h"
 #include "tables/tables.hpp"
@@ -314,6 +316,15 @@ bool SemanticAnalyzer::analyze(TopStatSeqNode *root) {
     // Связывание дочерних и родительских классов
     linkInheritanceHierarchy();
 
+    // Проверка существования типов
+    TypeExistenceValidator typeValidator;
+    typeValidator.visitTree(root);
+
+    if (!ErrorTable::errors.empty()) {
+        std::cerr << "Errors after type existence validation:" << std::endl << ErrorTable::getErrors() << std::endl;
+        return false;
+    }
+
     // Проверка циклов наследования
     validateInheritanceCycles();
     // Валидация переопределений (override/final)
@@ -330,6 +341,10 @@ bool SemanticAnalyzer::analyze(TopStatSeqNode *root) {
         std::cerr << "Semantic errors after validation:" << std::endl << ErrorTable::getErrors() << std::endl;
         return false;
     }
+
+    // Проверка типов и вызовов методов
+    TypeCheckVisitor typeChecker;
+    typeChecker.visitTree(root);
 
     if (!ErrorTable::errors.empty()) {
         std::cerr << "Semantic errors after type check:" << std::endl << ErrorTable::getErrors() << std::endl;
