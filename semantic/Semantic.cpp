@@ -8,6 +8,7 @@
 #include "semantic/error/SemanticError.h"
 #include "nodes/exprs/InfixExprNode.h"
 #include "nodes/exprs/ExprNode.h"
+#include "nodes/exprs/AssignmentNode.h"
 #include "nodes/exprs/SimpleExpr1Node.h"
 
 #include <iostream>
@@ -119,14 +120,13 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
         if (!p->def->varDefs) continue;
 
         BlockStatNode *stat;
-        SimpleTypeNode* typeOfVars = p->def->varDefs->simpleType ? p->def->varDefs->simpleType->copy() : nullptr;
-        if (p->def->varDefs->type == StatType::_VAR_DECL) {
-            stat = BlockStatNode::createVarDefsNode(
-                    VarDefsNode::createVar(p->def->varDefs->fullId->copy(), typeOfVars, p->def->varDefs->expr->copy()));
-        } else {
-            stat = BlockStatNode::createVarDefsNode(
-                    VarDefsNode::createVal(p->def->varDefs->fullId->copy(), typeOfVars, p->def->varDefs->expr->copy()));
-        }
+        stat = BlockStatNode::createExprNode(
+                ExprNode::createAssignment(
+                        AssignmentNode::createIdAssignment(
+                                p->def->varDefs->fullId->copy(), p->def->varDefs->expr->copy()
+                        )
+                )
+        );
         p->def->varDefs->expr = nullptr;
         BlockStatsNode::addBlockStatToList(blockStats, stat);
     }
