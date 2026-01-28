@@ -1,5 +1,4 @@
 #include "EnumeratorsNode.h"
-#include "semantic/scopes/Scope.h"
 
 EnumeratorsNode::EnumeratorsNode() : generator(nullptr) {
 }

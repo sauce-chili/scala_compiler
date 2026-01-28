@@ -2,9 +2,11 @@
 
 BlockStatsNode::BlockStatsNode() {
     blockStats = new std::list<BlockStatNode *>;
+    blockScope = nullptr;
 }
 
 BlockStatsNode::BlockStatsNode(BlockStatNode *blockStat) {
+    blockScope = nullptr;
     blockStats = new std::list<BlockStatNode *>;
     if (blockStat) {
         blockStats->push_back(blockStat);
