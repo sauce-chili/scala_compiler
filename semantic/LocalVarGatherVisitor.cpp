@@ -2,6 +2,7 @@
 // LocalVarGatherVisitor - собирает локальные переменные в таблицы методов
 //
 
+#include <set>
 #include "LocalVarGatherVisitor.h"
 
 #include "nodes/nodes.h"
@@ -89,11 +90,17 @@ void LocalVarGatherVisitor::visitFunDef(FunDefNode* node) {
     std::string methodName;
     std::vector<DataType*> argTypes;
 
+    if (node->funcParams) {
+        validateArgumentNames(node->funcParams);
+    }
+
     if (node->funSig && node->funSig->fullId) {
         methodName = node->funSig->fullId->name;
 
         // Собираем типы аргументов для поиска по сигнатуре
         if (node->funSig->params && node->funSig->params->funcParams) {
+            validateArgumentNames(node->funSig->params);
+
             for (auto* paramNode : *node->funSig->params->funcParams) {
                 DataType* argType = new DataType(DataType::createFromNode(paramNode->simpleType));
                 argTypes.push_back(argType);
@@ -133,6 +140,24 @@ void LocalVarGatherVisitor::visitFunDef(FunDefNode* node) {
 
     currentMethod = prevMethod;
     currentScope = prevScope;
+}
+
+void LocalVarGatherVisitor::validateArgumentNames(FuncParamsNode* funcParams) {
+    if (!funcParams || !funcParams->funcParams) {
+        return;
+    }
+
+    set<string> actualNames;
+    for (auto* paramNode : *funcParams->funcParams) {
+        string currentName = paramNode->fullId->name;
+        if (actualNames.contains(currentName)) {
+            ErrorTable::addErrorToList(new SemanticError(
+                    SemanticError::SameArgumentsNames(0, currentName)
+            ));
+        }
+
+        actualNames.insert(currentName);
+    }
 }
 
 void LocalVarGatherVisitor::visitBlockStats(BlockStatsNode* node) {

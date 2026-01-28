@@ -21,6 +21,7 @@ class VarDefsNode;
 class EnumeratorsNode;
 class GeneratorNode;
 class ExprNode;
+class FuncParamsNode;
 
 class LocalVarGatherVisitor {
 private:
@@ -38,6 +39,8 @@ private:
     void visitVarDefs(VarDefsNode* node, Scope* scope);
     void visitForExpression(ExprNode* node);
     void visitGenerator(GeneratorNode* node, Scope* scope);
+
+    static void validateArgumentNames(FuncParamsNode* funcParams);
 
 public:
     LocalVarGatherVisitor() = default;
