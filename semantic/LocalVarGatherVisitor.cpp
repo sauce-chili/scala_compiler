@@ -11,12 +11,12 @@
 #include "nodes/stats/BlockStatsNode.h"
 #include "nodes/stats/BlockStatNode.h"
 #include "nodes/var/VarDefsNode.h"
-#include "nodes/generator/EnumeratorsNode.h"
 #include "nodes/generator/GeneratorNode.h"
 #include "nodes/exprs/ExprNode.h"
 #include "semantic/tables/tables.hpp"
 #include "semantic/error/ErrorTable.h"
 #include "semantic/error/SemanticError.h"
+#include "Constants.cpp"
 
 void LocalVarGatherVisitor::visitTree(TopStatSeqNode* root) {
     if (root) visit(root);
@@ -106,12 +106,12 @@ void LocalVarGatherVisitor::visitFunDef(FunDefNode* node) {
                 argTypes.push_back(argType);
             }
         }
-    } else if (node->isConstructor() && node->funcParams) {
+    } else if (node->isConstructor()) {
         // Вторичный конструктор // TODO или как this?
-        methodName = currentClass->name;
-        if (node->funcParams->funcParams) {
-            for (auto* paramNode : *node->funcParams->funcParams) {
-                DataType* argType = new DataType(DataType::createFromNode(paramNode->simpleType));
+        methodName = CONSTRUCTOR_NAME;
+        if (node->funcParams && node->funcParams->funcParams) {
+            for (auto *paramNode: *node->funcParams->funcParams) {
+                DataType *argType = new DataType(DataType::createFromNode(paramNode->simpleType));
                 argTypes.push_back(argType);
             }
         }
