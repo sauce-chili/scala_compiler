@@ -323,6 +323,7 @@ optional<MethodMetaInfo *> ClassMetaInfo::addMethod(FunDefNode *funDefNode, Modi
     method->returnType = DataType::createFromNode(funDefNode->simpleType);
     method->modifiers = modifiers;
     method->localVarCounter = tempCounter;
+    method->isPrimaryConstructor = funDefNode->primaryConstructor;
 
     // Переносим аргументы в структуру метода
     for (auto *arg: tempArgs) {

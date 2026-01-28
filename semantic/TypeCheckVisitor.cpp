@@ -835,7 +835,7 @@ void TypeCheckVisitor::checkAssignmentCompatibility(const DataType& targetType,
 }
 
 void TypeCheckVisitor::checkNotVal(bool isVal, const std::string& varName, int line) {
-    if (isVal) {
+    if (isVal && !currentMethod->isPrimaryConstructor) {
         ErrorTable::addErrorToList(new SemanticError(
             SemanticError::ValReassignment(line, varName)
         ));
