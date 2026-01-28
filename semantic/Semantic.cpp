@@ -75,6 +75,8 @@ void TopStatNode::toFieldsFromPrimaryConstructor() {
 
         currentClass->classTemplateOpt->templateStats->templateStats->push_front(stat);
     }
+
+    currentClass->classParams = nullptr;
 }
 
 void TopStatNode::initializeBaseConstructorFromFields() const {
