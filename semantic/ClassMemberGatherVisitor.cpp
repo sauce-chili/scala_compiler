@@ -2,6 +2,8 @@
 #include <iostream>
 
 #include "tables/tables.hpp"
+#include "error/ErrorTable.h"
+#include "tools/datatype.h"
 
 ClassMemberGatherVisitor::ClassMemberGatherVisitor() : currentClass(nullptr) {}
 
@@ -56,8 +58,7 @@ void ClassMemberGatherVisitor::visitClassDef(ClassDefNode* node) {
 
     auto result = ctx().addClass(node);
     if (!result.has_value()) {
-        // TODO
-        std::cerr << "Error: Class " << node->fullId->name << " already defined." << std::endl;
+        ErrorTable::addErrorToList(new SemanticError(SemanticError::ClassRedefinition(0, node->fullId->name)));
         return;
     }
 
@@ -83,10 +84,35 @@ void ClassMemberGatherVisitor::visitDef(DefNode* node) {
     if (!currentClass) return;
     auto mod = Modifiers::createFromModifiersNode(*node->modifiers);
     if (node->type == _VAR_DEFS && node->varDefs) {
-        currentClass->addField(node->varDefs, mod);
+        auto result = currentClass->addField(node->varDefs, mod);
+        if (!result.has_value() && node->varDefs->fullId) {
+            int line = node->varDefs->fullId->id;
+            std::string fieldName = node->varDefs->fullId->name;
+            ErrorTable::addErrorToList(new SemanticError(
+                SemanticError::FieldRedefinition(line, fieldName)
+            ));
+        }
     }
     else if (node->type == _FUN_DEFINITION && node->funDef) {
-        currentClass->addMethod(node->funDef, mod);
+        auto result = currentClass->addMethod(node->funDef, mod);
+        if (!result.has_value() && node->funDef->funSig && node->funDef->funSig->fullId) {
+            int line = node->funDef->funSig->fullId->id;
+            std::string methodName = node->funDef->funSig->fullId->name;
+            // Build signature string with argument types
+            std::string sigStr = methodName + "(";
+            if (node->funDef->funSig->params && node->funDef->funSig->params->funcParams) {
+                bool first = true;
+                for (auto* paramNode : *node->funDef->funSig->params->funcParams) {
+                    if (!first) sigStr += ", ";
+                    first = false;
+                    sigStr += DataType::createFromNode(paramNode->simpleType).toString();
+                }
+            }
+            sigStr += ")";
+            ErrorTable::addErrorToList(new SemanticError(
+                SemanticError::MethodAlreadyExists(line, sigStr)
+            ));
+        }
     }
 }
 
@@ -94,9 +120,34 @@ void ClassMemberGatherVisitor::visitDcl(DclNode* node) {
     if (!currentClass) return;
     auto mod = Modifiers::createFromModifiersNode(*node->modifiers);
     if (node->type == _VAL_DECL || node->type == _VAR_DECL) {
-        currentClass->addField(node);
+        auto result = currentClass->addField(node);
+        if (!result.has_value() && node->fullId) {
+            int line = node->fullId->id;
+            std::string fieldName = node->fullId->name;
+            ErrorTable::addErrorToList(new SemanticError(
+                SemanticError::FieldRedefinition(line, fieldName)
+            ));
+        }
     }
     else if (node->type == _FUN_DEF) {
-        currentClass->addMethod(node);
+        auto result = currentClass->addMethod(node);
+        if (!result.has_value() && node->funSig && node->funSig->fullId) {
+            int line = node->funSig->fullId->id;
+            std::string methodName = node->funSig->fullId->name;
+            // Build signature string with argument types
+            std::string sigStr = methodName + "(";
+            if (node->funSig->params && node->funSig->params->funcParams) {
+                bool first = true;
+                for (auto* paramNode : *node->funSig->params->funcParams) {
+                    if (!first) sigStr += ", ";
+                    first = false;
+                    sigStr += DataType::createFromNode(paramNode->simpleType).toString();
+                }
+            }
+            sigStr += ")";
+            ErrorTable::addErrorToList(new SemanticError(
+                SemanticError::MethodAlreadyExists(line, sigStr)
+            ));
+        }
     }
 }
