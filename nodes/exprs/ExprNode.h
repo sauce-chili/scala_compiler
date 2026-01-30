@@ -4,6 +4,7 @@
 #include <list>
 #include "../Node.h"
 #include "../nodes/stats/BlockStatsNode.h"
+#include "IExpr.h"
 
 class ExprNode;
 class TryExprNode;
@@ -11,7 +12,7 @@ class EnumeratorsNode;
 class InfixExprNode;
 class AssignmentNode;
 
-class ExprNode: public Node {
+class ExprNode: public Node, public IExpr {
 public:
     ExprType type;
     std::list<ExprNode*> *exprs;
@@ -37,6 +38,16 @@ public:
     static ExprNode* createInfix(InfixExprNode* infixExpr);
     static ExprNode* createAssignment(AssignmentNode* assignment);
     static ExprNode* createFromBlockStats(BlockStatsNode* blockStats);
+
+    /**
+     * @brief Infers the type of this expression.
+     * @see IExpr::inferType
+     */
+    DataType inferType(
+        ClassMetaInfo* currentClass,
+        MethodMetaInfo* currentMethod,
+        Scope* currentScope
+    ) const override;
 
     string toDot() const override;
     string getDotLabel() const override;

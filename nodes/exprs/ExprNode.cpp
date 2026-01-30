@@ -3,6 +3,11 @@
 #include "../generator/EnumeratorsNode.h"
 #include "../exprs/InfixExprNode.h"
 #include "../exprs/AssignmentNode.h"
+#include "semantic/SemanticContext.h"
+#include "semantic/tables/tables.hpp"
+#include "semantic/error/ErrorTable.h"
+#include "semantic/error/SemanticError.h"
+#include "semantic/tools/datatype.h"
 
 ExprNode::ExprNode() {
     exprs = new std::list<ExprNode *>;
@@ -189,19 +194,79 @@ list<Node *> ExprNode::getChildren() const {
             addChildIfNotNull(children, assignment);
             break;
         case _RETURN_EXPR:
-        case _THROW:
+        case _THROW: // уже не поддерживается
             if (exprs && !exprs->empty()) {
                 addChildIfNotNull(children, exprs->front());
             }
             break;
+        case _RETURN_EMPTY:
+            // No children
+            break;
         default:
-            // Для остальных случаев (пр. _RETURN_EMPTY)
-            // или если в будущем появятся простые списки выражений.
-            if (exprs) {
-                for (auto *e: *exprs) addChildIfNotNull(children, e);
-            }
+            throw std::logic_error("Неизвестный ранее тип выражения");
             break;
     }
 
     return children;
+}
+
+DataType ExprNode::inferType(
+    ClassMetaInfo* currentClass,
+    MethodMetaInfo* currentMethod,
+    Scope* currentScope
+) const {
+    switch (type) {
+        case _INFIX:
+            if (infixExpr) {
+                return infixExpr->inferType(currentClass, currentMethod, currentScope);
+            }
+            throw SemanticError::InternalError(id, "ExprNode _INFIX without infixExpr");
+
+        case _ASSIGNMENT:
+            return DataType::makeUnit();
+
+        case _IF_ELSE:
+            // Type of if-else is the nearest common ancestor of both branches
+            if (exprs && exprs->size() >= 3) {
+                auto it = exprs->begin();
+                ++it; // skip condition
+
+                DataType thenType = (*it)->inferType(currentClass, currentMethod, currentScope);
+                ++it;
+                DataType elseType = (*it)->inferType(currentClass, currentMethod, currentScope);
+
+                // Find nearest common ancestor
+                auto commonTypeOpt = DataType::findCommonAncestor(thenType, elseType);
+
+                if (commonTypeOpt.has_value()) {
+                    return commonTypeOpt.value();
+                }
+
+                // Types are incompatible - throw error
+                throw SemanticError::IfBranchesReturnDifferentTypes(
+                    id,
+                    thenType.toString(),
+                    elseType.toString()
+                );
+            }
+            throw SemanticError::InternalError(id, "ExprNode _IF_ELSE invalid state");
+
+        case _IF:
+        case _WHILE:
+        case _DO_WHILE:
+        case _FOR_WITHOUT_YIELD:
+            return DataType::makeUnit();
+
+        case _RETURN_EXPR:
+            if (exprs && !exprs->empty()) {
+                return exprs->front()->inferType(currentClass, currentMethod, currentScope);
+            }
+            return DataType::makeUnit();
+
+        case _RETURN_EMPTY:
+            return DataType::makeUnit();
+
+        default:
+            throw SemanticError::InternalError(id, "Unknown ExprNode type");
+    }
 }

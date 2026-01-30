@@ -3,6 +3,7 @@
 
 #include "../Node.h"
 #include "../Types.h"
+#include "IExpr.h"
 
 class ArgumentExprsNode;
 class SimpleExprNode;
@@ -10,7 +11,7 @@ class ExprNode;
 class IdNode;
 class SimpleTypeNode;
 
-class SimpleExpr1Node: public Node {
+class SimpleExpr1Node: public Node, public IExpr {
 public:
     SimpleExpr1Type type;
     int intValue;
@@ -45,6 +46,18 @@ public:
     static SimpleExpr1Node* createPlainThisNode();
     static SimpleExpr1Node* createArrayWithTypeBuilderNode(SimpleTypeNode* simpleType, ArgumentExprsNode* argumentExprs);
     static SimpleExpr1Node* createArrayBuilderNode(ArgumentExprsNode* argumentExprs);
+
+    bool isLiteral() const;
+
+    /**
+     * @brief Infers the type of this simple expression.
+     * @see IExpr::inferType
+     */
+    DataType inferType(
+        ClassMetaInfo* currentClass,
+        MethodMetaInfo* currentMethod,
+        Scope* currentScope
+    ) const override;
 
     string toDot() const override;
     string getDotLabel() const override;

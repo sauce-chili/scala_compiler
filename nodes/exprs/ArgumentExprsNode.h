@@ -4,7 +4,13 @@
 #include "../Node.h"
 #include "ExprNode.h"
 #include "ExprsNode.h"
+#include "semantic/tools/datatype.h"
 #include <list>
+#include <vector>
+
+class ClassMetaInfo;
+class MethodMetaInfo;
+class Scope;
 
 class ArgumentExprsNode: public Node {
 public:
@@ -15,6 +21,12 @@ public:
     ArgumentExprsNode* copy();
 
     bool contains(string name);
+
+    std::vector<DataType*> getArgsTypes(
+        ClassMetaInfo* currentClass,
+        MethodMetaInfo* currentMethod,
+        Scope* currentScope
+    ) const;
 
     string toDot() const override;
     string getDotLabel() const override;

@@ -4,12 +4,47 @@
 
 #ifndef SCALA_LEXER_IEXPR_H
 #define SCALA_LEXER_IEXPR_H
+
 #include "semantic/tools/datatype.h"
 
+class ClassMetaInfo;
+class MethodMetaInfo;
+class Scope;
+
+/**
+ * @brief Интерфейс для всех узлов-выражений в AST.
+ *
+ * Предоставляет интерфейс для вывода типа. Каждый узел выражения
+ * должен реализовывать этот интерфейс и уметь вычислять свой тип.
+ */
 class IExpr {
 public:
-    virtual DataType getDataType() = 0;
-    virtual int getExprType() = 0;
+    /**
+     * @brief Определяет тип данного выражения.
+     *
+     * Анализирует узел AST и возвращает тип данных, который это выражение
+     * будет иметь во время выполнения. Для корректного вывода типа
+     * требуется доступ к контексту семантического анализа.
+     *
+     * @param currentClass Текущий класс, в рамках которого выполняется анализ
+     * @param currentMethod Текущий метод, если анализ выполняется внутри метода (может быть nullptr)
+     * @param currentScope Текущая область видимости для разрешения локальных переменных (может быть nullptr)
+     * @return DataType Тип выражения
+     *
+     * @throws SemanticError если тип не может быть определён или обнаружена ошибка типов
+     *
+     * @see DataType
+     * @see ClassMetaInfo
+     * @see MethodMetaInfo
+     * @see Scope
+     */
+    virtual DataType inferType(
+        ClassMetaInfo *currentClass,
+        MethodMetaInfo *currentMethod,
+        Scope *currentScope
+    ) const = 0;
+
+    virtual ~IExpr() = default;
 };
 
 #endif //SCALA_LEXER_IEXPR_H

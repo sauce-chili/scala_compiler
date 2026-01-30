@@ -2,6 +2,14 @@
 #include "../class/ConstrInvokeNode.h"
 #include "../stats/BlockStatsNode.h"
 #include "SimpleExpr1Node.h"
+#include "ExprNode.h"
+#include "ArgumentExprsNode.h"
+#include "ExprsNode.h"
+#include "../type/SimpleTypeNode.h"
+#include "semantic/SemanticContext.h"
+#include "semantic/tables/tables.hpp"
+#include "semantic/error/ErrorTable.h"
+#include "semantic/error/SemanticError.h"
 
 SimpleExprNode::SimpleExprNode() {
     fullId = nullptr;
@@ -88,5 +96,95 @@ list<Node *> SimpleExprNode::getChildren() const {
     addChildIfNotNull(children, arguments);
     addChildIfNotNull(children, simpleType);
     return children;
+}
+
+// Helper function to infer block stats type
+static DataType inferBlockStatsType(
+    BlockStatsNode* blockStats,
+    ClassMetaInfo* currentClass,
+    MethodMetaInfo* currentMethod,
+    Scope* currentScope
+) {
+    if (!blockStats || !blockStats->blockStats || blockStats->blockStats->empty()) {
+        return DataType::makeUnit();
+    }
+
+    // Type of block is the type of the last statement
+    BlockStatNode* lastStat = blockStats->blockStats->back();
+
+    if (lastStat->expr) {
+        return lastStat->expr->inferType(currentClass, currentMethod, currentScope);
+    }
+
+    // If last statement is a variable definition, type is Unit
+    return DataType::makeUnit();
+}
+
+DataType SimpleExprNode::inferType(
+    ClassMetaInfo* currentClass,
+    MethodMetaInfo* currentMethod,
+    Scope* currentScope
+) const {
+    switch (type) {
+        case _SIMPLE_EXPR_1:
+            if (simpleExpr1) {
+                return simpleExpr1->inferType(currentClass, currentMethod, currentScope);
+            }
+            throw SemanticError::InternalError(id, "SimpleExprNode _SIMPLE_EXPR_1 without simpleExpr1");
+
+        case _INSTANCE_CREATING:
+            if (fullId) {
+                std::string className = fullId->name;
+
+                // Primitive types - synthetic constructors from transformLiterals
+                auto primitiveType = DataType::primitiveFromName(className);
+                if (primitiveType.has_value()) {
+                    return primitiveType.value();
+                }
+
+                auto classIt = ctx().classes.find(className);
+                if (classIt != ctx().classes.end()) {
+                    ClassMetaInfo* classInfo = classIt->second;
+
+                    if (classInfo->modifiers.hasModifier(_ABSTRACT)) {
+                        throw SemanticError::AbstractClassInstantiated(id, className);
+                    }
+
+                    auto argTypes = arguments->getArgsTypes(currentClass, currentMethod, currentScope);
+                    auto constrOpt = classInfo->resolveMethod(className, argTypes, currentClass);
+
+                    if (!constrOpt.has_value() && !argTypes.empty()) {
+                        std::string argsStr = "(";
+                        for (size_t i = 0; i < argTypes.size(); ++i) {
+                            if (i > 0) argsStr += ", ";
+                            argsStr += argTypes[i]->toString();
+                        }
+                        argsStr += ")";
+                        for (auto* t : argTypes) delete t;
+                        throw SemanticError::ConstructorNotFound(id, className + argsStr);
+                    }
+
+                    for (auto* t : argTypes) delete t;
+                    return DataType::makeClass(className);
+                }
+                throw SemanticError::UndefinedClass(id, className);
+            }
+            throw SemanticError::InternalError(id, "SimpleExprNode _INSTANCE_CREATING without fullId");
+
+        case _ARRAY_CREATING:
+            if (simpleType) {
+                DataType elemType = DataType::createFromNode(simpleType);
+                return DataType::makeArray(elemType);
+            }
+            throw SemanticError::InternalError(id, "SimpleExprNode _ARRAY_CREATING without simpleType");
+
+        case _BLOCK_STATS:
+            if (blockStats) {
+                return inferBlockStatsType(blockStats, currentClass, currentMethod, currentScope);
+            }
+            throw SemanticError::InternalError(id, "SimpleExprNode _BLOCK_STATS without blockStats");
+    }
+
+    throw SemanticError::InternalError(id, "Unknown SimpleExprNode type");
 }
 
