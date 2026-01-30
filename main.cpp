@@ -91,7 +91,6 @@ int main(int argc, char **argv) {
             std::cout << "Parsing completed successfully!" << std::endl;
             if (root) {
                 std::cout << "AST Root created at address: " << root << std::endl;
-                createDotTree(root, "after_transform.txt");
             } else {
                 std::cout << "AST Root not created at address: " << root << std::endl;
             }
@@ -110,6 +109,7 @@ int runCompile(TopStatSeqNode *root) {
     SemanticAnalyzer analyzer;
     try {
         root->convertAst();
+        createDotTree(root, "after_transform.txt");
     } catch (SemanticError &e) {
         std::cerr << e.getErrorMessage() << std::endl;
         return 1;
