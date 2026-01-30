@@ -287,16 +287,12 @@ private:
             out << node->fullId->name;
         }
 
-        if (node->params) {
-            generateFuncParams(node->params);
-        }
+        generateFuncParams(node->params);
     }
 
     void generateFuncParams(FuncParamsNode* node) {
-        if (!node) return;
-
         out << "(";
-        if (node->funcParams) {
+        if (node && node->funcParams) {
             bool first = true;
             for (auto* param : *node->funcParams) {
                 if (!first) out << ", ";
