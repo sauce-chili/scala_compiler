@@ -19,6 +19,8 @@ public:
     static FunDefNode* createFunSigFunDef(FunSigNode* funSig, SimpleTypeNode* simpleType, ExprNode* expr);
     static FunDefNode* createThisConstrCallFunDef(FuncParamsNode* funcParams, ConstrExprNode* constrExpr);
 
+    ExprNode* getBody() const;
+
     FunDefNode* copy();
 
     string toDot() const override;

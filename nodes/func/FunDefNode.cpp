@@ -24,6 +24,14 @@ FunDefNode *FunDefNode::createThisConstrCallFunDef(FuncParamsNode *funcParams, C
     return node;
 }
 
+ExprNode* FunDefNode::getBody() const {
+    if (constrExpr) {
+        return ExprNode::createFromBlockStats(constrExpr->blockStats);
+    }
+
+    return expr;
+}
+
 FunDefNode *FunDefNode::copy() {
     FunDefNode* node = new FunDefNode();
 
