@@ -319,12 +319,6 @@ private:
     void generateConstrExpr(ConstrExprNode* node) {
         if (!node) return;
 
-        out << indent() << "this";
-        if (node->argumentExprs) {
-            generateArgumentExprs(node->argumentExprs);
-        }
-        out << "\n";
-
         if (node->blockStats) {
             generateBlockStats(node->blockStats);
         }

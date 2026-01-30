@@ -365,16 +365,7 @@ void TopStatNode::secondaryConstructorsToMethods() {
         if (!p->def->funDef->funcParams) continue;
 
         // Собираем тело конструктора: склеиваем вызов другого конструктора с остальным содержимым тела конструктора
-        BlockStatsNode *blockStats = BlockStatsNode::addBlockStatToList(nullptr, nullptr);
-        BlockStatNode *otherConstructorCall = BlockStatNode::createSimpleExpr1(SimpleExpr1Node::createMethodCallNode(
-                otherConstructorName->copy(), p->def->funDef->constrExpr->argumentExprs->copy())
-        );
-        BlockStatsNode::addBlockStatToList(blockStats, otherConstructorCall);
-        if (p->def->funDef->constrExpr->blockStats) {
-            for (BlockStatNode *bs: *(p->def->funDef->constrExpr->blockStats->blockStats)) {
-                BlockStatsNode::addBlockStatToList(blockStats, bs->copy());
-            }
-        }
+        BlockStatsNode *blockStats = p->def->funDef->constrExpr->blockStats->copy();
         ExprNode* bodyOfConstructor = BlockStatNode::createExpr(SimpleExprNode::createBlockStatsNode(blockStats));
 
         FunSigNode *constrSignature = FunSigNode::createFunSig(IdNode::createId("this"), p->def->funDef->funcParams->copy());
