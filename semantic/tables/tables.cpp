@@ -1146,6 +1146,34 @@ RtlClassMetaInfo* RtlClassMetaInfo::initInteger() {
     toString->args = vector<ArgMetaInfo*>();
     rec->methods[toString->name].push_back(toString);
 
+    // Унарные операторы
+    MethodMetaInfo* unary_plus = new MethodMetaInfo();
+    unary_plus->classMetaInfo = Integer;
+    unary_plus->modifiers.modifiers.push_back(_PUBLIC);
+    unary_plus->returnType = DataType::Kind::Int;
+    unary_plus->name = "unary_+";
+    unary_plus->jvmName = NameTransformer::encode(unary_plus->name);
+    unary_plus->args = vector<ArgMetaInfo*>();
+    rec->methods[unary_plus->name].push_back(unary_plus);
+
+    MethodMetaInfo* unary_minus = new MethodMetaInfo();
+    unary_minus->classMetaInfo = Integer;
+    unary_minus->modifiers.modifiers.push_back(_PUBLIC);
+    unary_minus->returnType = DataType::Kind::Int;
+    unary_minus->name = "unary_-";
+    unary_minus->jvmName = NameTransformer::encode(unary_minus->name);
+    unary_minus->args = vector<ArgMetaInfo*>();
+    rec->methods[unary_minus->name].push_back(unary_minus);
+
+    MethodMetaInfo* unary_tilde = new MethodMetaInfo();
+    unary_tilde->classMetaInfo = Integer;
+    unary_tilde->modifiers.modifiers.push_back(_PUBLIC);
+    unary_tilde->returnType = DataType::Kind::Int;
+    unary_tilde->name = "unary_~";
+    unary_tilde->jvmName = NameTransformer::encode(unary_tilde->name);
+    unary_tilde->args = vector<ArgMetaInfo*>();
+    rec->methods[unary_tilde->name].push_back(unary_tilde);
+
     return rec;
 }
 
@@ -1831,6 +1859,25 @@ RtlClassMetaInfo* RtlClassMetaInfo::initDouble() {
     toString->args = vector<ArgMetaInfo*>();
     rec->methods[toString->name].push_back(toString);
 
+    // Унарные операторы
+    MethodMetaInfo* unary_plus_d = new MethodMetaInfo();
+    unary_plus_d->classMetaInfo = Double;
+    unary_plus_d->modifiers.modifiers.push_back(_PUBLIC);
+    unary_plus_d->returnType = DataType::Kind::Double;
+    unary_plus_d->name = "unary_+";
+    unary_plus_d->jvmName = NameTransformer::encode(unary_plus_d->name);
+    unary_plus_d->args = vector<ArgMetaInfo*>();
+    rec->methods[unary_plus_d->name].push_back(unary_plus_d);
+
+    MethodMetaInfo* unary_minus_d = new MethodMetaInfo();
+    unary_minus_d->classMetaInfo = Double;
+    unary_minus_d->modifiers.modifiers.push_back(_PUBLIC);
+    unary_minus_d->returnType = DataType::Kind::Double;
+    unary_minus_d->name = "unary_-";
+    unary_minus_d->jvmName = NameTransformer::encode(unary_minus_d->name);
+    unary_minus_d->args = vector<ArgMetaInfo*>();
+    rec->methods[unary_minus_d->name].push_back(unary_minus_d);
+
     return rec;
 }
 
@@ -2063,6 +2110,16 @@ RtlClassMetaInfo* RtlClassMetaInfo::initBoolean() {
     toScalaString->jvmName = NameTransformer::encode(toScalaString->name);
     toScalaString->args = vector<ArgMetaInfo*>();
     rec->methods[toScalaString->name].push_back(toScalaString);
+
+    // Унарный оператор отрицания
+    MethodMetaInfo* unary_not = new MethodMetaInfo();
+    unary_not->classMetaInfo = Boolean;
+    unary_not->modifiers.modifiers.push_back(_PUBLIC);
+    unary_not->returnType = DataType::Kind::Bool;
+    unary_not->name = "unary_!";
+    unary_not->jvmName = NameTransformer::encode(unary_not->name);
+    unary_not->args = vector<ArgMetaInfo*>();
+    rec->methods[unary_not->name].push_back(unary_not);
 
     return rec;
 }
