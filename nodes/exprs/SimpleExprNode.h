@@ -29,7 +29,7 @@ public:
     static SimpleExprNode* createSimpleExpr1Node(SimpleExpr1Node* simpleExpr1);
 
     /**
-     * @brief Infers the type of this simple expression.
+     * @brief Определяет тип данного простого выражения.
      * @see IExpr::inferType
      */
     DataType inferType(

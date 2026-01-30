@@ -27,7 +27,7 @@ public:
     void normalizeInfix();
 
     /**
-     * @brief Infers the type of this infix expression.
+     * @brief Определяет тип данного инфиксного выражения.
      * @see IExpr::inferType
      */
     DataType inferType(

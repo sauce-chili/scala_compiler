@@ -40,7 +40,7 @@ public:
     static ExprNode* createFromBlockStats(BlockStatsNode* blockStats);
 
     /**
-     * @brief Infers the type of this expression.
+     * @brief Определяет тип данного выражения.
      * @see IExpr::inferType
      */
     DataType inferType(

@@ -27,7 +27,7 @@ public:
     static AssignmentNode* createArrayAssignment(SimpleExpr1Node* simpleExpr1, ArgumentExprsNode* argumentExprs, ExprNode* expr);
 
     /**
-     * @brief Infers the type of this assignment expression.
+     * @brief Определяет тип данного выражения присваивания.
      * @see IExpr::inferType
      */
     DataType inferType(

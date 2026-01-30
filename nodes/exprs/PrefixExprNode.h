@@ -18,7 +18,7 @@ public:
     static PrefixExprNode* createPrefixExprNode(SimpleExprNode* simpleExpr, PrefixExprType type);
 
     /**
-     * @brief Infers the type of this prefix expression.
+     * @brief Определяет тип данного префиксного выражения.
      * @see IExpr::inferType
      */
     DataType inferType(

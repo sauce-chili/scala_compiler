@@ -50,7 +50,7 @@ public:
     bool isLiteral() const;
 
     /**
-     * @brief Infers the type of this simple expression.
+     * @brief Определяет тип данного простого выражения (SimpleExpr1).
      * @see IExpr::inferType
      */
     DataType inferType(
