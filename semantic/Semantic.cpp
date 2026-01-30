@@ -80,8 +80,6 @@ void TopStatNode::toFieldsFromPrimaryConstructor() {
 
         currentClass->classTemplateOpt->templateStats->templateStats->push_front(stat);
     }
-
-    currentClass->classParams = nullptr;
 }
 
 void TopStatNode::initializeBaseConstructorFromFields() const {
@@ -146,6 +144,7 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
     currentClass->classParams = new ClassParamsNode();
     baseConstructor->def = DefNode::createFunDef(primaryConstructorNode);
     currentClass->classTemplateOpt->templateStats->templateStats->push_front(baseConstructor);
+    currentClass->classParams = nullptr;
 }
 
 void TemplateDefNode::validateModifiers() const {
