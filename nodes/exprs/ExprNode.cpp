@@ -1,5 +1,4 @@
 #include "ExprNode.h"
-#include "../try/TryExprNode.h"
 #include "../generator/EnumeratorsNode.h"
 #include "../exprs/InfixExprNode.h"
 #include "../exprs/AssignmentNode.h"
@@ -11,7 +10,6 @@
 
 ExprNode::ExprNode() {
     exprs = new std::list<ExprNode *>;
-    tryExpr = nullptr;
     enumerators = nullptr;
     infixExpr = nullptr;
     assignment = nullptr;
@@ -39,13 +37,6 @@ ExprNode *ExprNode::createWhile(ExprNode *cond, ExprNode *expr) {
     node->type = _WHILE;
     node->exprs->push_back(cond);
     node->exprs->push_back(expr);
-    return node;
-}
-
-ExprNode *ExprNode::createTry(TryExprNode *tryExpr) {
-    ExprNode *node = new ExprNode();
-    node->type = _TRY;
-    node->tryExpr = tryExpr;
     return node;
 }
 
@@ -111,7 +102,6 @@ string ExprNode::toDot() const {
     string dot;
 
     addDotNode(dot);
-    addDotChild(dot, tryExpr, "tryExpr_");
     addDotChild(dot, enumerators, "enumerators_");
     addDotChild(dot, infixExpr, "infixExpr_");
     addDotChild(dot, assignment, "assignment_");
@@ -144,9 +134,6 @@ ExprNode *ExprNode::copy() {
 
     node->type = type;
 
-    if (tryExpr) {
-        node->tryExpr = tryExpr->copy();
-    }
     if (enumerators) {
         node->enumerators = enumerators->copy();
     }
@@ -183,9 +170,6 @@ list<Node *> ExprNode::getChildren() const {
             if (exprs) {
                 for (auto *e: *exprs) addChildIfNotNull(children, e);
             }
-            break;
-        case _TRY: // уже не поддерживается
-            addChildIfNotNull(children, tryExpr);
             break;
         case _INFIX:
             addChildIfNotNull(children, infixExpr);
