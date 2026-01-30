@@ -610,10 +610,8 @@ private:
     }
 
     void generateArgumentExprs(ArgumentExprsNode* node) {
-        if (!node) return;
-
         out << "(";
-        if (node->exprs && node->exprs->exprs) {
+        if (node && node->exprs && node->exprs->exprs) {
             bool first = true;
             for (auto* expr : *node->exprs->exprs) {
                 if (!first) out << ", ";
