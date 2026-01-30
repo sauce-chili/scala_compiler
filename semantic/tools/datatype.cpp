@@ -1,7 +1,9 @@
 #include <string>
+#include <unordered_set>
 #include "datatype.h"
 #include "tools.h"
 #include "nodes/type/SimpleTypeNode.h"
+#include "nodes/exprs/SimpleExpr1Node.h"
 #include "semantic/SemanticContext.h"
 #include "semantic/tables/tables.hpp"
 
@@ -104,6 +106,43 @@ DataType DataType::createFromNode(SimpleTypeNode *typeNode) {
     return DataType(Kind::Undefined);
 }
 
+string DataType::literalClassName(SimpleExpr1Node* literal) {
+    switch (literal->type) {
+        case _INTEGER_LITERAL: return "Int";
+        case _DOUBLE_LITERAL:  return "Double";
+        case _STRING_LITERAL:  return "String";
+        case _CHAR_LITERAL:    return "Char";
+        case _BOOL_LITERAL:    return "Boolean";
+        default: return "";
+    }
+}
+
+std::optional<DataType> DataType::primitiveFromName(const string& name) {
+    if (name == "Int")     return makePrimitive(Kind::Int);
+    if (name == "Double")  return makePrimitive(Kind::Double);
+    if (name == "Boolean") return makePrimitive(Kind::Bool);
+    if (name == "String")  return makePrimitive(Kind::String);
+    if (name == "Char")    return makePrimitive(Kind::Char);
+    if (name == "Unit")    return makePrimitive(Kind::Unit);
+    return std::nullopt;
+}
+
+string DataType::getClassName() const {
+    switch (kind) {
+        case Kind::Int:    return "Int";
+        case Kind::Double: return "Double";
+        case Kind::Bool:   return "Boolean";
+        case Kind::String: return "String";
+        case Kind::Char:   return "Char";
+        case Kind::Unit:   return "Unit";
+        case Kind::Class:  return className;
+        case Kind::Array:  return "Array";
+        case Kind::Any:    return "Any";
+        case Kind::Null:   return "Null";
+        default:           return "";
+    }
+}
+
 bool DataType::isPrimitive() const {
     return kind == Kind::Int || kind == Kind::Double ||
            kind == Kind::Char || kind == Kind::Bool ||
@@ -155,4 +194,86 @@ bool DataType::isAssignableTo(const DataType& target) const {
     }
 
     return false;
+}
+
+std::optional<DataType> DataType::findCommonAncestor(const DataType& t1, const DataType& t2) {
+    // Точное совпадение
+    if (t1 == t2) return t1;
+
+    // Any принимает всё
+    if (t1.kind == Kind::Any || t2.kind == Kind::Any) {
+        return DataType::makePrimitive(Kind::Any);
+    }
+
+    // Null совместим со ссылочными типами
+    if (t1.isNull() && (t2.kind == Kind::Class || t2.kind == Kind::Array)) {
+        return t2;
+    }
+    if (t2.isNull() && (t1.kind == Kind::Class || t1.kind == Kind::Array)) {
+        return t1;
+    }
+
+    // Оба Null
+    if (t1.isNull() && t2.isNull()) {
+        return t1;
+    }
+
+    // Примитивные типы
+    if (t1.isPrimitive() && t2.isPrimitive()) {
+        // Числовое расширение: Int и Double -> Double
+        if ((t1.kind == Kind::Int && t2.kind == Kind::Double) ||
+            (t1.kind == Kind::Double && t2.kind == Kind::Int)) {
+            return DataType::makeDouble();
+        }
+        // Другие примитивы несовместимы
+        return std::nullopt;
+    }
+
+    // Оба класса - ищем LCA по иерархии
+    if (t1.kind == Kind::Class && t2.kind == Kind::Class) {
+        auto class1It = ctx().classes.find(t1.className);
+        auto class2It = ctx().classes.find(t2.className);
+
+        if (class1It == ctx().classes.end() || class2It == ctx().classes.end()) {
+            return std::nullopt;
+        }
+
+        ClassMetaInfo* class1 = class1It->second;
+        ClassMetaInfo* class2 = class2It->second;
+
+        // Собираем всех предков первого класса (включая его самого)
+        std::unordered_set<ClassMetaInfo*> ancestors1;
+        ClassMetaInfo* current = class1;
+        while (current) {
+            ancestors1.insert(current);
+            current = current->parent;
+        }
+
+        // Поднимаемся по иерархии второго класса, пока не найдем общего предка
+        current = class2;
+        while (current) {
+            if (ancestors1.find(current) != ancestors1.end()) {
+                // Нашли LCA
+                return DataType::makeClass(current->name);
+            }
+            current = current->parent;
+        }
+
+        // Нет общего предка
+        return std::nullopt;
+    }
+
+    // Оба массива - проверяем элементы
+    if (t1.kind == Kind::Array && t2.kind == Kind::Array) {
+        if (t1.elementType && t2.elementType) {
+            auto elemLCA = findCommonAncestor(*t1.elementType, *t2.elementType);
+            if (elemLCA.has_value()) {
+                return DataType::makeArray(elemLCA.value());
+            }
+        }
+        return std::nullopt;
+    }
+
+    // Разные категории типов - несовместимы
+    return std::nullopt;
 }
