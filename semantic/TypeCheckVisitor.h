@@ -44,26 +44,12 @@ private:
     void visitAssignment(AssignmentNode* node);
     void visitForExpression(ExprNode* node);
 
-    // Вывод типов выражений (возвращает nullopt если тип не удалось вывести)
-    std::optional<DataType> inferExprType(ExprNode* expr);
-    std::optional<DataType> inferInfixExprType(InfixExprNode* infixExpr);
-    std::optional<DataType> inferPrefixExprType(PrefixExprNode* prefixExpr);
-    std::optional<DataType> inferSimpleExprType(SimpleExprNode* simpleExpr);
-    std::optional<DataType> inferSimpleExpr1Type(SimpleExpr1Node* simpleExpr1);
-    std::optional<DataType> inferBlockStatsType(BlockStatsNode* blockStats);
-
     // Проверка совместимости типов при присваивании
     void checkAssignmentCompatibility(const DataType& targetType, const DataType& sourceType,
                                       int line, const std::string& context);
 
     // Проверка что переменная не val при присваивании
     void checkNotVal(bool isVal, const std::string& varName, int line);
-
-    // Собрать типы аргументов из ArgumentExprsNode
-    std::vector<DataType*> collectArgumentTypes(class ArgumentExprsNode* args);
-
-    // Поиск унарного оператора как метода класса
-    std::optional<DataType> resolveUnaryOperator(const std::string& op, const DataType& operandType, int line);
 
 public:
     TypeCheckVisitor() = default;
