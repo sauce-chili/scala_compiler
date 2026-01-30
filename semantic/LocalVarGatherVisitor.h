@@ -40,8 +40,6 @@ private:
     void visitForExpression(ExprNode* node);
     void visitGenerator(GeneratorNode* node, Scope* scope);
 
-    static void validateArgumentNames(FuncParamsNode* funcParams);
-
 public:
     LocalVarGatherVisitor() = default;
     void visitTree(TopStatSeqNode* root);

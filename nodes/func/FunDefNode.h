@@ -20,6 +20,7 @@ public:
     static FunDefNode* createThisConstrCallFunDef(FuncParamsNode* funcParams, ConstrExprNode* constrExpr);
 
     ExprNode* getBody() const;
+    optional<FuncParamsNode*> getParams() const;
 
     FunDefNode* copy();
 

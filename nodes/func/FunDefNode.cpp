@@ -32,6 +32,18 @@ ExprNode* FunDefNode::getBody() const {
     return expr;
 }
 
+optional<FuncParamsNode*> FunDefNode::getParams() const {
+    if (funcParams) {
+        return funcParams;
+    }
+
+    if (funSig && funSig->params) {
+        return funSig->params;
+    }
+
+    return nullopt;
+}
+
 FunDefNode *FunDefNode::copy() {
     FunDefNode* node = new FunDefNode();
 
