@@ -15,6 +15,18 @@ ExprNode::ExprNode() {
     assignment = nullptr;
 }
 
+ExprNode* ExprNode::createFromBlockStats(BlockStatsNode *blockStats) {
+    ExprNode *node = new ExprNode();
+    node->type = _INFIX;
+    node->infixExpr = InfixExprNode::createInfixFromPrefix(
+        PrefixExprNode::createPrefixExprNode(
+                SimpleExprNode::createBlockStatsNode(blockStats),
+                _NO_UNARY_OPERATOR
+            )
+        );
+    return node;
+}
+
 ExprNode *ExprNode::createIfElse(ExprNode *cond, ExprNode *trueB, ExprNode *falseB) {
     ExprNode *node = new ExprNode();
     node->type = _IF_ELSE;
