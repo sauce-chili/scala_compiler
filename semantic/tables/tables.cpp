@@ -319,7 +319,7 @@ optional<MethodMetaInfo *> ClassMetaInfo::addMethod(FunDefNode *funDefNode, Modi
     method->name = methodName;
     method->jvmName = NameTransformer::encode(methodName);
     method->classMetaInfo = this;
-    method->body = funDefNode->expr;
+    method->body = funDefNode->getBody();
     method->returnType = DataType::createFromNode(funDefNode->simpleType);
     method->modifiers = modifiers;
     method->localVarCounter = tempCounter;
