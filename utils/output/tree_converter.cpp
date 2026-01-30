@@ -594,7 +594,7 @@ private:
                 if (node->simpleExpr1) {
                     generateSimpleExpr1(node->simpleExpr1);
                 }
-                if (node->argumentExprs) {
+                if (node) {
                     generateArgumentExprs(node->argumentExprs);
                 }
                 break;
