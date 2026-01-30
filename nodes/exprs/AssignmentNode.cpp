@@ -89,3 +89,12 @@ list<Node *> AssignmentNode::getChildren() const {
     return children;
 }
 
+DataType AssignmentNode::inferType(
+    ClassMetaInfo* currentClass,
+    MethodMetaInfo* currentMethod,
+    Scope* currentScope
+) const {
+    // всегда Unit
+    return DataType::makeUnit();
+}
+

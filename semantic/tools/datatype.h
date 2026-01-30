@@ -2,10 +2,12 @@
 #define COMPILER_DATATYPE_H
 
 #include <vector>
+#include <optional>
 #include "nodes/Node.h"
 
 
 class SimpleTypeNode;
+class SimpleExpr1Node;
 using namespace std;
 
 #define ARR_SIZE_UNSPECIFIED -1
@@ -123,6 +125,8 @@ public:
 
     bool isNull() const;
 
+    string getClassName() const;
+
     /**
      * Проверяет можно ли присвоить значение данного типа переменной целевого типа.
      * Учитывает: точное совпадение, Any принимает всё, null совместим со ссылочными типами,
@@ -130,7 +134,18 @@ public:
      */
     bool isAssignableTo(const DataType& target) const;
 
+    /**
+     * Находит ближайший общий предок (LCA) двух типов.
+     * Используется для определения типа if-else выражений.
+     * Возвращает std::nullopt если общий тип не существует.
+     */
+    static std::optional<DataType> findCommonAncestor(const DataType& t1, const DataType& t2);
+
     static DataType createFromNode(SimpleTypeNode *node);
+
+    static string literalClassName(SimpleExpr1Node* literal);
+
+    static std::optional<DataType> primitiveFromName(const string& name);
 
     static DataType makeNull();
 };

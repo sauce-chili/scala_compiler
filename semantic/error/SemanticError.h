@@ -75,6 +75,7 @@ public:
     static SemanticError SameArgumentsNames(int line, const std::string& name);
     static SemanticError MainMethodNotDefined(int line);
     static SemanticError AbstractMethodNotImplemented(int line, const std::string& name);
+    static SemanticError InternalError(int line, const std::string& message);
 };
 
 

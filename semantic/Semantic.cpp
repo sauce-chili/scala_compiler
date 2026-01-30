@@ -10,12 +10,15 @@
 #include "nodes/exprs/ExprNode.h"
 #include "nodes/exprs/AssignmentNode.h"
 #include "nodes/exprs/SimpleExpr1Node.h"
+#include "nodes/exprs/ArgumentExprsNode.h"
+#include "semantic/tools/datatype.h"
 
 #include <iostream>
 #include <stdexcept>
 
 void normalizeInfixes(Node* node);
 void transformInfixes(Node* node);
+void transformLiterals(Node* node);
 
 void TopStatSeqNode::convertAst() {
     for (TopStatNode* tsn: *(topStats)) {
@@ -31,6 +34,7 @@ void TopStatSeqNode::convertAst() {
         tsn->secondaryConstructorsToMethods();
         normalizeInfixes(tsn);
         transformInfixes(tsn);
+        transformLiterals(tsn);
     }
 }
 
@@ -471,4 +475,38 @@ void InfixExprNode::transformInfixOperationToMethodCall() {
     fullId = nullptr;
 
     std::cout << "end\n";
+}
+
+void transformLiterals(Node* node) {
+    if (!node) return;
+
+    if (auto simpleExpr = dynamic_cast<SimpleExprNode*>(node)) {
+        if (simpleExpr->type == _SIMPLE_EXPR_1 && simpleExpr->simpleExpr1 &&
+            simpleExpr->simpleExpr1->isLiteral()) {
+
+            SimpleExpr1Node* literal = simpleExpr->simpleExpr1;
+            string className = DataType::literalClassName(literal);
+
+            // Оборачиваем литерал в цепочку аргументов:
+            // SimpleExpr1Node -> SimpleExprNode -> PrefixExprNode -> InfixExprNode -> ExprNode
+            SimpleExprNode* litSimpleExpr = SimpleExprNode::createSimpleExpr1Node(literal);
+            PrefixExprNode* litPrefixExpr = PrefixExprNode::createPrefixExprNode(litSimpleExpr, _NO_UNARY_OPERATOR);
+            InfixExprNode* litInfixExpr = InfixExprNode::createInfixFromPrefix(litPrefixExpr);
+            ExprNode* litExpr = ExprNode::createInfix(litInfixExpr);
+            ArgumentExprsNode* arguments = new ArgumentExprsNode(new ExprsNode(litExpr));
+
+            // Преобразуем SimpleExprNode на месте в new ClassName(literal)
+            simpleExpr->type = _INSTANCE_CREATING;
+            simpleExpr->fullId = IdNode::createId(className);
+            simpleExpr->arguments = arguments;
+            simpleExpr->simpleExpr1 = nullptr;
+
+            return;
+        }
+    }
+
+    auto children = node->getChildren();
+    for (Node* child : children) {
+        transformLiterals(child);
+    }
 }

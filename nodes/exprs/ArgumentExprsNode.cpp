@@ -1,7 +1,26 @@
 #include "ArgumentExprsNode.h"
+#include "semantic/tables/tables.hpp"
+#include "semantic/scopes/Scope.h"
 
 ArgumentExprsNode::ArgumentExprsNode(ExprsNode* exprs) {
     this->exprs = exprs;
+}
+
+std::vector<DataType*> ArgumentExprsNode::getArgsTypes(
+    ClassMetaInfo* currentClass,
+    MethodMetaInfo* currentMethod,
+    Scope* currentScope
+) const {
+    std::vector<DataType*> result;
+
+    if (exprs && exprs->exprs) {
+        for (ExprNode* expr : *exprs->exprs) {
+            DataType exprType = expr->inferType(currentClass, currentMethod, currentScope);
+            result.push_back(new DataType(exprType));
+        }
+    }
+
+    return result;
 }
 
 string ArgumentExprsNode::toDot() const {

@@ -1,4 +1,7 @@
 #include "InfixExprNode.h"
+#include "semantic/SemanticContext.h"
+#include "semantic/error/SemanticError.h"
+#include "semantic/tables/tables.hpp"
 
 InfixExprNode::InfixExprNode() {
     left = nullptr;
@@ -8,13 +11,13 @@ InfixExprNode::InfixExprNode() {
 }
 
 InfixExprNode *InfixExprNode::createInfixFromPrefix(PrefixExprNode *prefixExpr) {
-    InfixExprNode* node = new InfixExprNode();
+    InfixExprNode *node = new InfixExprNode();
     node->prefixExpr = prefixExpr;
     return node;
 }
 
 InfixExprNode *InfixExprNode::createFromInfixes(InfixExprNode *left, IdNode *fullId, InfixExprNode *right) {
-    InfixExprNode* node = new InfixExprNode();
+    InfixExprNode *node = new InfixExprNode();
     node->left = left;
     node->fullId = fullId;
     node->right = right;
@@ -22,7 +25,7 @@ InfixExprNode *InfixExprNode::createFromInfixes(InfixExprNode *left, IdNode *ful
 }
 
 InfixExprNode *InfixExprNode::copy() {
-    InfixExprNode* node = new InfixExprNode();
+    InfixExprNode *node = new InfixExprNode();
 
     if (left) {
         node->left = left->copy();
@@ -63,4 +66,42 @@ list<Node *> InfixExprNode::getChildren() const {
     addChildIfNotNull(children, fullId);
     addChildIfNotNull(children, right);
     return children;
+}
+
+DataType InfixExprNode::inferType(
+    ClassMetaInfo *currentClass,
+    MethodMetaInfo *currentMethod,
+    Scope *currentScope
+) const {
+    // Имеется преобразование инфиксных вызов в классический вызов метода: a + b -> a.+(b)
+    if (prefixExpr && !left && !right) {
+        return prefixExpr->inferType(currentClass, currentMethod, currentScope);
+    }
+
+    // Бинарная операция (не должна остаться после трансформации, но на всякий случай)
+    if (left && right && fullId) {
+        DataType leftType = left->inferType(currentClass, currentMethod, currentScope);
+        DataType rightType = right->inferType(currentClass, currentMethod, currentScope);
+
+        std::string methodName = fullId->name;
+
+        auto clsName = leftType.getClassName();
+
+        auto classIt = ctx().classes.find(clsName);
+        if (classIt != ctx().classes.end()) {
+            std::vector<DataType *> argTypes;
+            argTypes.push_back(new DataType(rightType));
+
+            auto methodOpt = classIt->second->resolveMethod(methodName, argTypes, currentClass);
+            for (auto *t: argTypes) delete t;
+
+            if (methodOpt.has_value()) {
+                return methodOpt.value()->returnType;
+            }
+        }
+
+        throw SemanticError::MethodCandidateNotFound(id, methodName, "(" + rightType.toString() + ")");
+    }
+
+    throw SemanticError::InternalError(id, "Invalid InfixExprNode state");
 }

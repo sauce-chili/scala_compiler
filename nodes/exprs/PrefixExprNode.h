@@ -4,8 +4,9 @@
 
 #include "../Node.h"
 #include "SimpleExprNode.h"
+#include "IExpr.h"
 
-class PrefixExprNode: public Node {
+class PrefixExprNode: public Node, public IExpr {
 public:
     PrefixExprType type;
     SimpleExprNode* simpleExpr;
@@ -15,6 +16,16 @@ public:
     PrefixExprNode* copy();
 
     static PrefixExprNode* createPrefixExprNode(SimpleExprNode* simpleExpr, PrefixExprType type);
+
+    /**
+     * @brief Infers the type of this prefix expression.
+     * @see IExpr::inferType
+     */
+    DataType inferType(
+        ClassMetaInfo* currentClass,
+        MethodMetaInfo* currentMethod,
+        Scope* currentScope
+    ) const override;
 
     string toDot() const override;
     string getDotLabel() const override;

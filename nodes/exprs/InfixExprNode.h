@@ -5,8 +5,9 @@
 #include "../Node.h"
 #include "../id/IdNode.h"
 #include "../exprs/PrefixExprNode.h"
+#include "IExpr.h"
 
-class InfixExprNode: public Node {
+class InfixExprNode: public Node, public IExpr {
 public:
     InfixExprNode *left, *right;
     IdNode* fullId;
@@ -24,6 +25,16 @@ public:
 
     void transformInfixOperationToMethodCall();
     void normalizeInfix();
+
+    /**
+     * @brief Infers the type of this infix expression.
+     * @see IExpr::inferType
+     */
+    DataType inferType(
+        ClassMetaInfo* currentClass,
+        MethodMetaInfo* currentMethod,
+        Scope* currentScope
+    ) const override;
 
     string toDot() const override;
     string getDotLabel() const override;
