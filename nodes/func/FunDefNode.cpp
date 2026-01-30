@@ -18,8 +18,9 @@ FunDefNode *FunDefNode::createFunSigFunDef(FunSigNode *funSig, SimpleTypeNode* s
 
 FunDefNode *FunDefNode::createThisConstrCallFunDef(FuncParamsNode *funcParams, ConstrExprNode *constrExpr) {
     FunDefNode *node = new FunDefNode();
-    node->funcParams = funcParams;
     node->constrExpr = constrExpr;
+    FunSigNode* constrSig = FunSigNode::createFunSig(IdNode::createId("this"), node->funcParams);
+    node->funSig = constrSig;
     return node;
 }
 
