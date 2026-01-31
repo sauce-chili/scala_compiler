@@ -106,6 +106,10 @@ SemanticError SemanticError::IfBranchesReturnDifferentTypes(int line, const std:
     return SemanticError(IF_BRANCHES_RETURNS_DIFFERENT_TYPES, line, "If branches return different types: '" + t1 + "' and '" + t2 + "'");
 }
 
+SemanticError SemanticError::IncompatibleArrayElementTypes(int line, const std::string& t1, const std::string& t2) {
+    return SemanticError(INCOMPATIBLE_ARRAY_ELEMENT_TYPES, line, "Incompatible array element types: '" + t1 + "' and '" + t2 + "' have no common ancestor");
+}
+
 // ------------------------------------------ Наследование / классы ------------------------------------------
 SemanticError SemanticError::InvalidInheritance(int line, const std::string& base) {
     return SemanticError(INVALID_INHERITANCE, line, "Invalid inheritance from '" + base + "'");

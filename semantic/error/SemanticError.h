@@ -46,6 +46,7 @@ public:
     static SemanticError ForLoopNotArray(int line, const std::string& type);
     static SemanticError ExprNotArray(int line);
     static SemanticError IfBranchesReturnDifferentTypes(int line, const std::string& t1, const std::string& t2);
+    static SemanticError IncompatibleArrayElementTypes(int line, const std::string& t1, const std::string& t2);
 
     // ===== Наследование / классы =====
     static SemanticError InvalidInheritance(int line, const std::string& base);

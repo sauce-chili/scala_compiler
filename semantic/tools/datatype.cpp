@@ -106,40 +106,40 @@ DataType DataType::createFromNode(SimpleTypeNode *typeNode) {
     return DataType(Kind::Undefined);
 }
 
-string DataType::literalClassName(SimpleExpr1Node* literal) {
+string DataType::literalClassName(SimpleExpr1Node *literal) {
     switch (literal->type) {
         case _INTEGER_LITERAL: return "Int";
-        case _DOUBLE_LITERAL:  return "Double";
-        case _STRING_LITERAL:  return "String";
-        case _CHAR_LITERAL:    return "Char";
-        case _BOOL_LITERAL:    return "Boolean";
+        case _DOUBLE_LITERAL: return "Double";
+        case _STRING_LITERAL: return "String";
+        case _CHAR_LITERAL: return "Char";
+        case _BOOL_LITERAL: return "Boolean";
         default: return "";
     }
 }
 
-std::optional<DataType> DataType::primitiveFromName(const string& name) {
-    if (name == "Int")     return makePrimitive(Kind::Int);
-    if (name == "Double")  return makePrimitive(Kind::Double);
+std::optional<DataType> DataType::primitiveFromName(const string &name) {
+    if (name == "Int") return makePrimitive(Kind::Int);
+    if (name == "Double") return makePrimitive(Kind::Double);
     if (name == "Boolean") return makePrimitive(Kind::Bool);
-    if (name == "String")  return makePrimitive(Kind::String);
-    if (name == "Char")    return makePrimitive(Kind::Char);
-    if (name == "Unit")    return makePrimitive(Kind::Unit);
+    if (name == "String") return makePrimitive(Kind::String);
+    if (name == "Char") return makePrimitive(Kind::Char);
+    if (name == "Unit") return makePrimitive(Kind::Unit);
     return std::nullopt;
 }
 
 string DataType::getClassName() const {
     switch (kind) {
-        case Kind::Int:    return "Int";
+        case Kind::Int: return "Int";
         case Kind::Double: return "Double";
-        case Kind::Bool:   return "Boolean";
+        case Kind::Bool: return "Boolean";
         case Kind::String: return "String";
-        case Kind::Char:   return "Char";
-        case Kind::Unit:   return "Unit";
-        case Kind::Class:  return className;
-        case Kind::Array:  return "Array";
-        case Kind::Any:    return "Any";
-        case Kind::Null:   return "Null";
-        default:           return "";
+        case Kind::Char: return "Char";
+        case Kind::Unit: return "Unit";
+        case Kind::Class: return className;
+        case Kind::Array: return "Array";
+        case Kind::Any: return "Any";
+        case Kind::Null: return "Null";
+        default: return "";
     }
 }
 
@@ -153,11 +153,15 @@ bool DataType::isNull() const {
     return kind == Kind::Null;
 }
 
+bool DataType::isUndefined() const {
+    return kind == Kind::Undefined;
+}
+
 DataType DataType::makeNull() {
     return DataType(Kind::Null);
 }
 
-bool DataType::isAssignableTo(const DataType& target) const {
+bool DataType::isAssignableTo(const DataType &target) const {
     // Точное совпадение
     if (*this == target) return true;
 
@@ -180,8 +184,8 @@ bool DataType::isAssignableTo(const DataType& target) const {
         auto sourceIt = ctx().classes.find(this->className);
 
         if (targetIt != ctx().classes.end() && sourceIt != ctx().classes.end()) {
-            ClassMetaInfo* targetClass = targetIt->second;
-            ClassMetaInfo* sourceClass = sourceIt->second;
+            ClassMetaInfo *targetClass = targetIt->second;
+            ClassMetaInfo *sourceClass = sourceIt->second;
             return sourceClass->amSubclassOf(targetClass);
         }
     }
@@ -196,7 +200,7 @@ bool DataType::isAssignableTo(const DataType& target) const {
     return false;
 }
 
-std::optional<DataType> DataType::findCommonAncestor(const DataType& t1, const DataType& t2) {
+std::optional<DataType> DataType::findCommonAncestor(const DataType &t1, const DataType &t2) {
     // Точное совпадение
     if (t1 == t2) return t1;
 
@@ -238,12 +242,12 @@ std::optional<DataType> DataType::findCommonAncestor(const DataType& t1, const D
             return std::nullopt;
         }
 
-        ClassMetaInfo* class1 = class1It->second;
-        ClassMetaInfo* class2 = class2It->second;
+        ClassMetaInfo *class1 = class1It->second;
+        ClassMetaInfo *class2 = class2It->second;
 
         // Собираем всех предков первого класса (включая его самого)
-        std::unordered_set<ClassMetaInfo*> ancestors1;
-        ClassMetaInfo* current = class1;
+        std::unordered_set<ClassMetaInfo *> ancestors1;
+        ClassMetaInfo *current = class1;
         while (current) {
             ancestors1.insert(current);
             current = current->parent;

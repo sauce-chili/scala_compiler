@@ -125,6 +125,8 @@ public:
 
     bool isNull() const;
 
+    bool isUndefined() const;
+
     string getClassName() const;
 
     /**

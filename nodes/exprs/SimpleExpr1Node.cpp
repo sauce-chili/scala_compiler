@@ -10,6 +10,7 @@
 #include "semantic/scopes/Scope.h"
 #include "semantic/error/ErrorTable.h"
 #include "semantic/error/SemanticError.h"
+#include "utils/logger.h"
 
 SimpleExpr1Node::SimpleExpr1Node() {
     intValue = 0;
@@ -26,106 +27,106 @@ SimpleExpr1Node::SimpleExpr1Node() {
     simpleType = nullptr;
 }
 
-SimpleExpr1Node* SimpleExpr1Node::createIntNode(int value) {
-    SimpleExpr1Node* node = new SimpleExpr1Node();
+SimpleExpr1Node *SimpleExpr1Node::createIntNode(int value) {
+    SimpleExpr1Node *node = new SimpleExpr1Node();
     node->type = _INTEGER_LITERAL;
     node->intValue = value;
     return node;
 }
 
-SimpleExpr1Node* SimpleExpr1Node::createCharNode(char value) {
-    SimpleExpr1Node* node = new SimpleExpr1Node();
+SimpleExpr1Node *SimpleExpr1Node::createCharNode(char value) {
+    SimpleExpr1Node *node = new SimpleExpr1Node();
     node->type = _CHAR_LITERAL;
     node->charValue = value;
     return node;
 }
 
-SimpleExpr1Node* SimpleExpr1Node::createDoubleNode(double value) {
-    SimpleExpr1Node* node = new SimpleExpr1Node();
+SimpleExpr1Node *SimpleExpr1Node::createDoubleNode(double value) {
+    SimpleExpr1Node *node = new SimpleExpr1Node();
     node->type = _DOUBLE_LITERAL;
     node->doubleValue = value;
     return node;
 }
 
-SimpleExpr1Node* SimpleExpr1Node::createStringNode(string value) {
-    SimpleExpr1Node* node = new SimpleExpr1Node();
+SimpleExpr1Node *SimpleExpr1Node::createStringNode(string value) {
+    SimpleExpr1Node *node = new SimpleExpr1Node();
     node->type = _STRING_LITERAL;
     node->stringValue = value;
     return node;
 }
 
-SimpleExpr1Node* SimpleExpr1Node::createBoolNode(bool value) {
-    SimpleExpr1Node* node = new SimpleExpr1Node();
+SimpleExpr1Node *SimpleExpr1Node::createBoolNode(bool value) {
+    SimpleExpr1Node *node = new SimpleExpr1Node();
     node->type = _BOOL_LITERAL;
     node->boolValue = value;
     return node;
 }
 
-SimpleExpr1Node* SimpleExpr1Node::createNullNode() {
-    SimpleExpr1Node* node = new SimpleExpr1Node();
+SimpleExpr1Node *SimpleExpr1Node::createNullNode() {
+    SimpleExpr1Node *node = new SimpleExpr1Node();
     node->type = _NULL_LITERAL;
     return node;
 }
 
-SimpleExpr1Node *SimpleExpr1Node::createIdNode(IdNode* identifier) {
-    SimpleExpr1Node* node = new SimpleExpr1Node();
+SimpleExpr1Node *SimpleExpr1Node::createIdNode(IdNode *identifier) {
+    SimpleExpr1Node *node = new SimpleExpr1Node();
     node->type = _IDENTIFIER;
     node->identifier = identifier;
     return node;
 }
 
-SimpleExpr1Node* SimpleExpr1Node::createMethodCallNode(SimpleExpr1Node* left, ArgumentExprsNode* right) {
-    SimpleExpr1Node* node = new SimpleExpr1Node();
+SimpleExpr1Node *SimpleExpr1Node::createMethodCallNode(SimpleExpr1Node *left, ArgumentExprsNode *right) {
+    SimpleExpr1Node *node = new SimpleExpr1Node();
     node->type = _METHOD_CALL;
     node->simpleExpr1 = left;
     node->argumentExprs = right;
     return node;
 }
 
-SimpleExpr1Node* SimpleExpr1Node::createSuperFieldAccessNode(IdNode* identifier) {
-    SimpleExpr1Node* node = new SimpleExpr1Node();
+SimpleExpr1Node *SimpleExpr1Node::createSuperFieldAccessNode(IdNode *identifier) {
+    SimpleExpr1Node *node = new SimpleExpr1Node();
     node->type = _SUPER_FIELD_ACCESS;
     node->identifier = identifier;
     return node;
 }
 
-SimpleExpr1Node* SimpleExpr1Node::createThisFieldAccessNode(IdNode* identifier) {
-    SimpleExpr1Node* node = new SimpleExpr1Node();
+SimpleExpr1Node *SimpleExpr1Node::createThisFieldAccessNode(IdNode *identifier) {
+    SimpleExpr1Node *node = new SimpleExpr1Node();
     node->type = _THIS_FIELD_ACCESS;
     node->identifier = identifier;
     return node;
 }
 
-SimpleExpr1Node *SimpleExpr1Node::createSimpleExprFieldAccessNode(IdNode* identifier, SimpleExprNode* expr) {
-    SimpleExpr1Node* node = new SimpleExpr1Node();
+SimpleExpr1Node *SimpleExpr1Node::createSimpleExprFieldAccessNode(IdNode *identifier, SimpleExprNode *expr) {
+    SimpleExpr1Node *node = new SimpleExpr1Node();
     node->type = _EXPRESSION_FIELD_ACCESS;
     node->identifier = identifier;
     node->simpleExpr = expr;
     return node;
 }
 
-SimpleExpr1Node* SimpleExpr1Node::createParenthesizedExprNode(ExprNode* expr) {
-    SimpleExpr1Node* node = new SimpleExpr1Node();
+SimpleExpr1Node *SimpleExpr1Node::createParenthesizedExprNode(ExprNode *expr) {
+    SimpleExpr1Node *node = new SimpleExpr1Node();
     node->type = _PARENTHESIZED_EXPR;
     node->expr = expr;
     return node;
 }
 
-SimpleExpr1Node* SimpleExpr1Node::createUnitLiteralNode() {
-    SimpleExpr1Node* node = new SimpleExpr1Node();
+SimpleExpr1Node *SimpleExpr1Node::createUnitLiteralNode() {
+    SimpleExpr1Node *node = new SimpleExpr1Node();
     node->type = _UNIT_LITERAL;
     return node;
 }
 
 SimpleExpr1Node *SimpleExpr1Node::createPlainThisNode() {
-    SimpleExpr1Node* node = new SimpleExpr1Node();
+    SimpleExpr1Node *node = new SimpleExpr1Node();
     node->type = _PLAIN_THIS;
     return node;
 }
 
 SimpleExpr1Node *SimpleExpr1Node::createArrayWithTypeBuilderNode(SimpleTypeNode *simpleType,
                                                                  ArgumentExprsNode *argumentExprs) {
-    SimpleExpr1Node* node = new SimpleExpr1Node();
+    SimpleExpr1Node *node = new SimpleExpr1Node();
     node->type = _ARRAY_WITH_TYPE_BUILDER;
     node->simpleType = simpleType;
     node->argumentExprs = argumentExprs;
@@ -133,7 +134,7 @@ SimpleExpr1Node *SimpleExpr1Node::createArrayWithTypeBuilderNode(SimpleTypeNode 
 }
 
 SimpleExpr1Node *SimpleExpr1Node::createArrayBuilderNode(ArgumentExprsNode *argumentExprs) {
-    SimpleExpr1Node* node = new SimpleExpr1Node();
+    SimpleExpr1Node *node = new SimpleExpr1Node();
     node->type = _ARRAY_BUILDER;
     node->argumentExprs = argumentExprs;
     return node;
@@ -146,7 +147,7 @@ bool SimpleExpr1Node::isLiteral() const {
 }
 
 SimpleExpr1Node *SimpleExpr1Node::copy() {
-    SimpleExpr1Node* node = new SimpleExpr1Node();
+    SimpleExpr1Node *node = new SimpleExpr1Node();
     node->type = type;
     node->intValue = intValue;
     node->charValue = charValue;
@@ -192,12 +193,12 @@ string SimpleExpr1Node::toDot() const {
 
 string SimpleExpr1Node::getDotLabel() const {
     switch (type) {
-        case _INTEGER_LITERAL:    return to_string(intValue);
-        case _DOUBLE_LITERAL:     return to_string(doubleValue);
-        case _BOOL_LITERAL:       return to_string(boolValue);
-        case _CHAR_LITERAL :      return to_string(charValue);
-        case _STRING_LITERAL:     return stringValue;
-        case _NULL_LITERAL:       return "null";
+        case _INTEGER_LITERAL: return to_string(intValue);
+        case _DOUBLE_LITERAL: return to_string(doubleValue);
+        case _BOOL_LITERAL: return to_string(boolValue);
+        case _CHAR_LITERAL: return to_string(charValue);
+        case _STRING_LITERAL: return stringValue;
+        case _NULL_LITERAL: return "null";
 
         default: break;
     }
@@ -217,9 +218,9 @@ list<Node *> SimpleExpr1Node::getChildren() const {
 }
 
 DataType SimpleExpr1Node::inferType(
-    ClassMetaInfo* currentClass,
-    MethodMetaInfo* currentMethod,
-    Scope* currentScope
+    ClassMetaInfo *currentClass,
+    MethodMetaInfo *currentMethod,
+    Scope *currentScope
 ) const {
     switch (type) {
         case _INTEGER_LITERAL:
@@ -244,7 +245,6 @@ DataType SimpleExpr1Node::inferType(
             if (identifier) {
                 std::string name = identifier->name;
 
-                // Search for local variable
                 if (currentMethod) {
                     auto localOpt = currentMethod->resolveLocal(name, currentScope);
                     if (localOpt.has_value()) {
@@ -252,7 +252,6 @@ DataType SimpleExpr1Node::inferType(
                     }
                 }
 
-                // Search for class field
                 if (currentClass) {
                     auto fieldOpt = currentClass->resolveField(name, currentClass);
                     if (fieldOpt.has_value()) {
@@ -260,7 +259,6 @@ DataType SimpleExpr1Node::inferType(
                     }
                 }
 
-                // Not a variable or field - error (methods are handled in _METHOD_CALL)
                 throw SemanticError::UndefinedVar(identifier->id, name);
             }
             throw SemanticError::InternalError(id, "SimpleExpr1Node _IDENTIFIER without identifier");
@@ -309,123 +307,184 @@ DataType SimpleExpr1Node::inferType(
             if (!simpleExpr1) {
                 throw SemanticError::InternalError(id, "SimpleExpr1Node _METHOD_CALL without simpleExpr1");
             }
-            // argumentExprs can be null for synthetic calls (super constructor)
+            // заглушка, тк генерился конструктор c super без ()
             if (!argumentExprs) {
+                debug("No args");
                 return DataType::makeUnit();
             }
 
             auto argTypes = argumentExprs->getArgsTypes(currentClass, currentMethod, currentScope);
-            SimpleExpr1Node* callee = simpleExpr1;
+            SimpleExpr1Node *callee = simpleExpr1;
 
-                if (callee->type == _EXPRESSION_FIELD_ACCESS && callee->identifier) {
-                    std::string methodName = callee->identifier->name;
-                    DataType objType = callee->simpleExpr->inferType(currentClass, currentMethod, currentScope);
+            if (callee->type == _EXPRESSION_FIELD_ACCESS && callee->identifier) {
+                std::string name = callee->identifier->name;
+                DataType objType = callee->simpleExpr->inferType(currentClass, currentMethod, currentScope);
 
-                    std::string className = objType.getClassName();
-                    auto classIt = ctx().classes.find(className);
-                    if (classIt != ctx().classes.end()) {
-                        auto methodOpt = classIt->second->resolveMethod(methodName, argTypes, currentClass);
-                        if (methodOpt.has_value()) {
-                            DataType returnType = methodOpt.value()->returnType;
-                            for (auto* t : argTypes) delete t;
-                            return returnType;
+                std::string className = objType.getClassName();
+                auto classIt = ctx().classes.find(className);
+                if (classIt != ctx().classes.end()) {
+                    ClassMetaInfo *objClass = classIt->second;
+
+                    // проверяем, является ли это обращением к полю-массиву: obj.arr(index)
+                    auto fieldOpt = objClass->resolveField(name, currentClass);
+                    if (fieldOpt.has_value() && fieldOpt.value()->dataType.kind == DataType::Kind::Array) {
+                        // Проверяем, что индекс — Int
+                        if (argTypes.size() != 1 || argTypes[0]->kind != DataType::Kind::Int) {
+                            std::string actualType = argTypes.empty() ? "<none>" : argTypes[0]->toString();
+                            for (auto *t: argTypes) delete t;
+                            throw SemanticError::TypeMismatch(id, "Int", actualType);
                         }
 
-                        std::string argsStr = "(";
-                        for (size_t i = 0; i < argTypes.size(); ++i) {
-                            if (i > 0) argsStr += ", ";
-                            argsStr += argTypes[i]->toString();
-                        }
-                        argsStr += ")";
-                        for (auto* t : argTypes) delete t;
-                        throw SemanticError::MethodCandidateNotFound(id, methodName, argsStr);
+                        DataType elemType = *fieldOpt.value()->dataType.elementType;
+                        for (auto *t: argTypes) delete t;
+                        return elemType;
                     }
 
-                    for (auto* t : argTypes) delete t;
-                    throw SemanticError::UndefinedClass(id, className);
-
-                } else if (callee->type == _IDENTIFIER && callee->identifier) {
-                    std::string methodName = callee->identifier->name;
-                    if (currentClass) {
-                        auto methodOpt = currentClass->resolveMethod(methodName, argTypes, currentClass);
-                        if (methodOpt.has_value()) {
-                            DataType returnType = methodOpt.value()->returnType;
-                            for (auto* t : argTypes) delete t;
-                            return returnType;
-                        }
-
-                        std::string argsStr = "(";
-                        for (size_t i = 0; i < argTypes.size(); ++i) {
-                            if (i > 0) argsStr += ", ";
-                            argsStr += argTypes[i]->toString();
-                        }
-                        argsStr += ")";
-                        for (auto* t : argTypes) delete t;
-                        throw SemanticError::MethodCandidateNotFound(id, methodName, argsStr);
+                    // иначе это вызов метода: obj.method(args)
+                    auto methodOpt = objClass->resolveMethod(name, argTypes, currentClass);
+                    if (methodOpt.has_value()) {
+                        DataType returnType = methodOpt.value()->returnType;
+                        for (auto *t: argTypes) delete t;
+                        return returnType;
                     }
 
-                    for (auto* t : argTypes) delete t;
-                    throw SemanticError::InternalError(id, "Method call without currentClass");
-
-                } else if (callee->type == _THIS_FIELD_ACCESS && callee->identifier) {
-                    std::string methodName = callee->identifier->name;
-                    if (currentClass) {
-                        auto methodOpt = currentClass->resolveMethod(methodName, argTypes, currentClass);
-                        if (methodOpt.has_value()) {
-                            DataType returnType = methodOpt.value()->returnType;
-                            for (auto* t : argTypes) delete t;
-                            return returnType;
-                        }
-
-                        std::string argsStr = "(";
-                        for (size_t i = 0; i < argTypes.size(); ++i) {
-                            if (i > 0) argsStr += ", ";
-                            argsStr += argTypes[i]->toString();
-                        }
-                        argsStr += ")";
-                        for (auto* t : argTypes) delete t;
-                        throw SemanticError::MethodCandidateNotFound(id, methodName, argsStr);
+                    std::string argsStr = "(";
+                    for (size_t i = 0; i < argTypes.size(); ++i) {
+                        if (i > 0) argsStr += ", ";
+                        argsStr += argTypes[i]->toString();
                     }
-
-                    for (auto* t : argTypes) delete t;
-                    throw SemanticError::InternalError(id, "This method call without currentClass");
-
-                } else if (callee->type == _SUPER_FIELD_ACCESS && callee->identifier) {
-                    std::string methodName = callee->identifier->name;
-                    if (currentClass && currentClass->parent) {
-                        auto methodOpt = currentClass->parent->resolveMethod(methodName, argTypes, currentClass);
-                        if (methodOpt.has_value()) {
-                            DataType returnType = methodOpt.value()->returnType;
-                            for (auto* t : argTypes) delete t;
-                            return returnType;
-                        }
-
-                        std::string argsStr = "(";
-                        for (size_t i = 0; i < argTypes.size(); ++i) {
-                            if (i > 0) argsStr += ", ";
-                            argsStr += argTypes[i]->toString();
-                        }
-                        argsStr += ")";
-                        for (auto* t : argTypes) delete t;
-                        throw SemanticError::MethodCandidateNotFound(id, methodName, argsStr);
-                    }
-
-                    for (auto* t : argTypes) delete t;
-                    throw SemanticError::InternalError(id, "Super method call without parent");
-
-                } else if (callee->type == _METHOD_CALL) {
-                    // Chain of method calls: a.b().c() - callee is the result of a.b()
-                    // The result type of the inner call determines the class to search for the method
-                    DataType calleeType = callee->inferType(currentClass, currentMethod, currentScope);
-
-                    // This is calling apply() on the result - not supported yet
-                    // For now, just return the callee type (this handles cases like factory methods)
-                    for (auto* t : argTypes) delete t;
-                    throw SemanticError::InternalError(id, "Chained method call with arguments not supported");
+                    argsStr += ")";
+                    for (auto *t: argTypes) delete t;
+                    throw SemanticError::MethodCandidateNotFound(id, name, argsStr);
                 }
 
-                for (auto* t : argTypes) delete t;
-                throw SemanticError::InternalError(id, "Unknown method call type: " + std::to_string(callee->type));
+                for (auto *t: argTypes) delete t;
+                throw SemanticError::UndefinedClass(id, className);
+            } else if (callee->type == _IDENTIFIER && callee->identifier) {
+                std::string name = callee->identifier->name;
+
+                // сначала проверяем, является ли это обращением к массиву: arr(index)
+                // ищем переменную/поле с таким именем
+                DataType varType(DataType::Kind::Undefined);
+
+                if (currentMethod) {
+                    auto localOpt = currentMethod->resolveLocal(name, currentScope);
+                    if (localOpt.has_value()) {
+                        varType = localOpt.value()->dataType;
+                    }
+                }
+
+                if (varType.isUndefined() && currentClass) {
+                    auto fieldOpt = currentClass->resolveField(name, currentClass);
+                    if (fieldOpt.has_value()) {
+                        varType = fieldOpt.value()->dataType;
+                    }
+                }
+
+                // если нашли переменную и это массив — обращение к элементу массива
+                if (varType.kind == DataType::Kind::Array) {
+                    // Проверяем, что индекс — Int
+                    if (argTypes.size() != 1 || argTypes[0]->kind != DataType::Kind::Int) {
+                        std::string actualType = argTypes.empty() ? "<none>" : argTypes[0]->toString();
+                        for (auto *t: argTypes) delete t;
+                        throw SemanticError::TypeMismatch(id, "Int", actualType);
+                    }
+
+                    DataType elemType = *varType.elementType;
+                    for (auto *t: argTypes) delete t;
+                    return elemType;
+                }
+
+                // иначе это вызов метода
+                if (currentClass) {
+                    auto methodOpt = currentClass->resolveMethod(name, argTypes, currentClass);
+                    if (methodOpt.has_value()) {
+                        DataType returnType = methodOpt.value()->returnType;
+                        for (auto *t: argTypes) delete t;
+                        return returnType;
+                    }
+
+                    std::string argsStr = "(";
+                    for (size_t i = 0; i < argTypes.size(); ++i) {
+                        if (i > 0) argsStr += ", ";
+                        argsStr += argTypes[i]->toString();
+                    }
+                    argsStr += ")";
+                    for (auto *t: argTypes) delete t;
+                    throw SemanticError::MethodCandidateNotFound(id, name, argsStr);
+                }
+
+                for (auto *t: argTypes) delete t;
+                throw SemanticError::InternalError(id, "Method call without currentClass");
+            } else if (callee->type == _THIS_FIELD_ACCESS && callee->identifier) {
+                std::string methodName = callee->identifier->name;
+                if (currentClass) {
+                    auto methodOpt = currentClass->resolveMethod(methodName, argTypes, currentClass);
+                    if (methodOpt.has_value()) {
+                        DataType returnType = methodOpt.value()->returnType;
+                        for (auto *t: argTypes) delete t;
+                        return returnType;
+                    }
+
+                    std::string argsStr = "(";
+                    for (size_t i = 0; i < argTypes.size(); ++i) {
+                        if (i > 0) argsStr += ", ";
+                        argsStr += argTypes[i]->toString();
+                    }
+                    argsStr += ")";
+                    for (auto *t: argTypes) delete t;
+                    throw SemanticError::MethodCandidateNotFound(id, methodName, argsStr);
+                }
+
+                for (auto *t: argTypes) delete t;
+                throw SemanticError::InternalError(id, "This method call without currentClass");
+            } else if (callee->type == _SUPER_FIELD_ACCESS && callee->identifier) {
+                std::string methodName = callee->identifier->name;
+                if (currentClass && currentClass->parent) {
+                    auto methodOpt = currentClass->parent->resolveMethod(methodName, argTypes, currentClass);
+                    if (methodOpt.has_value()) {
+                        DataType returnType = methodOpt.value()->returnType;
+                        for (auto *t: argTypes) delete t;
+                        return returnType;
+                    }
+
+                    std::string argsStr = "(";
+                    for (size_t i = 0; i < argTypes.size(); ++i) {
+                        if (i > 0) argsStr += ", ";
+                        argsStr += argTypes[i]->toString();
+                    }
+                    argsStr += ")";
+                    for (auto *t: argTypes) delete t;
+                    throw SemanticError::MethodCandidateNotFound(id, methodName, argsStr);
+                }
+
+                for (auto *t: argTypes) delete t;
+                throw SemanticError::InternalError(id, "Super method call without parent");
+            } else if (callee->type == _METHOD_CALL) {
+                // цепочка вызовов: a(0)(1) для многомерных массивов или a.b().c()
+                DataType calleeType = callee->inferType(currentClass, currentMethod, currentScope);
+
+                // если результат предыдущего вызова — массив, это обращение к элементу
+                if (calleeType.kind == DataType::Kind::Array) {
+                    // Проверяем, что индекс — Int
+                    if (argTypes.size() != 1 || argTypes[0]->kind != DataType::Kind::Int) {
+                        std::string actualType = argTypes.empty() ? "<none>" : argTypes[0]->toString();
+                        for (auto *t: argTypes) delete t;
+                        throw SemanticError::TypeMismatch(id, "Int", actualType);
+                    }
+
+                    DataType elemType = *calleeType.elementType;
+                    for (auto *t: argTypes) delete t;
+                    return elemType;
+                }
+
+                // иначе это вызов метода на результате (apply)
+                for (auto *t: argTypes) delete t;
+                throw SemanticError::InternalError(id, "Chained method call with arguments not supported");
+            }
+
+            for (auto *t: argTypes) delete t;
+            throw SemanticError::InternalError(id, "Unknown method call type: " + std::to_string(callee->type));
         }
 
         case _PLAIN_THIS:
@@ -434,21 +493,55 @@ DataType SimpleExpr1Node::inferType(
             }
             throw SemanticError::InternalError(id, "SimpleExpr1Node _PLAIN_THIS without currentClass");
 
-        case _ARRAY_BUILDER:
-        case _ARRAY_WITH_TYPE_BUILDER:
-            if (simpleType) {
-                DataType elemType = DataType::createFromNode(simpleType);
-                return DataType::makeArray(elemType);
-            } else if (argumentExprs) {
+        case _ARRAY_WITH_TYPE_BUILDER: {
+            // Array[T](elem1, elem2, ...) - тип элемента указан явно
+            if (!simpleType) {
+                throw SemanticError::InternalError(id, "_ARRAY_WITH_TYPE_BUILDER without simpleType");
+            }
+
+            DataType declaredElemType = DataType::createFromNode(simpleType);
+
+            // Проверяем, что все аргументы совместимы с указанным типом
+            if (argumentExprs) {
                 auto argTypes = argumentExprs->getArgsTypes(currentClass, currentMethod, currentScope);
-                if (!argTypes.empty()) {
-                    DataType elemType = *argTypes[0];
-                    for (auto* t : argTypes) delete t;
-                    return DataType::makeArray(elemType);
+                for (size_t i = 0; i < argTypes.size(); ++i) {
+                    if (!argTypes[i]->isAssignableTo(declaredElemType)) {
+                        std::string argTypeStr = argTypes[i]->toString();
+                        for (auto* t : argTypes) delete t;
+                        throw SemanticError::TypeMismatch(id, declaredElemType.toString(), argTypeStr);
+                    }
                 }
                 for (auto* t : argTypes) delete t;
             }
-            return DataType::makeArray(DataType(DataType::Kind::Any));
+
+            return DataType::makeArray(declaredElemType);
+        }
+
+        case _ARRAY_BUILDER: {
+            // Array(elem1, elem2, ...) - тип элемента выводится из аргументов
+
+            auto argTypes = argumentExprs->getArgsTypes(currentClass, currentMethod, currentScope);
+            if (argTypes.empty()) {
+                for (auto* t : argTypes) delete t;
+                return DataType::makeArray(DataType(DataType::Kind::Any));
+            }
+
+            // Находим ближайший общий тип всех элементов
+            DataType commonType = *argTypes[0];
+            for (size_t i = 1; i < argTypes.size(); ++i) {
+                auto lcaOpt = DataType::findCommonAncestor(commonType, *argTypes[i]);
+                if (!lcaOpt.has_value()) {
+                    std::string type1 = commonType.toString();
+                    std::string type2 = argTypes[i]->toString();
+                    for (auto* t : argTypes) delete t;
+                    throw SemanticError::IncompatibleArrayElementTypes(id, type1, type2);
+                }
+                commonType = lcaOpt.value();
+            }
+
+            for (auto* t : argTypes) delete t;
+            return DataType::makeArray(commonType);
+        }
 
         case _PARENTHESIZED_EXPR:
             if (expr) {
