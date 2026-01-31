@@ -236,7 +236,7 @@ prefixExpr: simpleExpr { $$ = PrefixExprNode::createPrefixExprNode($1, _NO_UNARY
           ;
 
 simpleExpr: NEW fullID argumentExprs { $$ = SimpleExprNode::createNewObjectNode($2, $3); } // (бывший constrInvoke)
-	  | NEW ARRAY '[' simpleType ']' argumentExprs { $$ = SimpleExprNode::createNewArrayNode($4, $6); }
+	  | NEW ARRAY '[' simpleType ']' argumentExprs { $$ = SimpleExprNode::createNewArrayNode($4, $6); } // в argumentExprs должен быть 1 элемент - размер массива
           | '{' blockStats '}' { $$ = SimpleExprNode::createBlockStatsNode($2); } // бывший blockExpr
           | simpleExpr1        { $$ = SimpleExprNode::createSimpleExpr1Node($1); }
           ;
