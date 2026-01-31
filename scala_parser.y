@@ -247,7 +247,6 @@ simpleExpr1: literal                   { $$ = $1; }
            | THIS                      { $$ = SimpleExpr1Node::createPlainThisNode(); }
            | simpleExpr '.' fullID     { $$ = SimpleExpr1Node::createSimpleExprFieldAccessNode($3, $1); }
            | '(' expr ')'              { $$ = SimpleExpr1Node::createParenthesizedExprNode($2); }
-           | '(' ')'                   { $$ = SimpleExpr1Node::createUnitLiteralNode(); }
            | simpleExpr1 argumentExprs { $$ = SimpleExpr1Node::createMethodCallNode($1, $2); } // вызов метода
            | ARRAY '[' simpleType ']' argumentExprs { $$ = SimpleExpr1Node::createArrayWithTypeBuilderNode($3, $5); }
            | ARRAY argumentExprs       {$$ = SimpleExpr1Node::createArrayBuilderNode($2); }
@@ -397,6 +396,7 @@ literal: DECIMAL_LITERAL { $$ = SimpleExpr1Node::createIntNode($1); }
        | TRUE_LITERAL    { $$ = SimpleExpr1Node::createBoolNode($1); }
        | FALSE_LITERAL   { $$ = SimpleExpr1Node::createBoolNode($1); }
        | NULL_LITERAL    { $$ = SimpleExpr1Node::createNullNode(); }
+       | '(' ')'         { $$ = SimpleExpr1Node::createUnitLiteralNode(); }
        ;
 
 nls: /* empty */
