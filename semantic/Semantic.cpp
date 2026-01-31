@@ -284,10 +284,10 @@ void ClassDefNode::validatePrimaryConstructorParametersModifiers() const {
         return;
     }
 
-    string prevAccess;
-    string prevInherit;
-    bool overrided = false;
     for (ClassParamNode* cp: *classParams->classParams) {
+        string prevAccess;
+        string prevInherit;
+        bool overrided = false;
         for (ModifierNode *m: *cp->modifiers->modifiers) {
             if (m->isAccessModifier()) {
                 if (!prevAccess.empty()) {
