@@ -18,6 +18,7 @@ public:
     BlockStatsNode(BlockStatNode *blockStat);
 
     static BlockStatsNode *addBlockStatToList(BlockStatsNode *list, BlockStatNode *blockStat);
+    static BlockStatsNode *addBlockStatFrontToList(BlockStatsNode *list, BlockStatNode *blockStat);
 
     BlockStatsNode* copy();
 

@@ -24,6 +24,17 @@ BlockStatsNode *BlockStatsNode::addBlockStatToList(BlockStatsNode *list, BlockSt
     return list;
 }
 
+BlockStatsNode *BlockStatsNode::addBlockStatFrontToList(BlockStatsNode *list, BlockStatNode *blockStat) {
+    if (list == nullptr) {
+        return new BlockStatsNode(blockStat);
+    }
+
+    if (blockStat) {
+        list->blockStats->push_front(blockStat);
+    }
+    return list;
+}
+
 BlockStatsNode *BlockStatsNode::copy() {
     BlockStatsNode* copied = new BlockStatsNode();
 
