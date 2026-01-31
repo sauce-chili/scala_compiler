@@ -8,6 +8,7 @@
 #include "semantic/error/SemanticError.h"
 #include "nodes/exprs/InfixExprNode.h"
 #include "nodes/exprs/ExprNode.h"
+#include "nodes/exprs/AssignmentNode.h"
 #include "nodes/exprs/SimpleExpr1Node.h"
 #include "nodes/exprs/ArgumentExprsNode.h"
 #include "semantic/tools/datatype.h"
@@ -121,14 +122,13 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
         if (!p->def->varDefs) continue;
 
         BlockStatNode *stat;
-        SimpleTypeNode* typeOfVars = p->def->varDefs->simpleType ? p->def->varDefs->simpleType->copy() : nullptr;
-        if (p->def->varDefs->type == StatType::_VAR_DECL) {
-            stat = BlockStatNode::createVarDefsNode(
-                    VarDefsNode::createVar(p->def->varDefs->fullId->copy(), typeOfVars, p->def->varDefs->expr->copy()));
-        } else {
-            stat = BlockStatNode::createVarDefsNode(
-                    VarDefsNode::createVal(p->def->varDefs->fullId->copy(), typeOfVars, p->def->varDefs->expr->copy()));
-        }
+        stat = BlockStatNode::createExprNode(
+                ExprNode::createAssignment(
+                        AssignmentNode::createIdAssignment(
+                                p->def->varDefs->fullId->copy(), p->def->varDefs->expr->copy()
+                        )
+                )
+        );
         p->def->varDefs->expr = nullptr;
         BlockStatsNode::addBlockStatToList(blockStats, stat);
     }
@@ -144,6 +144,7 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
     currentClass->classParams = new ClassParamsNode();
     baseConstructor->def = DefNode::createFunDef(primaryConstructorNode);
     currentClass->classTemplateOpt->templateStats->templateStats->push_front(baseConstructor);
+    currentClass->classParams = nullptr;
 }
 
 void TemplateDefNode::validateModifiers() const {
@@ -363,16 +364,7 @@ void TopStatNode::secondaryConstructorsToMethods() {
         if (!p->def->funDef->funcParams) continue;
 
         // Собираем тело конструктора: склеиваем вызов другого конструктора с остальным содержимым тела конструктора
-        BlockStatsNode *blockStats = BlockStatsNode::addBlockStatToList(nullptr, nullptr);
-        BlockStatNode *otherConstructorCall = BlockStatNode::createSimpleExpr1(SimpleExpr1Node::createMethodCallNode(
-                otherConstructorName->copy(), p->def->funDef->constrExpr->argumentExprs->copy())
-        );
-        BlockStatsNode::addBlockStatToList(blockStats, otherConstructorCall);
-        if (p->def->funDef->constrExpr->blockStats) {
-            for (BlockStatNode *bs: *(p->def->funDef->constrExpr->blockStats->blockStats)) {
-                BlockStatsNode::addBlockStatToList(blockStats, bs->copy());
-            }
-        }
+        BlockStatsNode *blockStats = p->def->funDef->constrExpr->blockStats->copy();
         ExprNode* bodyOfConstructor = BlockStatNode::createExpr(SimpleExprNode::createBlockStatsNode(blockStats));
 
         FunSigNode *constrSignature = FunSigNode::createFunSig(IdNode::createId("this"), p->def->funDef->funcParams->copy());

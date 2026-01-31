@@ -8,7 +8,6 @@
 
 class ConstrExprNode: public Node {
 public:
-    ArgumentExprsNode* argumentExprs;
     BlockStatsNode* blockStats;
     bool isBlock;
 

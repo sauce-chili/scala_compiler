@@ -21,6 +21,8 @@ private:
     void visitClassDef(ClassDefNode* node);
     void visitTemplateStat(TemplateStatNode* node);
 
+    void validateArgumentNames(FuncParamsNode* funcParams);
+
     // Узлы членов
     void visitDef(DefNode* node);
     void visitDcl(DclNode* node);

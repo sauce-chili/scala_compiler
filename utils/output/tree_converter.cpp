@@ -287,16 +287,12 @@ private:
             out << node->fullId->name;
         }
 
-        if (node->params) {
-            generateFuncParams(node->params);
-        }
+        generateFuncParams(node->params);
     }
 
     void generateFuncParams(FuncParamsNode* node) {
-        if (!node) return;
-
         out << "(";
-        if (node->funcParams) {
+        if (node && node->funcParams) {
             bool first = true;
             for (auto* param : *node->funcParams) {
                 if (!first) out << ", ";
@@ -322,12 +318,6 @@ private:
 
     void generateConstrExpr(ConstrExprNode* node) {
         if (!node) return;
-
-        out << indent() << "this";
-        if (node->argumentExprs) {
-            generateArgumentExprs(node->argumentExprs);
-        }
-        out << "\n";
 
         if (node->blockStats) {
             generateBlockStats(node->blockStats);
@@ -594,7 +584,7 @@ private:
                 if (node->simpleExpr1) {
                     generateSimpleExpr1(node->simpleExpr1);
                 }
-                if (node->argumentExprs) {
+                if (node) {
                     generateArgumentExprs(node->argumentExprs);
                 }
                 break;
@@ -620,10 +610,8 @@ private:
     }
 
     void generateArgumentExprs(ArgumentExprsNode* node) {
-        if (!node) return;
-
         out << "(";
-        if (node->exprs && node->exprs->exprs) {
+        if (node && node->exprs && node->exprs->exprs) {
             bool first = true;
             for (auto* expr : *node->exprs->exprs) {
                 if (!first) out << ", ";

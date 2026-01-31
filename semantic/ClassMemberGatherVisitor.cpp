@@ -1,5 +1,5 @@
 #include "ClassMemberGatherVisitor.h"
-#include <iostream>
+#include <set>
 
 #include "tables/tables.hpp"
 #include "error/ErrorTable.h"
@@ -94,6 +94,10 @@ void ClassMemberGatherVisitor::visitDef(DefNode* node) {
         }
     }
     else if (node->type == _FUN_DEFINITION && node->funDef) {
+        auto paramsOpt = node->funDef->getParams();
+        if (paramsOpt) {
+            validateArgumentNames(paramsOpt.value());
+        }
         auto result = currentClass->addMethod(node->funDef, mod);
         if (!result.has_value() && node->funDef->funSig && node->funDef->funSig->fullId) {
             int line = node->funDef->funSig->fullId->id;
@@ -113,6 +117,24 @@ void ClassMemberGatherVisitor::visitDef(DefNode* node) {
                 SemanticError::MethodAlreadyExists(line, sigStr)
             ));
         }
+    }
+}
+
+void ClassMemberGatherVisitor::validateArgumentNames(FuncParamsNode* funcParams) {
+    if (!funcParams || !funcParams->funcParams) {
+        return;
+    }
+
+    set<string> actualNames;
+    for (auto* paramNode : *funcParams->funcParams) {
+        string currentName = paramNode->fullId->name;
+        if (actualNames.contains(currentName)) {
+            ErrorTable::addErrorToList(new SemanticError(
+                    SemanticError::SameArgumentsNames(0, currentName)
+            ));
+        }
+
+        actualNames.insert(currentName);
     }
 }
 

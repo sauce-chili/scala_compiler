@@ -6,19 +6,12 @@
 
 #include "nodes/nodes.h"
 #include "nodes/func/FunDefNode.h"
-#include "nodes/func/FunSigNode.h"
-#include "nodes/func/FuncParamsNode.h"
 #include "nodes/class/ClassDefNode.h"
 #include "nodes/stats/BlockStatsNode.h"
 #include "nodes/stats/BlockStatNode.h"
 #include "nodes/var/VarDefsNode.h"
 #include "nodes/exprs/ExprNode.h"
-#include "nodes/exprs/SimpleExprNode.h"
-#include "nodes/exprs/SimpleExpr1Node.h"
 #include "nodes/exprs/AssignmentNode.h"
-#include "nodes/exprs/ArgumentExprsNode.h"
-#include "nodes/generator/EnumeratorsNode.h"
-#include "nodes/generator/GeneratorNode.h"
 #include "semantic/error/ErrorTable.h"
 #include "semantic/error/SemanticError.h"
 
@@ -370,8 +363,8 @@ void TypeCheckVisitor::checkAssignmentCompatibility(const DataType &targetType,
     }
 }
 
-void TypeCheckVisitor::checkNotVal(bool isVal, const std::string &varName, int line) {
-    if (isVal) {
+void TypeCheckVisitor::checkNotVal(bool isVal, const std::string& varName, int line) {
+    if (isVal && !currentMethod->isPrimaryConstructor) {
         ErrorTable::addErrorToList(new SemanticError(
             SemanticError::ValReassignment(line, varName)
         ));

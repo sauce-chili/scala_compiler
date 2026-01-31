@@ -7,7 +7,6 @@
 #include "IExpr.h"
 
 class ExprNode;
-class TryExprNode;
 class EnumeratorsNode;
 class InfixExprNode;
 class AssignmentNode;
@@ -16,7 +15,6 @@ class ExprNode: public Node, public IExpr {
 public:
     ExprType type;
     std::list<ExprNode*> *exprs;
-    TryExprNode* tryExpr;
     EnumeratorsNode* enumerators;
     InfixExprNode* infixExpr;
     AssignmentNode* assignment;
@@ -28,7 +26,6 @@ public:
     static ExprNode* createIfElse(ExprNode* cond, ExprNode* trueB, ExprNode* falseB);
     static ExprNode* createIf(ExprNode* cond, ExprNode* expr);
     static ExprNode* createWhile(ExprNode* cond, ExprNode* expr);
-    static ExprNode* createTry(TryExprNode* tryExpr);
     static ExprNode* createDoWhile(ExprNode* cond, ExprNode* expr);
     static ExprNode* createThrow(ExprNode* expr);
     static ExprNode* createReturn();

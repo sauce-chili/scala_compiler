@@ -21,6 +21,7 @@ class VarDefsNode;
 class EnumeratorsNode;
 class GeneratorNode;
 class ExprNode;
+class FuncParamsNode;
 
 class LocalVarGatherVisitor {
 private:

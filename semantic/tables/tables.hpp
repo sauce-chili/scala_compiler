@@ -137,6 +137,7 @@ public:
     Modifiers modifiers;
     DataType returnType;
     ExprNode *body = nullptr;
+    bool isPrimaryConstructor = false;
     // храним в векторе чтобы сохранять очередность аргументов и верно получать кортеж их типов
     vector<ArgMetaInfo *> args;
     /**
