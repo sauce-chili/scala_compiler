@@ -150,7 +150,7 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
         p->def = nullptr;
     }
 
-    FunSigNode *primaryConstrSignature = FunSigNode::createFunSig(IdNode::createId("this"), new FuncParamsNode(currentClass->classParams->copy()));
+    FunSigNode *primaryConstrSignature = FunSigNode::createFunSig(IdNode::createId(CONSTRUCTOR_NAME), new FuncParamsNode(currentClass->classParams->copy()));
     // Конструкторы не имеют явного типа возврата в Scala
     FunDefNode *primaryConstructorNode = FunDefNode::createFunSigFunDef(
             primaryConstrSignature,
