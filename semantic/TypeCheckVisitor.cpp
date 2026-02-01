@@ -227,6 +227,19 @@ void TypeCheckVisitor::visitExpr(ExprNode *node) {
     visit(node);
 }
 
+void TypeCheckVisitor::checkAssignment(
+        VarMetaInfo *fieldInfo,
+        const std::string &varName,
+        const DataType &exprType,
+        int line) {
+
+    if (fieldInfo->isInit || !currentMethod->isPrimaryConstructor) {
+        checkNotVal(fieldInfo->isVal, varName, line);
+    }
+    checkAssignmentCompatibility(fieldInfo->dataType, exprType, line,
+                                 "Assignment to field '" + varName + "'");
+}
+
 void TypeCheckVisitor::visitAssignment(AssignmentNode *node) {
     if (!node || !currentMethod) return;
 
@@ -241,16 +254,12 @@ void TypeCheckVisitor::visitAssignment(AssignmentNode *node) {
             auto localOpt = currentMethod->resolveLocal(varName, currentScope);
             if (localOpt.has_value()) {
                 MethodVarMetaInfo *varInfo = localOpt.value();
-                checkNotVal(varInfo->isVal, varName, line);
-                checkAssignmentCompatibility(varInfo->dataType, exprType, line,
-                                             "Assignment to variable '" + varName + "'");
+                checkAssignment(varInfo, varName, exprType, line);
             } else {
                 auto fieldOpt = currentClass->resolveField(varName, currentClass);
                 if (fieldOpt.has_value()) {
                     FieldMetaInfo *fieldInfo = fieldOpt.value();
-                    checkNotVal(fieldInfo->isVal, varName, line);
-                    checkAssignmentCompatibility(fieldInfo->dataType, exprType, line,
-                                                 "Assignment to field '" + varName + "'");
+                    checkAssignment(fieldInfo, varName, exprType, line);
                 } else {
                     ErrorTable::addErrorToList(new SemanticError(
                         SemanticError::UndefinedVar(line, varName)
@@ -276,9 +285,7 @@ void TypeCheckVisitor::visitAssignment(AssignmentNode *node) {
 
                     if (fieldOpt.has_value()) {
                         FieldMetaInfo *fieldInfo = fieldOpt.value();
-                        checkNotVal(fieldInfo->isVal, fieldName, line);
-                        checkAssignmentCompatibility(fieldInfo->dataType, exprType, line,
-                                                     "Assignment to field '" + fieldName + "'");
+                        checkAssignment(fieldInfo, fieldName, exprType, line);
                     } else {
                         ErrorTable::addErrorToList(new SemanticError(
                             SemanticError::UndefinedVar(line, fieldName)
@@ -319,6 +326,8 @@ void TypeCheckVisitor::visitAssignment(AssignmentNode *node) {
             ErrorTable::addErrorToList(new SemanticError(err));
         }
     }
+
+    currentMethod->executeAssign(node, currentScope);
 }
 
 void TypeCheckVisitor::visitForExpression(ExprNode *node) {
@@ -364,7 +373,7 @@ void TypeCheckVisitor::checkAssignmentCompatibility(const DataType &targetType,
 }
 
 void TypeCheckVisitor::checkNotVal(bool isVal, const std::string& varName, int line) {
-    if (isVal && !currentMethod->isPrimaryConstructor) {
+    if (isVal) {
         ErrorTable::addErrorToList(new SemanticError(
             SemanticError::ValReassignment(line, varName)
         ));

@@ -9,6 +9,7 @@
 #include "nodes/func/FunDefNode.h"
 #include "nodes/var/VarDefsNode.h"
 #include "semantic/SemanticContext.h"
+#include "nodes/exprs/AssignmentNode.h"
 
 class DefNode;
 class DclNode;
@@ -59,8 +60,16 @@ optional<LocalVarMetaInfo *> MethodMetaInfo::addLocalVar(VarDefsNode *varDefsNod
 
     // Проверяем: не определена ли уже переменная с таким именем в ТЕКУЩЕМ скоупе
     auto& byName = localVars[varName];
-    if (byName.find(scope->scopeId) != byName.end()) {
+    auto it = byName.find(scope->scopeId);
+    if (it != byName.end()) {
         // Переменная уже определена в этом скоупе
+        auto* foundVar = it->second;
+        // Если она до этого не была инициализирована, инициализируем ее
+        if (!foundVar->isInit && varDefsNode->expr) {
+            foundVar->isInit = true;
+            foundVar->value = varDefsNode->expr;
+        }
+
         return nullopt;
     }
 
@@ -92,7 +101,16 @@ optional<LocalVarMetaInfo *> MethodMetaInfo::addGeneratorVar(GeneratorNode *gene
 
     // Проверяем: не определена ли уже переменная с таким именем в ТЕКУЩЕМ скоупе
     auto& byName = localVars[varName];
+    auto it = byName.find(scope->scopeId);
     if (byName.find(scope->scopeId) != byName.end()) {
+        // Переменная уже определена в этом скоупе
+        auto* foundVar = it->second;
+        // Если она до этого не была инициализирована, инициализируем ее
+        if (!foundVar->isInit && generatorNode->expr) {
+            foundVar->isInit = true;
+            foundVar->value = generatorNode->expr;
+        }
+
         return nullopt;
     }
 
@@ -124,6 +142,29 @@ bool ClassMetaInfo::amSubclassOf(const ClassMetaInfo* other) const {
 
 bool ClassMetaInfo::isRTL() const {
     return dynamic_cast<const RtlClassMetaInfo*>(this) != nullptr;
+}
+
+optional<LocalVarMetaInfo *> MethodMetaInfo::executeAssign(AssignmentNode *assignNode, Scope* scope) {
+    if (!assignNode || !assignNode->expr || !assignNode->fullId || !scope) return nullopt;
+
+    string varName = assignNode->fullId->name;
+
+    // Проверяем: не определена ли уже переменная с таким именем в ТЕКУЩЕМ скоупе
+    optional<MethodVarMetaInfo*> optLocalVar = resolveLocal(varName, scope);
+    if (optLocalVar.has_value()) {
+        MethodVarMetaInfo* localVar = optLocalVar.value();
+        localVar->isInit = true;
+        localVar->value = assignNode->expr;
+    }
+
+    optional<FieldMetaInfo*> optField = classMetaInfo->resolveField(varName, classMetaInfo, false);
+    if (optField.has_value()) {
+        FieldMetaInfo* foundField = optField.value();
+        foundField->isInit = true;
+        foundField->value = assignNode->expr;
+    }
+
+    return nullopt;
 }
 
 optional<FieldMetaInfo *> ClassMetaInfo::resolveField(const string& fieldName,

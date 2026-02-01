@@ -51,6 +51,8 @@ private:
     // Проверка что переменная не val при присваивании
     void checkNotVal(bool isVal, const std::string& varName, int line);
 
+    void checkAssignment(VarMetaInfo *fieldInfo, const std::string &varName, const DataType &exprType, int line);
+
 public:
     TypeCheckVisitor() = default;
     void visitTree(TopStatSeqNode* root);

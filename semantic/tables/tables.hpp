@@ -70,7 +70,7 @@ public:
           dataType(type),
           value(value),
           isVal(val),
-          isInit(true) {
+          isInit(false) {
     };
 
     VarMetaInfo() : isVal(true) {
@@ -162,6 +162,7 @@ public:
 
     virtual optional<LocalVarMetaInfo *> addLocalVar(VarDefsNode *varDefsNode, Scope *scope);
     virtual optional<LocalVarMetaInfo *> addGeneratorVar(GeneratorNode *generatorNode, Scope *scope);
+    virtual optional<LocalVarMetaInfo *> executeAssign(AssignmentNode *assignNode, Scope* scope);
 };
 
 class ClassMetaInfo : public BytesMetaInfo, public JvmDescriptorOwner {
