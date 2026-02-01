@@ -16,7 +16,6 @@
 #include "TypeCheckVisitor.h"
 #include "constants/ConstantPoolVisitor.h"
 #include "SemanticContext.h"
-#include "Constants.cpp"
 #include "error/ErrorTable.h"
 #include "tables/tables.hpp"
 #include "utils/output/dot.cpp"

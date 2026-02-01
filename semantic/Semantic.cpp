@@ -12,7 +12,6 @@
 #include "nodes/exprs/SimpleExpr1Node.h"
 #include "nodes/exprs/ArgumentExprsNode.h"
 #include "semantic/tools/datatype.h"
-#include "Constants.cpp"
 
 #include <iostream>
 #include <stdexcept>
