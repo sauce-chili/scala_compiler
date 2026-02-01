@@ -625,7 +625,9 @@ private:
     void generateAssignment(AssignmentNode* node) {
         if (!node) return;
 
-        if (node->simpleExpr) {
+        if (node->fullId) {
+            out << node->fullId->name;
+        } else if (node->simpleExpr) {
             generateSimpleExpr(node->simpleExpr);
         }
 
