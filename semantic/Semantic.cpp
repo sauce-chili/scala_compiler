@@ -12,6 +12,7 @@
 #include "nodes/exprs/SimpleExpr1Node.h"
 #include "nodes/exprs/ArgumentExprsNode.h"
 #include "semantic/tools/datatype.h"
+#include "Constants.cpp"
 
 #include <iostream>
 #include <stdexcept>
@@ -20,6 +21,8 @@ void normalizeInfixes(Node* node);
 void transformInfixes(Node* node);
 void transformLiterals(Node* node);
 
+ClassDefNode* currentClassTemplate;
+
 void TopStatSeqNode::convertAst() {
     for (TopStatNode* tsn: *(topStats)) {
         if (!tsn) continue;
@@ -27,7 +30,6 @@ void TopStatSeqNode::convertAst() {
         if (!tsn->tmplDef->classDef) continue;
 
         tsn->tmplDef->classDef->normalizeBody();
-        tsn->tmplDef->classDef->validatePrimaryConstructorModifiers();
         tsn->tmplDef->validateModifiers();
         tsn->toFieldsFromPrimaryConstructor();
         tsn->initializeBaseConstructorFromFields();
@@ -129,8 +131,23 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
                         )
                 )
         );
-        p->def->varDefs->expr = nullptr;
+
+        if (p->def->varDefs->type == _VAR_DECL) {
+            p->dcl = DclNode::createVarDcl(
+                p->def->varDefs->fullId->copy(),
+                p->def->varDefs->simpleType->copy()
+            );
+            p->dcl->modifiers = p->def->modifiers;
+        } else if (p->def->varDefs->type == _VAL_DECL) {
+            p->dcl = DclNode::createValDcl(
+                p->def->varDefs->fullId->copy(),
+                p->def->varDefs->simpleType->copy()
+            );
+            p->dcl->modifiers = p->def->modifiers;
+        }
+
         BlockStatsNode::addBlockStatToList(blockStats, stat);
+        p->def = nullptr;
     }
 
     FunSigNode *primaryConstrSignature = FunSigNode::createFunSig(IdNode::createId("this"), new FuncParamsNode(currentClass->classParams->copy()));
@@ -149,6 +166,10 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
 
 void TemplateDefNode::validateModifiers() const {
     validateClassModifiers();
+    currentClassTemplate = this->classDef;
+    if (classDef) {
+        classDef->validatePrimaryConstructorModifiers();
+    }
     if (classDef && classDef->classTemplateOpt && classDef->classTemplateOpt->templateStats) {
         classDef->classTemplateOpt->templateStats->validateModifiers();
     }
@@ -220,6 +241,10 @@ void TemplateStatNode::validateVarModifiers() const {
                 throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type) + " to var");
             }
 
+            if (!currentClassTemplate->classTemplateOpt || !currentClassTemplate->classTemplateOpt->extensionPartClassTemplate) {
+                throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type));
+            }
+
             if (overrided) {
                 throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type) + " " + modifierToString(m->type));
             }
@@ -261,6 +286,9 @@ void TemplateStatNode::validateMethodModifiers() const {
         } else if (m->isOverrideModifier()) {
             if (overrided) {
                 throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type) + " " + modifierToString(m->type));
+            }
+            if (!currentClassTemplate->classTemplateOpt || !currentClassTemplate->classTemplateOpt->extensionPartClassTemplate) {
+                throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type));
             }
             overrided = true;
         }
@@ -306,7 +334,9 @@ void ClassDefNode::validatePrimaryConstructorParametersModifiers() const {
                 if (cp && cp->type == _VAR_CLASS_PARAM) {
                     throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type) + " to var");
                 }
-
+                if (!currentClassTemplate->classTemplateOpt || !currentClassTemplate->classTemplateOpt->extensionPartClassTemplate) {
+                    throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type));
+                }
                 if (overrided) {
                     throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type) + " " + modifierToString(m->type));
                 }
