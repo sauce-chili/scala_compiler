@@ -100,7 +100,7 @@ void LocalVarGatherVisitor::visitFunDef(FunDefNode* node) {
             }
         }
     } else if (node->isConstructor()) {
-        // Вторичный конструктор // TODO или как this?
+        // Вторичный конструктор
         methodName = CONSTRUCTOR_NAME;
         if (node->funcParams && node->funcParams->funcParams) {
             for (auto *paramNode: *node->funcParams->funcParams) {
