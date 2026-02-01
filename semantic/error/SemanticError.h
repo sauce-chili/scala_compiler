@@ -25,7 +25,7 @@ public:
     static SemanticError ValReassignment(int line, const std::string& name);
     static SemanticError VarInvalidTypeCast(int line, const std::string& from, const std::string& to);
     static SemanticError FinalFieldOverride(int line, const std::string& name);
-    static SemanticError AbstractFieldNotOverride(int line, const std::string& name);
+    static SemanticError AbstractFieldNotOverride(int line, const std::string& error);
     static SemanticError VarNotInitialized(int line, const std::string& name);
     static SemanticError UndefinedVar(int line, const std::string& name);
     static SemanticError FieldRedefinition(int line, const std::string& name);
@@ -53,7 +53,7 @@ public:
     static SemanticError FinalClassInheritance(int line, const std::string& base);
     static SemanticError UndefinedClass(int line, const std::string& name);
     static SemanticError ClassRedefinition(int line, const std::string& name);
-    static SemanticError ConstructorAlreadyExists(int line, const std::string& signature);
+    static SemanticError ConstructorAlreadyExists(int line, const std::string& signature, const std::string& className);
     static SemanticError ConstructorNotFound(int line, const std::string& signature);
     static SemanticError ClassNotFound(int line, const std::string& name);
     static SemanticError AbstractClassInstantiated(int line, const std::string& name);

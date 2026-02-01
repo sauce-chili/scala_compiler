@@ -36,8 +36,8 @@ SemanticError SemanticError::FinalFieldOverride(int line, const std::string& nam
     return SemanticError(FINAL_FIELD_OVERRIDE, line, "Cannot override final field '" + name + "'");
 }
 
-SemanticError SemanticError::AbstractFieldNotOverride(int line, const std::string& name) {
-    return SemanticError(ABSTRACT_FIELD_NOT_OVERRIDEN, line, "Abstract field '" + name + "' must be overridden");
+SemanticError SemanticError::AbstractFieldNotOverride(int line, const std::string& error) {
+    return SemanticError(ABSTRACT_FIELD_NOT_OVERRIDEN, line, error);
 }
 
 SemanticError SemanticError::VarNotInitialized(int line, const std::string& name) {
@@ -127,8 +127,8 @@ SemanticError SemanticError::ClassRedefinition(int line, const std::string& name
     return SemanticError(CLASS_REDEFINITION, line, "Class '" + name + "' is already defined");
 }
 
-SemanticError SemanticError::ConstructorAlreadyExists(int line, const std::string& signature) {
-    return SemanticError(CONSTRUCTOR_ALREADY_EXISTS, line, "Constructor '" + signature + "' already exists");
+SemanticError SemanticError::ConstructorAlreadyExists(int line, const std::string& signature, const std::string& className) {
+    return SemanticError(CONSTRUCTOR_ALREADY_EXISTS, line, "Constructor '" + signature + "' of class '" + className + "' already exists");
 }
 
 SemanticError SemanticError::ConstructorNotFound(int line, const std::string& signature) {
