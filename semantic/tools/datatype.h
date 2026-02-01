@@ -10,7 +10,7 @@ class SimpleTypeNode;
 class SimpleExpr1Node;
 using namespace std;
 
-#define ARR_SIZE_UNSPECIFIED -1
+#define ARR_SIZE_UNSPECIFIED (-1)
 
 class DataType {
 public:
@@ -128,6 +128,12 @@ public:
     bool isUndefined() const;
 
     string getClassName() const;
+
+    /**
+     * Возвращает JVM-дескриптор типа.
+     * Примеры: I (Int), D (Double), Ljava/lang/String; (String), [I (Array[Int])
+     */
+    string toJvmDescriptor() const;
 
     /**
      * Проверяет можно ли присвоить значение данного типа переменной целевого типа.

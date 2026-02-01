@@ -15,7 +15,6 @@
 #include "semantic/tables/tables.hpp"
 #include "semantic/error/ErrorTable.h"
 #include "semantic/error/SemanticError.h"
-#include "Constants.cpp"
 
 void LocalVarGatherVisitor::visitTree(TopStatSeqNode* root) {
     if (root) visit(root);

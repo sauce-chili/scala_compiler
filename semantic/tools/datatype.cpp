@@ -157,6 +157,26 @@ bool DataType::isUndefined() const {
     return kind == Kind::Undefined;
 }
 
+string DataType::toJvmDescriptor() const {
+    switch (kind) {
+        case Kind::Int:     return "I";
+        case Kind::Double:  return "F";  // Double реализуется через float
+        case Kind::Char:    return "C";
+        case Kind::Bool:    return "Z";
+        case Kind::Unit:    return "V";
+        case Kind::String:  return "Ljava/lang/String;";
+        case Kind::Class:   return "L" + className + ";";
+        case Kind::Array:
+            if (elementType) {
+                return "[" + elementType->toJvmDescriptor();
+            }
+            return "[Ljava/lang/Object;";
+        case Kind::Any:     return "Ljava/lang/Object;";
+        case Kind::Null:    return "Ljava/lang/Object;";
+        default:            return "V";
+    }
+}
+
 DataType DataType::makeNull() {
     return DataType(Kind::Null);
 }

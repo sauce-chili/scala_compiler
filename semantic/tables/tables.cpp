@@ -5,6 +5,7 @@
 #include "tables.hpp"
 
 #include "nodes/class/ClassDefNode.h"
+#include "semantic/constants/ConstantPoolBuilder.h"
 #include "nodes/definitions/DclNode.h"
 #include "nodes/func/FunDefNode.h"
 #include "nodes/var/VarDefsNode.h"
@@ -15,6 +16,10 @@ class DefNode;
 class DclNode;
 class FunDefNode;
 class VarDefsNode;
+
+// Определение констант для имён конструкторов
+const std::string CONSTRUCTOR_NAME = "this";
+const std::string JVM_CONSTRUCTOR_NAME = "<init>";
 
 MetaInfo::~MetaInfo() = default;
 
@@ -51,6 +56,16 @@ vector<DataType *> MethodMetaInfo::getArgsTypes() {
         argsTypes.push_back(&arg->dataType);
     }
     return argsTypes;
+}
+
+std::string MethodMetaInfo::jvmDescriptor() {
+    std::string descriptor = "(";
+    for (const auto* arg : args) {
+        descriptor += arg->dataType.toJvmDescriptor();
+    }
+    descriptor += ")";
+    descriptor += returnType.toJvmDescriptor();
+    return descriptor;
 }
 
 optional<LocalVarMetaInfo *> MethodMetaInfo::addLocalVar(VarDefsNode *varDefsNode, Scope* scope) {
@@ -268,7 +283,10 @@ optional<string> ClassMetaInfo::getParentName() {
 }
 
 uint16_t ClassMetaInfo::getConstantCounter() {
-    return constantCounter;
+    if (constantPool) {
+        return constantPool->size();
+    }
+    return 0;
 }
 
 optional<FieldMetaInfo *> ClassMetaInfo::addField(VarDefsNode *varDefsNode, Modifiers modifiers) {

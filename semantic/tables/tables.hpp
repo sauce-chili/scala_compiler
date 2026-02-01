@@ -8,6 +8,7 @@
 #include <list>
 #include <optional>
 #include <unordered_map>
+#include <string>
 
 #include "tables.hpp"
 #include "nodes/generator/GeneratorNode.h"
@@ -15,6 +16,11 @@
 #include "semantic/tools/datatype.h"
 #include "semantic/tools/tools.h"
 #include "semantic/tools/NameTransformer.h"
+
+// Имя конструктора в Scala (после преобразования AST)
+extern const std::string CONSTRUCTOR_NAME;
+// Имя конструктора в JVM байткоде
+extern const std::string JVM_CONSTRUCTOR_NAME;
 
 class Scope;
 class FunDefNode;
@@ -121,15 +127,7 @@ public:
     };
 };
 
-class ConstantMetaInfo : public BytesMetaInfo {
-    uint16_t number = 0;
-
-    virtual bool operator==(const ConstantMetaInfo &m) const = 0;
-
-    virtual string toString() = 0;
-};
-
-class MethodMetaInfo : public BytesMetaInfo {
+class MethodMetaInfo : public BytesMetaInfo, public JvmDescriptorOwner {
 public:
     string name;
     string jvmName;
@@ -141,7 +139,8 @@ public:
     // храним в векторе чтобы сохранять очередность аргументов и верно получать кортеж их типов
     vector<ArgMetaInfo *> args;
     /**
-     * ключ имя переменной, значение - мапа, где ключ scopeId, а значение - локальная переменная*/
+     * ключ имя переменной, значение - мапа, где ключ scopeId, а значение - локальная переменная
+     */
     unordered_map<string, unordered_map<unsigned int, LocalVarMetaInfo *> > localVars;
 
 
@@ -159,6 +158,13 @@ public:
     bool isProtected() const { return modifiers.hasModifier(_PROTECTED); }
     bool isFinal() const { return modifiers.hasModifier(_FINAL); }
     bool isOverride() const { return modifiers.hasModifier(_OVERRIDE); }
+
+    /**
+     * Возвращает JVM-дескриптор метода.
+     * Формат: (параметры)возвращаемый_тип
+     * Пример: (II)I для метода (Int, Int) => Int
+     */
+    std::string jvmDescriptor() override;
 
     virtual optional<LocalVarMetaInfo *> addLocalVar(VarDefsNode *varDefsNode, Scope *scope);
     virtual optional<LocalVarMetaInfo *> addGeneratorVar(GeneratorNode *generatorNode, Scope *scope);
@@ -178,7 +184,7 @@ public:
      * ключ - имя метода, значение - все сигнатуры метода, чтобы найти искомый, нужно сранивать по типу параметров
      */
     unordered_map<string, vector<MethodMetaInfo *> > methods;
-    unordered_map<uint16_t, ConstantMetaInfo *> constants;
+    class ConstantPoolBuilder* constantPool = nullptr;  // Таблица констант для кодогенерации
 
     // -----------------------------------------------------------------------------------------------------------------
 
@@ -292,8 +298,6 @@ public:
      */
     bool isRTL() const;
 
-protected:
-    uint16_t constantCounter = 1;
 };
 
 class RtlClassMetaInfo : public ClassMetaInfo {

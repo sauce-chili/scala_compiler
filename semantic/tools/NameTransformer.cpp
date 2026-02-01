@@ -1,5 +1,5 @@
 #include "NameTransformer.h"
-#include "../Constants.cpp"
+#include "semantic/tables/tables.hpp"
 
 const std::unordered_map<std::string, char> NameTransformer::op = {
         {"$tilde",'~'}, {"$eq",'='}, {"$less",'<'}, {"$greater",'>'},

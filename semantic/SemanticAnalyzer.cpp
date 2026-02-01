@@ -14,6 +14,7 @@
 #include "LocalVarGatherVisitor.h"
 #include "TypeExistenceValidator.h"
 #include "TypeCheckVisitor.h"
+#include "constants/ConstantPoolVisitor.h"
 #include "SemanticContext.h"
 #include "Constants.cpp"
 #include "error/ErrorTable.h"
@@ -167,6 +168,16 @@ static void exportMethodLocalVars(const std::string& localVarsDir, MethodMetaInf
     file.close();
 }
 
+static void exportConstantPool(const std::string& classDir, ClassMetaInfo* info) {
+    if (!info || !info->constantPool) return;
+
+    std::ofstream file(classDir + "/constants.csv");
+    if (!file.is_open()) return;
+
+    file << info->constantPool->toCsv();
+    file.close();
+}
+
 void SemanticAnalyzer::exportContext(const std::string& basePath) {
     std::string exportDir = basePath + "/out_export";
     prepareExportDir(exportDir);
@@ -199,6 +210,9 @@ void SemanticAnalyzer::exportContext(const std::string& basePath) {
                 exportMethodLocalVars(localVarsDir, method);
             }
         }
+
+        // Экспортируем таблицу констант
+        exportConstantPool(classDir, classInfo);
     }
 }
 
@@ -356,6 +370,10 @@ bool SemanticAnalyzer::analyze(TopStatSeqNode *root) {
         std::cerr << "Semantic errors after type check:" << std::endl << ErrorTable::getErrors() << std::endl;
         return false;
     }
+
+    // Сбор констант для кодогенерации
+    ConstantPoolVisitor constantPoolVisitor;
+    constantPoolVisitor.visitTree(root);
 
     exportContext(".");
     createScalaCode(root, "./generated.scala");
