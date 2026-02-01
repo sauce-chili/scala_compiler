@@ -15,6 +15,7 @@
 #include "TypeExistenceValidator.h"
 #include "TypeCheckVisitor.h"
 #include "SemanticContext.h"
+#include "Constants.cpp"
 #include "error/ErrorTable.h"
 #include "tables/tables.hpp"
 #include "utils/output/dot.cpp"
@@ -251,6 +252,10 @@ static void checkFieldOverride(ClassMetaInfo* info, const std::string& name, Fie
 static void checkMethodOverride(ClassMetaInfo* info, const std::string& name, MethodMetaInfo* method) {
     if (!info->parent) return;
 
+    if (method->name == CONSTRUCTOR_NAME) {
+        return;
+    }
+
     // Ищем метод, доступный наследнику
     auto parentMethodOpt = info->parent->resolveMethod(name, method->getArgsTypes(), info);
 
@@ -264,8 +269,9 @@ static void checkMethodOverride(ClassMetaInfo* info, const std::string& name, Me
         }
 
         if (!method->isOverride()) {
+            // К конструкторам нельзя override писать + сигнатуры конструкторов в наследнике и родителе могут полностью совпадать
             ErrorTable::addErrorToList(new SemanticError(
-                SemanticError::MethodAlreadyExists(0, name + " (missing 'override' modifier)")
+                    SemanticError::MethodAlreadyExists(0, name + " (missing 'override' modifier)")
             ));
         }
 
