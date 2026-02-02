@@ -17,8 +17,6 @@ public:
 
     static ExtensionClassTemplateNode* createExtendWithConstrAndBody(IdNode* fullId, ArgumentExprsNode* argumentExprs, TemplateStatsNode* templateStats);
     static ExtensionClassTemplateNode* createExtendWithBody(IdNode* fullId, TemplateStatsNode* templateStats);
-    static ExtensionClassTemplateNode* createExtendWithConstr(IdNode* fullId, ArgumentExprsNode* argumentExprs);
-    static ExtensionClassTemplateNode* createEmptyExtend(IdNode* fullId);
 
     ExtensionClassTemplateNode* copy();
 
