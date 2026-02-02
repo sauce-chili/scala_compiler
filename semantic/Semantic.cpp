@@ -32,7 +32,7 @@ void TopStatSeqNode::convertAst() {
         tsn->tmplDef->toExtendsAny();
         tsn->tmplDef->classDef->normalizeBody();
         tsn->toFieldsFromPrimaryConstructor();
-        tsn->initializeBaseConstructorFromFields();
+        tsn->initializeBaseConstructor();
         tsn->secondaryConstructorsToMethods();
         normalizeInfixes(tsn);
         transformInfixes(tsn);
@@ -101,7 +101,7 @@ void TopStatNode::toFieldsFromPrimaryConstructor() {
     }
 }
 
-void TopStatNode::initializeBaseConstructorFromFields() const {
+void TopStatNode::initializeBaseConstructor() {
     if (!tmplDef) return;
     if (!tmplDef->classDef) return;
 
@@ -135,6 +135,7 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
     // Поля класса
     BlockStatsNode *blockStats = BlockStatsNode::addBlockStatToList(nullptr, nullptr);
     BlockStatsNode::addBlockStatToList(blockStats, superCall);
+    blockStats->blockStats->splice(blockStats->blockStats->end(), initializeVarFromClassParams(currentClass->classParams));
     for (TemplateStatNode* p: *(currentClass->classTemplateOpt->templateStats->templateStats)) {
         if (!p) continue;
         if (p->dcl) continue;
@@ -179,6 +180,42 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
     baseConstructor->def = DefNode::createFunDef(primaryConstructorNode);
     currentClass->classTemplateOpt->templateStats->templateStats->push_front(baseConstructor);
     currentClass->classParams = nullptr;
+}
+
+list<BlockStatNode*> TopStatNode::initializeVarFromClassParams(ClassParamsNode* classParams) {
+    list<BlockStatNode*> topStatsParams = list<BlockStatNode*>();
+
+    if (!classParams) return topStatsParams;
+
+    for (ClassParamNode* cp: *(classParams->classParams)) {
+        AssignmentNode* assignment = AssignmentNode::createFieldAssignment(
+                SimpleExprNode::createSimpleExpr1Node(
+                        SimpleExpr1Node::createSimpleExprFieldAccessNode(
+                                cp->fullId->copy(),
+                                SimpleExprNode::createSimpleExpr1Node(
+                                    SimpleExpr1Node::createPlainThisNode()
+                                )
+                        )
+                ),
+                nullptr,
+                ExprNode::createInfix(InfixExprNode::createInfixFromPrefix(
+                        PrefixExprNode::createPrefixExprNode(
+                                SimpleExprNode::createSimpleExpr1Node(
+                                        SimpleExpr1Node::createIdNode(cp->fullId->copy())
+                                        ),
+                                _NO_UNARY_OPERATOR
+                                )
+                        )
+                )
+        );
+
+        topStatsParams.push_back(BlockStatNode::createExprNode(
+                    ExprNode::createAssignment(assignment)
+                )
+        );
+    }
+
+    return topStatsParams;
 }
 
 void TemplateDefNode::validateModifiers() const {
