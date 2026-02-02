@@ -26,7 +26,7 @@ TemplateStatNode *TemplateStatNode::copy() {
     if (dcl) {
         node->dcl = dcl->copy();
     }
-    if (dcl) {
+    if (def) {
         node->def = def->copy();
     }
     return node;
