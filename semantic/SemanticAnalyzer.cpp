@@ -282,10 +282,11 @@ static void checkMethodOverride(ClassMetaInfo* info, const std::string& name, Me
         }
 
         if (!method->isOverride()) {
-            // К конструкторам нельзя override писать + сигнатуры конструкторов в наследнике и родителе могут полностью совпадать
-            ErrorTable::addErrorToList(new SemanticError(
-                    SemanticError::MethodAlreadyExists(0, name + " (missing 'override' modifier)")
-            ));
+            // К конструкторам нельзя override писать + сигнатуры конструкторов в наследнике и родителе могут полностью совпадать\
+            // Для методов override опускается
+//            ErrorTable::addErrorToList(new SemanticError(
+//                    SemanticError::MethodAlreadyExists(0, name + " (missing 'override' modifier)")
+//            ));
         }
 
         if (!(method->returnType == parentMethod->returnType)) {
@@ -569,6 +570,12 @@ void SemanticAnalyzer::validateAbstractMethods() {
                 for (auto& [pMethodName, pMethodList] : currParent->methods) {
                     for (auto* pMethod : pMethodList) {
                         // Нашли абстрактный метод у родителя
+
+                        // В RTL абстрактность метода определяется ТОЛЬКО модификатором
+                        if (currParent->isRTL() && !pMethod->modifiers.hasModifier(_ABSTRACT)) {
+                            continue;
+                        }
+
                         if (pMethod->body == nullptr) {
                             // Пытаемся найти реализацию этого метода в нашем классе (или в промежуточных родителях)
                             // resolveMethod ищет снизу вверх (child -> parent -> grandParent)
@@ -578,7 +585,7 @@ void SemanticAnalyzer::validateAbstractMethods() {
                             if (implementationOpt.has_value()) {
                                 MethodMetaInfo* implementation = implementationOpt.value();
                                 // Если найденный метод имеет тело, значит он реализован
-                                if (implementation->body != nullptr) {
+                                if (implementation->body != nullptr || (implementation->classMetaInfo->isRTL() && !implementation->modifiers.hasModifier(_ABSTRACT))) {
                                     implemented = true;
                                 }
                             }
