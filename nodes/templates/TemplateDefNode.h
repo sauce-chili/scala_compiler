@@ -3,11 +3,13 @@
 
 #include "../Node.h"
 #include "../modifier/ModifiersNode.h"
+#include "semantic/tables/tables.hpp"
 
 class ClassDefNode;
 class ClassTemplateOptNode;
 class IdNode;
 
+extern const std::string BASE_SCALA_CLASS;
 
 class TemplateDefNode: public Node {
 public:

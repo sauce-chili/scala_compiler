@@ -21,6 +21,8 @@
 extern const std::string CONSTRUCTOR_NAME;
 // Имя конструктора в JVM байткоде
 extern const std::string JVM_CONSTRUCTOR_NAME;
+// Имя базового класса Scala
+extern const std::string BASE_SCALA_CLASS;
 
 class Scope;
 class FunDefNode;
