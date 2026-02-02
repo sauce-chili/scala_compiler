@@ -2,6 +2,10 @@
 #include "semantic/tables/tables.hpp"
 #include "semantic/scopes/Scope.h"
 
+ArgumentExprsNode::ArgumentExprsNode() {
+    this->exprs = new ExprsNode();
+}
+
 ArgumentExprsNode::ArgumentExprsNode(ExprsNode* exprs) {
     this->exprs = exprs;
 }

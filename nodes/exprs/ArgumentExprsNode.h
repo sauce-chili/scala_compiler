@@ -16,6 +16,7 @@ class ArgumentExprsNode: public Node {
 public:
     ExprsNode* exprs;
 
+    ArgumentExprsNode();
     ArgumentExprsNode(ExprsNode* exprs);
 
     ArgumentExprsNode* copy();
