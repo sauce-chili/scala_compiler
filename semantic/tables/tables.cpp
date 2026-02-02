@@ -2221,6 +2221,16 @@ RtlClassMetaInfo *RtlClassMetaInfo::initObject() {
     rec->modifiers.modifiers.push_back(_PUBLIC);
     rec->modifiers.modifiers.push_back(_ABSTRACT);
 
+    MethodMetaInfo* constructor = new MethodMetaInfo();
+    constructor->classMetaInfo = rec;
+    constructor->modifiers.modifiers.push_back(_PUBLIC);
+    constructor->returnType = DataType::Kind::Class;
+    constructor->returnType.className = "Object";
+    constructor->name = "this";
+    constructor->jvmName = "<init>";
+    constructor->args = vector<ArgMetaInfo*>();
+    rec->methods[constructor->name].push_back(constructor);
+
     MethodMetaInfo* toJvmString = new MethodMetaInfo();
     toJvmString->classMetaInfo = rec;
     toJvmString->modifiers.modifiers.push_back(_PUBLIC);
