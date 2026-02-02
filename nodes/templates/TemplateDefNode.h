@@ -28,6 +28,7 @@ public:
     TemplateDefNode* setModifiers(ModifiersNode* modifiers);
     ModifiersNode * getModifiers() const;
     void validateModifiers() const;
+    void toExtendsAny();
 
     list<Node *> getChildren() const override;
 

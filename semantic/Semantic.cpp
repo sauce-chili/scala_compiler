@@ -30,6 +30,7 @@ void TopStatSeqNode::convertAst() {
 
         tsn->tmplDef->classDef->normalizeBody();
         tsn->tmplDef->validateModifiers();
+        tsn->tmplDef->toExtendsAny();
         tsn->toFieldsFromPrimaryConstructor();
         tsn->initializeBaseConstructorFromFields();
         tsn->secondaryConstructorsToMethods();
@@ -44,6 +45,23 @@ void ClassDefNode::normalizeBody() const {
         classTemplateOpt->templateStats = classTemplateOpt->extensionPartClassTemplate->templateStats;
         classTemplateOpt->extensionPartClassTemplate->templateStats = nullptr;
     }
+}
+
+void TemplateDefNode::toExtendsAny() {
+    if (!classDef || !classDef->classTemplateOpt) {
+        return;
+    }
+
+    if (classDef->classTemplateOpt->extensionPartClassTemplate) {
+        return;
+    }
+
+    classDef->classTemplateOpt->extensionPartClassTemplate = ExtensionClassTemplateNode::createExtendWithBody(
+            IdNode::createId(BASE_SCALA_CLASS),
+            classDef->classTemplateOpt->templateStats
+    );
+
+    classDef->classTemplateOpt->templateStats = nullptr;
 }
 
 void TopStatNode::toFieldsFromPrimaryConstructor() {
