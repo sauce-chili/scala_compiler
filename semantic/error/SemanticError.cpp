@@ -208,8 +208,8 @@ SemanticError SemanticError::MainMethodNotDefined(int line) {
     return SemanticError(MAIN_METHOD_NOT_DEFINED, line, "Main method is not defined");
 }
 
-SemanticError SemanticError::AbstractMethodNotImplemented(int line, const std::string &name) {
-    return SemanticError(ABSTRACT_METHOD_NOT_IMPLEMENTED, line, "Main method '" + name + "' is not defined");
+SemanticError SemanticError::AbstractMethodNotImplemented(int line, const std::string &error) {
+    return SemanticError(ABSTRACT_METHOD_NOT_IMPLEMENTED, line, error);
 }
 
 SemanticError SemanticError::InternalError(int line, const std::string& message) {
