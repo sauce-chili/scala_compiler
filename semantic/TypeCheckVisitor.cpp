@@ -338,11 +338,19 @@ void TypeCheckVisitor::visitForExpression(ExprNode *node) {
 
     if (node->enumerators->generator && node->enumerators->generator->expr) {
         try {
+            // Выводит тип элементов (если есть элементы несовместимых типов - кидается ошибка)
             DataType iterableType = node->enumerators->generator->expr->inferType(
                 currentClass, currentMethod, currentScope);
             if (iterableType.kind != DataType::Kind::Array) {
                 ErrorTable::addErrorToList(new SemanticError(
                     SemanticError::ForLoopNotArray(node->id, iterableType.toString())
+                ));
+            }
+            DataType* arrayElementType = iterableType.elementType;
+            DataType generatorVarDeclaredType = DataType::createFromNode(node->enumerators->generator->simpleType);
+            if (!arrayElementType->isAssignableTo(generatorVarDeclaredType)) {
+                ErrorTable::addErrorToList(new SemanticError(
+                        SemanticError::TypeMismatch(node->id, generatorVarDeclaredType.toString(), arrayElementType->toString())
                 ));
             }
         } catch (const SemanticError &err) {
