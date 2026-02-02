@@ -79,7 +79,11 @@ SimpleExpr1Node *SimpleExpr1Node::createMethodCallNode(SimpleExpr1Node *left, Ar
     SimpleExpr1Node *node = new SimpleExpr1Node();
     node->type = _METHOD_CALL;
     node->simpleExpr1 = left;
-    node->argumentExprs = right;
+    if (right) {
+        node->argumentExprs = right;
+    } else {
+        node->argumentExprs = new ArgumentExprsNode();
+    }
     return node;
 }
 
