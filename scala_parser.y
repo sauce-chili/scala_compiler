@@ -175,9 +175,7 @@ expr: IF '(' expr ')' nls expr ELSE expr { $$ = ExprNode::createIfElse($3, $6, $
     | assignment                               { $$ = ExprNode::createAssignment($1); }
     ;
 
-assignment: fullID '=' expr                    { $$ = AssignmentNode::createIdAssignment($1, $3); }
-          | simpleExpr '.' fullID '=' expr     { $$ = AssignmentNode::createFieldAssignment($1, $3, $5); }
-          | simpleExpr1 argumentExprs '=' expr { $$ = AssignmentNode::createArrayAssignment($1, $2, $4); } // запись в массив
+assignment: simpleExpr '=' expr { $$ = AssignmentNode::createFieldAssignment($1, nullptr, $3); }
           ;
 
 enumerators: generator { $$ = new EnumeratorsNode($1); }

@@ -22,6 +22,7 @@ public:
 
     AssignmentNode* copy();
 
+    static AssignmentNode* createAssignment(SimpleExprNode *simpleExpr, ExprNode *expr);
     static AssignmentNode* createIdAssignment(IdNode* fullId, ExprNode* expr);
     static AssignmentNode* createFieldAssignment(SimpleExprNode* simpleExpr, IdNode* fullId, ExprNode* expr);
     static AssignmentNode* createArrayAssignment(SimpleExpr1Node* simpleExpr1, ArgumentExprsNode* argumentExprs, ExprNode* expr);

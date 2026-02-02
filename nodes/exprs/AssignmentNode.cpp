@@ -5,12 +5,30 @@
 #include "../exprs/ArgumentExprsNode.h"
 #include "nodes/id/IdNode.h"
 
+#include <stdexcept>
+
 AssignmentNode::AssignmentNode() {
     fullId = nullptr;
     expr = nullptr;
     simpleExpr = nullptr;
     simpleExpr1 = nullptr;
     argumentExprs = nullptr;
+}
+
+AssignmentNode *AssignmentNode::createAssignment(SimpleExprNode *simpleExpr, ExprNode *expr) {
+    if (!simpleExpr->simpleExpr1) {
+        throw std::logic_error("Illegal assignment");
+    }
+    if (simpleExpr->simpleExpr1->type == _IDENTIFIER) {
+        return createIdAssignment(simpleExpr->simpleExpr1->identifier, expr);
+    }
+    if (simpleExpr->simpleExpr1->type == _METHOD_CALL) {
+        return createArrayAssignment(simpleExpr->simpleExpr1->simpleExpr1, simpleExpr->simpleExpr1->argumentExprs, expr);
+    }
+    if (simpleExpr->simpleExpr1->type == _EXPRESSION_FIELD_ACCESS) {
+        return createFieldAssignment(simpleExpr->simpleExpr1->simpleExpr, simpleExpr->simpleExpr1->identifier, expr);
+    }
+    throw std::logic_error("Wrong assignment expr");
 }
 
 AssignmentNode *AssignmentNode::createIdAssignment(IdNode *fullId, ExprNode *expr) {
