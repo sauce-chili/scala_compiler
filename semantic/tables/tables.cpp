@@ -554,6 +554,32 @@ RtlClassMetaInfo *RtlClassMetaInfo::initAny() {
     isInstanceOf->args.push_back(isInstanceOfArg1);
     rec->methods[isInstanceOf->name].push_back(isInstanceOf);
 
+    MethodMetaInfo* equals = new MethodMetaInfo();
+    equals->classMetaInfo = Any;
+    equals->modifiers.modifiers.push_back(_PUBLIC);
+    equals->modifiers.modifiers.push_back(_OVERRIDE);
+    equals->returnType = DataType::Kind::Bool;
+    equals->name = "equals";
+    equals->jvmName = NameTransformer::encode(equals->name);
+    equals->args = vector<ArgMetaInfo*>();
+    ArgMetaInfo* equalsArg = new ArgMetaInfo();
+    equalsArg->name = "o";
+    equalsArg->jvmName = NameTransformer::encode(equalsArg->name);
+    equalsArg->dataType = DataType::Kind::Class;
+    equalsArg->dataType.className = "Object";
+    equals->args.push_back(equalsArg);
+    rec->methods[equals->name].push_back(equals);
+
+    MethodMetaInfo* hashCode = new MethodMetaInfo();
+    hashCode->classMetaInfo = Any;
+    hashCode->modifiers.modifiers.push_back(_PUBLIC);
+    hashCode->modifiers.modifiers.push_back(_OVERRIDE);
+    hashCode->returnType = DataType::Kind::Int;
+    hashCode->name = "hashCode";
+    hashCode->jvmName = NameTransformer::encode(hashCode->name);
+    hashCode->args = vector<ArgMetaInfo*>();
+    rec->methods[hashCode->name].push_back(hashCode);
+
     return rec;
 }
 
