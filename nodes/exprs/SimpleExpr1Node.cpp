@@ -401,7 +401,12 @@ DataType SimpleExpr1Node::inferType(
 
                 // иначе это вызов метода
                 if (currentClass) {
-                    auto methodOpt = currentClass->resolveMethod(name, argTypes, currentClass);
+                    optional<MethodMetaInfo *> methodOpt;
+                    if (name == "super") {
+                        methodOpt = currentClass->parent->resolveMethod(CONSTRUCTOR_NAME, argTypes, currentClass);
+                    } else {
+                        methodOpt = currentClass->resolveMethod(name, argTypes, currentClass);
+                    }
                     if (methodOpt.has_value()) {
                         DataType returnType = methodOpt.value()->returnType;
                         for (auto *t: argTypes) delete t;
