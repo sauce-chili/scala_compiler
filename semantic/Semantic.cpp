@@ -28,9 +28,9 @@ void TopStatSeqNode::convertAst() {
         if (!tsn->tmplDef) continue;
         if (!tsn->tmplDef->classDef) continue;
 
-        tsn->tmplDef->classDef->normalizeBody();
         tsn->tmplDef->validateModifiers();
         tsn->tmplDef->toExtendsAny();
+        tsn->tmplDef->classDef->normalizeBody();
         tsn->toFieldsFromPrimaryConstructor();
         tsn->initializeBaseConstructorFromFields();
         tsn->secondaryConstructorsToMethods();
