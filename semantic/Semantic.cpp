@@ -116,7 +116,7 @@ void TopStatNode::initializeBaseConstructor() {
 
     // Сущность конструктора
     TemplateStatNode *baseConstructor = new TemplateStatNode();
-    // Вызов родительского конструктора (будет всегда, как минимум Object)
+    // Вызов родительского конструктора (будет всегда, как минимум Any)
     BlockStatNode *superCall;
     SimpleExpr1Node* superConstructorName = SimpleExpr1Node::createIdNode(IdNode::createId("super"));
     if (currentClass->classTemplateOpt->extensionPartClassTemplate && currentClass->classTemplateOpt->extensionPartClassTemplate->argumentExprs) {

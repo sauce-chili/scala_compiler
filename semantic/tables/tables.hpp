@@ -305,7 +305,6 @@ public:
 class RtlClassMetaInfo : public ClassMetaInfo {
 public:
     static RtlClassMetaInfo* Any;
-    static RtlClassMetaInfo* Object;
     static RtlClassMetaInfo* String;
     static RtlClassMetaInfo* Integer;
     static RtlClassMetaInfo* StdIn;
@@ -342,7 +341,6 @@ public:
 
 private:
     static RtlClassMetaInfo* initAny();
-    static RtlClassMetaInfo* initObject();
     static RtlClassMetaInfo* initString();
     static RtlClassMetaInfo* initInteger();
     static RtlClassMetaInfo* initStdIn();

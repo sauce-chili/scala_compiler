@@ -459,7 +459,6 @@ bool VarMetaInfo::operator==(const VarMetaInfo& other) {
     return name == other.name && dataType == other.dataType;
 }
 
-RtlClassMetaInfo* RtlClassMetaInfo::Object = nullptr;
 RtlClassMetaInfo* RtlClassMetaInfo::Any = nullptr;
 RtlClassMetaInfo* RtlClassMetaInfo::String = nullptr;
 RtlClassMetaInfo* RtlClassMetaInfo::Integer = nullptr;
@@ -473,9 +472,6 @@ RtlClassMetaInfo* RtlClassMetaInfo::Array = nullptr;
 
 void RtlClassMetaInfo::initializeRtlClasses() {
     // Инициализируем RTL классы в правильном порядке (учитываем зависимости)
-    Object = RtlClassMetaInfo::initObject();
-    ctx().addRTL(Object);
-
     Any = RtlClassMetaInfo::initAny();
     ctx().addRTL(Any);
 
@@ -524,7 +520,7 @@ RtlClassMetaInfo *RtlClassMetaInfo::initAny() {
 
     RtlClassMetaInfo* rec = new RtlClassMetaInfo(className, _SCALA);
 
-    rec->parent = Object;
+    rec->parent = nullptr;
 
     rec->modifiers.modifiers.push_back(_PUBLIC);
     rec->modifiers.modifiers.push_back(_ABSTRACT);
@@ -533,7 +529,7 @@ RtlClassMetaInfo *RtlClassMetaInfo::initAny() {
     constructor->classMetaInfo = rec;
     constructor->modifiers.modifiers.push_back(_PUBLIC);
     constructor->returnType = DataType::Kind::Class;
-    constructor->returnType.className = "Object";
+    constructor->returnType.className = "Any";
     constructor->name = "this";
     constructor->jvmName = "<init>";
     constructor->args = vector<ArgMetaInfo*>();
@@ -561,7 +557,7 @@ RtlClassMetaInfo *RtlClassMetaInfo::initAny() {
     isInstanceOfArg1->name = "cls";
     isInstanceOfArg1->jvmName = NameTransformer::encode(isInstanceOfArg1->name);
     isInstanceOfArg1->dataType = DataType::Kind::Class;
-    isInstanceOfArg1->dataType.className = "Object";
+    isInstanceOfArg1->dataType.className = "Any";
     isInstanceOf->args.push_back(isInstanceOfArg1);
     rec->methods[isInstanceOf->name].push_back(isInstanceOf);
 
@@ -577,7 +573,7 @@ RtlClassMetaInfo *RtlClassMetaInfo::initAny() {
     equalsArg->name = "o";
     equalsArg->jvmName = NameTransformer::encode(equalsArg->name);
     equalsArg->dataType = DataType::Kind::Class;
-    equalsArg->dataType.className = "Object";
+    equalsArg->dataType.className = "Any";
     equals->args.push_back(equalsArg);
     rec->methods[equals->name].push_back(equals);
 
@@ -608,7 +604,7 @@ RtlClassMetaInfo* RtlClassMetaInfo::initString() {
     constructor->classMetaInfo = rec;
     constructor->modifiers.modifiers.push_back(_PUBLIC);
     constructor->returnType = DataType::Kind::Class;
-    constructor->returnType.className = "Object";
+    constructor->returnType.className = "Any";
     constructor->name = "this";
     constructor->jvmName = "<init>";
     constructor->args = vector<ArgMetaInfo*>();
@@ -752,7 +748,7 @@ RtlClassMetaInfo* RtlClassMetaInfo::initString() {
     equalsArg->name = "o";
     equalsArg->jvmName = NameTransformer::encode(equalsArg->name);
     equalsArg->dataType = DataType::Kind::Class;
-    equalsArg->dataType.className = "Object";
+    equalsArg->dataType.className = "Any";
     equals->args.push_back(equalsArg);
     rec->methods[equals->name].push_back(equals);
 
@@ -794,7 +790,7 @@ RtlClassMetaInfo* RtlClassMetaInfo::initInteger() {
     constructor->classMetaInfo = rec;
     constructor->modifiers.modifiers.push_back(_PUBLIC);
     constructor->returnType = DataType::Kind::Class;
-    constructor->returnType.className = "Object";
+    constructor->returnType.className = "Any";
     constructor->name = "this";
     constructor->jvmName = "<init>";
     constructor->args = vector<ArgMetaInfo*>();
@@ -1218,7 +1214,7 @@ RtlClassMetaInfo* RtlClassMetaInfo::initInteger() {
     equalsArg->name = "o";
     equalsArg->jvmName = NameTransformer::encode(equalsArg->name);
     equalsArg->dataType = DataType::Kind::Class;
-    equalsArg->dataType.className = "Object";
+    equalsArg->dataType.className = "Any";
     equals->args.push_back(equalsArg);
     rec->methods[equals->name].push_back(equals);
 
@@ -1288,7 +1284,7 @@ RtlClassMetaInfo* RtlClassMetaInfo::initStdIn() {
     constructor->classMetaInfo = rec;
     constructor->modifiers.modifiers.push_back(_PUBLIC);
     constructor->returnType = DataType::Kind::Class;
-    constructor->returnType.className = "Object";
+    constructor->returnType.className = "Any";
     constructor->name = "this";
     constructor->jvmName = "<init>";
     constructor->args = vector<ArgMetaInfo*>();
@@ -1352,7 +1348,7 @@ RtlClassMetaInfo* RtlClassMetaInfo::initStdIn() {
     equalsArg->name = "o";
     equalsArg->jvmName = NameTransformer::encode(equalsArg->name);
     equalsArg->dataType = DataType::Kind::Class;
-    equalsArg->dataType.className = "Object";
+    equalsArg->dataType.className = "Any";
     equals->args.push_back(equalsArg);
     rec->methods[equals->name].push_back(equals);
 
@@ -1383,7 +1379,7 @@ RtlClassMetaInfo* RtlClassMetaInfo::initUnit() {
     constructor->classMetaInfo = rec;
     constructor->modifiers.modifiers.push_back(_PUBLIC);
     constructor->returnType = DataType::Kind::Class;
-    constructor->returnType.className = "Object";
+    constructor->returnType.className = "Any";
     constructor->name = "this";
     constructor->jvmName = "<init>";
     constructor->args = vector<ArgMetaInfo*>();
@@ -1401,7 +1397,7 @@ RtlClassMetaInfo* RtlClassMetaInfo::initUnit() {
     equalsArg->name = "o";
     equalsArg->jvmName = NameTransformer::encode(equalsArg->name);
     equalsArg->dataType = DataType::Kind::Class;
-    equalsArg->dataType.className = "Object";
+    equalsArg->dataType.className = "Any";
     equals->args.push_back(equalsArg);
     rec->methods[equals->name].push_back(equals);
 
@@ -1454,7 +1450,7 @@ RtlClassMetaInfo* RtlClassMetaInfo::initChar() {
     constructor->classMetaInfo = rec;
     constructor->modifiers.modifiers.push_back(_PUBLIC);
     constructor->returnType = DataType::Kind::Class;
-    constructor->returnType.className = "Object";
+    constructor->returnType.className = "Any";
     constructor->name = "this";
     constructor->jvmName = "<init>";
     constructor->args = vector<ArgMetaInfo*>();
@@ -1506,7 +1502,7 @@ RtlClassMetaInfo* RtlClassMetaInfo::initChar() {
     equalsArg->name = "o";
     equalsArg->jvmName = NameTransformer::encode(equalsArg->name);
     equalsArg->dataType = DataType::Kind::Class;
-    equalsArg->dataType.className = "Object";
+    equalsArg->dataType.className = "Any";
     equals->args.push_back(equalsArg);
     rec->methods[equals->name].push_back(equals);
 
@@ -1559,7 +1555,7 @@ RtlClassMetaInfo* RtlClassMetaInfo::initDouble() {
     constructor->classMetaInfo = rec;
     constructor->modifiers.modifiers.push_back(_PUBLIC);
     constructor->returnType = DataType::Kind::Class;
-    constructor->returnType.className = "Object";
+    constructor->returnType.className = "Any";
     constructor->name = "this";
     constructor->jvmName = "<init>";
     constructor->args = vector<ArgMetaInfo*>();
@@ -1931,7 +1927,7 @@ RtlClassMetaInfo* RtlClassMetaInfo::initDouble() {
     equalsArg->name = "o";
     equalsArg->jvmName = NameTransformer::encode(equalsArg->name);
     equalsArg->dataType = DataType::Kind::Class;
-    equalsArg->dataType.className = "Object";
+    equalsArg->dataType.className = "Any";
     equals->args.push_back(equalsArg);
     rec->methods[equals->name].push_back(equals);
 
@@ -1992,7 +1988,7 @@ RtlClassMetaInfo* RtlClassMetaInfo::initBoolean() {
     constructor->classMetaInfo = rec;
     constructor->modifiers.modifiers.push_back(_PUBLIC);
     constructor->returnType = DataType::Kind::Class;
-    constructor->returnType.className = "Object";
+    constructor->returnType.className = "Any";
     constructor->name = "this";
     constructor->jvmName = "<init>";
     constructor->args = vector<ArgMetaInfo*>();
@@ -2172,7 +2168,7 @@ RtlClassMetaInfo* RtlClassMetaInfo::initBoolean() {
     equalsArg1->name = "o";
     equalsArg1->jvmName = NameTransformer::encode(equalsArg1->name);
     equalsArg1->dataType = DataType::Kind::Class;
-    equalsArg1->dataType.className = "Object";
+    equalsArg1->dataType.className = "Any";
     equals->args.push_back(equalsArg1);
     rec->methods[equals->name].push_back(equals);
 
@@ -2221,133 +2217,6 @@ RtlClassMetaInfo* RtlClassMetaInfo::initBoolean() {
     return rec;
 }
 
-RtlClassMetaInfo *RtlClassMetaInfo::initObject() {
-    string className = "Object";
-
-    RtlClassMetaInfo* rec = new RtlClassMetaInfo(className, _SCALA);
-
-    rec->parent = nullptr;
-
-    rec->modifiers.modifiers.push_back(_PUBLIC);
-    rec->modifiers.modifiers.push_back(_ABSTRACT);
-
-    MethodMetaInfo* constructor = new MethodMetaInfo();
-    constructor->classMetaInfo = rec;
-    constructor->modifiers.modifiers.push_back(_PUBLIC);
-    constructor->returnType = DataType::Kind::Class;
-    constructor->returnType.className = "Object";
-    constructor->name = "this";
-    constructor->jvmName = "<init>";
-    constructor->args = vector<ArgMetaInfo*>();
-    rec->methods[constructor->name].push_back(constructor);
-
-    MethodMetaInfo* toJvmString = new MethodMetaInfo();
-    toJvmString->classMetaInfo = rec;
-    toJvmString->modifiers.modifiers.push_back(_PUBLIC);
-    toJvmString->returnType = DataType::Kind::Class;
-    toJvmString->returnType.className = "String";
-    toJvmString->name = "toJvmString";
-    toJvmString->jvmName = NameTransformer::encode(toJvmString->name);
-    toJvmString->args = vector<ArgMetaInfo*>();
-    rec->methods[toJvmString->name].push_back(toJvmString);
-
-    MethodMetaInfo* ToString = new MethodMetaInfo(); // Оно с заглавной в коде начинается
-    ToString->classMetaInfo = rec;
-    ToString->modifiers.modifiers.push_back(_PUBLIC);
-    ToString->returnType = DataType::Kind::Class;
-    ToString->returnType.className = "String";
-    ToString->name = "ToString";
-    ToString->jvmName = NameTransformer::encode(ToString->name);
-    ToString->args = vector<ArgMetaInfo*>();
-    rec->methods[ToString->name].push_back(ToString);
-
-    MethodMetaInfo* toString = new MethodMetaInfo();
-    toString->classMetaInfo = rec;
-    toString->modifiers.modifiers.push_back(_PUBLIC);
-    toString->returnType = DataType::Kind::Class;
-    toString->returnType.className = "String";
-    toString->name = "toString";
-    toString->jvmName = NameTransformer::encode(toString->name);
-    toString->args = vector<ArgMetaInfo*>();
-    rec->methods[toString->name].push_back(toString);
-
-    MethodMetaInfo* equals = new MethodMetaInfo();
-    equals->classMetaInfo = rec;
-    equals->modifiers.modifiers.push_back(_PUBLIC);
-    equals->modifiers.modifiers.push_back(_ABSTRACT);
-    equals->returnType = DataType::Kind::Bool;
-    equals->name = "equals";
-    equals->jvmName = NameTransformer::encode(equals->name);
-    equals->args = vector<ArgMetaInfo*>();
-    ArgMetaInfo* equalsArg1= new ArgMetaInfo();
-    equalsArg1->name = "other";
-    equalsArg1->jvmName = NameTransformer::encode(equalsArg1->name);
-    equalsArg1->dataType = DataType::Kind::Class;
-    equalsArg1->dataType.className = "Object";
-    equals->args.push_back(equalsArg1);
-    rec->methods[equals->name].push_back(equals);
-
-    MethodMetaInfo* hashCode = new MethodMetaInfo();
-    hashCode->classMetaInfo = rec;
-    hashCode->modifiers.modifiers.push_back(_PUBLIC);
-    hashCode->modifiers.modifiers.push_back(_ABSTRACT);
-    hashCode->returnType = DataType::Kind::Int;
-    hashCode->name = "hashCode";
-    hashCode->jvmName = NameTransformer::encode(hashCode->name);
-    hashCode->args = vector<ArgMetaInfo*>();
-    rec->methods[hashCode->name].push_back(hashCode);
-
-    MethodMetaInfo* notEquals = new MethodMetaInfo();
-    notEquals->classMetaInfo = rec;
-    notEquals->modifiers.modifiers.push_back(_PUBLIC);
-    notEquals->returnType = DataType::Kind::Class;
-    notEquals->returnType.className = "Boolean";
-    notEquals->name = "notEquals";
-    notEquals->jvmName = NameTransformer::encode(notEquals->name);
-    notEquals->args = vector<ArgMetaInfo*>();
-    ArgMetaInfo* notEqualsArg1= new ArgMetaInfo();
-    notEqualsArg1->name = "other";
-    notEqualsArg1->jvmName = NameTransformer::encode(notEqualsArg1->name);
-    notEqualsArg1->dataType = DataType::Kind::Class;
-    notEqualsArg1->dataType.className = "Object";
-    notEquals->args.push_back(notEqualsArg1);
-    rec->methods[notEquals->name].push_back(notEquals);
-
-    MethodMetaInfo* is = new MethodMetaInfo();
-    is->classMetaInfo = rec;
-    is->modifiers.modifiers.push_back(_PUBLIC);
-    is->returnType = DataType::Kind::Class;
-    is->returnType.className = "Boolean";
-    is->name = "is";
-    is->jvmName = NameTransformer::encode(is->name);
-    is->args = vector<ArgMetaInfo*>();
-    ArgMetaInfo* isArg1= new ArgMetaInfo();
-    isArg1->name = "other";
-    isArg1->jvmName = NameTransformer::encode(isArg1->name);
-    isArg1->dataType = DataType::Kind::Class;
-    isArg1->dataType.className = "Object";
-    is->args.push_back(isArg1);
-    rec->methods[is->name].push_back(is);
-
-    MethodMetaInfo* isNot = new MethodMetaInfo();
-    isNot->classMetaInfo = rec;
-    isNot->modifiers.modifiers.push_back(_PUBLIC);
-    isNot->returnType = DataType::Kind::Class;
-    isNot->returnType.className = "Boolean";
-    isNot->name = "isNot";
-    isNot->jvmName = NameTransformer::encode(isNot->name);
-    isNot->args = vector<ArgMetaInfo*>();
-    ArgMetaInfo* isNotArg1= new ArgMetaInfo();
-    isNotArg1->name = "other";
-    isNotArg1->jvmName = NameTransformer::encode(isNotArg1->name);
-    isNotArg1->dataType = DataType::Kind::Class;
-    isNotArg1->dataType.className = "Object";
-    isNot->args.push_back(isNotArg1);
-    rec->methods[isNot->name].push_back(isNot);
-
-    return rec;
-}
-
 RtlClassMetaInfo *RtlClassMetaInfo::initPredef() {
     string className = "Predef";
 
@@ -2362,7 +2231,7 @@ RtlClassMetaInfo *RtlClassMetaInfo::initPredef() {
     constructor->classMetaInfo = rec;
     constructor->modifiers.modifiers.push_back(_PUBLIC);
     constructor->returnType = DataType::Kind::Class;
-    constructor->returnType.className = "Object";
+    constructor->returnType.className = "Any";
     constructor->name = "this";
     constructor->jvmName = "<init>";
     constructor->args = vector<ArgMetaInfo*>();
@@ -2379,7 +2248,7 @@ RtlClassMetaInfo *RtlClassMetaInfo::initPredef() {
     printArg->name = "x";
     printArg->jvmName = NameTransformer::encode(printArg->name);
     printArg->dataType = DataType::Kind::Class;
-    printArg->dataType.className = "Object";
+    printArg->dataType.className = "Any";
     print->args.push_back(printArg);
     rec->methods[print->name].push_back(print);
 
@@ -2403,7 +2272,7 @@ RtlClassMetaInfo *RtlClassMetaInfo::initPredef() {
     printlnArg->name = "x";
     printlnArg->jvmName = NameTransformer::encode(printlnArg->name);
     printlnArg->dataType = DataType::Kind::Class;
-    printlnArg->dataType.className = "Object";
+    printlnArg->dataType.className = "Any";
     println1->args.push_back(printlnArg);
     rec->methods[println1->name].push_back(println1);
 
@@ -2419,7 +2288,7 @@ RtlClassMetaInfo *RtlClassMetaInfo::initPredef() {
     equalsArg1->name = "o";
     equalsArg1->jvmName = NameTransformer::encode(equalsArg1->name);
     equalsArg1->dataType = DataType::Kind::Class;
-    equalsArg1->dataType.className = "Object";
+    equalsArg1->dataType.className = "Any";
     equals->args.push_back(equalsArg1);
     rec->methods[equals->name].push_back(equals);
 
@@ -2450,7 +2319,7 @@ RtlClassMetaInfo *RtlClassMetaInfo::initArray() {
     constructor1->classMetaInfo = rec;
     constructor1->modifiers.modifiers.push_back(_PUBLIC);
     constructor1->returnType = DataType::Kind::Class;
-    constructor1->returnType.className = "Object";
+    constructor1->returnType.className = "Any";
     constructor1->name = "<init7>";
     constructor1->jvmName = NameTransformer::encode(constructor1->name);
     constructor1->args = vector<ArgMetaInfo*>();
@@ -2466,7 +2335,7 @@ RtlClassMetaInfo *RtlClassMetaInfo::initArray() {
     constructor2->classMetaInfo = rec;
     constructor2->modifiers.modifiers.push_back(_PUBLIC);
     constructor2->returnType = DataType::Kind::Class;
-    constructor2->returnType.className = "Object";
+    constructor2->returnType.className = "Any";
     constructor2->name = "<init8>";
     constructor2->jvmName = NameTransformer::encode(constructor2->name);
     constructor2->args = vector<ArgMetaInfo*>();
@@ -2563,7 +2432,7 @@ RtlClassMetaInfo *RtlClassMetaInfo::initArray() {
     equalsArg->name = "other";
     equalsArg->jvmName = NameTransformer::encode(equalsArg->name);
     equalsArg->dataType = DataType::Kind::Class;
-    equalsArg->dataType.className = "Object";
+    equalsArg->dataType.className = "Any";
     equals->args.push_back(equalsArg);
     rec->methods[equals->name].push_back(equals);
 
@@ -2641,7 +2510,7 @@ RtlClassMetaInfo *RtlClassMetaInfo::initArray() {
     isInstanceOfArg->name = "cls";
     isInstanceOfArg->jvmName = NameTransformer::encode(isInstanceOfArg->name);
     isInstanceOfArg->dataType = DataType::Kind::Class;
-    isInstanceOfArg->dataType.className = "Object";
+    isInstanceOfArg->dataType.className = "Any";
     isInstanceOf->args.push_back(isInstanceOfArg);
     rec->methods[isInstanceOf->name].push_back(isInstanceOf);
 
