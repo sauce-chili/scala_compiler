@@ -1,4 +1,5 @@
 #include "FunSigNode.h"
+#include "semantic/tools/datatype.h"
 
 FunSigNode::FunSigNode() {
     fullId = nullptr;
@@ -44,4 +45,19 @@ list<Node *> FunSigNode::getChildren() const {
     addChildIfNotNull(children, fullId);
     addChildIfNotNull(children, params);
     return children;
+}
+
+string FunSigNode::getFuncSignature() const {
+    std::string sigStr = fullId->name + "(";
+    if (params && params->funcParams) {
+        bool first = true;
+        for (auto* paramNode : *params->funcParams) {
+            if (!first) sigStr += ", ";
+            first = false;
+            sigStr += DataType::createFromNode(paramNode->simpleType).toString();
+        }
+    }
+    sigStr += ")";
+
+    return sigStr;
 }
