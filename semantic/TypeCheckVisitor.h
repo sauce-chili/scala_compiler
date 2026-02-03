@@ -53,6 +53,8 @@ private:
 
     void checkAssignment(VarMetaInfo *fieldInfo, const std::string &varName, const DataType &exprType, int line);
 
+    static void validateConstructorExpr(ExprNode* expr, string constructorSignature);
+
 public:
     TypeCheckVisitor() = default;
     void visitTree(TopStatSeqNode* root);

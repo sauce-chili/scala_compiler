@@ -55,6 +55,7 @@ public:
     static SemanticError ClassRedefinition(int line, const std::string& name);
     static SemanticError ConstructorAlreadyExists(int line, const std::string& signature, const std::string& className);
     static SemanticError ConstructorNotFound(int line, const std::string& signature);
+    static SemanticError ConstructorContainsIncorrectInstruction(int line, const std::string& signature, const std::string& instruction);
     static SemanticError ClassNotFound(int line, const std::string& name);
     static SemanticError AbstractClassInstantiated(int line, const std::string& name);
     static SemanticError ClassCanNotBeOverride(int line, const std::string& name);

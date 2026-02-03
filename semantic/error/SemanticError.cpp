@@ -135,6 +135,10 @@ SemanticError SemanticError::ConstructorNotFound(int line, const std::string& si
     return SemanticError(CONSTRUCTOR_NOT_FOUND, line, "Constructor '" + signature + "' not found");
 }
 
+SemanticError SemanticError::ConstructorContainsIncorrectInstruction(int line, const std::string& signature, const std::string& instruction) {
+    return SemanticError(CONSTRUCTOR_CONTAINS_INCORRECT_INSTRUCTION, line, "Constructor '" + signature + "' contains prohibited instruction: " + instruction);
+}
+
 SemanticError SemanticError::ClassNotFound(int line, const std::string& name) {
     return SemanticError(CLASS_NOT_FOUND, line, "Class '" + name + "' not found");
 }
