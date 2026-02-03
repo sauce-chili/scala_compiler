@@ -282,11 +282,10 @@ static void checkMethodOverride(ClassMetaInfo* info, const std::string& name, Me
         }
 
         if (!method->isOverride()) {
-            // К конструкторам нельзя override писать + сигнатуры конструкторов в наследнике и родителе могут полностью совпадать\
-            // Для методов override опускается
-//            ErrorTable::addErrorToList(new SemanticError(
-//                    SemanticError::MethodAlreadyExists(0, name + " (missing 'override' modifier)")
-//            ));
+            // К конструкторам нельзя override писать + сигнатуры конструкторов в наследнике и родителе могут полностью совпадать
+            ErrorTable::addErrorToList(new SemanticError(
+                    SemanticError::MethodAlreadyExists(0, name + " (missing 'override' modifier)")
+            ));
         }
 
         if (!(method->returnType == parentMethod->returnType)) {
