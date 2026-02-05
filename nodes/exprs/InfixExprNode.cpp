@@ -71,17 +71,18 @@ list<Node *> InfixExprNode::getChildren() const {
 DataType InfixExprNode::inferType(
     ClassMetaInfo *currentClass,
     MethodMetaInfo *currentMethod,
-    Scope *currentScope
+    Scope *currentScope,
+    int parentsConsider
 ) const {
     // Имеется преобразование инфиксных вызов в классический вызов метода: a + b -> a.+(b)
     if (prefixExpr && !left && !right) {
-        return prefixExpr->inferType(currentClass, currentMethod, currentScope);
+        return prefixExpr->inferType(currentClass, currentMethod, currentScope, parentsConsider);
     }
 
     // Бинарная операция (не должна остаться после трансформации, но на всякий случай)
     if (left && right && fullId) {
-        DataType leftType = left->inferType(currentClass, currentMethod, currentScope);
-        DataType rightType = right->inferType(currentClass, currentMethod, currentScope);
+        DataType leftType = left->inferType(currentClass, currentMethod, currentScope, parentsConsider);
+        DataType rightType = right->inferType(currentClass, currentMethod, currentScope, parentsConsider);
 
         std::string methodName = fullId->name;
 

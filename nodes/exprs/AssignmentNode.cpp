@@ -110,7 +110,8 @@ list<Node *> AssignmentNode::getChildren() const {
 DataType AssignmentNode::inferType(
     ClassMetaInfo* currentClass,
     MethodMetaInfo* currentMethod,
-    Scope* currentScope
+    Scope* currentScope,
+    int parentsConsider
 ) const {
     // всегда Unit
     return DataType::makeUnit();

@@ -11,6 +11,8 @@ class ClassMetaInfo;
 class MethodMetaInfo;
 class Scope;
 
+constexpr int PARENTS_CONSIDER = 99999;
+
 /**
  * @brief Интерфейс для всех узлов-выражений в AST.
  *
@@ -41,7 +43,8 @@ public:
     virtual DataType inferType(
         ClassMetaInfo *currentClass,
         MethodMetaInfo *currentMethod,
-        Scope *currentScope
+        Scope *currentScope,
+        int parentsConsider = PARENTS_CONSIDER
     ) const = 0;
 
     virtual ~IExpr() = default;

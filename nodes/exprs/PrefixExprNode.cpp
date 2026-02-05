@@ -49,14 +49,15 @@ list<Node *> PrefixExprNode::getChildren() const {
 DataType PrefixExprNode::inferType(
     ClassMetaInfo* currentClass,
     MethodMetaInfo* currentMethod,
-    Scope* currentScope
+    Scope* currentScope,
+    int parentsConsider
 ) const {
     if (!simpleExpr) {
         throw SemanticError::InternalError(id, "PrefixExprNode without simpleExpr");
     }
 
     // Get the type of the inner expression
-    DataType innerType = simpleExpr->inferType(currentClass, currentMethod, currentScope);
+    DataType innerType = simpleExpr->inferType(currentClass, currentMethod, currentScope, parentsConsider);
 
     // No unary operator - just return the type
     if (type == _NO_UNARY_OPERATOR) {

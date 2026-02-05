@@ -227,7 +227,8 @@ optional<FieldMetaInfo *> ClassMetaInfo::resolveField(const string& fieldName,
 optional<MethodMetaInfo *> ClassMetaInfo::resolveMethod(const string& methodName,
                                                         const vector<DataType *>& argTypes,
                                                         const ClassMetaInfo* accessFrom,
-                                                        bool lookupPrivate) {
+                                                        bool lookupPrivate,
+                                                        int leftParents) {
     // Ищем метод в текущем классе
     if (methods.find(methodName) != methods.end()) {
         vector<MethodMetaInfo *> methodsSignature = methods.at(methodName);
@@ -265,8 +266,8 @@ optional<MethodMetaInfo *> ClassMetaInfo::resolveMethod(const string& methodName
     }
 
     // Ищем у родителя
-    if (parent) {
-        return parent->resolveMethod(methodName, argTypes, accessFrom, lookupPrivate);
+    if (parent && leftParents > 0) {
+        return parent->resolveMethod(methodName, argTypes, accessFrom, lookupPrivate, leftParents--);
     }
 
     return nullopt;

@@ -26,7 +26,8 @@ public:
     std::vector<DataType*> getArgsTypes(
         ClassMetaInfo* currentClass,
         MethodMetaInfo* currentMethod,
-        Scope* currentScope
+        Scope* currentScope,
+        int parentsConsider = PARENTS_CONSIDER
     ) const;
 
     string toDot() const override;

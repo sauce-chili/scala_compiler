@@ -224,7 +224,8 @@ list<Node *> SimpleExpr1Node::getChildren() const {
 DataType SimpleExpr1Node::inferType(
     ClassMetaInfo *currentClass,
     MethodMetaInfo *currentMethod,
-    Scope *currentScope
+    Scope *currentScope,
+    int parentsConsider
 ) const {
     switch (type) {
         case _INTEGER_LITERAL:
@@ -291,7 +292,7 @@ DataType SimpleExpr1Node::inferType(
 
         case _EXPRESSION_FIELD_ACCESS:
             if (simpleExpr && identifier) {
-                DataType receiverType = simpleExpr->inferType(currentClass, currentMethod, currentScope);
+                DataType receiverType = simpleExpr->inferType(currentClass, currentMethod, currentScope, parentsConsider);
                 std::string fieldName = identifier->name;
 
                 std::string className = receiverType.getClassName();
@@ -317,12 +318,12 @@ DataType SimpleExpr1Node::inferType(
                 return DataType::makeUnit();
             }
 
-            auto argTypes = argumentExprs->getArgsTypes(currentClass, currentMethod, currentScope);
+            auto argTypes = argumentExprs->getArgsTypes(currentClass, currentMethod, currentScope, parentsConsider);
             SimpleExpr1Node *callee = simpleExpr1;
 
             if (callee->type == _EXPRESSION_FIELD_ACCESS && callee->identifier) {
                 std::string name = callee->identifier->name;
-                DataType objType = callee->simpleExpr->inferType(currentClass, currentMethod, currentScope);
+                DataType objType = callee->simpleExpr->inferType(currentClass, currentMethod, currentScope, parentsConsider);
 
                 std::string className = objType.getClassName();
                 auto classIt = ctx().classes.find(className);
@@ -345,7 +346,7 @@ DataType SimpleExpr1Node::inferType(
                     }
 
                     // иначе это вызов метода: obj.method(args)
-                    auto methodOpt = objClass->resolveMethod(name, argTypes, currentClass);
+                    auto methodOpt = objClass->resolveMethod(name, argTypes, currentClass, false, parentsConsider);
                     if (methodOpt.has_value()) {
                         DataType returnType = methodOpt.value()->returnType;
                         for (auto *t: argTypes) delete t;
@@ -403,9 +404,12 @@ DataType SimpleExpr1Node::inferType(
                 if (currentClass) {
                     optional<MethodMetaInfo *> methodOpt;
                     if (name == "super") {
-                        methodOpt = currentClass->parent->resolveMethod(CONSTRUCTOR_NAME, argTypes, currentClass);
+                        methodOpt = currentClass->parent->resolveMethod(CONSTRUCTOR_NAME, argTypes, currentClass, false, parentsConsider);
                     } else {
-                        methodOpt = currentClass->resolveMethod(name, argTypes, currentClass);
+                        if (currentMethod->name == CONSTRUCTOR_NAME) {
+                            int resolveOnlyInCurrentClass = 0;
+                            methodOpt = currentClass->resolveMethod(name, argTypes, currentClass, false, resolveOnlyInCurrentClass);
+                        }
                     }
                     if (methodOpt.has_value()) {
                         DataType returnType = methodOpt.value()->returnType;
@@ -471,7 +475,7 @@ DataType SimpleExpr1Node::inferType(
                 throw SemanticError::InternalError(id, "Super method call without parent");
             } else if (callee->type == _METHOD_CALL) {
                 // цепочка вызовов: a(0)(1) для многомерных массивов или a.b().c()
-                DataType calleeType = callee->inferType(currentClass, currentMethod, currentScope);
+                DataType calleeType = callee->inferType(currentClass, currentMethod, currentScope, parentsConsider);
 
                 // если результат предыдущего вызова — массив, это обращение к элементу
                 if (calleeType.kind == DataType::Kind::Array) {
@@ -512,7 +516,7 @@ DataType SimpleExpr1Node::inferType(
 
             // Проверяем, что все аргументы совместимы с указанным типом
             if (argumentExprs) {
-                auto argTypes = argumentExprs->getArgsTypes(currentClass, currentMethod, currentScope);
+                auto argTypes = argumentExprs->getArgsTypes(currentClass, currentMethod, currentScope, parentsConsider);
                 for (size_t i = 0; i < argTypes.size(); ++i) {
                     if (!argTypes[i]->isAssignableTo(declaredElemType)) {
                         std::string argTypeStr = argTypes[i]->toString();
@@ -529,7 +533,7 @@ DataType SimpleExpr1Node::inferType(
         case _ARRAY_BUILDER: {
             // Array(elem1, elem2, ...) - тип элемента выводится из аргументов
 
-            auto argTypes = argumentExprs->getArgsTypes(currentClass, currentMethod, currentScope);
+            auto argTypes = argumentExprs->getArgsTypes(currentClass, currentMethod, currentScope, parentsConsider);
             if (argTypes.empty()) {
                 for (auto* t : argTypes) delete t;
                 return DataType::makeArray(DataType(DataType::Kind::Any));
@@ -554,7 +558,7 @@ DataType SimpleExpr1Node::inferType(
 
         case _PARENTHESIZED_EXPR:
             if (expr) {
-                return expr->inferType(currentClass, currentMethod, currentScope);
+                return expr->inferType(currentClass, currentMethod, currentScope, parentsConsider);
             }
             throw SemanticError::InternalError(id, "SimpleExpr1Node _PARENTHESIZED_EXPR without expr");
 
