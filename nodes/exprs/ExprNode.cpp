@@ -258,3 +258,7 @@ DataType ExprNode::inferType(
             throw SemanticError::InternalError(id, "Unknown ExprNode type");
     }
 }
+
+bool ExprNode::isReturnExpr() const {
+    return type == _RETURN_EMPTY || type == _RETURN_EXPR;
+}

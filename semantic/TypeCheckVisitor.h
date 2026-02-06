@@ -7,6 +7,7 @@
 #define SCALA_LEXER_TYPECHECKVISITOR_H
 
 #include <optional>
+#include <map>
 #include "nodes/Node.h"
 #include "semantic/SemanticContext.h"
 #include "semantic/scopes/Scope.h"
@@ -53,7 +54,11 @@ private:
 
     void checkAssignment(VarMetaInfo *fieldInfo, const std::string &varName, const DataType &exprType, int line);
 
-    static void validateConstructorExpr(ExprNode* expr, string constructorSignature);
+    static void validateConstructorExpr(Node* expr, string constructorSignature);
+
+    void validateFunDefReturnType(FunDefNode *node);
+    map<ExprNode*, DataType> getAllReturnExprsTypes(FunDefNode* node) const;
+    map<ExprNode*, DataType> collectReturns(map<ExprNode*, DataType> exprsTypes, Node* node) const;
 
 public:
     TypeCheckVisitor() = default;

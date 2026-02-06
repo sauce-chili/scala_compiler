@@ -46,6 +46,8 @@ public:
         int parentsConsider = PARENTS_CONSIDER
     ) const override;
 
+    bool isReturnExpr() const;
+
     string toDot() const override;
     string getDotLabel() const override;
     list<Node *> getChildren() const override;
