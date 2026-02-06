@@ -78,8 +78,6 @@ void TypeCheckVisitor::visitFunDef(FunDefNode *node) {
     std::string methodName;
     std::vector<DataType *> argTypes;
 
-    bool currentNodeIsConstructor = node->isConstructor() && node->funSig->params;
-
     if (node->funSig && node->funSig->fullId && !node->isConstructor()) {
         methodName = node->funSig->fullId->name;
 
@@ -89,13 +87,15 @@ void TypeCheckVisitor::visitFunDef(FunDefNode *node) {
                 argTypes.push_back(argType);
             }
         }
-    } else if (currentNodeIsConstructor) {
+    } else if (node->isConstructor()) {
         // methodName = currentClass->name; // THIS
 
         methodName = node->funSig->fullId->name;
-        for (auto *paramNode: *node->funSig->params->funcParams) {
-            DataType *argType = new DataType(DataType::createFromNode(paramNode->simpleType));
-            argTypes.push_back(argType);
+        if (node->funSig->params) {
+            for (auto *paramNode: *node->funSig->params->funcParams) {
+                DataType *argType = new DataType(DataType::createFromNode(paramNode->simpleType));
+                argTypes.push_back(argType);
+            }
         }
 
         if (node->constrExpr && node->constrExpr->blockStats) {

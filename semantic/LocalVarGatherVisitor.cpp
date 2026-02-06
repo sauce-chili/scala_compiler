@@ -112,13 +112,7 @@ void LocalVarGatherVisitor::visitFunDef(FunDefNode* node) {
     }
 
     // передаём currentClass как accessFrom для доступа к приватным методам
-    optional<MethodMetaInfo *> methodOpt;
-    if (node->isConstructor()) {
-        int currentClassConsiderOnly = 0;
-        methodOpt = currentClass->resolveMethod(methodName, argTypes, currentClass, currentClassConsiderOnly);
-    } else {
-        methodOpt = currentClass->resolveMethod(methodName, argTypes, currentClass);
-    }
+    optional<MethodMetaInfo *> methodOpt = currentClass->resolveMethod(methodName, argTypes, currentClass);
 
     for (const auto* t : argTypes) delete t;
 

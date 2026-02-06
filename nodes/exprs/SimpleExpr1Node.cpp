@@ -346,7 +346,7 @@ DataType SimpleExpr1Node::inferType(
                     }
 
                     // иначе это вызов метода: obj.method(args)
-                    auto methodOpt = objClass->resolveMethod(name, argTypes, currentClass, false, parentsConsider);
+                    auto methodOpt = objClass->resolveMethod(name, argTypes, currentClass, parentsConsider);
                     if (methodOpt.has_value()) {
                         DataType returnType = methodOpt.value()->returnType;
                         for (auto *t: argTypes) delete t;
@@ -404,11 +404,11 @@ DataType SimpleExpr1Node::inferType(
                 if (currentClass) {
                     optional<MethodMetaInfo *> methodOpt;
                     if (name == "super") {
-                        methodOpt = currentClass->parent->resolveMethod(CONSTRUCTOR_NAME, argTypes, currentClass, false, parentsConsider);
+                        methodOpt = currentClass->parent->resolveMethod(CONSTRUCTOR_NAME, argTypes, currentClass, parentsConsider);
                     } else {
                         if (currentMethod->name == CONSTRUCTOR_NAME) {
                             int resolveOnlyInCurrentClass = 0;
-                            methodOpt = currentClass->resolveMethod(name, argTypes, currentClass, false, resolveOnlyInCurrentClass);
+                            methodOpt = currentClass->resolveMethod(name, argTypes, currentClass, resolveOnlyInCurrentClass);
                         }
                     }
                     if (methodOpt.has_value()) {
@@ -432,7 +432,7 @@ DataType SimpleExpr1Node::inferType(
             } else if (callee->type == _THIS_FIELD_ACCESS && callee->identifier) {
                 std::string methodName = callee->identifier->name;
                 if (currentClass) {
-                    auto methodOpt = currentClass->resolveMethod(methodName, argTypes, currentClass);
+                    auto methodOpt = currentClass->resolveMethod(methodName, argTypes, currentClass, parentsConsider);
                     if (methodOpt.has_value()) {
                         DataType returnType = methodOpt.value()->returnType;
                         for (auto *t: argTypes) delete t;

@@ -279,8 +279,8 @@ public:
         const string &methodName,
         const vector<DataType *> &argTypes,
         const ClassMetaInfo *accessFrom,
-        bool lookupPrivate = false,
-        int leftParents = 1 // Глубина. Нужна, чтобы ограничить количество предков, по которым идет поиск. 0 - ищем только в переданном классе
+        int leftParents = PARENTS_CONSIDER, // Глубина. Нужна, чтобы ограничить количество предков, по которым идет поиск. 0 - ищем только в переданном классе
+        bool lookupPrivate = false
     );
 
     string jvmDescriptor() {
