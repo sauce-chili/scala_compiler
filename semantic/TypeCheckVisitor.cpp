@@ -113,8 +113,6 @@ void TypeCheckVisitor::visitFunDef(FunDefNode *node) {
 
     if (!methodOpt.has_value()) return;
 
-    validateFunDefReturnType(node);
-
     MethodMetaInfo *prevMethod = currentMethod;
     Scope *prevScope = currentScope;
 
@@ -123,6 +121,8 @@ void TypeCheckVisitor::visitFunDef(FunDefNode *node) {
 
     if (node->expr) visit(node->expr);
     if (node->constrExpr) visit(node->constrExpr);
+
+    validateFunDefReturnType(node);
 
     currentMethod = prevMethod;
     currentScope = prevScope;
