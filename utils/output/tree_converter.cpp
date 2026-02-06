@@ -385,7 +385,7 @@ private:
                 }
                 break;
 
-            case _FOR_WITHOUT_YIELD:
+            case _FOR:
                 out << "for (";
                 if (node->enumerators) {
                     generateEnumerators(node->enumerators);

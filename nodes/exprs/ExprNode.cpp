@@ -82,15 +82,7 @@ ExprNode *ExprNode::createReturnExpr(ExprNode *expr) {
 
 ExprNode *ExprNode::createFor(EnumeratorsNode *enumerators, ExprNode *expr) {
     ExprNode *node = new ExprNode();
-    node->type = _FOR_WITHOUT_YIELD;
-    node->exprs->push_back(expr);
-    node->enumerators = enumerators;
-    return node;
-}
-
-ExprNode *ExprNode::createForYield(EnumeratorsNode *enumerators, ExprNode *expr) {
-    ExprNode *node = new ExprNode();
-    node->type = _FOR_WITH_YIELD;
+    node->type = _FOR;
     node->exprs->push_back(expr);
     node->enumerators = enumerators;
     return node;
@@ -162,8 +154,7 @@ list<Node *> ExprNode::getChildren() const {
     list<Node *> children = {};
 
     switch (type) {
-        case _FOR_WITHOUT_YIELD:
-        case _FOR_WITH_YIELD:
+        case _FOR:
             addChildIfNotNull(children, enumerators);
             if (exprs) {
                 for (auto *e: *exprs) addChildIfNotNull(children, e);
@@ -251,7 +242,7 @@ DataType ExprNode::inferType(
         case _IF:
         case _WHILE:
         case _DO_WHILE:
-        case _FOR_WITHOUT_YIELD:
+        case _FOR:
             return DataType::makeUnit();
 
         case _RETURN_EXPR:
@@ -266,4 +257,8 @@ DataType ExprNode::inferType(
         default:
             throw SemanticError::InternalError(id, "Unknown ExprNode type");
     }
+}
+
+bool ExprNode::isReturnExpr() const {
+    return type == _RETURN_EMPTY || type == _RETURN_EXPR;
 }

@@ -22,8 +22,7 @@ enum ExprType {
     _THROW = 12,
     _RETURN_EMPTY = 13,
     _RETURN_EXPR = 14,
-    _FOR_WITHOUT_YIELD = 15,
-    _FOR_WITH_YIELD = 16,
+    _FOR = 15,
     _INFIX = 17,
     _ASSIGNMENT = 18,
 };

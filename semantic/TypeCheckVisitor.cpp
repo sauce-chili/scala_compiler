@@ -122,27 +122,118 @@ void TypeCheckVisitor::visitFunDef(FunDefNode *node) {
     if (node->expr) visit(node->expr);
     if (node->constrExpr) visit(node->constrExpr);
 
+    validateFunDefReturnType(node);
+
     currentMethod = prevMethod;
     currentScope = prevScope;
 }
 
-void TypeCheckVisitor::validateConstructorExpr(ExprNode* expr, string constructorSignature) {
-    if (!expr) return;
+void TypeCheckVisitor::validateFunDefReturnType(FunDefNode *node) {
+    if (!node) return;
+    if (node->constrExpr || node->primaryConstructor) return;
 
-    if (!expr->exprs->empty()) {
-        for (auto *e: *expr->exprs) {
-            validateConstructorExpr(e, constructorSignature);
+    DataType expectedType = DataType(DataType::createFromNode(node->simpleType));
+
+    map<ExprNode*, DataType> realTypes = getAllReturnExprsTypes(node);
+
+    if (realTypes.empty()) {
+        DataType realType = DataType::Kind::Unit;
+        if (expectedType != realType) {
+            SemanticError *error = new SemanticError(SemanticError::ReturnTypeMismatch(
+                    node->id, // id всей ноды, потому что expra нет
+                    expectedType.toString(),
+                    realType.toString()
+            ));
+            ErrorTable::addErrorToList(error);
         }
-        return;
     }
 
-    if (expr->type == _RETURN_EMPTY || expr->type == _RETURN_EXPR) {
-        SemanticError* error = new SemanticError(SemanticError::ConstructorContainsIncorrectInstruction(
-                expr->id,
-                constructorSignature,
-                expr->getDotLabel()
-        ));
-        ErrorTable::addErrorToList(error);
+    for (auto &pair : realTypes) {
+        ExprNode *currentExpr = pair.first;
+        DataType &realType = pair.second;
+
+        // Если тип метода Unit, то валидируем только явные return
+        if (expectedType == DataType::Kind::Unit && !currentExpr->isReturnExpr()) {
+            continue;
+        }
+
+        if (!realType.isAssignableTo(expectedType)) {
+            SemanticError *error = new SemanticError(SemanticError::ReturnTypeMismatch(
+                    currentExpr->id,
+                    expectedType.toString(),
+                    realType.toString()
+            ));
+            ErrorTable::addErrorToList(error);
+        }
+    }
+}
+
+map<ExprNode*, DataType> TypeCheckVisitor::getAllReturnExprsTypes(FunDefNode* node) const {
+    map<ExprNode*, DataType> exprsTypes;
+
+    if (!node) return exprsTypes;
+
+    exprsTypes = collectReturns(exprsTypes, node);
+
+    ExprNode* lastExprInBlock = nullptr;
+    if (node->expr
+        && node->expr->infixExpr
+        && node->expr->infixExpr->prefixExpr
+        && node->expr->infixExpr->prefixExpr->simpleExpr
+        && node->expr->infixExpr->prefixExpr->simpleExpr->blockStats
+        && !node->expr->infixExpr->prefixExpr->simpleExpr->blockStats->blockStats->empty()
+    ) {
+        lastExprInBlock = node->expr->infixExpr->prefixExpr->simpleExpr->blockStats->blockStats->back()->expr;
+    } else if (node->expr) {
+        lastExprInBlock = node->expr;
+    }
+
+    if (lastExprInBlock && !exprsTypes.contains(lastExprInBlock)) {
+        if (!exprsTypes.contains(lastExprInBlock)) {
+            DataType t = lastExprInBlock->inferType(currentClass, currentMethod, currentScope);
+            exprsTypes.emplace(lastExprInBlock, t);
+        }
+    }
+
+    return exprsTypes;
+}
+
+map<ExprNode*, DataType> TypeCheckVisitor::collectReturns(map<ExprNode*, DataType> exprsTypes, Node* node) const {
+    if (!node) return exprsTypes;
+
+    if (auto currentExpr = dynamic_cast<ExprNode *>(node)) {
+        if (currentExpr->isReturnExpr()) {
+            DataType t = currentExpr->inferType(currentClass, currentMethod, currentScope);
+            exprsTypes.emplace(currentExpr, t);
+        }
+    }
+
+    auto children = node->getChildren();
+    for (Node* child : children) {
+        exprsTypes = collectReturns(exprsTypes, child);
+    }
+
+    return exprsTypes;
+}
+
+void TypeCheckVisitor::validateConstructorExpr(Node* node, string constructorSignature) {
+    if (!node) return;
+
+    if (auto currentExpr = dynamic_cast<ExprNode *>(node)) {
+        if (currentExpr->type == _RETURN_EMPTY || currentExpr->type == _RETURN_EXPR) {
+            SemanticError* error = new SemanticError(SemanticError::ConstructorContainsIncorrectInstruction(
+                    currentExpr->id,
+                    constructorSignature,
+                    currentExpr->getDotLabel()
+            ));
+            ErrorTable::addErrorToList(error);
+            return;
+        }
+    }
+
+    auto children = node->getChildren();
+    for (Node* child : children) {
+        validateConstructorExpr(child, constructorSignature);
     }
 }
 

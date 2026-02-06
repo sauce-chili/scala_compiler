@@ -4,6 +4,7 @@
 #include "../Node.h"
 #include "FunSigNode.h"
 #include "../exprs/ConstrExprNode.h"
+#include <map>
 
 class FunDefNode: public Node {
 public:
@@ -21,6 +22,7 @@ public:
 
     ExprNode* getBody() const;
     optional<FuncParamsNode*> getParams() const;
+    map<Node*, DataType*> getAllReturnExprsTypes() const;
 
     FunDefNode* copy();
 
