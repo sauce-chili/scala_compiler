@@ -56,7 +56,8 @@ public:
     DataType inferType(
         ClassMetaInfo* currentClass,
         MethodMetaInfo* currentMethod,
-        Scope* currentScope
+        Scope* currentScope,
+        int parentsConsider = PARENTS_CONSIDER
     ) const override;
 
     string toDot() const override;

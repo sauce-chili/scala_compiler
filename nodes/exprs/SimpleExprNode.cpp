@@ -103,7 +103,8 @@ static DataType inferBlockStatsType(
     BlockStatsNode* blockStats,
     ClassMetaInfo* currentClass,
     MethodMetaInfo* currentMethod,
-    Scope* currentScope
+    Scope* currentScope,
+    int parentsConsider = PARENTS_CONSIDER
 ) {
     if (!blockStats || !blockStats->blockStats || blockStats->blockStats->empty()) {
         return DataType::makeUnit();
@@ -113,7 +114,7 @@ static DataType inferBlockStatsType(
     BlockStatNode* lastStat = blockStats->blockStats->back();
 
     if (lastStat->expr) {
-        return lastStat->expr->inferType(currentClass, currentMethod, currentScope);
+        return lastStat->expr->inferType(currentClass, currentMethod, currentScope, parentsConsider);
     }
 
     // If last statement is a variable definition, type is Unit
@@ -123,12 +124,13 @@ static DataType inferBlockStatsType(
 DataType SimpleExprNode::inferType(
     ClassMetaInfo* currentClass,
     MethodMetaInfo* currentMethod,
-    Scope* currentScope
+    Scope* currentScope,
+    int parentsConsider
 ) const {
     switch (type) {
         case _SIMPLE_EXPR_1:
             if (simpleExpr1) {
-                return simpleExpr1->inferType(currentClass, currentMethod, currentScope);
+                return simpleExpr1->inferType(currentClass, currentMethod, currentScope, parentsConsider);
             }
             throw SemanticError::InternalError(id, "SimpleExprNode _SIMPLE_EXPR_1 without simpleExpr1");
 
@@ -150,7 +152,7 @@ DataType SimpleExprNode::inferType(
                         throw SemanticError::AbstractClassInstantiated(id, className);
                     }
 
-                    auto argTypes = arguments->getArgsTypes(currentClass, currentMethod, currentScope);
+                    auto argTypes = arguments->getArgsTypes(currentClass, currentMethod, currentScope, parentsConsider);
                     auto constrOpt = classInfo->resolveMethod(className, argTypes, currentClass);
 
                     if (!constrOpt.has_value() && !argTypes.empty()) {
@@ -173,14 +175,27 @@ DataType SimpleExprNode::inferType(
 
         case _ARRAY_CREATING:
             if (simpleType) {
-                DataType elemType = DataType::createFromNode(simpleType);
-                return DataType::makeArray(elemType);
+                DataType elementsType = DataType::createFromNode(simpleType);
+
+                if (arguments) {
+                    auto argTypes = arguments->getArgsTypes(currentClass, currentMethod, currentScope, parentsConsider);
+                    for (size_t i = 0; i < argTypes.size(); ++i) {
+                        if (!argTypes[i]->isAssignableTo(elementsType)) {
+                            std::string argTypeStr = argTypes[i]->toString();
+                            for (auto* t : argTypes) delete t;
+                            throw SemanticError::TypeMismatch(id, elementsType.toString(), argTypeStr);
+                        }
+                    }
+                    for (auto* t : argTypes) delete t;
+                }
+
+                return DataType::makeArray(elementsType);
             }
             throw SemanticError::InternalError(id, "SimpleExprNode _ARRAY_CREATING without simpleType");
 
         case _BLOCK_STATS:
             if (blockStats) {
-                return inferBlockStatsType(blockStats, currentClass, currentMethod, currentScope);
+                return inferBlockStatsType(blockStats, currentClass, currentMethod, currentScope, parentsConsider);
             }
             throw SemanticError::InternalError(id, "SimpleExprNode _BLOCK_STATS without blockStats");
     }

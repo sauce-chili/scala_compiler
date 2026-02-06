@@ -5,6 +5,10 @@
 #include "../Node.h"
 #include "../modifier/ModifiersNode.h"
 #include "../templates/TemplateDefNode.h"
+#include "../class/ClassParamsNode.h"
+
+extern const std::string CONSTRUCTOR_NAME;
+extern const std::string JVM_CONSTRUCTOR_NAME;
 
 class TopStatNode: public Node {
 public:
@@ -15,8 +19,9 @@ public:
     static TopStatNode* createClass(ModifiersNode* modifiers, TemplateDefNode* templateDef);
 
     void toFieldsFromPrimaryConstructor();
-    void initializeBaseConstructorFromFields() const;
+    void initializeBaseConstructor();
     void secondaryConstructorsToMethods();
+    list<BlockStatNode*> initializeVarFromClassParams(ClassParamsNode* classParams);
 
     TopStatNode* copy();
 

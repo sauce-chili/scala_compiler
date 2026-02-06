@@ -209,12 +209,13 @@ list<Node *> ExprNode::getChildren() const {
 DataType ExprNode::inferType(
     ClassMetaInfo* currentClass,
     MethodMetaInfo* currentMethod,
-    Scope* currentScope
+    Scope* currentScope,
+    int parentsConsider
 ) const {
     switch (type) {
         case _INFIX:
             if (infixExpr) {
-                return infixExpr->inferType(currentClass, currentMethod, currentScope);
+                return infixExpr->inferType(currentClass, currentMethod, currentScope, parentsConsider);
             }
             throw SemanticError::InternalError(id, "ExprNode _INFIX without infixExpr");
 
@@ -227,9 +228,9 @@ DataType ExprNode::inferType(
                 auto it = exprs->begin();
                 ++it; // skip condition
 
-                DataType thenType = (*it)->inferType(currentClass, currentMethod, currentScope);
+                DataType thenType = (*it)->inferType(currentClass, currentMethod, currentScope, parentsConsider);
                 ++it;
-                DataType elseType = (*it)->inferType(currentClass, currentMethod, currentScope);
+                DataType elseType = (*it)->inferType(currentClass, currentMethod, currentScope, parentsConsider);
 
                 // Find nearest common ancestor
                 auto commonTypeOpt = DataType::findCommonAncestor(thenType, elseType);
@@ -255,7 +256,7 @@ DataType ExprNode::inferType(
 
         case _RETURN_EXPR:
             if (exprs && !exprs->empty()) {
-                return exprs->front()->inferType(currentClass, currentMethod, currentScope);
+                return exprs->front()->inferType(currentClass, currentMethod, currentScope, parentsConsider);
             }
             return DataType::makeUnit();
 

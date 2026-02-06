@@ -14,6 +14,7 @@ public:
     FunSigNode();
 
     static FunSigNode* createFunSig(IdNode* fullId, FuncParamsNode* params);
+    string getFuncSignature() const;
 
     FunSigNode* copy();
 

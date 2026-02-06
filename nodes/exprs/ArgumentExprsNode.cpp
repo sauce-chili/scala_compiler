@@ -2,6 +2,10 @@
 #include "semantic/tables/tables.hpp"
 #include "semantic/scopes/Scope.h"
 
+ArgumentExprsNode::ArgumentExprsNode() {
+    this->exprs = new ExprsNode();
+}
+
 ArgumentExprsNode::ArgumentExprsNode(ExprsNode* exprs) {
     this->exprs = exprs;
 }
@@ -9,13 +13,14 @@ ArgumentExprsNode::ArgumentExprsNode(ExprsNode* exprs) {
 std::vector<DataType*> ArgumentExprsNode::getArgsTypes(
     ClassMetaInfo* currentClass,
     MethodMetaInfo* currentMethod,
-    Scope* currentScope
+    Scope* currentScope,
+    int parentsConsider
 ) const {
     std::vector<DataType*> result;
 
     if (exprs && exprs->exprs) {
         for (ExprNode* expr : *exprs->exprs) {
-            DataType exprType = expr->inferType(currentClass, currentMethod, currentScope);
+            DataType exprType = expr->inferType(currentClass, currentMethod, currentScope, parentsConsider);
             result.push_back(new DataType(exprType));
         }
     }

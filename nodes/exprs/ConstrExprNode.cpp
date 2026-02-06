@@ -12,7 +12,7 @@ ConstrExprNode *ConstrExprNode::createConstrExpr(ArgumentExprsNode *argumentExpr
             SimpleExpr1Node::createIdNode(IdNode::createId("this")),
             argumentExprs
             ));
-    blockStats->blockStats->push_front(blockStat);
+    blockStats = BlockStatsNode::addBlockStatFrontToList(blockStats, blockStat);
     node->blockStats = blockStats;
     node->isBlock = isBlock;
     return node;

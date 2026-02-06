@@ -629,6 +629,10 @@ private:
             generateSimpleExpr(node->simpleExpr);
         }
 
+        if (node->fullId) {
+            out << node->fullId->name;
+        }
+
         out << " = ";
 
         if (node->expr) {

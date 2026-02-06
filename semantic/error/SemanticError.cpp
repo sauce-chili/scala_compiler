@@ -36,8 +36,8 @@ SemanticError SemanticError::FinalFieldOverride(int line, const std::string& nam
     return SemanticError(FINAL_FIELD_OVERRIDE, line, "Cannot override final field '" + name + "'");
 }
 
-SemanticError SemanticError::AbstractFieldNotOverride(int line, const std::string& name) {
-    return SemanticError(ABSTRACT_FIELD_NOT_OVERRIDEN, line, "Abstract field '" + name + "' must be overridden");
+SemanticError SemanticError::AbstractFieldNotOverride(int line, const std::string& error) {
+    return SemanticError(ABSTRACT_FIELD_NOT_OVERRIDEN, line, error);
 }
 
 SemanticError SemanticError::VarNotInitialized(int line, const std::string& name) {
@@ -127,12 +127,16 @@ SemanticError SemanticError::ClassRedefinition(int line, const std::string& name
     return SemanticError(CLASS_REDEFINITION, line, "Class '" + name + "' is already defined");
 }
 
-SemanticError SemanticError::ConstructorAlreadyExists(int line, const std::string& signature) {
-    return SemanticError(CONSTRUCTOR_ALREADY_EXISTS, line, "Constructor '" + signature + "' already exists");
+SemanticError SemanticError::ConstructorAlreadyExists(int line, const std::string& signature, const std::string& className) {
+    return SemanticError(CONSTRUCTOR_ALREADY_EXISTS, line, "Constructor '" + signature + "' of class '" + className + "' already exists");
 }
 
 SemanticError SemanticError::ConstructorNotFound(int line, const std::string& signature) {
     return SemanticError(CONSTRUCTOR_NOT_FOUND, line, "Constructor '" + signature + "' not found");
+}
+
+SemanticError SemanticError::ConstructorContainsIncorrectInstruction(int line, const std::string& signature, const std::string& instruction) {
+    return SemanticError(CONSTRUCTOR_CONTAINS_INCORRECT_INSTRUCTION, line, "Constructor '" + signature + "' contains prohibited instruction: " + instruction);
 }
 
 SemanticError SemanticError::ClassNotFound(int line, const std::string& name) {
@@ -208,8 +212,8 @@ SemanticError SemanticError::MainMethodNotDefined(int line) {
     return SemanticError(MAIN_METHOD_NOT_DEFINED, line, "Main method is not defined");
 }
 
-SemanticError SemanticError::AbstractMethodNotImplemented(int line, const std::string &name) {
-    return SemanticError(ABSTRACT_METHOD_NOT_IMPLEMENTED, line, "Main method '" + name + "' is not defined");
+SemanticError SemanticError::AbstractMethodNotImplemented(int line, const std::string &error) {
+    return SemanticError(ABSTRACT_METHOD_NOT_IMPLEMENTED, line, error);
 }
 
 SemanticError SemanticError::InternalError(int line, const std::string& message) {

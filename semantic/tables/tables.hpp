@@ -21,6 +21,8 @@
 extern const std::string CONSTRUCTOR_NAME;
 // Имя конструктора в JVM байткоде
 extern const std::string JVM_CONSTRUCTOR_NAME;
+// Имя базового класса Scala
+extern const std::string BASE_SCALA_CLASS;
 
 class Scope;
 class FunDefNode;
@@ -75,8 +77,8 @@ public:
           jvmName(NameTransformer::encode(name)),
           dataType(type),
           value(value),
-          isInit(true),
-          isVal(val) {
+          isVal(val),
+          isInit(false) {
     };
 
     VarMetaInfo() : isVal(true) {
@@ -168,6 +170,7 @@ public:
 
     virtual optional<LocalVarMetaInfo *> addLocalVar(VarDefsNode *varDefsNode, Scope *scope);
     virtual optional<LocalVarMetaInfo *> addGeneratorVar(GeneratorNode *generatorNode, Scope *scope);
+    virtual optional<LocalVarMetaInfo *> executeAssign(AssignmentNode *assignNode, Scope* scope);
 };
 
 class ClassMetaInfo : public BytesMetaInfo, public JvmDescriptorOwner {
@@ -276,6 +279,7 @@ public:
         const string &methodName,
         const vector<DataType *> &argTypes,
         const ClassMetaInfo *accessFrom,
+        int leftParents = PARENTS_CONSIDER, // Глубина. Нужна, чтобы ограничить количество предков, по которым идет поиск. 0 - ищем только в переданном классе
         bool lookupPrivate = false
     );
 
@@ -302,7 +306,6 @@ public:
 class RtlClassMetaInfo : public ClassMetaInfo {
 public:
     static RtlClassMetaInfo* Any;
-    static RtlClassMetaInfo* Object;
     static RtlClassMetaInfo* String;
     static RtlClassMetaInfo* Integer;
     static RtlClassMetaInfo* StdIn;
@@ -339,7 +342,6 @@ public:
 
 private:
     static RtlClassMetaInfo* initAny();
-    static RtlClassMetaInfo* initObject();
     static RtlClassMetaInfo* initString();
     static RtlClassMetaInfo* initInteger();
     static RtlClassMetaInfo* initStdIn();

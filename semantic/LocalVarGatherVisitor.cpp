@@ -99,7 +99,7 @@ void LocalVarGatherVisitor::visitFunDef(FunDefNode* node) {
             }
         }
     } else if (node->isConstructor()) {
-        // Вторичный конструктор // TODO или как this?
+        // Вторичный конструктор
         methodName = CONSTRUCTOR_NAME;
         if (node->funcParams && node->funcParams->funcParams) {
             for (auto *paramNode: *node->funcParams->funcParams) {
@@ -112,7 +112,7 @@ void LocalVarGatherVisitor::visitFunDef(FunDefNode* node) {
     }
 
     // передаём currentClass как accessFrom для доступа к приватным методам
-    auto methodOpt = currentClass->resolveMethod(methodName, argTypes, currentClass);
+    optional<MethodMetaInfo *> methodOpt = currentClass->resolveMethod(methodName, argTypes, currentClass);
 
     for (const auto* t : argTypes) delete t;
 

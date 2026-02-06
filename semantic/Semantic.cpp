@@ -20,17 +20,19 @@ void normalizeInfixes(Node* node);
 void transformInfixes(Node* node);
 void transformLiterals(Node* node);
 
+ClassDefNode* currentClassTemplate;
+
 void TopStatSeqNode::convertAst() {
     for (TopStatNode* tsn: *(topStats)) {
         if (!tsn) continue;
         if (!tsn->tmplDef) continue;
         if (!tsn->tmplDef->classDef) continue;
 
-        tsn->tmplDef->classDef->normalizeBody();
-        tsn->tmplDef->classDef->validatePrimaryConstructorModifiers();
         tsn->tmplDef->validateModifiers();
+        tsn->tmplDef->toExtendsAny();
+        tsn->tmplDef->classDef->normalizeBody();
         tsn->toFieldsFromPrimaryConstructor();
-        tsn->initializeBaseConstructorFromFields();
+        tsn->initializeBaseConstructor();
         tsn->secondaryConstructorsToMethods();
         normalizeInfixes(tsn);
         transformInfixes(tsn);
@@ -43,6 +45,23 @@ void ClassDefNode::normalizeBody() const {
         classTemplateOpt->templateStats = classTemplateOpt->extensionPartClassTemplate->templateStats;
         classTemplateOpt->extensionPartClassTemplate->templateStats = nullptr;
     }
+}
+
+void TemplateDefNode::toExtendsAny() {
+    if (!classDef || !classDef->classTemplateOpt) {
+        return;
+    }
+
+    if (classDef->classTemplateOpt->extensionPartClassTemplate) {
+        return;
+    }
+
+    classDef->classTemplateOpt->extensionPartClassTemplate = ExtensionClassTemplateNode::createExtendWithBody(
+            IdNode::createId(BASE_SCALA_CLASS),
+            classDef->classTemplateOpt->templateStats
+    );
+
+    classDef->classTemplateOpt->templateStats = nullptr;
 }
 
 void TopStatNode::toFieldsFromPrimaryConstructor() {
@@ -82,7 +101,7 @@ void TopStatNode::toFieldsFromPrimaryConstructor() {
     }
 }
 
-void TopStatNode::initializeBaseConstructorFromFields() const {
+void TopStatNode::initializeBaseConstructor() {
     if (!tmplDef) return;
     if (!tmplDef->classDef) return;
 
@@ -97,7 +116,7 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
 
     // Сущность конструктора
     TemplateStatNode *baseConstructor = new TemplateStatNode();
-    // Вызов родительского конструктора (будет всегда, как минимум Object)
+    // Вызов родительского конструктора (будет всегда, как минимум Any)
     BlockStatNode *superCall;
     SimpleExpr1Node* superConstructorName = SimpleExpr1Node::createIdNode(IdNode::createId("super"));
     if (currentClass->classTemplateOpt->extensionPartClassTemplate && currentClass->classTemplateOpt->extensionPartClassTemplate->argumentExprs) {
@@ -116,6 +135,7 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
     // Поля класса
     BlockStatsNode *blockStats = BlockStatsNode::addBlockStatToList(nullptr, nullptr);
     BlockStatsNode::addBlockStatToList(blockStats, superCall);
+    blockStats->blockStats->splice(blockStats->blockStats->end(), initializeVarFromClassParams(currentClass->classParams));
     for (TemplateStatNode* p: *(currentClass->classTemplateOpt->templateStats->templateStats)) {
         if (!p) continue;
         if (p->dcl) continue;
@@ -129,11 +149,26 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
                         )
                 )
         );
-        p->def->varDefs->expr = nullptr;
+
+        if (p->def->varDefs->type == _VAR_DECL) {
+            p->dcl = DclNode::createVarDcl(
+                p->def->varDefs->fullId->copy(),
+                p->def->varDefs->simpleType->copy()
+            );
+            p->dcl->modifiers = p->def->modifiers;
+        } else if (p->def->varDefs->type == _VAL_DECL) {
+            p->dcl = DclNode::createValDcl(
+                p->def->varDefs->fullId->copy(),
+                p->def->varDefs->simpleType->copy()
+            );
+            p->dcl->modifiers = p->def->modifiers;
+        }
+
         BlockStatsNode::addBlockStatToList(blockStats, stat);
+        p->def = nullptr;
     }
 
-    FunSigNode *primaryConstrSignature = FunSigNode::createFunSig(IdNode::createId("this"), new FuncParamsNode(currentClass->classParams->copy()));
+    FunSigNode *primaryConstrSignature = FunSigNode::createFunSig(IdNode::createId(CONSTRUCTOR_NAME), new FuncParamsNode(currentClass->classParams->copy()));
     // Конструкторы не имеют явного типа возврата в Scala
     FunDefNode *primaryConstructorNode = FunDefNode::createFunSigFunDef(
             primaryConstrSignature,
@@ -147,8 +182,48 @@ void TopStatNode::initializeBaseConstructorFromFields() const {
     currentClass->classParams = nullptr;
 }
 
+list<BlockStatNode*> TopStatNode::initializeVarFromClassParams(ClassParamsNode* classParams) {
+    list<BlockStatNode*> topStatsParams = list<BlockStatNode*>();
+
+    if (!classParams) return topStatsParams;
+
+    for (ClassParamNode* cp: *(classParams->classParams)) {
+        AssignmentNode* assignment = AssignmentNode::createFieldAssignment(
+                SimpleExprNode::createSimpleExpr1Node(
+                        SimpleExpr1Node::createSimpleExprFieldAccessNode(
+                                cp->fullId->copy(),
+                                SimpleExprNode::createSimpleExpr1Node(
+                                    SimpleExpr1Node::createPlainThisNode()
+                                )
+                        )
+                ),
+                nullptr,
+                ExprNode::createInfix(InfixExprNode::createInfixFromPrefix(
+                        PrefixExprNode::createPrefixExprNode(
+                                SimpleExprNode::createSimpleExpr1Node(
+                                        SimpleExpr1Node::createIdNode(cp->fullId->copy())
+                                        ),
+                                _NO_UNARY_OPERATOR
+                                )
+                        )
+                )
+        );
+
+        topStatsParams.push_back(BlockStatNode::createExprNode(
+                    ExprNode::createAssignment(assignment)
+                )
+        );
+    }
+
+    return topStatsParams;
+}
+
 void TemplateDefNode::validateModifiers() const {
     validateClassModifiers();
+    currentClassTemplate = this->classDef;
+    if (classDef) {
+        classDef->validatePrimaryConstructorModifiers();
+    }
     if (classDef && classDef->classTemplateOpt && classDef->classTemplateOpt->templateStats) {
         classDef->classTemplateOpt->templateStats->validateModifiers();
     }
@@ -220,6 +295,10 @@ void TemplateStatNode::validateVarModifiers() const {
                 throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type) + " to var");
             }
 
+            if (!currentClassTemplate->classTemplateOpt || !currentClassTemplate->classTemplateOpt->extensionPartClassTemplate) {
+                throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type));
+            }
+
             if (overrided) {
                 throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type) + " " + modifierToString(m->type));
             }
@@ -262,6 +341,9 @@ void TemplateStatNode::validateMethodModifiers() const {
             if (overrided) {
                 throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type) + " " + modifierToString(m->type));
             }
+            if (!currentClassTemplate->classTemplateOpt || !currentClassTemplate->classTemplateOpt->extensionPartClassTemplate) {
+                throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type));
+            }
             overrided = true;
         }
     }
@@ -284,10 +366,10 @@ void ClassDefNode::validatePrimaryConstructorParametersModifiers() const {
         return;
     }
 
-    string prevAccess;
-    string prevInherit;
-    bool overrided = false;
     for (ClassParamNode* cp: *classParams->classParams) {
+        string prevAccess;
+        string prevInherit;
+        bool overrided = false;
         for (ModifierNode *m: *cp->modifiers->modifiers) {
             if (m->isAccessModifier()) {
                 if (!prevAccess.empty()) {
@@ -306,7 +388,9 @@ void ClassDefNode::validatePrimaryConstructorParametersModifiers() const {
                 if (cp && cp->type == _VAR_CLASS_PARAM) {
                     throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type) + " to var");
                 }
-
+                if (!currentClassTemplate->classTemplateOpt || !currentClassTemplate->classTemplateOpt->extensionPartClassTemplate) {
+                    throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type));
+                }
                 if (overrided) {
                     throw SemanticError::InvalidCombinationOfModifiers(0, modifierToString(m->type) + " " + modifierToString(m->type));
                 }

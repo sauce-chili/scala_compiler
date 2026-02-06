@@ -78,7 +78,7 @@ void TypeCheckVisitor::visitFunDef(FunDefNode *node) {
     std::string methodName;
     std::vector<DataType *> argTypes;
 
-    if (node->funSig && node->funSig->fullId) {
+    if (node->funSig && node->funSig->fullId && !node->isConstructor()) {
         methodName = node->funSig->fullId->name;
 
         if (node->funSig->params && node->funSig->params->funcParams) {
@@ -87,12 +87,20 @@ void TypeCheckVisitor::visitFunDef(FunDefNode *node) {
                 argTypes.push_back(argType);
             }
         }
-    } else if (node->isConstructor() && node->funcParams) {
-        methodName = currentClass->name;
-        if (node->funcParams->funcParams) {
-            for (auto *paramNode: *node->funcParams->funcParams) {
+    } else if (node->isConstructor()) {
+        // methodName = currentClass->name; // THIS
+
+        methodName = node->funSig->fullId->name;
+        if (node->funSig->params) {
+            for (auto *paramNode: *node->funSig->params->funcParams) {
                 DataType *argType = new DataType(DataType::createFromNode(paramNode->simpleType));
                 argTypes.push_back(argType);
+            }
+        }
+
+        if (node->constrExpr && node->constrExpr->blockStats) {
+            for (auto *bs: *node->constrExpr->blockStats->blockStats) {
+                validateConstructorExpr(bs->expr, node->funSig->getFuncSignature());
             }
         }
     } else {
@@ -116,6 +124,26 @@ void TypeCheckVisitor::visitFunDef(FunDefNode *node) {
 
     currentMethod = prevMethod;
     currentScope = prevScope;
+}
+
+void TypeCheckVisitor::validateConstructorExpr(ExprNode* expr, string constructorSignature) {
+    if (!expr) return;
+
+    if (!expr->exprs->empty()) {
+        for (auto *e: *expr->exprs) {
+            validateConstructorExpr(e, constructorSignature);
+        }
+        return;
+    }
+
+    if (expr->type == _RETURN_EMPTY || expr->type == _RETURN_EXPR) {
+        SemanticError* error = new SemanticError(SemanticError::ConstructorContainsIncorrectInstruction(
+                expr->id,
+                constructorSignature,
+                expr->getDotLabel()
+        ));
+        ErrorTable::addErrorToList(error);
+    }
 }
 
 void TypeCheckVisitor::visitBlockStats(BlockStatsNode *node) {
@@ -227,6 +255,19 @@ void TypeCheckVisitor::visitExpr(ExprNode *node) {
     visit(node);
 }
 
+void TypeCheckVisitor::checkAssignment(
+        VarMetaInfo *fieldInfo,
+        const std::string &varName,
+        const DataType &exprType,
+        int line) {
+
+    if (fieldInfo->isInit || !currentMethod->isPrimaryConstructor) {
+        checkNotVal(fieldInfo->isVal, varName, line);
+    }
+    checkAssignmentCompatibility(fieldInfo->dataType, exprType, line,
+                                 "Assignment to field '" + varName + "'");
+}
+
 void TypeCheckVisitor::visitAssignment(AssignmentNode *node) {
     if (!node || !currentMethod) return;
 
@@ -241,16 +282,12 @@ void TypeCheckVisitor::visitAssignment(AssignmentNode *node) {
             auto localOpt = currentMethod->resolveLocal(varName, currentScope);
             if (localOpt.has_value()) {
                 MethodVarMetaInfo *varInfo = localOpt.value();
-                checkNotVal(varInfo->isVal, varName, line);
-                checkAssignmentCompatibility(varInfo->dataType, exprType, line,
-                                             "Assignment to variable '" + varName + "'");
+                checkAssignment(varInfo, varName, exprType, line);
             } else {
                 auto fieldOpt = currentClass->resolveField(varName, currentClass);
                 if (fieldOpt.has_value()) {
                     FieldMetaInfo *fieldInfo = fieldOpt.value();
-                    checkNotVal(fieldInfo->isVal, varName, line);
-                    checkAssignmentCompatibility(fieldInfo->dataType, exprType, line,
-                                                 "Assignment to field '" + varName + "'");
+                    checkAssignment(fieldInfo, varName, exprType, line);
                 } else {
                     ErrorTable::addErrorToList(new SemanticError(
                         SemanticError::UndefinedVar(line, varName)
@@ -276,9 +313,7 @@ void TypeCheckVisitor::visitAssignment(AssignmentNode *node) {
 
                     if (fieldOpt.has_value()) {
                         FieldMetaInfo *fieldInfo = fieldOpt.value();
-                        checkNotVal(fieldInfo->isVal, fieldName, line);
-                        checkAssignmentCompatibility(fieldInfo->dataType, exprType, line,
-                                                     "Assignment to field '" + fieldName + "'");
+                        checkAssignment(fieldInfo, fieldName, exprType, line);
                     } else {
                         ErrorTable::addErrorToList(new SemanticError(
                             SemanticError::UndefinedVar(line, fieldName)
@@ -319,6 +354,8 @@ void TypeCheckVisitor::visitAssignment(AssignmentNode *node) {
             ErrorTable::addErrorToList(new SemanticError(err));
         }
     }
+
+    currentMethod->executeAssign(node, currentScope);
 }
 
 void TypeCheckVisitor::visitForExpression(ExprNode *node) {
@@ -329,11 +366,19 @@ void TypeCheckVisitor::visitForExpression(ExprNode *node) {
 
     if (node->enumerators->generator && node->enumerators->generator->expr) {
         try {
+            // Выводит тип элементов (если есть элементы несовместимых типов - кидается ошибка)
             DataType iterableType = node->enumerators->generator->expr->inferType(
                 currentClass, currentMethod, currentScope);
             if (iterableType.kind != DataType::Kind::Array) {
                 ErrorTable::addErrorToList(new SemanticError(
                     SemanticError::ForLoopNotArray(node->id, iterableType.toString())
+                ));
+            }
+            DataType* arrayElementType = iterableType.elementType;
+            DataType generatorVarDeclaredType = DataType::createFromNode(node->enumerators->generator->simpleType);
+            if (!arrayElementType->isAssignableTo(generatorVarDeclaredType)) {
+                ErrorTable::addErrorToList(new SemanticError(
+                        SemanticError::TypeMismatch(node->id, generatorVarDeclaredType.toString(), arrayElementType->toString())
                 ));
             }
         } catch (const SemanticError &err) {
@@ -364,7 +409,7 @@ void TypeCheckVisitor::checkAssignmentCompatibility(const DataType &targetType,
 }
 
 void TypeCheckVisitor::checkNotVal(bool isVal, const std::string& varName, int line) {
-    if (isVal && !currentMethod->isPrimaryConstructor) {
+    if (isVal) {
         ErrorTable::addErrorToList(new SemanticError(
             SemanticError::ValReassignment(line, varName)
         ));

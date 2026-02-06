@@ -103,16 +103,7 @@ void ClassMemberGatherVisitor::visitDef(DefNode* node) {
             int line = node->funDef->funSig->fullId->id;
             std::string methodName = node->funDef->funSig->fullId->name;
             // Build signature string with argument types
-            std::string sigStr = methodName + "(";
-            if (node->funDef->funSig->params && node->funDef->funSig->params->funcParams) {
-                bool first = true;
-                for (auto* paramNode : *node->funDef->funSig->params->funcParams) {
-                    if (!first) sigStr += ", ";
-                    first = false;
-                    sigStr += DataType::createFromNode(paramNode->simpleType).toString();
-                }
-            }
-            sigStr += ")";
+            std::string sigStr = node->funDef->funSig->getFuncSignature();
             ErrorTable::addErrorToList(new SemanticError(
                 SemanticError::MethodAlreadyExists(line, sigStr)
             ));

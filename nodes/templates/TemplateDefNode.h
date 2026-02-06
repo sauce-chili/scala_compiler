@@ -3,11 +3,13 @@
 
 #include "../Node.h"
 #include "../modifier/ModifiersNode.h"
+#include "semantic/tables/tables.hpp"
 
 class ClassDefNode;
 class ClassTemplateOptNode;
 class IdNode;
 
+extern const std::string BASE_SCALA_CLASS;
 
 class TemplateDefNode: public Node {
 public:
@@ -26,6 +28,7 @@ public:
     TemplateDefNode* setModifiers(ModifiersNode* modifiers);
     ModifiersNode * getModifiers() const;
     void validateModifiers() const;
+    void toExtendsAny();
 
     list<Node *> getChildren() const override;
 
