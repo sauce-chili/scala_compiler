@@ -171,7 +171,7 @@ whitespace [ \t\f\u000B]
      }
 
 \"                     { literal = ""; BEGIN(STRING); }
-<STRING>[^\\\n\"]+     { literal.append(yytext); };
+<STRING>[^\\\n\r\"]+     { literal.append(yytext); };
 <STRING,CHARACTER>\\n  { literal.append("\n"); }
 <STRING,CHARACTER>\\\\ { literal.append("\\"); }
 <STRING,CHARACTER>\\b  { literal.append("\b"); }
@@ -192,8 +192,8 @@ whitespace [ \t\f\u000B]
     BEGIN(INITIAL);
     return processor.onStringLiteral(literal);
 }
-<STRING,CHARACTER>\n {
-    std::cerr << "error: newline inside literal\n" << std::endl;
+<STRING,CHARACTER>\n\r {
+    std::cerr << "error: newline inside literal at line " << real_lineno << ", literal so far: [" << literal << "]" << std::endl;
     BEGIN(INITIAL);
 }
 <STRING><<EOF>> {
@@ -202,8 +202,9 @@ whitespace [ \t\f\u000B]
 }
 
 \' { literal = ""; BEGIN(CHARACTER); }
-<CHARACTER>[^\'\\\n]+ { literal.append(yytext); }
+<CHARACTER>[^\'\\\n\r]+ { literal.append(yytext); }
 <CHARACTER>\' {
+    BEGIN(INITIAL);
     if(literal.length() == 0){
         std::cerr << "error: empty character\n" << std::endl;
     } else if (literal.length() == 1){
@@ -211,7 +212,6 @@ whitespace [ \t\f\u000B]
     } else {
         std::cerr << "\nerror: more than one character in string literal: " << literal << std::endl;
     }
-    BEGIN(INITIAL);
 }
 <CHARACTER><<EOF>> {
     std::cerr << "error: no end of character\n" << std::endl;
