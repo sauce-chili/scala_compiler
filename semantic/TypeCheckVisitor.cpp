@@ -126,23 +126,24 @@ void TypeCheckVisitor::visitFunDef(FunDefNode *node) {
     currentScope = prevScope;
 }
 
-void TypeCheckVisitor::validateConstructorExpr(ExprNode* expr, string constructorSignature) {
-    if (!expr) return;
+void TypeCheckVisitor::validateConstructorExpr(Node* node, string constructorSignature) {
+    if (!node) return;
 
-    if (!expr->exprs->empty()) {
-        for (auto *e: *expr->exprs) {
-            validateConstructorExpr(e, constructorSignature);
+    if (auto currentExpr = dynamic_cast<ExprNode *>(node)) {
+        if (currentExpr->type == _RETURN_EMPTY || currentExpr->type == _RETURN_EXPR) {
+            SemanticError* error = new SemanticError(SemanticError::ConstructorContainsIncorrectInstruction(
+                    currentExpr->id,
+                    constructorSignature,
+                    currentExpr->getDotLabel()
+            ));
+            ErrorTable::addErrorToList(error);
+            return;
         }
-        return;
     }
 
-    if (expr->type == _RETURN_EMPTY || expr->type == _RETURN_EXPR) {
-        SemanticError* error = new SemanticError(SemanticError::ConstructorContainsIncorrectInstruction(
-                expr->id,
-                constructorSignature,
-                expr->getDotLabel()
-        ));
-        ErrorTable::addErrorToList(error);
+    auto children = node->getChildren();
+    for (Node* child : children) {
+        validateConstructorExpr(child, constructorSignature);
     }
 }
 
