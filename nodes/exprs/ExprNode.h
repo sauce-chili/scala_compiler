@@ -31,7 +31,6 @@ public:
     static ExprNode* createReturn();
     static ExprNode* createReturnExpr(ExprNode* expr);
     static ExprNode* createFor(EnumeratorsNode* enumerators, ExprNode* expr);
-    static ExprNode* createForYield(EnumeratorsNode* enumerators, ExprNode* expr);
     static ExprNode* createInfix(InfixExprNode* infixExpr);
     static ExprNode* createAssignment(AssignmentNode* assignment);
     static ExprNode* createFromBlockStats(BlockStatsNode* blockStats);

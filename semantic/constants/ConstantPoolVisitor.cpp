@@ -224,8 +224,7 @@ void ConstantPoolVisitor::visitExpr(ExprNode* node) {
         case _IF_ELSE:
         case _WHILE:
         case _DO_WHILE:
-        case _FOR_WITHOUT_YIELD:
-        case _FOR_WITH_YIELD:
+        case _FOR:
         case _RETURN_EXPR:
             // Обходим вложенные выражения
             if (node->exprs) {

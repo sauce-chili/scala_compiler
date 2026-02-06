@@ -120,8 +120,7 @@ std::string exprTypeToString(ExprType t) {
         case _THROW:             return "Throw";
         case _RETURN_EMPTY:      return "Return";
         case _RETURN_EXPR:       return "Return expr";
-        case _FOR_WITHOUT_YIELD: return "For";
-        case _FOR_WITH_YIELD:    return "For Yield";
+        case _FOR:               return "For";
         case _INFIX:             return "Infix";
         case _ASSIGNMENT:        return "Assignment";
 
