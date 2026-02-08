@@ -60,6 +60,7 @@ public:
     static SemanticError AbstractClassInstantiated(int line, const std::string& name);
     static SemanticError ClassCanNotBeOverride(int line, const std::string& name);
     static SemanticError MainClassNotDefined(int line);
+    static SemanticError MultipleMainClasses(int line, const std::string& classes);
 
     // ===== Методы =====
     static SemanticError FinalMethodOverride(int line, const std::string& name);

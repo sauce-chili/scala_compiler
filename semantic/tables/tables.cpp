@@ -520,6 +520,7 @@ RtlClassMetaInfo *RtlClassMetaInfo::initAny() {
     string className = "Any";
 
     RtlClassMetaInfo* rec = new RtlClassMetaInfo(className, _SCALA);
+    rec->jvmName = "java/lang/Object";  // Any maps to java.lang.Object in JVM
 
     rec->parent = nullptr;
 
@@ -590,6 +591,7 @@ RtlClassMetaInfo* RtlClassMetaInfo::initString() {
     string className = "String";
 
     RtlClassMetaInfo* rec = new RtlClassMetaInfo(className, _JAVA);
+    rec->jvmName = "rtl/String";
 
     rec->parent = Any;
 
@@ -758,6 +760,7 @@ RtlClassMetaInfo* RtlClassMetaInfo::initInteger() {
     string className = "Int";
 
     RtlClassMetaInfo* rec = new RtlClassMetaInfo(className, _JAVA);
+    rec->jvmName = "rtl/Int";
 
     rec->parent = Any;
 
@@ -1201,6 +1204,7 @@ RtlClassMetaInfo* RtlClassMetaInfo::initStdIn() {
     string className = "StdIn";
 
     RtlClassMetaInfo* rec = new RtlClassMetaInfo(className, _SCALA);
+    rec->jvmName = "rtl/StdIn";
 
     rec->parent = Any;
 
@@ -1293,6 +1297,7 @@ RtlClassMetaInfo* RtlClassMetaInfo::initUnit() {
     string className = "Unit";
 
     RtlClassMetaInfo* rec = new RtlClassMetaInfo(className, _JAVA);
+    rec->jvmName = "rtl/Unit";
 
     rec->parent = Any;
 
@@ -1360,6 +1365,7 @@ RtlClassMetaInfo* RtlClassMetaInfo::initChar() {
     string className = "Char";
 
     RtlClassMetaInfo* rec = new RtlClassMetaInfo(className, _JAVA);
+    rec->jvmName = "rtl/Char";
 
     rec->parent = Any;
 
@@ -1459,6 +1465,7 @@ RtlClassMetaInfo* RtlClassMetaInfo::initDouble() {
     string className = "Double";
 
     RtlClassMetaInfo* rec = new RtlClassMetaInfo(className, _JAVA);
+    rec->jvmName = "rtl/Double";
 
     rec->parent = Any;
 
@@ -1847,6 +1854,7 @@ RtlClassMetaInfo* RtlClassMetaInfo::initBoolean() {
     string className = "Boolean";
 
     RtlClassMetaInfo* rec = new RtlClassMetaInfo(className, _JAVA);
+    rec->jvmName = "rtl/Boolean";
 
     rec->parent = Any;
 
@@ -2068,6 +2076,7 @@ RtlClassMetaInfo *RtlClassMetaInfo::initPredef() {
     string className = "Predef";
 
     RtlClassMetaInfo* rec = new RtlClassMetaInfo(className, _SCALA);
+    rec->jvmName = "rtl/Predef";
 
     rec->parent = Any;
 
@@ -2154,6 +2163,7 @@ RtlClassMetaInfo *RtlClassMetaInfo::initArray() {
     string className = "Array";
 
     RtlClassMetaInfo* rec = new RtlClassMetaInfo(className, _JAVA);
+    rec->jvmName = "rtl/Array";
 
     rec->parent = Any;
 

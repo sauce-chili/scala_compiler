@@ -6,6 +6,7 @@
 #define SCALA_LEXER_SEMANTICANALYZER_H
 
 #include <string>
+#include <optional>
 
 class TopStatSeqNode;
 
@@ -20,6 +21,23 @@ class SemanticAnalyzer {
 public:
     bool analyze(TopStatSeqNode* root);
     void exportContext(const std::string& basePath);
+
+    /**
+     * Compile the AST to a JAR file
+     *
+     * Performs semantic analysis, generates .class files for all user classes,
+     * and packages them into a JAR file.
+     *
+     * @param root The root of the AST
+     * @param outputDir Directory for .class files and output JAR
+     * @param rtlJarPath Path to the RTL jar file (for Class-Path in manifest)
+     * @return Path to the created JAR file, or std::nullopt on failure
+     */
+    std::optional<std::string> compile(
+        TopStatSeqNode* root,
+        const std::string& outputDir = "out_jar",
+        const std::string& rtlJarPath = "rtl.jar"
+    );
 
     SemanticAnalyzer();
 };

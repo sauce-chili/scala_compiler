@@ -155,6 +155,10 @@ SemanticError SemanticError::MainClassNotDefined(int line) {
     return SemanticError(MAIN_CLASS_NOT_DEFINED, line, "Main class is not defined");
 }
 
+SemanticError SemanticError::MultipleMainClasses(int line, const std::string& classes) {
+    return SemanticError(MULTIPLE_MAIN_CLASSES, line, "Multiple main classes found: " + classes);
+}
+
 // ------------------------------------------ Методы ------------------------------------------
 SemanticError SemanticError::FinalMethodOverride(int line, const std::string& name) {
     return SemanticError(FINAL_METHOD_OVERRIDE, line, "Cannot override final method '" + name + "'");

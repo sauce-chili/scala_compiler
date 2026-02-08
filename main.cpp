@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdio>
 #include <string>
+#include <cstring>
 
 #include "nodes/stats/TopStatSeqNode.h"
 #include "semantic/SemanticAnalyzer.h"
@@ -33,13 +34,20 @@ void yyerror(TopStatSeqNode **out_root, const char *s) {
 }
 
 void print_help(const char *prog_name) {
-    std::cout << "Usage: " << prog_name << " <filename>\n";
-    std::cout << "Environment variables:\n";
+    std::cout << "Usage: " << prog_name << " [options] <filename>\n";
+    std::cout << "\nOptions:\n";
+    std::cout << "  --compile-only    Compile to JAR without running\n";
+    std::cout << "  --run             Compile and run the JAR (default)\n";
+    std::cout << "  --analyze-only    Only perform semantic analysis (no codegen)\n";
+    std::cout << "  --rtl-jar <path>  Path to RTL jar file (default: rtl.jar)\n";
+    std::cout << "  --output <dir>    Output directory for JAR (default: out_jar)\n";
+    std::cout << "\nEnvironment variables:\n";
     std::cout << "  SCALA_MODE  : 'lexer' (only tokens) or 'parser' (default)\n";
     std::cout << "  SCALA_DEBUG : '1' to enable verbose debug output\n";
 }
 
-int runCompile(TopStatSeqNode *root);
+int runCompile(TopStatSeqNode *root, bool runAfterCompile, bool analyzeOnly,
+               const std::string& rtlJarPath, const std::string& outputDir);
 
 int main(int argc, char **argv) {
     if (argc < 2) {
@@ -47,10 +55,40 @@ int main(int argc, char **argv) {
         return -1;
     }
 
+    // Parse command line arguments
+    bool compileOnly = false;
+    bool runAfterCompile = true;
+    bool analyzeOnly = false;
+    std::string rtlJarPath = "rtl.jar";
+    std::string outputDir = "out_jar";
+    std::string inputFile;
+
+    for (int i = 1; i < argc; i++) {
+        if (std::strcmp(argv[i], "--compile-only") == 0) {
+            compileOnly = true;
+            runAfterCompile = false;
+        } else if (std::strcmp(argv[i], "--run") == 0) {
+            runAfterCompile = true;
+        } else if (std::strcmp(argv[i], "--analyze-only") == 0) {
+            analyzeOnly = true;
+        } else if (std::strcmp(argv[i], "--rtl-jar") == 0 && i + 1 < argc) {
+            rtlJarPath = argv[++i];
+        } else if (std::strcmp(argv[i], "--output") == 0 && i + 1 < argc) {
+            outputDir = argv[++i];
+        } else if (argv[i][0] != '-') {
+            inputFile = argv[i];
+        }
+    }
+
+    if (inputFile.empty()) {
+        print_help(argv[0]);
+        return -1;
+    }
+
     // 1. Открываем файл
-    FILE *input_file = fopen(argv[1], "r");
+    FILE *input_file = fopen(inputFile.c_str(), "r");
     if (!input_file) {
-        std::cerr << "Cannot open file: " << argv[1] << std::endl;
+        std::cerr << "Cannot open file: " << inputFile << std::endl;
         return -1;
     }
     real_in = input_file;
@@ -94,9 +132,11 @@ int main(int argc, char **argv) {
             } else {
                 std::cout << "AST Root not created at address: " << root << std::endl;
             }
-            runCompile(root);
+            return runCompile(root, runAfterCompile, analyzeOnly, rtlJarPath, outputDir);
         } else {
             std::cerr << "Parsing failed." << std::endl;
+            fclose(input_file);
+            return 1;
         }
     }
 
@@ -105,8 +145,10 @@ int main(int argc, char **argv) {
 }
 
 
-int runCompile(TopStatSeqNode *root) {
+int runCompile(TopStatSeqNode *root, bool runAfterCompile, bool analyzeOnly,
+               const std::string& rtlJarPath, const std::string& outputDir) {
     SemanticAnalyzer analyzer;
+
     try {
         root->convertAst();
         createDotTree(root, "after_transform.txt");
@@ -114,6 +156,30 @@ int runCompile(TopStatSeqNode *root) {
         std::cerr << e.getErrorMessage() << std::endl;
         return 1;
     }
-    analyzer.analyze(root);
+
+    if (analyzeOnly) {
+        if (analyzer.analyze(root)) {
+            std::cout << "Semantic analysis completed successfully." << std::endl;
+            return 0;
+        }
+        return 1;
+    }
+    auto jarPathOpt = analyzer.compile(root, outputDir, rtlJarPath);
+
+    if (!jarPathOpt.has_value()) {
+        std::cerr << "Compilation failed." << std::endl;
+        return 1;
+    }
+
+    std::string jarPath = jarPathOpt.value();
+    std::cout << "Compilation successful: " << jarPath << std::endl;
+
+    if (runAfterCompile) {
+        std::cout << "Running JAR..." << std::endl;
+        std::string cmd = "java -jar \"" + jarPath + "\"";
+        int exitCode = std::system(cmd.c_str());
+        return exitCode;
+    }
+
     return 0;
 }

@@ -22,6 +22,11 @@ public:
     unordered_map<string, ClassMetaInfo *> classes;
 
     /**
+     * Main-класс программы (final класс с main(Array[String]): Unit, без родителя и наследников)
+     */
+    ClassMetaInfo* mainClass = nullptr;
+
+    /**
      * Возвращает созданный класс, если такого нет
      */
     optional<ClassMetaInfo *> addClass(ClassDefNode *classDefNode);

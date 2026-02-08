@@ -16,6 +16,8 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "utils/logger.h"
+
 void normalizeInfixes(Node* node);
 void transformInfixes(Node* node);
 void transformLiterals(Node* node);
@@ -519,7 +521,7 @@ void InfixExprNode::transformInfixOperationToMethodCall() {
     right->transformInfixOperationToMethodCall();
     left->transformInfixOperationToMethodCall();
 
-    std::cout << "start " + to_string((iter++)) + "\n";
+    // debug("start " + to_string((iter++)));
 
     prefixExpr = new PrefixExprNode();
     prefixExpr->type = left->prefixExpr ? left->prefixExpr->type : _NO_UNARY_OPERATOR;
@@ -548,7 +550,7 @@ void InfixExprNode::transformInfixOperationToMethodCall() {
     right = nullptr;
     fullId = nullptr;
 
-    std::cout << "end\n";
+    // debug("end");
 }
 
 void transformLiterals(Node* node) {

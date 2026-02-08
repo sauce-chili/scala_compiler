@@ -10,6 +10,7 @@
 #include "semantic/scopes/Scope.h"
 #include "semantic/error/ErrorTable.h"
 #include "semantic/error/SemanticError.h"
+#include "semantic/tools/NameTransformer.h"
 #include "utils/logger.h"
 
 SimpleExpr1Node::SimpleExpr1Node() {
@@ -270,39 +271,67 @@ DataType SimpleExpr1Node::inferType(
 
         case _THIS_FIELD_ACCESS:
             if (identifier && currentClass) {
-                std::string fieldName = identifier->name;
-                auto fieldOpt = currentClass->resolveField(fieldName, currentClass);
+                std::string memberName = identifier->name;
+
+                // First try to resolve as field
+                auto fieldOpt = currentClass->resolveField(memberName, currentClass);
                 if (fieldOpt.has_value()) {
                     return fieldOpt.value()->dataType;
                 }
-                throw SemanticError::UndefinedVar(identifier->id, fieldName);
+                throw SemanticError::UndefinedVar(identifier->id, memberName);
             }
             throw SemanticError::InternalError(id, "SimpleExpr1Node _THIS_FIELD_ACCESS invalid state");
 
         case _SUPER_FIELD_ACCESS:
             if (identifier && currentClass && currentClass->parent) {
-                std::string fieldName = identifier->name;
-                auto fieldOpt = currentClass->parent->resolveField(fieldName, currentClass);
+                std::string memberName = identifier->name;
+
+                // First try to resolve as field
+                auto fieldOpt = currentClass->parent->resolveField(memberName, currentClass);
                 if (fieldOpt.has_value()) {
                     return fieldOpt.value()->dataType;
                 }
-                throw SemanticError::UndefinedVar(identifier->id, fieldName);
+                throw SemanticError::UndefinedVar(identifier->id, memberName);
             }
             throw SemanticError::InternalError(id, "SimpleExpr1Node _SUPER_FIELD_ACCESS invalid state");
 
         case _EXPRESSION_FIELD_ACCESS:
             if (simpleExpr && identifier) {
-                DataType receiverType = simpleExpr->inferType(currentClass, currentMethod, currentScope, parentsConsider);
-                std::string fieldName = identifier->name;
+                DataType receiverType = simpleExpr->inferType(currentClass, currentMethod, currentScope,
+                                                              parentsConsider);
+                std::string memberName = identifier->name;
+                // Encode operator names (e.g., "*" -> "$times")
+                std::string encodedName = NameTransformer::encode(memberName);
 
                 std::string className = receiverType.getClassName();
                 auto classIt = ctx().classes.find(className);
                 if (classIt != ctx().classes.end()) {
-                    auto fieldOpt = classIt->second->resolveField(fieldName, currentClass);
+                    ClassMetaInfo *targetClass = classIt->second;
+
+                    // First try to resolve as field (with original name)
+                    auto fieldOpt = targetClass->resolveField(memberName, currentClass);
                     if (fieldOpt.has_value()) {
                         return fieldOpt.value()->dataType;
                     }
-                    throw SemanticError::UndefinedVar(identifier->id, fieldName);
+
+                    // If not a field, try to resolve as a no-arg method
+                    std::vector<DataType *> emptyArgs;
+
+                    // Try original name first
+                    auto methodOpt = targetClass->resolveMethod(memberName, emptyArgs, currentClass);
+                    if (methodOpt.has_value()) {
+                        return methodOpt.value()->returnType;
+                    }
+
+                    // Try encoded name (for operators like * -> $times)
+                    if (encodedName != memberName) {
+                        methodOpt = targetClass->resolveMethod(encodedName, emptyArgs, currentClass);
+                        if (methodOpt.has_value()) {
+                            return methodOpt.value()->returnType;
+                        }
+                    }
+
+                    throw SemanticError::UndefinedVar(identifier->id, memberName);
                 }
                 throw SemanticError::UndefinedClass(id, className);
             }
@@ -323,7 +352,8 @@ DataType SimpleExpr1Node::inferType(
 
             if (callee->type == _EXPRESSION_FIELD_ACCESS && callee->identifier) {
                 std::string name = callee->identifier->name;
-                DataType objType = callee->simpleExpr->inferType(currentClass, currentMethod, currentScope, parentsConsider);
+                DataType objType = callee->simpleExpr->inferType(currentClass, currentMethod, currentScope,
+                                                                 parentsConsider);
 
                 std::string className = objType.getClassName();
                 auto classIt = ctx().classes.find(className);
@@ -404,12 +434,14 @@ DataType SimpleExpr1Node::inferType(
                 if (currentClass) {
                     optional<MethodMetaInfo *> methodOpt;
                     if (name == "super") {
-                        methodOpt = currentClass->parent->resolveMethod(CONSTRUCTOR_NAME, argTypes, currentClass, parentsConsider);
+                        methodOpt = currentClass->parent->resolveMethod(CONSTRUCTOR_NAME, argTypes, currentClass,
+                                                                        parentsConsider);
+                    } else if (name == CONSTRUCTOR_NAME && currentMethod != nullptr && currentMethod->name == CONSTRUCTOR_NAME) {
+                        int resolveOnlyInCurrentClass = 0;
+                        methodOpt = currentClass->
+                                resolveMethod(name, argTypes, currentClass, resolveOnlyInCurrentClass);
                     } else {
-                        if (currentMethod->name == CONSTRUCTOR_NAME) {
-                            int resolveOnlyInCurrentClass = 0;
-                            methodOpt = currentClass->resolveMethod(name, argTypes, currentClass, resolveOnlyInCurrentClass);
-                        }
+                        methodOpt = currentClass->resolveMethod(name, argTypes, currentClass, parentsConsider);
                     }
                     if (methodOpt.has_value()) {
                         DataType returnType = methodOpt.value()->returnType;
@@ -520,11 +552,11 @@ DataType SimpleExpr1Node::inferType(
                 for (size_t i = 0; i < argTypes.size(); ++i) {
                     if (!argTypes[i]->isAssignableTo(declaredElemType)) {
                         std::string argTypeStr = argTypes[i]->toString();
-                        for (auto* t : argTypes) delete t;
+                        for (auto *t: argTypes) delete t;
                         throw SemanticError::TypeMismatch(id, declaredElemType.toString(), argTypeStr);
                     }
                 }
-                for (auto* t : argTypes) delete t;
+                for (auto *t: argTypes) delete t;
             }
 
             return DataType::makeArray(declaredElemType);
@@ -535,7 +567,7 @@ DataType SimpleExpr1Node::inferType(
 
             auto argTypes = argumentExprs->getArgsTypes(currentClass, currentMethod, currentScope, parentsConsider);
             if (argTypes.empty()) {
-                for (auto* t : argTypes) delete t;
+                for (auto *t: argTypes) delete t;
                 return DataType::makeArray(DataType(DataType::Kind::Any));
             }
 
@@ -546,13 +578,13 @@ DataType SimpleExpr1Node::inferType(
                 if (!lcaOpt.has_value()) {
                     std::string type1 = commonType.toString();
                     std::string type2 = argTypes[i]->toString();
-                    for (auto* t : argTypes) delete t;
+                    for (auto *t: argTypes) delete t;
                     throw SemanticError::IncompatibleArrayElementTypes(id, type1, type2);
                 }
                 commonType = lcaOpt.value();
             }
 
-            for (auto* t : argTypes) delete t;
+            for (auto *t: argTypes) delete t;
             return DataType::makeArray(commonType);
         }
 

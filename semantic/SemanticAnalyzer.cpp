@@ -20,6 +20,8 @@
 #include "tables/tables.hpp"
 #include "utils/output/dot.cpp"
 #include "utils/output/tree_converter.cpp"
+#include "codegen/ClassFileWriter.h"
+#include "codegen/JarWriter.h"
 
 namespace fs = std::filesystem;
 
@@ -353,8 +355,8 @@ bool SemanticAnalyzer::analyze(TopStatSeqNode *root) {
     // Проверяем что абстрактные поля переопределены
     validateAbstractFields();
 
-    // 9. Проверяем наличие main метода
-    // validateMainMethod();
+    // Проверяем наличие main класса и сохраняем в контекст
+    validateMainMethod();
 
     if (!ErrorTable::errors.empty()) {
         std::cerr << "Semantic errors after validation:" << std::endl << ErrorTable::getErrors() << std::endl;
@@ -490,47 +492,85 @@ void SemanticAnalyzer::validateAbstractFields() {
     }
 }
 
-// TODO возврщать список классов-кандидатов
-void SemanticAnalyzer::validateMainMethod() {
-    int mainCount = 0;
-    ClassMetaInfo* mainClass = nullptr;
+/**
+ * Проверяет, есть ли у класса наследники
+ */
+static bool hasChildren(ClassMetaInfo* classInfo) {
+    for (auto& [name, info] : ctx().classes) {
+        if (info->isRTL()) continue;
+        if (info->parent == classInfo) {
+            return true;
+        }
+    }
+    return false;
+}
 
-    for (auto& [className, classInfo] : ctx().classes) {
-        // Пропускаем RTL классы
-        if (classInfo->isRTL()) continue;
+/**
+ * Проверяет, имеет ли класс метод main(Array[String]): Unit
+ */
+static bool hasMainMethod(ClassMetaInfo* classInfo) {
+    auto mainIt = classInfo->methods.find("main");
+    if (mainIt == classInfo->methods.end()) {
+        return false;
+    }
 
-        // main должен быть в final классе без параметров конструктора
-        if (!classInfo->isFinal()) continue;
-
-        // Ищем метод main(Array[String]): Unit
-        auto mainIt = classInfo->methods.find("main");
-        if (mainIt != classInfo->methods.end()) {
-            for (auto* method : mainIt->second) {
-                // Проверяем сигнатуру: один аргумент Array[String], возврат Unit
-                if (method->args.size() == 1) {
-                    DataType& argType = method->args[0]->dataType;
-                    if (argType.kind == DataType::Kind::Array) {
-                        DataType* elemType = argType.elementType;
-                        if (elemType && elemType->kind == DataType::Kind::String) {
-                            if (method->returnType.kind == DataType::Kind::Unit) {
-                                mainCount++;
-                                mainClass = classInfo;
-                            }
-                        }
+    for (auto* method : mainIt->second) {
+        // Проверяем сигнатуру: один аргумент Array[String], возврат Unit
+        if (method->args.size() == 1) {
+            DataType& argType = method->args[0]->dataType;
+            if (argType.kind == DataType::Kind::Array) {
+                DataType* elemType = argType.elementType;
+                if (elemType && elemType->kind == DataType::Kind::String) {
+                    if (method->returnType.kind == DataType::Kind::Unit) {
+                        return true;
                     }
                 }
             }
         }
     }
+    return false;
+}
 
-    if (mainCount == 0) {
+void SemanticAnalyzer::validateMainMethod() {
+    std::vector<ClassMetaInfo*> mainCandidates;
+
+    for (auto& [className, classInfo] : ctx().classes) {
+        // Пропускаем RTL классы
+        if (classInfo->isRTL()) continue;
+
+        // Критерий 1: класс должен быть final
+        if (!classInfo->isFinal()) continue;
+
+        // Критерий 2: у класса не должно быть родителя
+        // if (classInfo->parent != nullptr) continue;
+
+        // Критерий 3: у класса не должно быть наследников
+        if (hasChildren(classInfo)) continue;
+
+        // Критерий 4: класс должен иметь метод main(Array[String]): Unit
+        if (!hasMainMethod(classInfo)) continue;
+
+        mainCandidates.push_back(classInfo);
+    }
+
+    if (mainCandidates.empty()) {
         ErrorTable::addErrorToList(new SemanticError(
-            SemanticError::MainMethodNotDefined(0)
+            SemanticError::MainClassNotDefined(0)
         ));
-    } else if (mainCount > 1) {
+    } else if (mainCandidates.size() > 1) {
+        std::string classList;
+        for (size_t i = 0; i < mainCandidates.size(); ++i) {
+            classList += mainCandidates[i]->name;
+            if (i < mainCandidates.size() - 1) {
+                classList += ", ";
+            }
+        }
         ErrorTable::addErrorToList(new SemanticError(
-            SemanticError::MethodAlreadyExists(0, "Multiple main methods found")
+            SemanticError::MultipleMainClasses(0, classList)
         ));
+    } else {
+        // Ровно один main-класс — сохраняем в контекст
+        ctx().mainClass = mainCandidates[0];
     }
 }
 
@@ -604,4 +644,55 @@ void SemanticAnalyzer::validateAbstractMethods() {
             }
         }
     }
+}
+
+std::optional<std::string> SemanticAnalyzer::compile(
+    TopStatSeqNode* root,
+    const std::string& outputDir,
+    const std::string& rtlJarPath
+) {
+    // 1. Perform semantic analysis
+    if (!analyze(root)) {
+        return std::nullopt;
+    }
+
+    // 2. Check that main class was found
+    if (!ctx().mainClass) {
+        std::cerr << "No main class found" << std::endl;
+        return std::nullopt;
+    }
+
+    // 3. Create output directory
+    fs::path outPath(outputDir);
+    if (!fs::exists(outPath)) {
+        fs::create_directories(outPath);
+    }
+
+    // 4. Generate .class files for each user class
+    for (auto& [className, classInfo] : ctx().classes) {
+        // Skip RTL classes
+        if (classInfo->isRTL()) continue;
+
+        ClassFileWriter writer(classInfo);
+        writer.generate();
+
+        std::string classFilePath = outputDir + "/" + className + ".class";
+        if (!writer.writeToFile(classFilePath)) {
+            std::cerr << "Failed to write class file: " << classFilePath << std::endl;
+            return std::nullopt;
+        }
+    }
+
+    // 5. Create JAR file
+    std::string jarPath = outputDir + "/output.jar";
+    JarWriter jarWriter(outputDir, jarPath);
+    jarWriter.setMainClass(ctx().mainClass->name);
+    jarWriter.setRtlJar(rtlJarPath);
+
+    if (!jarWriter.write()) {
+        std::cerr << "Failed to create JAR file" << std::endl;
+        return std::nullopt;
+    }
+
+    return jarPath;
 }

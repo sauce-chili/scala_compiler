@@ -159,12 +159,7 @@ ConstantMethodRef *ConstantPoolBuilder::addMethodRef(ClassMetaInfo *cls, MethodM
 std::vector<uint8_t> ConstantPoolBuilder::toBytes() const {
     std::vector<uint8_t> bytes;
 
-    // Записываем количество констант + 1 (по спецификации JVM)
-    uint16_t count = nextIndex;
-    bytes.push_back(static_cast<uint8_t>((count >> 8) & 0xFF));
-    bytes.push_back(static_cast<uint8_t>(count & 0xFF));
-
-    // Записываем все константы
+    // Записываем только константы (count пишется вызывающим кодом в ClassFileWriter)
     for (const auto *constant: pool) {
         auto constBytes = constant->toBytes();
         bytes.insert(bytes.end(), constBytes.begin(), constBytes.end());
