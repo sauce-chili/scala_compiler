@@ -22,6 +22,15 @@ void normalizeInfixes(Node* node);
 void transformInfixes(Node* node);
 void transformLiterals(Node* node);
 
+enum ConsoleClass {
+    _PREDEF = 0,
+    _STD_IN = 1,
+};
+
+static const char* ConsoleClassesNames[] = { "Predef", "StdIn" };
+
+void addConsoleInstance(TemplateStatsNode* templateStats, ConsoleClass cClass);
+
 ClassDefNode* currentClassTemplate;
 
 void TopStatSeqNode::convertAst() {
@@ -33,6 +42,7 @@ void TopStatSeqNode::convertAst() {
         tsn->tmplDef->validateModifiers();
         tsn->tmplDef->toExtendsAny();
         tsn->tmplDef->classDef->normalizeBody();
+        tsn->tmplDef->classDef->classTemplateOpt->processConsole();
         tsn->toFieldsFromPrimaryConstructor();
         tsn->initializeBaseConstructor();
         tsn->secondaryConstructorsToMethods();
@@ -465,6 +475,43 @@ void TopStatNode::secondaryConstructorsToMethods() {
     }
 }
 
+void ClassTemplateOptNode::processConsole() {
+    addConsoleInstance(templateStats, _PREDEF);
+    addConsoleInstance(templateStats, _STD_IN);
+}
+
+void addConsoleInstance(TemplateStatsNode* templateStats, ConsoleClass cClass) {
+    if (!templateStats) return;
+
+    string consoleClassName = ConsoleClassesNames[cClass];
+
+    ExprNode* cpnsoleClassNewInstanceCreating = ExprNode::createInfix(
+            InfixExprNode::createInfixFromPrefix(
+                    PrefixExprNode::createPrefixExprNode(
+                            SimpleExprNode::createNewObjectNode(
+                                    IdNode::createId(consoleClassName),
+                                    new ArgumentExprsNode()
+                            ),
+                            _NO_UNARY_OPERATOR
+                    )
+            )
+    );
+    DefNode* consoleClassInstance = DefNode::createVarDefs(
+            VarDefsNode::createVal(
+                    IdNode::createId(consoleClassName),
+                    SimpleTypeNode::createIdTypeNode(IdNode::createId(consoleClassName)),
+                    cpnsoleClassNewInstanceCreating
+            )
+    );
+    TemplateStatsNode::addTemplateStatToBackToList(
+            templateStats,
+            TemplateStatNode::createDefTemplate(
+                    ModifiersNode::addModifierToList(nullptr, ModifierNode::createModifier(_PRIVATE)),
+                    consoleClassInstance
+            )
+    );
+}
+
 void normalizeInfixes(Node* node) {
     if (!node) return;
 
@@ -586,3 +633,4 @@ void transformLiterals(Node* node) {
         transformLiterals(child);
     }
 }
+

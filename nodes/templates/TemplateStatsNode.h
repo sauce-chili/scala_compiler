@@ -13,8 +13,8 @@ public:
     TemplateStatsNode();
     TemplateStatsNode(TemplateStatNode* first);
 
-    static TemplateStatsNode* addFuncParamToBackToList(TemplateStatsNode *list, TemplateStatNode *templateStat);
-    static TemplateStatsNode* addFuncParamToFrontToList(TemplateStatsNode *list, TemplateStatNode *templateStat);
+    static TemplateStatsNode* addTemplateStatToBackToList(TemplateStatsNode *list, TemplateStatNode *templateStat);
+    static TemplateStatsNode* addTemplateStatToFrontToList(TemplateStatsNode *list, TemplateStatNode *templateStat);
 
     TemplateStatsNode* copy();
     void validateModifiers() const;

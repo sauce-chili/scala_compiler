@@ -12,7 +12,7 @@ TemplateStatsNode::TemplateStatsNode(TemplateStatNode *first) {
     }
 }
 
-TemplateStatsNode* TemplateStatsNode::addFuncParamToBackToList(TemplateStatsNode *list, TemplateStatNode *templateStat) {
+TemplateStatsNode* TemplateStatsNode::addTemplateStatToBackToList(TemplateStatsNode *list, TemplateStatNode *templateStat) {
     if (list == nullptr) {
         return new TemplateStatsNode(templateStat);
     }
@@ -23,7 +23,7 @@ TemplateStatsNode* TemplateStatsNode::addFuncParamToBackToList(TemplateStatsNode
     return list;
 }
 
-TemplateStatsNode* TemplateStatsNode::addFuncParamToFrontToList(TemplateStatsNode *list, TemplateStatNode *templateStat) {
+TemplateStatsNode* TemplateStatsNode::addTemplateStatToFrontToList(TemplateStatsNode *list, TemplateStatNode *templateStat) {
     if (list == nullptr) {
         return new TemplateStatsNode(templateStat);
     }
