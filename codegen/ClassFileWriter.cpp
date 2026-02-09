@@ -173,10 +173,25 @@ void ClassFileWriter::writeInterfaces() {
 }
 
 void ClassFileWriter::writeFields() {
-    writeU2(static_cast<uint16_t>(classInfo->fields.size()));
+    uint16_t fieldCount = static_cast<uint16_t>(classInfo->fields.size());
+    if (singletonMode) {
+        fieldCount++;  // MODULE$ static field
+    }
+    writeU2(fieldCount);
 
     for (auto& [name, field] : classInfo->fields) {
         writeField(field);
+    }
+
+    if (singletonMode) {
+        // Write MODULE$ field: public static final <jvmName>
+        writeU2(AccessFlags::ACC_PUBLIC | AccessFlags::ACC_STATIC | AccessFlags::ACC_FINAL);
+        auto* nameUtf8 = constantPool->addUtf8("MODULE$");
+        writeU2(nameUtf8->index);
+        std::string descriptor = "L" + classInfo->jvmName + ";";
+        auto* descUtf8 = constantPool->addUtf8(descriptor);
+        writeU2(descUtf8->index);
+        writeU2(0);  // no attributes
     }
 }
 
@@ -227,6 +242,10 @@ void ClassFileWriter::writeMethods() {
         methodCount++;  // Will generate default constructor
     }
 
+    if (singletonMode) {
+        methodCount++;  // <clinit> for MODULE$ initialization
+    }
+
     writeU2(methodCount);
 
     // Write constructors
@@ -246,6 +265,71 @@ void ClassFileWriter::writeMethods() {
         for (MethodMetaInfo* method : methodList) {
             writeMethod(method);
         }
+    }
+
+    if (singletonMode) {
+        // Generate <clinit>: static initializer that creates the singleton
+        // public static void <clinit>() {
+        //   new <this>; dup; invokespecial <init>()V; putstatic MODULE$; return
+        // }
+        writeU2(AccessFlags::ACC_STATIC);
+
+        auto* clinitName = constantPool->addUtf8("<clinit>");
+        writeU2(clinitName->index);
+
+        auto* clinitDesc = constantPool->addUtf8("()V");
+        writeU2(clinitDesc->index);
+
+        // attributes_count = 1 (Code)
+        writeU2(1);
+
+        // Build clinit bytecode manually
+        std::vector<uint8_t> codeBytes;
+        // new <this>
+        codeBytes.push_back(static_cast<uint8_t>(Instruction::new_));
+        codeBytes.push_back(static_cast<uint8_t>((thisClassIndex >> 8) & 0xFF));
+        codeBytes.push_back(static_cast<uint8_t>(thisClassIndex & 0xFF));
+        // dup
+        codeBytes.push_back(static_cast<uint8_t>(Instruction::dup));
+        // invokespecial <init>()V
+        auto* initRef = constantPool->addMethodRef(classInfo->jvmName, "<init>", "()V");
+        codeBytes.push_back(static_cast<uint8_t>(Instruction::invokespecial));
+        codeBytes.push_back(static_cast<uint8_t>((initRef->index >> 8) & 0xFF));
+        codeBytes.push_back(static_cast<uint8_t>(initRef->index & 0xFF));
+        // putstatic MODULE$
+        std::string moduleDesc = "L" + classInfo->jvmName + ";";
+        auto* moduleFieldRef = constantPool->addFieldRef(classInfo->jvmName, "MODULE$", moduleDesc);
+        codeBytes.push_back(static_cast<uint8_t>(Instruction::putstatic));
+        codeBytes.push_back(static_cast<uint8_t>((moduleFieldRef->index >> 8) & 0xFF));
+        codeBytes.push_back(static_cast<uint8_t>(moduleFieldRef->index & 0xFF));
+        // return
+        codeBytes.push_back(static_cast<uint8_t>(Instruction::return_));
+
+        // Build Code attribute
+        std::vector<uint8_t> codeAttr;
+        // max_stack = 2 (new + dup)
+        codeAttr.push_back(0); codeAttr.push_back(2);
+        // max_locals = 0 (static method, no locals)
+        codeAttr.push_back(0); codeAttr.push_back(0);
+        // code_length
+        uint32_t codeLen = codeBytes.size();
+        codeAttr.push_back(static_cast<uint8_t>((codeLen >> 24) & 0xFF));
+        codeAttr.push_back(static_cast<uint8_t>((codeLen >> 16) & 0xFF));
+        codeAttr.push_back(static_cast<uint8_t>((codeLen >> 8) & 0xFF));
+        codeAttr.push_back(static_cast<uint8_t>(codeLen & 0xFF));
+        // code[]
+        codeAttr.insert(codeAttr.end(), codeBytes.begin(), codeBytes.end());
+        // exception_table_length = 0
+        codeAttr.push_back(0); codeAttr.push_back(0);
+        // attributes_count = 0
+        codeAttr.push_back(0); codeAttr.push_back(0);
+
+        // attribute_name_index ("Code")
+        writeU2(codeAttributeNameIndex);
+        // attribute_length
+        writeU4(static_cast<uint32_t>(codeAttr.size()));
+        // Code attribute data
+        writeBytes(codeAttr);
     }
 }
 
@@ -331,12 +415,6 @@ uint16_t ClassFileWriter::getMethodAccessFlags(MethodMetaInfo* method) {
 
     if (method->isFinal()) {
         flags |= AccessFlags::ACC_FINAL;
-    }
-
-    // Main method must be static for JVM (Scala has no static keyword,
-    // but JVM requires public static void main(String[]))
-    if (method->name == "main" && classInfo == ctx().mainClass) {
-        flags |= AccessFlags::ACC_STATIC;
     }
 
     if (method->body == nullptr && !method->isPrimaryConstructor && method->name != "this") {

@@ -36,6 +36,9 @@ private:
     ConstantPoolBuilder* constantPool;
     std::vector<uint8_t> bytes;
 
+    // Singleton mode: generates MODULE$ field and <clinit>
+    bool singletonMode = false;
+
     // Constant pool indices for commonly used entries
     uint16_t thisClassIndex = 0;
     uint16_t superClassIndex = 0;
@@ -74,6 +77,11 @@ private:
 
 public:
     explicit ClassFileWriter(ClassMetaInfo* classInfo);
+
+    /**
+     * Enable singleton mode: adds MODULE$ static field and <clinit>
+     */
+    void setSingletonMode(bool enabled) { singletonMode = enabled; }
 
     /**
      * Generate complete .class file bytes

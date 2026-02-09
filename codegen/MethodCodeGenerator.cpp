@@ -92,10 +92,8 @@ void MethodCodeGenerator::generatePrimaryConstructor() {
 }
 
 uint16_t MethodCodeGenerator::getMaxLocals() const {
-    // this (for non-static) + args + local vars
-    // Static methods (e.g., main) don't have 'this'
-    bool isStatic = (method != nullptr && method->name == "main" && currentClass == ctx().mainClass);
-    uint16_t count = isStatic ? 0 : 1;
+    // this + args + local vars (all methods are instance methods now)
+    uint16_t count = 1;
 
     if (method != nullptr) {
         for (auto* arg : method->args) {
@@ -738,10 +736,14 @@ void MethodCodeGenerator::generateNewInstance(SimpleExprNode* newExpr) {
     // DUP
     code.emit(Instruction::dup);
 
-    // Generate constructor arguments
+    // Generate constructor arguments and collect their types
     std::vector<DataType> argTypes;
-    if (newExpr->arguments) {
-        // TODO: Collect argument types
+    if (newExpr->arguments && newExpr->arguments->exprs && newExpr->arguments->exprs->exprs) {
+        for (auto* expr : *(newExpr->arguments->exprs->exprs)) {
+            if (expr) {
+                argTypes.push_back(expr->inferType(currentClass, method, currentScope));
+            }
+        }
         generateArgumentList(newExpr->arguments);
     }
 
@@ -1216,13 +1218,13 @@ void MethodCodeGenerator::generateUnaryOp(const std::string& op, const DataType&
 // ==================== Helpers ====================
 
 bool MethodCodeGenerator::isStaticMethod() const {
-    return method != nullptr && method->name == "main" && currentClass == ctx().mainClass;
+    // All user methods are instance methods now (main runs via singleton pattern)
+    return false;
 }
 
 uint16_t MethodCodeGenerator::localSlot(uint16_t number) const {
-    // For instance methods, slot 0 = this, so args/locals shift by +1
-    // For static methods, args start at slot 0
-    return isStaticMethod() ? number : number + 1;
+    // Slot 0 = this for all instance methods, so args/locals shift by +1
+    return number + 1;
 }
 
 uint16_t MethodCodeGenerator::getLocalSlot(const std::string& varName) {

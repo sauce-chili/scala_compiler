@@ -65,7 +65,11 @@ std::string MethodMetaInfo::jvmDescriptor() {
         descriptor += arg->dataType.toJvmDescriptor();
     }
     descriptor += ")";
-    descriptor += returnType.toJvmDescriptor();
+    if (jvmName == JVM_CONSTRUCTOR_NAME) {
+        descriptor += "V";
+    } else {
+        descriptor += returnType.toJvmDescriptor();
+    }
     return descriptor;
 }
 
