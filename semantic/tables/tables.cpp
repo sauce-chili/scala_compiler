@@ -2282,8 +2282,7 @@ RtlClassMetaInfo *RtlClassMetaInfo::initPredef() {
     ArgMetaInfo* printlnArg = new ArgMetaInfo();
     printlnArg->name = "x";
     printlnArg->jvmName = NameTransformer::encode(printlnArg->name);
-    printlnArg->dataType = DataType::Kind::Class;
-    printlnArg->dataType.className = "Any";
+    printlnArg->dataType = DataType::Kind::Any;
     println1->args.push_back(printlnArg);
     rec->methods[println1->name].push_back(println1);
 
@@ -2298,8 +2297,7 @@ RtlClassMetaInfo *RtlClassMetaInfo::initPredef() {
     ArgMetaInfo* equalsArg1= new ArgMetaInfo();
     equalsArg1->name = "o";
     equalsArg1->jvmName = NameTransformer::encode(equalsArg1->name);
-    equalsArg1->dataType = DataType::Kind::Class;
-    equalsArg1->dataType.className = "Any";
+    equalsArg1->dataType = DataType::Kind::Any;
     equals->args.push_back(equalsArg1);
     rec->methods[equals->name].push_back(equals);
 
