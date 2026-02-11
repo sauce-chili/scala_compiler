@@ -7,7 +7,7 @@ public final class Predef extends Any {
     /**
      * Prints an object using its toString().
      */
-    public void print(Object x) {
+    public void print(Any x) {
         System.out.print(x == null ? "null" : x.toString());
     }
 
@@ -21,13 +21,13 @@ public final class Predef extends Any {
     /**
      * Prints an object followed by a newline.
      */
-    public void println(Object x) {
+    public void println(Any x) {
         System.out.println(x == null ? "null" : x.toString());
     }
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof Predef;
+        return o instanceof Object;
     }
 
     @Override

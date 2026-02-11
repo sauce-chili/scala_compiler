@@ -1323,9 +1323,15 @@ void MethodCodeGenerator::invokeConstructor(ClassMetaInfo* targetClass, const st
         }
     }
 
+    std::string descriptor = "(";
+    for (const DataType& dt : argTypes) {
+        descriptor += dt.toJvmDescriptor();
+    }
+    descriptor += ")V";
+
     // If no constructors found, use default ()V
     if (constructors.empty()) {
-        auto* methodRef = constantPool->addMethodRef(targetClass->jvmName, "<init>", "()V");
+        auto* methodRef = constantPool->addMethodRef(targetClass->jvmName, "<init>", descriptor);
         code.emit(Instruction::invokespecial, methodRef->index);
         code.adjustStack(-1);
         return;
@@ -1335,7 +1341,7 @@ void MethodCodeGenerator::invokeConstructor(ClassMetaInfo* targetClass, const st
     for (MethodMetaInfo* ctor : constructors) {
         if (ctor->args.size() == argTypes.size()) {
             // TODO: Check types match more precisely
-            auto* methodRef = constantPool->addMethodRef(targetClass->jvmName, "<init>", ctor->jvmDescriptor());
+            auto* methodRef = constantPool->addMethodRef(targetClass->jvmName, "<init>", descriptor);
             code.emit(Instruction::invokespecial, methodRef->index);
             code.adjustStack(-1 - static_cast<int>(argTypes.size()));
             return;
@@ -1344,7 +1350,7 @@ void MethodCodeGenerator::invokeConstructor(ClassMetaInfo* targetClass, const st
 
     // If we have a no-arg call and any constructor exists, try default
     if (argTypes.empty()) {
-        auto* methodRef = constantPool->addMethodRef(targetClass->jvmName, "<init>", "()V");
+        auto* methodRef = constantPool->addMethodRef(targetClass->jvmName, "<init>", descriptor);
         code.emit(Instruction::invokespecial, methodRef->index);
         code.adjustStack(-1);
         return;

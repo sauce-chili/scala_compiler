@@ -165,13 +165,17 @@ string DataType::toJvmDescriptor() const {
         case Kind::Bool:    return "Z";
         case Kind::Unit:    return "V";
         case Kind::String:  return "Ljava/lang/String;";
-        case Kind::Class:   return "L" + className + ";";
+        case Kind::Class:   {
+            if (className == "StdIn" || className == "Predef")
+                return "Lrtl/" + className + ";";
+            else
+                return "L" + className + ";"; }
         case Kind::Array:
             if (elementType) {
                 return "[" + elementType->toJvmDescriptor();
             }
             return "[Ljava/lang/Object;";
-        case Kind::Any:     return "Ljava/lang/Object;";
+        case Kind::Any:     return "Lrtl/Any;";
         case Kind::Null:    return "Ljava/lang/Object;";
         default:            return "V";
     }
