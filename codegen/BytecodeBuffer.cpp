@@ -443,10 +443,10 @@ void BytecodeBuffer::emitStore(const DataType& type, uint16_t slot) {
     switch (type.kind) {
         case DataType::Kind::Int:
         case DataType::Kind::Bool:
-        case DataType::Kind::Char:
             base = Instruction::istore;
             break;
         case DataType::Kind::Double:
+        case DataType::Kind::Char:
             base = Instruction::astore;
             break;
         case DataType::Kind::String:
