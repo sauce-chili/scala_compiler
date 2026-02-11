@@ -8,6 +8,8 @@ public final class Int extends Any {
 
     public Int(int value) { this.value = value; }
 
+    public Int(Int other) { this.value = other.value; }
+
     public int intValue() { return value; }
 
     public Int add(Int other)    { return new Int(this.value + other.value); }

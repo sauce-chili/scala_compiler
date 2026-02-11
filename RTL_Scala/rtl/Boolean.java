@@ -11,6 +11,10 @@ public final class Boolean extends Any {
         this.value = v;
     }
 
+    public Boolean(Boolean other) {
+        this.value = other.value;
+    }
+
     public static Boolean valueOf(boolean v) {
         return new Boolean(v);
     }

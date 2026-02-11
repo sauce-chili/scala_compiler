@@ -8,6 +8,10 @@ public final class Double extends Any {
 
     public Double(double value) { this.value = value; }
 
+    public Double(Double other) {
+        this.value = other.value;
+    }
+
     public double doubleValue() { return value; }
 
     public Double add(Double other) { return new Double(this.value + other.value); }
