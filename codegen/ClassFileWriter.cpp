@@ -260,7 +260,16 @@ void ClassFileWriter::writeMethod(MethodMetaInfo* method) {
     writeU2(nameUtf8->index);
 
     // descriptor_index
-    auto* descUtf8 = constantPool->addUtf8(method->jvmDescriptor());
+    ConstantUtf8* descUtf8;
+    if (method->name == "main" && method->classMetaInfo == ctx().mainClass) {
+        string descriptor = "(";
+        descriptor += "[Ljava/lang/String;";
+        descriptor += ")";
+        descriptor += "V";
+        descUtf8 = constantPool->addUtf8(descriptor);
+    } else {
+        descUtf8 = constantPool->addUtf8(method->jvmDescriptor());
+    }
     writeU2(descUtf8->index);
 
     // attributes_count

@@ -164,7 +164,7 @@ string DataType::toJvmDescriptor() const {
         case Kind::Char:    return "C";
         case Kind::Bool:    return "Z";
         case Kind::Unit:    return "V";
-        case Kind::String:  return "Ljava/lang/String;";
+        case Kind::String:  return "Lrtl/String;";
         case Kind::Class:   {
             if (className == "StdIn" || className == "Predef")
                 return "Lrtl/" + className + ";";
