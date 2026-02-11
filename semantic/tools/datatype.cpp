@@ -159,14 +159,14 @@ bool DataType::isUndefined() const {
 
 string DataType::toJvmDescriptor() const {
     switch (kind) {
-        case Kind::Int:     return "I";
-        case Kind::Double:  return "F";  // Double реализуется через float
+        case Kind::Int:     return "Lrtl/Int;";
+        case Kind::Double:  return "Lrtl/Double;";  // Double реализуется через float
         case Kind::Char:    return "C";
         case Kind::Bool:    return "Z";
         case Kind::Unit:    return "V";
         case Kind::String:  return "Lrtl/String;";
         case Kind::Class:   {
-            if (className == "StdIn" || className == "Predef")
+            if (className == "StdIn" || className == "Predef" || className == "Char")
                 return "Lrtl/" + className + ";";
             else
                 return "L" + className + ";"; }

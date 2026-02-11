@@ -75,7 +75,8 @@ public:
     }
 
     static DataType makeChar() {
-        return DataType(Kind::Char);
+        DataType charType = DataType(Kind::Char);
+        return charType;
     }
 
     static DataType makeString() {

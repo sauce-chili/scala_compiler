@@ -1532,10 +1532,11 @@ RtlClassMetaInfo* RtlClassMetaInfo::initChar() {
     MethodMetaInfo* constructor = new MethodMetaInfo();
     constructor->classMetaInfo = rec;
     constructor->modifiers.modifiers.push_back(_PUBLIC);
-    constructor->returnType = DataType::Kind::Any;
+    constructor->returnType = DataType::Kind::Unit;
     constructor->name = "this";
     constructor->jvmName = "<init>";
     constructor->args = vector<ArgMetaInfo*>();
+    constructor->isPrimaryConstructor = true;
     ArgMetaInfo* constructorArg = new ArgMetaInfo();
     constructorArg->name = "value";
     constructorArg->jvmName = NameTransformer::encode(constructorArg->name);
