@@ -391,10 +391,10 @@ void BytecodeBuffer::emitLoad(const DataType& type, uint16_t slot) {
     switch (type.kind) {
         case DataType::Kind::Int:
         case DataType::Kind::Bool:
-        case DataType::Kind::Char:
             base = Instruction::iload;
             break;
         case DataType::Kind::Double:
+        case DataType::Kind::Char:
             base = Instruction::aload;
             break;
         case DataType::Kind::String:
