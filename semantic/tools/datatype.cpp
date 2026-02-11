@@ -16,7 +16,7 @@ bool DataType::operator==(const DataType &other) const {
                    *this->elementType == *other.elementType;
 
         case Kind::Class:
-            return qualId == other.qualId;
+            return className == other.className;
 
         default:
             return true;
