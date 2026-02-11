@@ -11,6 +11,7 @@
 #include "nodes/var/VarDefsNode.h"
 #include "semantic/SemanticContext.h"
 #include "nodes/exprs/AssignmentNode.h"
+#include <unordered_set>
 
 class DefNode;
 class DclNode;
@@ -224,54 +225,210 @@ optional<FieldMetaInfo *> ClassMetaInfo::resolveField(const string& fieldName,
     return nullopt;
 }
 
-optional<MethodMetaInfo *> ClassMetaInfo::resolveMethod(const string& methodName,
-                                                        const vector<DataType *>& argTypes,
-                                                        const ClassMetaInfo* accessFrom,
-                                                        int leftParents,
-                                                        bool lookupPrivate) {
-    // Ищем метод в текущем классе
-    if (methods.find(methodName) != methods.end()) {
-        vector<MethodMetaInfo *> methodsSignature = methods.at(methodName);
+struct Candidate {
+    MethodMetaInfo* method;
+    std::vector<int> distances; // расстояния по параметрам (>=0)
+    int sum;                    // сумма расстояний
+};
 
-        for (auto const m: methodsSignature) {
-            // Проверка сигнатуры
-            vector<DataType *> existingArgs = m->getArgsTypes();
-            bool countArgsEquals = existingArgs.size() == argTypes.size();
-            bool typesArgsEquals = std::equal(existingArgs.begin(), existingArgs.end(),
-                                              argTypes.begin(), argTypes.end(),
-                                              [](const DataType *a, const DataType *b) {
-                                                  return *a == *b;
-                                              });
+optional<MethodMetaInfo *> ClassMetaInfo::resolveMethod(
+        const string& methodName,
+        const vector<DataType *>& argTypes,
+        const ClassMetaInfo* accessFrom,
+        int leftParents,
+        bool lookupPrivate)
+{
+    auto abcdef = ctx().classes;
 
-            if (countArgsEquals && typesArgsEquals) {
-                // Метод найден, проверяем доступ
-                if (lookupPrivate) return optional{m};
+    std::vector<Candidate> candidates;
 
-                // Public
-                if (!m->isPrivate() && !m->isProtected()) return optional{m};
+    auto itMethods = methods.find(methodName);
+    if (itMethods != methods.end()) {
+        for (MethodMetaInfo* m : itMethods->second) {
+            auto existingArgs = m->getArgsTypes();
+            if (existingArgs.size() != argTypes.size()) continue;
 
-                // Private
-                if (m->isPrivate()) {
-                    if (accessFrom == this) return optional{m};
-                    continue; // Ищем дальше (перегрузка) или выходим
-                }
-
-                // Protected
-                if (m->isProtected()) {
-                    if (accessFrom && accessFrom->amSubclassOf(this)) return optional{m};
-                    continue;
-                }
+            // вычисляем расстояния
+            std::vector<int> distances;
+            bool compatible = true;
+            int sum = 0;
+            for (size_t i = 0; i < existingArgs.size(); ++i) {
+                int d = this->subtypeDistance(existingArgs[i], argTypes[i]);
+                if (d < 0) { compatible = false; break; }
+                distances.push_back(d);
+                sum += d;
             }
+            if (!compatible) continue;
+
+            // проверка доступа (если lookupPrivate == false)
+            if (!lookupPrivate) {
+                if (m->isPrivate() && accessFrom != this) continue;
+                if (m->isProtected() && !(accessFrom && accessFrom->amSubclassOf(this))) continue;
+            }
+
+            candidates.push_back(Candidate{m, std::move(distances), sum});
         }
     }
 
-    // Ищем у родителя
-    if (parent && leftParents > 0) {
-        return parent->resolveMethod(methodName, argTypes, accessFrom, leftParents--, lookupPrivate);
+    if (candidates.empty()) {
+        if (parent && leftParents > 0) {
+            return parent->resolveMethod(methodName, argTypes, accessFrom, leftParents - 1, lookupPrivate);
+        }
+        return nullopt;
     }
 
+    // Найти минимальную сумму расстояний
+    int bestSum = INT_MAX;
+    for (auto &c : candidates) {
+        if (c.sum < bestSum) bestSum = c.sum;
+    }
+
+    // Отобрать кандидатов с лучшим суммарным score
+    std::vector<Candidate*> best;
+    for (auto &c : candidates) {
+        if (c.sum == bestSum) best.push_back(&c);
+    }
+
+    if (best.size() == 1) return optional{best.front()->method};
+
+    // Если несколько — попытка pairwise сравнения по специфичности
+    auto moreSpecific = [](const std::vector<int>& a, const std::vector<int>& b) {
+        bool strictlyLess = false;
+        for (size_t i = 0; i < a.size(); ++i) {
+            if (a[i] < 0 || b[i] < 0) return false; // несовместимы
+            if (a[i] > b[i]) return false;          // a хуже по этому параметру
+            if (a[i] < b[i]) strictlyLess = true;
+        }
+        return strictlyLess;
+    };
+
+    std::vector<Candidate*> survivors;
+    for (auto &c : candidates) survivors.push_back(&c);
+
+    // Удаляем кандидатов, над которыми есть более специфичный
+    for (auto it = survivors.begin(); it != survivors.end(); ) {
+        bool eliminated = false;
+        for (auto other : survivors) {
+            if (*it == other) continue;
+            if (moreSpecific(other->distances, (*it)->distances)) {
+                // other более специфичен, поэтому (*it) исключаем
+                eliminated = true;
+                break;
+            }
+        }
+        if (eliminated) it = survivors.erase(it);
+        else ++it;
+    }
+
+    if (survivors.size() == 1) return optional{survivors.front()->method};
+    // несколько выживших — неоднозначность
     return nullopt;
+
 }
+
+// Возвращает >=0 расстояние (0 = exact), или -1 если не подтип.
+// Защищено от циклов.
+int ClassMetaInfo::subtypeDistance(const DataType* declared, const DataType* actual) const {
+    if (!declared || !actual) return -1;
+    if (declared == actual) return 0;
+    if (*declared == *actual) return 0;
+
+    if (declared->kind == DataType::Kind::Any && actual->isPrimitive()) {
+        return 1;
+    }
+
+    // Только для class-типов поднимаемся по parent
+    if (actual->kind != DataType::Kind::Class || declared->kind != DataType::Kind::Class) {
+        return -1;
+    }
+
+    std::unordered_set<std::string> visitedNames;
+    const DataType* cur = actual;
+    int dist = 0;
+    while (cur != nullptr) {
+        // быстрые проверки
+        if (cur == declared) return dist;
+        if (*cur == *declared) return dist;
+
+        // защита от циклов: используем имя класса
+        if (cur->className.empty()) break;
+        if (!visitedNames.insert(cur->className).second) break;
+
+        // найти meta для cur
+        auto it = ctx().classes.find(cur->className);
+        if (it == ctx().classes.end()) break;
+        ClassMetaInfo* meta = it->second;
+        if (!meta) break;
+
+        // получить DataType родителя
+        ClassMetaInfo* parentMeta = meta->parent; // или найти по parentName
+        if (!parentMeta) break;
+        const DataType* parentDt = parentMeta->asDataType();
+        if (!parentDt) break;
+
+        cur = parentDt;
+        ++dist;
+    }
+    return -1;
+}
+
+// Возвращает true, если m1 более специфичен, чем m2 (все параметры m1 <= m2 и хотя бы один <)
+bool moreSpecific(const std::vector<int>& d1, const std::vector<int>& d2) {
+    bool strictlyLess = false;
+    for (size_t i = 0; i < d1.size(); ++i) {
+        if (d1[i] < 0 || d2[i] < 0) return false; // несовместимы
+        if (d1[i] > d2[i]) return false; // m1 хуже по этому параметру
+        if (d1[i] < d2[i]) strictlyLess = true;
+    }
+    return strictlyLess;
+}
+
+// Предположения:
+// - ctx().classes : std::unordered_map<std::string, ClassMetaInfo*>
+// - ClassMetaInfo имеет поле `ClassMetaInfo* parent` или метод parent() возвращающий указатель на родителя
+// - ClassMetaInfo имеет метод const DataType* asDataType() const;  // возвращает DataType представление класса
+bool ClassMetaInfo::isSubtypeOrEqual(const DataType *declared, const DataType *actual) {
+    if (declared == nullptr || actual == nullptr) return false;
+
+    std::unordered_set<const DataType*> visited;
+    const DataType *cur = actual;
+
+    while (cur != nullptr) {
+        // Быстрая проверка по указателю
+        if (cur == declared) return true;
+        // Структурное сравнение (operator== у DataType)
+        if (*cur == *declared) return true;
+
+        // Защита от циклов
+        if (!visited.insert(cur).second) break;
+
+        // Поднимаемся к родителю только если это class-тип
+        if (cur->kind != DataType::Kind::Class) break;
+
+        // Найти метаинформацию о текущем классе
+        auto it = ctx().classes.find(cur->className);
+        if (it == ctx().classes.end()) break;
+        ClassMetaInfo *meta = it->second;
+        if (!meta) break;
+
+        // Если у meta есть явный DataType родителя — используем его
+        if (meta->parent && meta->parent->asDataType()) {
+            cur = meta->parent->asDataType();
+            continue;
+        }
+
+        if (!meta->parent) break;
+        auto pit = ctx().classes.find(meta->parent->name);
+        if (pit == ctx().classes.end()) break;
+        ClassMetaInfo *parentMeta = pit->second;
+        if (!parentMeta) break;
+        cur = parentMeta->asDataType();
+    }
+
+    return false;
+}
+
+
 
 optional<string> ClassMetaInfo::getParentName() {
     if (parent) return parent->name;

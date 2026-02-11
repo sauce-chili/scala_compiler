@@ -213,6 +213,14 @@ public:
 
     // -----------------------------------------------------------------------------------------------------------------
 
+    int subtypeDistance(const DataType* declared, const DataType* actual) const;
+
+    DataType* asDataType() {
+        DataType* currentClassType = new DataType(DataType::Kind::Class);
+        currentClassType->className = name;
+        return currentClassType;
+    };
+
     /**
      * Проверяет, является ли текущий класс подклассом (наследником) указанного класса.
      *
@@ -301,6 +309,8 @@ public:
      */
     bool isRTL() const;
 
+private:
+    bool isSubtypeOrEqual(const DataType *declared, const DataType *actual);
 };
 
 class RtlClassMetaInfo : public ClassMetaInfo {
