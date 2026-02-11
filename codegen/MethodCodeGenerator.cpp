@@ -722,6 +722,16 @@ void MethodCodeGenerator::generateFieldAccess(SimpleExpr1Node* access) {
     }
 }
 
+std::vector<DataType> copyPointersToValues(const std::vector<DataType*>& src) {
+    std::vector<DataType> dst;
+    dst.reserve(src.size());
+    for (auto* p : src) {
+        if (p) dst.push_back(*p);
+        else    dst.emplace_back();
+    }
+    return dst;
+}
+
 void MethodCodeGenerator::generateNewInstance(SimpleExprNode* newExpr) {
     std::string className = newExpr->fullId->name;
 
@@ -742,6 +752,7 @@ void MethodCodeGenerator::generateNewInstance(SimpleExprNode* newExpr) {
     std::vector<DataType> argTypes;
     if (newExpr->arguments) {
         // TODO: Collect argument types
+        argTypes = copyPointersToValues(newExpr->arguments->getArgsTypes(currentClass, method, currentScope));
         generateArgumentList(newExpr->arguments);
     }
 
