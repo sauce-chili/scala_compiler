@@ -162,11 +162,11 @@ string DataType::toJvmDescriptor() const {
         case Kind::Int:     return "Lrtl/Int;";
         case Kind::Double:  return "Lrtl/Double;";  // Double реализуется через float
         case Kind::Char:    return "Lrtl/Char;";
-        case Kind::Bool:    return "Z";
-        case Kind::Unit:    return "V";
+        case Kind::Bool:    return "Lrtl/Boolean;";
+        case Kind::Unit:    return "V"; // Чтоб поддерживать Lrtl/Unit; нужно return (empty) преобразовать в return new Unit()
         case Kind::String:  return "Lrtl/String;";
         case Kind::Class:   {
-            if (className == "StdIn" || className == "Predef" || className == "Char")
+            if (className == "StdIn" || className == "Predef")
                 return "Lrtl/" + className + ";";
             else
                 return "L" + className + ";"; }
@@ -179,6 +179,24 @@ string DataType::toJvmDescriptor() const {
         case Kind::Null:    return "Ljava/lang/Object;";
         default:            return "V";
     }
+}
+
+string DataType::toConstructorArgDescriptor(string className) const {
+    if (kind == DataType::Kind::Char && className == "Char") {
+        return "C";
+    } else if (kind == DataType::Kind::Bool && className == "Boolean") {
+        return "Z";
+    } else if (kind == DataType::Kind::Int && className == "Int") {
+        return "I";
+    } else if (kind == DataType::Kind::Double && className == "Double") {
+        return "F";
+    } else if (kind == DataType::Kind::Unit && className == "Unit") {
+        return "V";
+    } else if (kind == DataType::Kind::String && className == "String") {
+        return "Ljava/lang/String;";
+    }
+
+    return toJvmDescriptor();
 }
 
 DataType DataType::makeNull() {
