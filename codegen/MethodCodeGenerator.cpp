@@ -756,7 +756,16 @@ void MethodCodeGenerator::generateNewInstance(SimpleExprNode* newExpr) {
     std::vector<DataType> argTypes;
     if (newExpr->arguments) {
         // TODO: Collect argument types
-        argTypes = copyPointersToValues(newExpr->arguments->getArgsTypes(currentClass, method, currentScope));
+        auto classOfNewInstance = ctx().classes.find(className)->second;
+        std::vector<DataType*> newInstanceArgTypes = newExpr->arguments->getArgsTypes(currentClass, method, currentScope);
+        MethodMetaInfo* methodDef = classOfNewInstance->resolveMethod(CONSTRUCTOR_NAME, newInstanceArgTypes, currentClass).value(); // TODO WARNING!!!
+        for (auto arg: methodDef->args) {
+            if (methodDef->classMetaInfo->name == "Char") {
+                argTypes.push_back(DataType::Kind::Char);
+            } else {
+                argTypes.push_back(arg->dataType);
+            }
+        }
         generateArgumentList(newExpr->arguments);
     }
 
@@ -1340,7 +1349,11 @@ void MethodCodeGenerator::invokeConstructor(ClassMetaInfo* targetClass, const st
 
     std::string descriptor = "(";
     for (const DataType& dt : argTypes) {
-        descriptor += dt.toJvmDescriptor();
+        if (targetClass->name == "Char") {
+            descriptor += "C";
+        } else {
+            descriptor += dt.toJvmDescriptor();
+        }
     }
     descriptor += ")V";
 

@@ -161,7 +161,7 @@ string DataType::toJvmDescriptor() const {
     switch (kind) {
         case Kind::Int:     return "Lrtl/Int;";
         case Kind::Double:  return "Lrtl/Double;";  // Double реализуется через float
-        case Kind::Char:    return "C";
+        case Kind::Char:    return "Lrtl/Char;";
         case Kind::Bool:    return "Z";
         case Kind::Unit:    return "V";
         case Kind::String:  return "Lrtl/String;";
