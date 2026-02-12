@@ -318,11 +318,11 @@ accessModifier: PRIVATE   { $$ = ModifierNode::createModifier(_PRIVATE); }
 
 /* --------------------- CLASS --------------------- */
 
-templateBody: nlo '{' templateStats '}' { $$ = TemplateStatsNode::addFuncParamToFrontToList($3, nullptr); }
+templateBody: nlo '{' templateStats '}' { $$ = TemplateStatsNode::addTemplateStatToFrontToList($3, nullptr); }
             ;
 
-templateStats: templateStat                     { $$ = TemplateStatsNode::addFuncParamToBackToList(nullptr, $1); }
-             | templateStats semi templateStat  { $$ = TemplateStatsNode::addFuncParamToBackToList($1, $3); }
+templateStats: templateStat                     { $$ = TemplateStatsNode::addTemplateStatToBackToList(nullptr, $1); }
+             | templateStats semi templateStat  { $$ = TemplateStatsNode::addTemplateStatToBackToList($1, $3); }
              ;
 
 templateStat: /* empty */   { $$ = nullptr; }

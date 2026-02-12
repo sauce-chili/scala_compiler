@@ -77,7 +77,7 @@ public final class Array extends Any {
         return new Boolean(this != other);
     }
 
-    public Boolean isInstanceOf(Object cls) {
+    public Boolean isInstanceOf(Any cls) {
         return new Boolean(cls.getClass().isInstance(this));
     }
 }

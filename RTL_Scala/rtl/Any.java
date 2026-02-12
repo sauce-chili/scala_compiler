@@ -5,7 +5,7 @@ package rtl;
  *
  * Subclasses должны по-прежнему переопределять equals(Object), hashCode() и toString().
  */
-public abstract class Any extends Object {
+public abstract class Any {
 
     @Override
     public boolean equals(Object other) {
@@ -28,7 +28,7 @@ public abstract class Any extends Object {
     /**
      * Проверка типа (аналог isInstanceOf[T]).
      */
-    public Boolean isInstanceOf(Object cls) {
+    public Boolean isInstanceOf(Any cls) {
         return new Boolean(cls.getClass().isInstance(this));
     }
 }
