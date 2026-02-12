@@ -36,7 +36,9 @@ void MethodCodeGenerator::generate() {
     generateExprNode(method->body);
 
     // Add implicit return
-    code.emitReturn(method->returnType);
+    if (!method->body->lastIsReturnExpr()) {
+        code.emitReturn(method->returnType);
+    }
 
     code.resolveLabels();
 }

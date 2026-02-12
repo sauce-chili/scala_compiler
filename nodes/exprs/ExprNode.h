@@ -47,6 +47,7 @@ public:
     ) const override;
 
     bool isReturnExpr() const;
+    bool lastIsReturnExpr() const;
 
     string toDot() const override;
     string getDotLabel() const override;

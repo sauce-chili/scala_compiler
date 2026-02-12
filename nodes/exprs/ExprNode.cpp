@@ -262,3 +262,23 @@ DataType ExprNode::inferType(
 bool ExprNode::isReturnExpr() const {
     return type == _RETURN_EMPTY || type == _RETURN_EXPR;
 }
+
+bool ExprNode::lastIsReturnExpr() const {
+    // Если тело это один expr
+    if (isReturnExpr()) {
+        return true;
+    }
+
+    // Если тело - блок
+    if (infixExpr
+     && infixExpr->prefixExpr
+     && infixExpr->prefixExpr->simpleExpr
+     && infixExpr->prefixExpr->simpleExpr->blockStats
+    ) {
+        return infixExpr->prefixExpr->simpleExpr->blockStats->blockStats->back()
+            && infixExpr->prefixExpr->simpleExpr->blockStats->blockStats->back()->expr
+            && infixExpr->prefixExpr->simpleExpr->blockStats->blockStats->back()->expr->isReturnExpr();
+    }
+
+    return false;
+}
