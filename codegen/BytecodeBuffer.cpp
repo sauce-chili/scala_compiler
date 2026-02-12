@@ -446,12 +446,6 @@ void BytecodeBuffer::emitStore(const DataType& type, uint16_t slot) {
             base = Instruction::astore;
             break;
         case DataType::Kind::Class:
-            if (type.className == "Char" || type.className == "Int" || type.className == "Boolean" || type.className == "Double") {
-                base = Instruction::istore;
-            } else {
-                base = Instruction::astore;
-            }
-            break;
         case DataType::Kind::String:
         case DataType::Kind::Array:
         case DataType::Kind::Any:

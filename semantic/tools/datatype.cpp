@@ -166,7 +166,7 @@ string DataType::toJvmDescriptor() const {
         case Kind::Unit:    return "V"; // Чтоб поддерживать Lrtl/Unit; нужно return (empty) преобразовать в return new Unit()
         case Kind::String:  return "Lrtl/String;";
         case Kind::Class:   {
-            if (className == "StdIn" || className == "Predef")
+            if (className == "StdIn" || className == "Predef" || className == "Any")
                 return "Lrtl/" + className + ";";
             else
                 return "L" + className + ";"; }

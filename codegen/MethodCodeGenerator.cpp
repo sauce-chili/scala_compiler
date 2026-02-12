@@ -595,10 +595,6 @@ void MethodCodeGenerator::generateMethodCall(SimpleExpr1Node* call) {
         DataType::Kind k = receiverType.kind;
         isRtlPrimitive = (k == DataType::Kind::Int || k == DataType::Kind::Double ||
                           k == DataType::Kind::Char || k == DataType::Kind::Bool);
-
-        if (!isRtlPrimitive) {
-            isRtlPrimitive = (k == DataType::Kind::Class && receiverType.className == "Char");
-        }
     }
 
     if (isSuperCall) {
