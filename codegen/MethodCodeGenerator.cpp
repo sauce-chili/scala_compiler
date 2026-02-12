@@ -720,6 +720,16 @@ void MethodCodeGenerator::generateFieldAccess(SimpleExpr1Node* access) {
     }
 }
 
+std::vector<DataType> copyPointersToValues(const std::vector<DataType*>& src) {
+    std::vector<DataType> dst;
+    dst.reserve(src.size());
+    for (auto* p : src) {
+        if (p) dst.push_back(*p);
+        else    dst.emplace_back();
+    }
+    return dst;
+}
+
 void MethodCodeGenerator::generateNewInstance(SimpleExprNode* newExpr) {
     std::string className = newExpr->fullId->name;
 
@@ -736,14 +746,11 @@ void MethodCodeGenerator::generateNewInstance(SimpleExprNode* newExpr) {
     // DUP
     code.emit(Instruction::dup);
 
-    // Generate constructor arguments and collect their types
+    // Generate constructor arguments
     std::vector<DataType> argTypes;
-    if (newExpr->arguments && newExpr->arguments->exprs && newExpr->arguments->exprs->exprs) {
-        for (auto* expr : *(newExpr->arguments->exprs->exprs)) {
-            if (expr) {
-                argTypes.push_back(expr->inferType(currentClass, method, currentScope));
-            }
-        }
+    if (newExpr->arguments) {
+        // TODO: Collect argument types
+        argTypes = copyPointersToValues(newExpr->arguments->getArgsTypes(currentClass, method, currentScope));
         generateArgumentList(newExpr->arguments);
     }
 
@@ -1325,9 +1332,15 @@ void MethodCodeGenerator::invokeConstructor(ClassMetaInfo* targetClass, const st
         }
     }
 
+    std::string descriptor = "(";
+    for (const DataType& dt : argTypes) {
+        descriptor += dt.toJvmDescriptor();
+    }
+    descriptor += ")V";
+
     // If no constructors found, use default ()V
     if (constructors.empty()) {
-        auto* methodRef = constantPool->addMethodRef(targetClass->jvmName, "<init>", "()V");
+        auto* methodRef = constantPool->addMethodRef(targetClass->jvmName, "<init>", descriptor);
         code.emit(Instruction::invokespecial, methodRef->index);
         code.adjustStack(-1);
         return;
@@ -1337,7 +1350,7 @@ void MethodCodeGenerator::invokeConstructor(ClassMetaInfo* targetClass, const st
     for (MethodMetaInfo* ctor : constructors) {
         if (ctor->args.size() == argTypes.size()) {
             // TODO: Check types match more precisely
-            auto* methodRef = constantPool->addMethodRef(targetClass->jvmName, "<init>", ctor->jvmDescriptor());
+            auto* methodRef = constantPool->addMethodRef(targetClass->jvmName, "<init>", descriptor);
             code.emit(Instruction::invokespecial, methodRef->index);
             code.adjustStack(-1 - static_cast<int>(argTypes.size()));
             return;
@@ -1346,7 +1359,7 @@ void MethodCodeGenerator::invokeConstructor(ClassMetaInfo* targetClass, const st
 
     // If we have a no-arg call and any constructor exists, try default
     if (argTypes.empty()) {
-        auto* methodRef = constantPool->addMethodRef(targetClass->jvmName, "<init>", "()V");
+        auto* methodRef = constantPool->addMethodRef(targetClass->jvmName, "<init>", descriptor);
         code.emit(Instruction::invokespecial, methodRef->index);
         code.adjustStack(-1);
         return;

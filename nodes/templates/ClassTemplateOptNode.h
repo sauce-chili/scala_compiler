@@ -19,6 +19,8 @@ public:
     ClassTemplateOptNode* copy();
     ClassTemplateOptNode* setModifiers(ModifiersNode* modifiers);
 
+    void processConsole();
+
     string toDot() const override;
     string getDotLabel() const override;
     list<Node *> getChildren() const override;

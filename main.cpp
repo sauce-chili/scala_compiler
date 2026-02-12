@@ -176,8 +176,12 @@ int runCompile(TopStatSeqNode *root, bool runAfterCompile, bool analyzeOnly,
 
     if (runAfterCompile) {
         std::cout << "Running JAR..." << std::endl;
-        std::string cmd = "java -jar \"" + jarPath + "\"";
+        std::cout << "\n\n\n";
+        std::cout << "--------------------------------------------------------------------------\n\n";
+        std::string cmd =
+                "java -cp \"" + jarPath + ";" + rtlJarPath + "\" A";
         int exitCode = std::system(cmd.c_str());
+        std::cout << "\n--------------------------------------------------------------------------";
         return exitCode;
     }
 

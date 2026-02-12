@@ -3,7 +3,7 @@ package rtl;
 /**
  * Обёртка для строк (в пакете rtl).
  */
-public final class String extends Any {
+public final class String extends rtl.Any {
     private final java.lang.String value;
 
     public String(java.lang.String value) {

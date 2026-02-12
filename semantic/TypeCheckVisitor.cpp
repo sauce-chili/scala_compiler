@@ -99,9 +99,12 @@ void TypeCheckVisitor::visitFunDef(FunDefNode *node) {
         }
 
         if (node->constrExpr && node->constrExpr->blockStats) {
+            Scope* prev = currentScope;
+            currentScope = node->constrExpr->blockStats->blockScope;
             for (auto *bs: *node->constrExpr->blockStats->blockStats) {
                 validateConstructorExpr(bs->expr, node->funSig->getFuncSignature());
             }
+            currentScope = prev;
         }
     } else {
         return;
@@ -121,6 +124,10 @@ void TypeCheckVisitor::visitFunDef(FunDefNode *node) {
 
     if (node->expr) visit(node->expr);
     if (node->constrExpr) visit(node->constrExpr);
+
+    if (node->expr && node->expr->infixExpr && node->expr->infixExpr->prefixExpr && node->expr->infixExpr->prefixExpr->simpleExpr && node->expr->infixExpr->prefixExpr->simpleExpr->blockStats) {
+        currentScope = node->expr->infixExpr->prefixExpr->simpleExpr->blockStats->blockScope;
+    }
 
     validateFunDefReturnType(node);
 
