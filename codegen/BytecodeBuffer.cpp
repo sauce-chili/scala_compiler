@@ -389,11 +389,9 @@ void BytecodeBuffer::emitLoad(const DataType& type, uint16_t slot) {
     bool isCategory2 = false;  // long/double take 2 slots
 
     switch (type.kind) {
-        case DataType::Kind::Int:
         case DataType::Kind::Bool:
-            base = Instruction::iload;
-            break;
         case DataType::Kind::Double:
+        case DataType::Kind::Int:
         case DataType::Kind::Char:
             base = Instruction::aload;
             break;
@@ -441,11 +439,9 @@ void BytecodeBuffer::emitStore(const DataType& type, uint16_t slot) {
     Instruction base;
 
     switch (type.kind) {
-        case DataType::Kind::Int:
         case DataType::Kind::Bool:
-            base = Instruction::istore;
-            break;
         case DataType::Kind::Double:
+        case DataType::Kind::Int:
         case DataType::Kind::Char:
             base = Instruction::astore;
             break;
@@ -499,10 +495,8 @@ void BytecodeBuffer::emitReturn(const DataType& type) {
     switch (type.kind) {
         case DataType::Kind::Int:
         case DataType::Kind::Bool:
-        case DataType::Kind::Char:
-            emit(Instruction::ireturn);
-            break;
         case DataType::Kind::Double:
+        case DataType::Kind::Char:
             emit(Instruction::areturn);
             break;
         case DataType::Kind::String:
@@ -522,8 +516,6 @@ void BytecodeBuffer::emitReturn(const DataType& type) {
 void BytecodeBuffer::emitArrayLoad(const DataType& elementType) {
     switch (elementType.kind) {
         case DataType::Kind::Int:
-            emit(Instruction::iaload);
-            break;
         case DataType::Kind::Bool:
         case DataType::Kind::Char:
             emit(Instruction::caload);
@@ -543,8 +535,6 @@ void BytecodeBuffer::emitArrayLoad(const DataType& elementType) {
 void BytecodeBuffer::emitArrayStore(const DataType& elementType) {
     switch (elementType.kind) {
         case DataType::Kind::Int:
-            emit(Instruction::iastore);
-            break;
         case DataType::Kind::Bool:
         case DataType::Kind::Char:
             emit(Instruction::castore);
