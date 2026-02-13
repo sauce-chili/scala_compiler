@@ -272,8 +272,8 @@ static void checkMethodOverride(ClassMetaInfo* info, const std::string& name, Me
         return;
     }
 
-    // Ищем метод, доступный наследнику
-    auto parentMethodOpt = info->parent->resolveMethod(name, method->getArgsTypes(), info);
+    // Ищем метод с точно такой же сигнатурой у родителя (exactMatch=true)
+    auto parentMethodOpt = info->parent->resolveMethod(name, method->getArgsTypes(), info, PARENTS_CONSIDER, false, true);
 
     if (parentMethodOpt.has_value()) {
         MethodMetaInfo* parentMethod = parentMethodOpt.value();

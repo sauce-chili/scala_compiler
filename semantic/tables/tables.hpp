@@ -288,7 +288,8 @@ public:
         const vector<DataType *> &argTypes,
         const ClassMetaInfo *accessFrom,
         int leftParents = PARENTS_CONSIDER, // Глубина. Нужна, чтобы ограничить количество предков, по которым идет поиск. 0 - ищем только в переданном классе
-        bool lookupPrivate = false
+        bool lookupPrivate = false,
+        bool exactMatch = false // Если true, используется точное совпадение типов (для проверки дубликатов)
     );
 
     string jvmDescriptor() {
