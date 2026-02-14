@@ -677,7 +677,7 @@ RtlClassMetaInfo *RtlClassMetaInfo::initAny() {
     string className = "Any";
 
     RtlClassMetaInfo* rec = new RtlClassMetaInfo(className, _SCALA);
-    rec->jvmName = "java/lang/Object";  // Any maps to java.lang.Object in JVM
+    rec->jvmName = "rtl/Any";  // Any maps to java.lang.Object in JVM
 
     rec->parent = nullptr;
 
