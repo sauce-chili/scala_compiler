@@ -352,8 +352,6 @@ bool SemanticAnalyzer::analyze(TopStatSeqNode *root) {
     validateOverrides();
     // Проверяем что абстрактные методы реализованы
     validateAbstractMethods();
-    // Проверяем что абстрактные поля переопределены
-    validateAbstractFields();
 
     // Проверяем наличие main класса и сохраняем в контекст
     validateMainMethod();
@@ -366,6 +364,9 @@ bool SemanticAnalyzer::analyze(TopStatSeqNode *root) {
     // Проверка типов и вызовов методов
     TypeCheckVisitor typeChecker;
     typeChecker.visitTree(root);
+
+    // Проверяем что абстрактные поля переопределены
+    validateAbstractFields();
 
     if (!ErrorTable::errors.empty()) {
         std::cerr << "Semantic errors after type check:" << std::endl << ErrorTable::getErrors() << std::endl;
