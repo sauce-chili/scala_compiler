@@ -583,27 +583,9 @@ void MethodCodeGenerator::generateMethodCall(SimpleExpr1Node* call) {
 
     MethodMetaInfo* resolvedMethod = methodOpt.value();
 
-    // Check if receiver is an RTL primitive type (Int, Double, Char, Bool)
-    // These map to JVM primitives (I, F, C, Z), so invokevirtual won't work.
-    // Use invokestatic with receiver type prepended to descriptor.
-    bool isRtlPrimitive = false;
-    if (auto* rtl = dynamic_cast<RtlClassMetaInfo*>(receiverClass)) {
-        DataType::Kind k = receiverType.kind;
-        isRtlPrimitive = (k == DataType::Kind::Int || k == DataType::Kind::Double ||
-                          k == DataType::Kind::Char || k == DataType::Kind::Bool);
-    }
-
     if (isSuperCall) {
         auto* methodRef = constantPool->addMethodRef(receiverClass, resolvedMethod);
         code.emit(Instruction::invokespecial, methodRef->index);
-    } else if (isRtlPrimitive) {
-        // invokestatic: receiver is first arg, so prepend its type to descriptor
-        std::string origDesc = resolvedMethod->jvmDescriptor();
-        std::string receiverDesc = receiverType.toJvmDescriptor();
-        std::string staticDesc = "(" + receiverDesc + origDesc.substr(1);
-        auto* methodRef = constantPool->addMethodRef(
-            receiverClass->jvmName, resolvedMethod->jvmName, staticDesc);
-        code.emit(Instruction::invokestatic, methodRef->index);
     } else {
         auto* methodRef = constantPool->addMethodRef(receiverClass, resolvedMethod);
         code.emit(Instruction::invokevirtual, methodRef->index);
