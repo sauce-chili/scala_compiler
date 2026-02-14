@@ -865,9 +865,9 @@ void MethodCodeGenerator::generateArrayCreation(SimpleExpr1Node* arrNode) {
 }
 
 void MethodCodeGenerator::generateAssignment(AssignmentNode* assign) {
-    if (assign->fullId != nullptr && assign->simpleExpr == nullptr && assign->simpleExpr1 == nullptr) {
+    if (assign->simpleExpr && !assign->simpleExpr1) {
         // Simple variable assignment: x = expr
-        std::string name = assign->fullId->name;
+        std::string name = assign->simpleExpr->simpleExpr1->identifier->name;
 
         // Generate value
         generateExprNode(assign->expr);

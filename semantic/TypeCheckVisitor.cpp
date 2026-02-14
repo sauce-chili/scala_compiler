@@ -372,8 +372,8 @@ void TypeCheckVisitor::visitAssignment(AssignmentNode *node) {
     int line = node->fullId ? node->fullId->id : node->id;
 
     // 1. ID_ASSIGNMENT: x = value
-    if (node->fullId && !node->simpleExpr && !node->simpleExpr1) {
-        std::string varName = node->fullId->name;
+    if (node->simpleExpr && !node->simpleExpr1) {
+        std::string varName = node->simpleExpr->simpleExpr1->identifier->name;
         try {
             DataType exprType = node->expr->inferType(currentClass, currentMethod, currentScope);
 
