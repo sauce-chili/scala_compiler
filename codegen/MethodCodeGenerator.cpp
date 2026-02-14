@@ -603,11 +603,9 @@ void MethodCodeGenerator::generateMethodCall(SimpleExpr1Node* call) {
     } else if (isRtlPrimitive) {
         // invokestatic: receiver is first arg, so prepend its type to descriptor
         std::string origDesc = resolvedMethod->jvmDescriptor();
-        std::string receiverDesc = receiverType.toJvmDescriptor();
-        std::string staticDesc = "(" + receiverDesc + origDesc.substr(1);
         auto* methodRef = constantPool->addMethodRef(
-            receiverClass->jvmName, resolvedMethod->jvmName, staticDesc);
-        code.emit(Instruction::invokestatic, methodRef->index);
+            receiverClass->jvmName, resolvedMethod->jvmName, origDesc);
+        code.emit(Instruction::invokevirtual, methodRef->index);
     } else {
         auto* methodRef = constantPool->addMethodRef(receiverClass, resolvedMethod);
         code.emit(Instruction::invokevirtual, methodRef->index);
