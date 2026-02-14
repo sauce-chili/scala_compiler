@@ -2504,5 +2504,19 @@ RtlClassMetaInfo *RtlClassMetaInfo::initArray() {
     isInstanceOf->args.push_back(isInstanceOfArg);
     rec->methods[isInstanceOf->name].push_back(isInstanceOf);
 
+    MethodMetaInfo* ofSize = new MethodMetaInfo();
+    ofSize->classMetaInfo = rec;
+    ofSize->modifiers.modifiers.push_back(_PUBLIC);
+    ofSize->returnType = DataType::Kind::Array;
+    ofSize->name = "ofSize";
+    ofSize->jvmName = NameTransformer::encode(ofSize->name);
+    ofSize->args = vector<ArgMetaInfo*>();
+    ArgMetaInfo* ofSizeArg = new ArgMetaInfo();
+    ofSizeArg->name = "size";
+    ofSizeArg->jvmName = NameTransformer::encode(ofSizeArg->name);
+    ofSizeArg->dataType = DataType::Kind::Int;
+    ofSize->args.push_back(ofSizeArg);
+    rec->methods[ofSize->name].push_back(ofSize);
+
     return rec;
 }
