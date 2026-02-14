@@ -493,7 +493,6 @@ void MethodCodeGenerator::generateMethodCall(SimpleExpr1Node* call) {
     } else if (call->simpleExpr1->type == _IDENTIFIER && call->simpleExpr1->identifier) {
         // Simple method call: methodName(args) - implicit 'this' as receiver
         methodName = call->simpleExpr1->identifier->name;
-        // Check if this is a super constructor call: super(args)
         if (methodName == "super") {
             isSuperConstructorCall = true;
         }
@@ -505,6 +504,13 @@ void MethodCodeGenerator::generateMethodCall(SimpleExpr1Node* call) {
         // receiver is 'this', but method resolved from parent class
     } else {
         throw std::runtime_error("Unsupported method call structure");
+    }
+
+    auto localOpt = method->resolveLocal(methodName, currentScope);
+    auto fieldOpt = currentClass->resolveField(methodName, currentClass);
+    if (!methodName.empty() && (localOpt.has_value() || fieldOpt.has_value())) {
+        generateArrayAccess(call, nullptr);
+        return;
     }
 
     // Generate receiver
@@ -615,6 +621,98 @@ void MethodCodeGenerator::generateMethodCall(SimpleExpr1Node* call) {
     for (auto* dt : argTypes) {
         delete dt;
     }
+}
+
+void MethodCodeGenerator::generateArrayAccess(SimpleExpr1Node *call, ArgumentExprsNode *index) {
+    if (call == nullptr || call->simpleExpr1 == nullptr || call->simpleExpr1->identifier == nullptr) {
+        throw std::runtime_error("generateArrayAccess: bad call node");
+    }
+
+    std::string arrayName = call->simpleExpr1->identifier->name;
+
+    // Получить мета-информацию о массиве (локальная переменная или поле)
+    optional<MethodVarMetaInfo *> localVarOpt = method->resolveLocal(arrayName, currentScope);
+    optional<FieldMetaInfo *> fieldOpt = currentClass->resolveField(arrayName, currentClass);
+
+    if (!localVarOpt.has_value() && !fieldOpt.has_value()) {
+        throw std::runtime_error("Array access to unknown identifier: " + arrayName);
+    }
+
+    DataType arrayType;
+    int localIndex = -1;
+    FieldMetaInfo *fieldInfo = nullptr;
+
+    if (localVarOpt.has_value()) {
+        // Локальная переменная
+        auto *localVar = localVarOpt.value();
+        if (localVar == nullptr) {
+            throw std::runtime_error("Internal error: local var meta not found: " + arrayName);
+        }
+        arrayType = localVar->dataType;
+        localIndex = localSlot(localVar->number);
+    } else {
+        // поле текущего класса
+        fieldInfo = fieldOpt.value();
+        if (fieldInfo == nullptr) {
+            throw std::runtime_error("Internal error: field meta not found: " + arrayName);
+        }
+        arrayType = fieldInfo->dataType;
+    }
+
+    DataType elemType = arrayType.arrayElementType();
+
+    // Загрузить ссылку на массив на стек
+    if (localVarOpt.has_value()) {
+        if (localIndex >= 0 && localIndex <= 3) {
+            switch (localIndex) {
+                case 0: code.emit(Instruction::aload_0); break;
+                case 1: code.emit(Instruction::aload_1); break;
+                case 2: code.emit(Instruction::aload_2); break;
+                case 3: code.emit(Instruction::aload_3); break;
+                default: break;
+            }
+        } else {
+            if (localIndex <= 255) {
+                code.emit(Instruction::aload, (uint8_t)localIndex);
+            } else {
+                code.emit(Instruction::aload, (uint16_t)localIndex);
+            }
+        }
+    } else {
+        // поле: загрузить this, затем getfield
+        code.emit(Instruction::aload_0);
+        // Добавляем ссылку на поле в constant pool
+        auto* fieldRef = constantPool->addFieldRef(currentClass, fieldInfo);
+        code.emit(Instruction::getfield, fieldRef->index);
+    }
+
+    // Вычислить индекс
+    if (call->argumentExprs == nullptr ||
+        call->argumentExprs->exprs == nullptr ||
+        call->argumentExprs->exprs->exprs == nullptr ||
+        call->argumentExprs->exprs->exprs->empty()) {
+        throw std::runtime_error("Array access without index: " + arrayName);
+    }
+
+    // Берём первый аргумент как индекс. Поддержка нескольких аргументов (многомерных) не реализована.
+    list<ExprNode *> idxExprIt = (*(call->argumentExprs->exprs->exprs));
+    auto it = idxExprIt.begin();
+    std::advance(it, 0);
+    ExprNode *idxExpr = *it;
+
+    if (idxExpr == nullptr) {
+        throw std::runtime_error("Null index expression for array access: " + arrayName);
+    }
+
+    // Выполнить загрузку элемента из массива (удаляет arrayref и index, кладёт элемент)
+    // code.emit(Instruction::aaload);
+
+    // Генерируем вызов метода доступа на объекте rtl/Array
+    // arrayref уже на стеке
+    generateExprNode(idxExpr);
+
+    auto* methodRef = constantPool->addMethodRef("rtl/Array", "apply", "(Lrtl/Int;)Lrtl/Any;");
+    code.emit(Instruction::invokevirtual, methodRef->index);
 }
 
 void MethodCodeGenerator::generateFieldAccess(SimpleExpr1Node* access) {
