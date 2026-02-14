@@ -2,9 +2,9 @@ package rtl;
 
 import java.util.Arrays;
 
-public final class Array extends Any {
+public final class Array extends rtl.Any {
 
-    private final Any[] elements;
+    private final rtl.Any[] elements;
 
     /** Создание массива фиксированной длины, заполненного null. */
     public Array(Int length) {
@@ -79,5 +79,9 @@ public final class Array extends Any {
 
     public Boolean isInstanceOf(Any cls) {
         return new Boolean(cls.getClass().isInstance(this));
+    }
+
+    public static Array ofSize(int size) {
+        return new rtl.Array(new Int(size));
     }
 }
