@@ -2330,7 +2330,7 @@ RtlClassMetaInfo *RtlClassMetaInfo::initArray() {
     constructor1->classMetaInfo = rec;
     constructor1->modifiers.modifiers.push_back(_PUBLIC);
     constructor1->returnType = DataType::Kind::Any;
-    constructor1->name = "<init7>";
+    constructor1->name = "<init>";
     constructor1->jvmName = NameTransformer::encode(constructor1->name);
     constructor1->args = vector<ArgMetaInfo*>();
     ArgMetaInfo* constructor1Arg = new ArgMetaInfo();
@@ -2344,7 +2344,7 @@ RtlClassMetaInfo *RtlClassMetaInfo::initArray() {
     constructor2->classMetaInfo = rec;
     constructor2->modifiers.modifiers.push_back(_PUBLIC);
     constructor2->returnType = DataType::Kind::Any;
-    constructor2->name = "<init8>";
+    constructor2->name = "<init>";
     constructor2->jvmName = NameTransformer::encode(constructor2->name);
     constructor2->args = vector<ArgMetaInfo*>();
     ArgMetaInfo* constructor2Arg = new ArgMetaInfo();
