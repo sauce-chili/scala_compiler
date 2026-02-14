@@ -905,10 +905,11 @@ void MethodCodeGenerator::generateArrayCreation(SimpleExpr1Node* arrNode) {
                 auto* updateMethodRef = constantPool->addMethodRef(
                     "rtl/Array",
                     "update",
-                    "(Lrtl/Int;Ljava/lang/Object;)V"
+                    "(Lrtl/Int;Lrtl/Any;)Lrtl/Unit;"
                 );
                 code.emit(Instruction::invokevirtual, updateMethodRef->index);
-                code.adjustStack(-3);
+                code.emit(Instruction::pop); // Array.update кладет на стек rtl.Unit, который нужно убрать для корректной обработки (он не несет смысловой нагрузки)
+                code.adjustStack(-3 + 1); // +1 из-за pop
                 idx++;
             }
         }
@@ -950,10 +951,11 @@ void MethodCodeGenerator::generateArrayCreation(SimpleExpr1Node* arrNode) {
                 auto* updateMethodRef = constantPool->addMethodRef(
                     "rtl/Array",
                     "update",
-                    "(Lrtl/Int;Ljava/lang/Object;)V"
+                    "(Lrtl/Int;Lrtl/Any;)Lrtl/Unit;"
                 );
                 code.emit(Instruction::invokevirtual, updateMethodRef->index);
-                code.adjustStack(-3);
+                code.emit(Instruction::pop); // Array.update кладет на стек rtl.Unit, который нужно убрать для корректной обработки (он не несет смысловой нагрузки)
+                code.adjustStack(-3 + 1); // +1 из-за pop
                 idx++;
             }
         }
@@ -1022,10 +1024,11 @@ void MethodCodeGenerator::generateAssignment(AssignmentNode* assign) {
         auto* methodRef = constantPool->addMethodRef(
             "rtl/Array",
             "update",
-            "(Lrtl/Int;Ljava/lang/Object;)V"
+            "(Lrtl/Int;Lrtl/Any;)Lrtl/Unit;"
         );
         code.emit(Instruction::invokevirtual, methodRef->index);
-        code.adjustStack(-3);
+        code.emit(Instruction::pop); // Array.update кладет на стек rtl.Unit, который нужно убрать для корректной обработки (он не несет смысловой нагрузки)
+        code.adjustStack(-3 + 1); // +1 из-за pop
     }
 }
 
