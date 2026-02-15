@@ -84,4 +84,8 @@ public final class Array extends rtl.Any {
     public static Array ofSize(int size) {
         return new rtl.Array(new Int(size));
     }
+
+    public rtl.Iterator iterator() {
+        return new rtl.ArrayIterator(this);
+    }
 }
