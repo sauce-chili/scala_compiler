@@ -7,6 +7,7 @@
 
 #include "BytecodeBuffer.h"
 #include "Instructions.h"
+#include "nodes/Types.h"
 #include "semantic/tables/tables.hpp"
 #include "semantic/scopes/Scope.h"
 
@@ -70,7 +71,7 @@ private:
 
     // Operators via RTL
     void generateBinaryOp(const std::string& op, const DataType& leftType, const DataType& rightType);
-    void generateUnaryOp(const std::string& op, const DataType& type);
+    void generateUnaryOp(PrefixExprType op, const DataType& type);
 
     // RTL type handling
     void generateRtlMethodCall(const std::string& rtlClass, const std::string& methodName,
