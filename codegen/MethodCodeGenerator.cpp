@@ -1203,7 +1203,16 @@ void MethodCodeGenerator::generateFor(EnumeratorsNode* enums, ExprNode* body) {
     code.emit(Instruction::invokevirtual, iteratorMethodRef->index);
 
     // Store iterator to temp slot
-    uint16_t iterSlot = getMaxLocals();
+    // При создании итератора в jvm создается переменная, которая не отображается нигде в таблицах
+    // Следовательно, Jvm не выделяла под него слот (память) и генерация крашилась
+    std::string iterVarName = "<iter_" + std::to_string(method->localVarCounter++) + ">";
+    method->addLocalVar(VarDefsNode::createVar(
+            IdNode::createId(iterVarName),
+            SimpleTypeNode::createIdTypeNode(IdNode::createId("rtl/Iterator")),
+            nullptr
+    ), currentScope);
+    uint16_t iterSlot = method->resolveLocal(iterVarName, currentScope).value()->number;
+    //uint16_t iterSlot = getMaxLocals();
     code.emit(Instruction::astore, static_cast<uint8_t>(iterSlot));
 
     code.emitLabel(loopStart);
@@ -1232,7 +1241,7 @@ void MethodCodeGenerator::generateFor(EnumeratorsNode* enums, ExprNode* body) {
     auto* nextMethodRef = constantPool->addMethodRef(
         "rtl/Iterator",
         "next",
-        "()Ljava/lang/Object;"
+        "()Lrtl/Any;"
     );
     code.emit(Instruction::invokevirtual, nextMethodRef->index);
 
@@ -1249,7 +1258,6 @@ void MethodCodeGenerator::generateFor(EnumeratorsNode* enums, ExprNode* body) {
 
     // Generate body
     generateExprNode(body);
-    code.emit(Instruction::pop);
 
     code.emitBranch(Instruction::goto_, loopStart);
 
