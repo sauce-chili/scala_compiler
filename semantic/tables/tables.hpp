@@ -324,6 +324,7 @@ public:
     static RtlClassMetaInfo* Char;
     static RtlClassMetaInfo* Double;
     static RtlClassMetaInfo* Boolean;
+    static RtlClassMetaInfo* Iterator;
     static RtlClassMetaInfo* Array;
 
     std::string javaDescriptor = "java/lang/";
@@ -360,6 +361,7 @@ private:
     static RtlClassMetaInfo* initChar();
     static RtlClassMetaInfo* initDouble();
     static RtlClassMetaInfo* initBoolean();
+    static RtlClassMetaInfo* initIterator();
     static RtlClassMetaInfo* initArray();
 };
 

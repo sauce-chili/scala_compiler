@@ -626,6 +626,7 @@ RtlClassMetaInfo* RtlClassMetaInfo::Unit = nullptr;
 RtlClassMetaInfo* RtlClassMetaInfo::Char = nullptr;
 RtlClassMetaInfo* RtlClassMetaInfo::Double = nullptr;
 RtlClassMetaInfo* RtlClassMetaInfo::Boolean = nullptr;
+RtlClassMetaInfo* RtlClassMetaInfo::Iterator = nullptr;
 RtlClassMetaInfo* RtlClassMetaInfo::Array = nullptr;
 
 void RtlClassMetaInfo::initializeRtlClasses() {
@@ -656,6 +657,9 @@ void RtlClassMetaInfo::initializeRtlClasses() {
 
     Predef = RtlClassMetaInfo::initPredef();
     ctx().addRTL(Predef);
+
+    Iterator = RtlClassMetaInfo::initIterator();
+    ctx().addRTL(Iterator);
 
     Array = RtlClassMetaInfo::initArray();
     ctx().addRTL(Array);
@@ -2311,6 +2315,38 @@ RtlClassMetaInfo *RtlClassMetaInfo::initPredef() {
     hashCode->jvmName = NameTransformer::encode(hashCode->name);
     hashCode->args = vector<ArgMetaInfo*>();
     rec->methods[hashCode->name].push_back(hashCode);
+
+    return rec;
+}
+
+RtlClassMetaInfo *RtlClassMetaInfo::initIterator() {
+    string className = "Iterator";
+
+    RtlClassMetaInfo* rec = new RtlClassMetaInfo(className, _JAVA);
+    rec->jvmName = "rtl/Iterator";
+
+    rec->parent = nullptr;
+
+    rec->modifiers.modifiers.push_back(_PUBLIC);
+    rec->modifiers.modifiers.push_back(_ABSTRACT);
+
+    MethodMetaInfo* hasNext = new MethodMetaInfo();
+    hasNext->classMetaInfo = rec;
+    hasNext->modifiers.modifiers.push_back(_PUBLIC);
+    hasNext->returnType = DataType::Kind::Bool;
+    hasNext->name = "hasNext";
+    hasNext->jvmName = NameTransformer::encode(hasNext->name);
+    hasNext->args = vector<ArgMetaInfo*>();
+    rec->methods[hasNext->name].push_back(hasNext);
+
+    MethodMetaInfo* next = new MethodMetaInfo();
+    next->classMetaInfo = rec;
+    next->modifiers.modifiers.push_back(_PUBLIC);
+    next->returnType = DataType::Kind::Any;
+    next->name = "next";
+    next->jvmName = NameTransformer::encode(next->name);
+    next->args = vector<ArgMetaInfo*>();
+    rec->methods[next->name].push_back(next);
 
     return rec;
 }
