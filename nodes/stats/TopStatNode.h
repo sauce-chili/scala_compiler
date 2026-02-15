@@ -6,9 +6,7 @@
 #include "../modifier/ModifiersNode.h"
 #include "../templates/TemplateDefNode.h"
 #include "../class/ClassParamsNode.h"
-
-extern const std::string CONSTRUCTOR_NAME;
-extern const std::string JVM_CONSTRUCTOR_NAME;
+#include "common/CommonConstants.h"
 
 class TopStatNode: public Node {
 public:

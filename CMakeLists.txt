@@ -64,3 +64,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
             PROPERTIES COMPILE_OPTIONS "/wd5033;/wd4996"
     )
 endif ()
+
+if (WIN32)
+    target_link_libraries(scala_lexer ws2_32)
+endif ()

@@ -11,18 +11,12 @@
 #include <string>
 
 #include "tables.hpp"
+#include "common/CommonConstants.h"
 #include "nodes/generator/GeneratorNode.h"
 #include "semantic/scopes/Scope.h"
 #include "semantic/tools/datatype.h"
 #include "semantic/tools/tools.h"
 #include "semantic/tools/NameTransformer.h"
-
-// Имя конструктора в Scala (после преобразования AST)
-extern const std::string CONSTRUCTOR_NAME;
-// Имя конструктора в JVM байткоде
-extern const std::string JVM_CONSTRUCTOR_NAME;
-// Имя базового класса Scala
-extern const std::string BASE_SCALA_CLASS;
 
 class Scope;
 class FunDefNode;

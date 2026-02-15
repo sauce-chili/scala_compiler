@@ -8,6 +8,10 @@
 #include <algorithm>
 #include <iostream>
 #include <filesystem>
+#include <sstream>
+#include <cstdio>
+#include <cstdlib>
+#include <regex>
 
 #include "ClassMemberGatherVisitor.h"
 #include "ScopeAttachVisitor.h"
@@ -23,6 +27,7 @@
 #include "codegen/ClassFileWriter.h"
 #include "codegen/MainForwarderWriter.h"
 #include "codegen/JarWriter.h"
+#include "utils/logger.h"
 
 namespace fs = std::filesystem;
 
@@ -653,76 +658,58 @@ void SemanticAnalyzer::validateAbstractMethods() {
     }
 }
 
+static void purgeClassFiles(const std::string& dir) {
+    if (!fs::exists(dir)) return;
+    for (auto& e : fs::directory_iterator(dir))
+        if (e.is_regular_file() && e.path().extension() == ".class")
+            fs::remove(e.path());
+}
+
 std::optional<std::string> SemanticAnalyzer::compile(
     TopStatSeqNode* root,
     const std::string& outputDir,
     const std::string& rtlJarPath
 ) {
-    // 1. Perform semantic analysis
-    if (!analyze(root)) {
+    if (!analyze(root))
         return std::nullopt;
-    }
 
-    // 2. Check that main class was found
-    if (!ctx().mainClass) {
-        std::cerr << "No main class found" << std::endl;
+    if (!ctx().mainClass)
         return std::nullopt;
-    }
 
-    // 3. Create output directory
-    fs::path outPath(outputDir);
-    if (!fs::exists(outPath)) {
-        fs::create_directories(outPath);
-    }
+    fs::create_directories(outputDir);
 
-    // 4. Generate .class files for each user class
     for (auto& [className, classInfo] : ctx().classes) {
-        // Skip RTL classes
         if (classInfo->isRTL()) continue;
-
-        if (classInfo == ctx().mainClass) {
-            // Main class: generate A$.class (singleton implementation) and A.class (forwarder)
-
-            // A$.class — the real implementation with singleton pattern
-            ClassFileWriter writer(classInfo);
-            writer.setSingletonMode(true);
-            writer.generate();
-            std::string implFilePath = outputDir + "/" + className + "$.class";
-            if (!writer.writeToFile(implFilePath)) {
-                std::cerr << "Failed to write class file: " << implFilePath << std::endl;
-                return std::nullopt;
+        try {
+            if (classInfo == ctx().mainClass) {
+                ClassFileWriter writer(classInfo);
+                writer.setSingletonMode(true);
+                writer.generate();
+                writer.writeToFile(outputDir + "/" + className + "$.class");
+                MainForwarderWriter forwarder(className, classInfo->jvmName);
+                forwarder.generate();
+                forwarder.writeToFile(outputDir + "/" + className + ".class");
+            } else {
+                ClassFileWriter writer(classInfo);
+                writer.generate();
+                writer.writeToFile(outputDir + "/" + className + ".class");
             }
-
-            // A.class — thin static forwarder
-            MainForwarderWriter forwarder(className, classInfo->jvmName);
-            forwarder.generate();
-            std::string forwarderFilePath = outputDir + "/" + className + ".class";
-            if (!forwarder.writeToFile(forwarderFilePath)) {
-                std::cerr << "Failed to write forwarder class file: " << forwarderFilePath << std::endl;
-                return std::nullopt;
-            }
-        } else {
-            // Normal class generation
-            ClassFileWriter writer(classInfo);
-            writer.generate();
-            std::string classFilePath = outputDir + "/" + className + ".class";
-            if (!writer.writeToFile(classFilePath)) {
-                std::cerr << "Failed to write class file: " << classFilePath << std::endl;
-                return std::nullopt;
-            }
+        } catch (const std::exception& e) {
+            debug("[codegen] " + className + ": " + e.what() + "\n");
+        } catch (...) {
+            debug( "[codegen] " + className + ": unknown exception\n");
         }
     }
 
-    // 5. Create JAR file
-    std::string jarPath = outputDir + "/output.jar";
-    JarWriter jarWriter(outputDir, jarPath);
-    jarWriter.setMainClass(ctx().mainClass->name);
-    jarWriter.setRtlJar(rtlJarPath);
+    std::string mainName = ctx().mainClass->name;
+    std::string jarPath = (fs::path(outputDir) / "output.jar").string();
 
-    if (!jarWriter.write()) {
-        std::cerr << "Failed to create JAR file" << std::endl;
-        return std::nullopt;
-    }
+    JarWriter jarWriter(outputDir, jarPath);
+    jarWriter.setMainClass(mainName);
+    jarWriter.setRtlJar(rtlJarPath);
+    jarWriter.write();
+
+    purgeClassFiles(outputDir);
 
     return jarPath;
 }

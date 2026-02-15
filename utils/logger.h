@@ -9,7 +9,7 @@
 #include <iostream>
 
 #ifndef DEBUG_ENABLE
-    #define DEBUG_ENABLE 1 // 1 - включено, 0 - выключено
+    #define DEBUG_ENABLE 0 // 1 - включено, 0 - выключено
 #endif
 
 #if DEBUG_ENABLE

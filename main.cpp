@@ -2,7 +2,9 @@
 #include <cstdio>
 #include <string>
 #include <cstring>
+#include <filesystem>
 
+#include "common/CommonConstants.h"
 #include "nodes/stats/TopStatSeqNode.h"
 #include "semantic/SemanticAnalyzer.h"
 #include "semantic/SemanticContext.h"
@@ -19,20 +21,14 @@ int yyparse(TopStatSeqNode **root);
 
 int yylex();
 
-extern "C" {
-extern FILE *real_in;
-extern int real_lineno;
-}
-
-extern int yydebug;
+std::string real_path;
 
 extern const char *get_bison_token_name(int token);
 
 void yyerror(TopStatSeqNode **out_root, const char *s) {
-    // Можно использовать внешнюю переменную yylineno, если она объявлена
-    extern int real_lineno;
     cerr << "Parser error at line " << real_lineno << ": " << s << endl;
 }
+
 
 void print_help(const char *prog_name) {
     std::cout << "Usage: " << prog_name << " [options] <filename>\n";
@@ -87,7 +83,8 @@ int main(int argc, char **argv) {
     }
 
     // 1. Открываем файл
-    FILE *input_file = fopen(inputFile.c_str(), "r");
+    real_path = std::filesystem::canonical(inputFile).string();
+    FILE *input_file = fopen(real_path.c_str(), "r");
     if (!input_file) {
         std::cerr << "Cannot open file: " << inputFile << std::endl;
         return -1;
@@ -180,8 +177,8 @@ int runCompile(TopStatSeqNode *root, bool runAfterCompile, bool analyzeOnly,
         std::cout << "\n\n\n";
         std::cout << "--------------------------------------------------------------------------\n\n";
         std::string mainClassName = ctx().mainClass ? ctx().mainClass->name : "Main";
-        std::string cmd =
-                "java -cp \"" + jarPath + ";" + rtlJarPath + "\" " + mainClassName;
+        std::string cp = "\"" + jarPath + ";" + rtlJarPath + "\"";
+        std::string cmd = "java -cp " + cp + " " + mainClassName;
         int exitCode = std::system(cmd.c_str());
         std::cout << "\n--------------------------------------------------------------------------";
         return exitCode;

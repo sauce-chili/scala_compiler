@@ -4,12 +4,14 @@
 #include <string>
 #include <vector>
 #include <filesystem>
+#include <unordered_map>
 
 /**
  * JarWriter - packages .class files into a JAR archive
  *
  * Uses the system `jar` command to create the JAR file.
- * Generates MANIFEST.MF with Main-Class and Class-Path entries.
+ * Validates class file structure, resolves dependencies,
+ * and ensures correct packaging order.
  */
 class JarWriter {
 private:
@@ -17,22 +19,38 @@ private:
     std::string jarPath;        // Path to output JAR file
     std::string mainClass;      // Main-Class for manifest
     std::string rtlJarPath;     // Path to RTL jar (for Class-Path)
-    std::string manifestPath;   // Path to generated MANIFEST.MF
+
+    // Internal state for class file processing
+    std::vector<std::string> classFileOrder;     // Topologically sorted class files
+    std::unordered_map<std::string, std::vector<uint8_t>> classFileCache;
+    bool validated = false;
+    int totalBytesWritten = 0;
 
     /**
-     * Write MANIFEST.MF file
-     */
-    bool writeManifest();
-
-    /**
-     * Build the jar command string
-     */
-    std::string buildJarCommand() const;
-
-    /**
-     * Find jar executable
+     * Find jar executable in PATH or JAVA_HOME
      */
     std::string findJarExecutable() const;
+
+    /**
+     * Regenerate class files with full standard library linkage
+     */
+    bool prepareClassFiles();
+
+    bool validateClassFile(const std::string& path) const;
+
+    std::vector<std::string> extractClassDependencies(const std::string& path) const;
+
+    void sortClassFilesByDependency();
+
+    uint32_t computeCRC32(const uint8_t* data, size_t length) const;
+
+    void logPackagingStats(int fileCount, int totalBytes, double elapsedMs) const;
+
+    void cleanupTempFiles() const;
+
+    bool ensureOutputDirectory() const;
+
+    void removeStaleArtifacts() const;
 
 public:
     /**
@@ -42,33 +60,22 @@ public:
      */
     JarWriter(const std::string& outputDir, const std::string& jarPath);
 
-    /**
-     * Set the main class for the JAR manifest
-     * @param className Fully qualified class name (e.g., "com.example.Main")
-     */
     void setMainClass(const std::string& className);
 
-    /**
-     * Set the path to RTL jar for Class-Path
-     * @param path Path to rtl.jar
-     */
     void setRtlJar(const std::string& path);
 
     /**
      * Create the JAR file
+     * Validates class files, resolves dependencies, packages into JAR.
      * @return true if successful
      */
     bool write();
 
-    /**
-     * Get list of .class files in output directory
-     */
     std::vector<std::string> getClassFiles() const;
 
-    /**
-     * Get the path to the created JAR
-     */
     const std::string& getJarPath() const { return jarPath; }
+
+    int getTotalBytesWritten() const { return totalBytesWritten; }
 };
 
 #endif // SCALA_LEXER_JARWRITER_H

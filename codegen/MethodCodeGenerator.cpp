@@ -19,8 +19,7 @@
 
 #include <stdexcept>
 
-// JVM Constructor name
-extern const std::string JVM_CONSTRUCTOR_NAME;
+#include "common/CommonConstants.h"
 
 MethodCodeGenerator::MethodCodeGenerator(MethodMetaInfo* method, ClassMetaInfo* currentClass, ConstantPoolBuilder* pool)
     : method(method), currentClass(currentClass), constantPool(pool) {

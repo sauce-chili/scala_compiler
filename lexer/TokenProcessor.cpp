@@ -7,7 +7,7 @@
 #include <cstring>
 #include <iostream>
 
-extern "C" int real_lineno;
+#include "common/CommonConstants.h"
 
 extern const char *get_bison_token_name(int token);
 
