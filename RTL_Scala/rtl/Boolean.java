@@ -27,6 +27,7 @@ public final class Boolean extends Any {
     public Boolean $up(Boolean other)      { return valueOf(this.value ^ other.value); }
     public Boolean not()                   { return valueOf(!this.value); }
     public Boolean $bang()                 { return valueOf(!this.value); }
+    public Boolean unary_$bang()           { return valueOf(!this.value); }
 
     @Override
     public boolean equals(Object o) {
