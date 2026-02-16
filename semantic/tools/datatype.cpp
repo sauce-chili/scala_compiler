@@ -163,7 +163,7 @@ string DataType::toJvmDescriptor() const {
         case Kind::Double:  return "Lrtl/Double;";  // Double реализуется через float
         case Kind::Char:    return "Lrtl/Char;";
         case Kind::Bool:    return "Lrtl/Boolean;";
-        case Kind::Unit:    return "V"; // Чтоб поддерживать Lrtl/Unit; нужно return (empty) преобразовать в return new Unit()
+        case Kind::Unit:    return "Lrtl/Unit;"; // Чтоб поддерживать Lrtl/Unit; нужно return (empty) преобразовать в return new Unit()
         case Kind::String:  return "Lrtl/String;";
         case Kind::Class:   {
             if (className == "StdIn" || className == "Predef" || className == "Any")

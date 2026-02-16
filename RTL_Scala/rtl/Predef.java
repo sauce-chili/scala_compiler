@@ -7,22 +7,25 @@ public final class Predef extends Any {
     /**
      * Prints an object using its toString().
      */
-    public void print(Any x) {
+    public rtl.Unit print(Any x) {
         System.out.print(x == null ? "null" : x.toString());
+        return new Unit();
     }
 
     /**
      * Prints a newline.
      */
-    public void println() {
+    public rtl.Unit println() {
         System.out.println();
+        return new Unit();
     }
 
     /**
      * Prints an object followed by a newline.
      */
-    public void println(Any x) {
+    public rtl.Unit println(Any x) {
         System.out.println(x == null ? "null" : x.toString());
+        return new Unit();
     }
 
     @Override
