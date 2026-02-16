@@ -240,7 +240,7 @@ void MethodCodeGenerator::generateInfixExpr(InfixExprNode* infix) {
         // Handle prefix operator via RTL
         if (infix->prefixExpr->type != _NO_UNARY_OPERATOR) {
             DataType type = infix->prefixExpr->inferType(currentClass, method, currentScope);
-            generateUnaryOp(prefixExprToString(infix->prefixExpr->type), type);
+            generateUnaryOp(infix->prefixExpr->type, type);
         }
         return;
     }
@@ -594,25 +594,9 @@ void MethodCodeGenerator::generateMethodCall(SimpleExpr1Node* call) {
 
     MethodMetaInfo* resolvedMethod = methodOpt.value();
 
-    // Check if receiver is an RTL primitive type (Int, Double, Char, Bool)
-    // These map to JVM primitives (I, F, C, Z), so invokevirtual won't work.
-    // Use invokestatic with receiver type prepended to descriptor.
-    bool isRtlPrimitive = false;
-    if (auto* rtl = dynamic_cast<RtlClassMetaInfo*>(receiverClass)) {
-        DataType::Kind k = receiverType.kind;
-        isRtlPrimitive = (k == DataType::Kind::Int || k == DataType::Kind::Double ||
-                          k == DataType::Kind::Char || k == DataType::Kind::Bool);
-    }
-
     if (isSuperCall) {
         auto* methodRef = constantPool->addMethodRef(receiverClass, resolvedMethod);
         code.emit(Instruction::invokespecial, methodRef->index);
-    } else if (isRtlPrimitive) {
-        // invokestatic: receiver is first arg, so prepend its type to descriptor
-        std::string origDesc = resolvedMethod->jvmDescriptor();
-        auto* methodRef = constantPool->addMethodRef(
-            receiverClass->jvmName, resolvedMethod->jvmName, origDesc);
-        code.emit(Instruction::invokevirtual, methodRef->index);
     } else {
         auto* methodRef = constantPool->addMethodRef(receiverClass, resolvedMethod);
         code.emit(Instruction::invokevirtual, methodRef->index);
@@ -1313,20 +1297,19 @@ void MethodCodeGenerator::generateBinaryOp(const std::string& op, const DataType
     code.adjustStack(-1);  // pops both operands, pushes result
 }
 
-void MethodCodeGenerator::generateUnaryOp(const std::string& op, const DataType& type) {
-    // Unary plus is a no-op
-    if (op == "_UNARY_PLUS" || op == "unary_$plus") return;
+void MethodCodeGenerator::generateUnaryOp(PrefixExprType op, const DataType& type) {
+    if (op == _UNARY_PLUS || op == _NO_UNARY_OPERATOR) return;
 
-    // All unary operations go through RTL method calls
     RtlClassMetaInfo* rtlClass = RtlClassMetaInfo::getRtlClassInfo(type.toString());
     if (rtlClass == nullptr) return;
 
-    // Map internal op names to Scala method names
     std::string methodName;
-    if (op == "_UNARY_MINUS" || op == "unary_$minus") methodName = "unary_-";
-    else if (op == "_NOT" || op == "unary_$bang") methodName = "unary_!";
-    else if (op == "_BIT_NOT" || op == "unary_$tilde") methodName = "unary_~";
-    else return;
+    switch (op) {
+        case _UNARY_MINUS: methodName = "unary_-"; break;
+        case _NOT:         methodName = "unary_!"; break;
+        case _BIT_NOT:     methodName = "unary_~"; break;
+        default: return;
+    }
 
     std::vector<DataType*> noArgs;
     auto methodOpt = rtlClass->resolveMethod(methodName, noArgs, rtlClass);
@@ -1334,26 +1317,22 @@ void MethodCodeGenerator::generateUnaryOp(const std::string& op, const DataType&
 
     MethodMetaInfo* rtlMethod = methodOpt.value();
 
-    // Use invokestatic: operand becomes first argument
-    // Original descriptor ()I -> static descriptor (I)I
-    std::string origDescriptor = rtlMethod->jvmDescriptor();
-    std::string operandDescriptor = type.toJvmDescriptor();
-    std::string staticDescriptor = "(" + operandDescriptor + origDescriptor.substr(1);
-
-    auto* methodRef = constantPool->addMethodRef(rtlClass->jvmName, rtlMethod->jvmName, staticDescriptor);
-    code.emit(Instruction::invokestatic, methodRef->index);
+    // Use invokevirtual: operand is already on stack as receiver
+    std::string descriptor = rtlMethod->jvmDescriptor();  // e.g. "()Lrtl/Int;"
+    auto* methodRef = constantPool->addMethodRef(rtlClass->jvmName, rtlMethod->jvmName, descriptor);
+    code.emit(Instruction::invokevirtual, methodRef->index);
 }
 
 // ==================== Helpers ====================
 
 bool MethodCodeGenerator::isStaticMethod() const {
-    return method != nullptr && method->name == "main" && currentClass == ctx().mainClass;
+    // All user methods are instance methods now (main runs via singleton pattern)
+    return false;
 }
 
 uint16_t MethodCodeGenerator::localSlot(uint16_t number) const {
-    // For instance methods, slot 0 = this, so args/locals shift by +1
-    // For static methods, args start at slot 0
-    return isStaticMethod() ? number : number + 1;
+    // Slot 0 = this for all instance methods, so args/locals shift by +1
+    return number + 1;
 }
 
 uint16_t MethodCodeGenerator::getLocalSlot(const std::string& varName) {

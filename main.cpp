@@ -5,6 +5,7 @@
 
 #include "nodes/stats/TopStatSeqNode.h"
 #include "semantic/SemanticAnalyzer.h"
+#include "semantic/SemanticContext.h"
 #include "utils/output/dot.cpp"
 #include "semantic/error/SemanticError.h"
 
@@ -178,6 +179,7 @@ int runCompile(TopStatSeqNode *root, bool runAfterCompile, bool analyzeOnly,
         std::cout << "Running JAR..." << std::endl;
         std::cout << "\n\n\n";
         std::cout << "--------------------------------------------------------------------------\n\n";
+        std::string mainClassName = ctx().mainClass ? ctx().mainClass->name : "Main";
         std::string cmd =
                 "java -noverify -cp \"" + jarPath + ";" + rtlJarPath + "\" A";
         int exitCode = std::system(cmd.c_str());

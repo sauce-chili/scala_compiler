@@ -21,6 +21,7 @@
 #include "utils/output/dot.cpp"
 #include "utils/output/tree_converter.cpp"
 #include "codegen/ClassFileWriter.h"
+#include "codegen/MainForwarderWriter.h"
 #include "codegen/JarWriter.h"
 
 namespace fs = std::filesystem;
@@ -271,8 +272,8 @@ static void checkMethodOverride(ClassMetaInfo* info, const std::string& name, Me
         return;
     }
 
-    // Ищем метод, доступный наследнику
-    auto parentMethodOpt = info->parent->resolveMethod(name, method->getArgsTypes(), info);
+    // Ищем метод с точно такой же сигнатурой у родителя (exactMatch=true)
+    auto parentMethodOpt = info->parent->resolveMethod(name, method->getArgsTypes(), info, PARENTS_CONSIDER, false, true);
 
     if (parentMethodOpt.has_value()) {
         MethodMetaInfo* parentMethod = parentMethodOpt.value();
@@ -355,6 +356,12 @@ bool SemanticAnalyzer::analyze(TopStatSeqNode *root) {
 
     // Проверяем наличие main класса и сохраняем в контекст
     validateMainMethod();
+
+    // Rename main class jvmName to ClassName$ for singleton pattern
+    // Must happen BEFORE ConstantPoolVisitor so all CP entries use the $ name
+    if (ctx().mainClass) {
+        ctx().mainClass->jvmName = ctx().mainClass->name + "$";
+    }
 
     if (!ErrorTable::errors.empty()) {
         std::cerr << "Semantic errors after validation:" << std::endl << ErrorTable::getErrors() << std::endl;
@@ -674,13 +681,36 @@ std::optional<std::string> SemanticAnalyzer::compile(
         // Skip RTL classes
         if (classInfo->isRTL()) continue;
 
-        ClassFileWriter writer(classInfo);
-        writer.generate();
+        if (classInfo == ctx().mainClass) {
+            // Main class: generate A$.class (singleton implementation) and A.class (forwarder)
 
-        std::string classFilePath = outputDir + "/" + className + ".class";
-        if (!writer.writeToFile(classFilePath)) {
-            std::cerr << "Failed to write class file: " << classFilePath << std::endl;
-            return std::nullopt;
+            // A$.class — the real implementation with singleton pattern
+            ClassFileWriter writer(classInfo);
+            writer.setSingletonMode(true);
+            writer.generate();
+            std::string implFilePath = outputDir + "/" + className + "$.class";
+            if (!writer.writeToFile(implFilePath)) {
+                std::cerr << "Failed to write class file: " << implFilePath << std::endl;
+                return std::nullopt;
+            }
+
+            // A.class — thin static forwarder
+            MainForwarderWriter forwarder(className, classInfo->jvmName);
+            forwarder.generate();
+            std::string forwarderFilePath = outputDir + "/" + className + ".class";
+            if (!forwarder.writeToFile(forwarderFilePath)) {
+                std::cerr << "Failed to write forwarder class file: " << forwarderFilePath << std::endl;
+                return std::nullopt;
+            }
+        } else {
+            // Normal class generation
+            ClassFileWriter writer(classInfo);
+            writer.generate();
+            std::string classFilePath = outputDir + "/" + className + ".class";
+            if (!writer.writeToFile(classFilePath)) {
+                std::cerr << "Failed to write class file: " << classFilePath << std::endl;
+                return std::nullopt;
+            }
         }
     }
 

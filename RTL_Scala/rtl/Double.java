@@ -23,6 +23,9 @@ public final class Double extends Any {
     public Double div(Double other) { return new Double(this.value / other.value); }
     public Double $div(Double other) { return new Double(this.value / other.value); }
 
+    public Double unary_$plus()  { return this; }
+    public Double unary_$minus() { return new Double(-this.value); }
+
     public Boolean lt(Double other) { return Boolean.valueOf(this.value < other.value); }
     public Boolean $less(Double other) { return Boolean.valueOf(this.value < other.value); }
     public Boolean le(Double other) { return Boolean.valueOf(this.value <= other.value); }

@@ -42,6 +42,10 @@ public final class Int extends Any {
 
     public Int neg() { return new Int(-this.value); }
 
+    public Int unary_$plus()  { return this; }
+    public Int unary_$minus() { return new Int(-this.value); }
+    public Int unary_$tilde() { return new Int(~this.value); }
+
     public Boolean lt(Int other)          { return Boolean.valueOf(this.value < other.value); }
     public Boolean $less(Int other)       { return Boolean.valueOf(this.value < other.value); }
     public Boolean le(Int other)          { return Boolean.valueOf(this.value <= other.value); }

@@ -66,7 +66,11 @@ std::string MethodMetaInfo::jvmDescriptor() {
         descriptor += arg->dataType.toJvmDescriptor();
     }
     descriptor += ")";
-    descriptor += returnType.toJvmDescriptor();
+    if (jvmName == JVM_CONSTRUCTOR_NAME) {
+        descriptor += "V";
+    } else {
+        descriptor += returnType.toJvmDescriptor();
+    }
     return descriptor;
 }
 
@@ -236,10 +240,9 @@ optional<MethodMetaInfo *> ClassMetaInfo::resolveMethod(
         const vector<DataType *>& argTypes,
         const ClassMetaInfo* accessFrom,
         int leftParents,
-        bool lookupPrivate)
+        bool lookupPrivate,
+        bool exactMatch)
 {
-    auto abcdef = ctx().classes;
-
     std::vector<Candidate> candidates;
 
     auto itMethods = methods.find(methodName);
@@ -253,7 +256,9 @@ optional<MethodMetaInfo *> ClassMetaInfo::resolveMethod(
             bool compatible = true;
             int sum = 0;
             for (size_t i = 0; i < existingArgs.size(); ++i) {
-                int d = this->subtypeDistance(existingArgs[i], argTypes[i]);
+                int d = exactMatch
+                    ? (*existingArgs[i] == *argTypes[i] ? 0 : -1)
+                    : this->subtypeDistance(existingArgs[i], argTypes[i]);
                 if (d < 0) { compatible = false; break; }
                 distances.push_back(d);
                 sum += d;
@@ -272,7 +277,7 @@ optional<MethodMetaInfo *> ClassMetaInfo::resolveMethod(
 
     if (candidates.empty()) {
         if (parent && leftParents > 0) {
-            return parent->resolveMethod(methodName, argTypes, accessFrom, leftParents - 1, lookupPrivate);
+            return parent->resolveMethod(methodName, argTypes, accessFrom, leftParents - 1, lookupPrivate, exactMatch);
         }
         return nullopt;
     }
@@ -526,8 +531,8 @@ optional<MethodMetaInfo *> ClassMetaInfo::addMethod(FunDefNode *funDefNode, Modi
         }
     }
 
-    // Проверка дубликатов - возвращаем nullopt, вызывающая сторона добавит ошибку
-    if (this->resolveMethod(methodName, signatureTypes, this).has_value()) {
+    // Проверка дубликатов (exactMatch=true: только точное совпадение типов, не subtype)
+    if (this->resolveMethod(methodName, signatureTypes, this, PARENTS_CONSIDER, false, true).has_value()) {
         for (auto *a: tempArgs) delete a;
         return nullopt;
     }
@@ -577,8 +582,8 @@ optional<MethodMetaInfo *> ClassMetaInfo::addMethod(DclNode *funDclNode) {
         }
     }
 
-    // Проверка дубликатов - возвращаем nullopt, вызывающая сторона добавит ошибку
-    if (this->resolveMethod(methodName, signatureTypes, this).has_value()) {
+    // Проверка дубликатов (exactMatch=true: только точное совпадение типов, не subtype)
+    if (this->resolveMethod(methodName, signatureTypes, this, PARENTS_CONSIDER, false, true).has_value()) {
         for (auto *a: tempArgs) delete a;
         return std::nullopt;
     }
