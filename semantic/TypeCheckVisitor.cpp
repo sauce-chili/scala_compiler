@@ -371,8 +371,40 @@ void TypeCheckVisitor::visitAssignment(AssignmentNode *node) {
 
     int line = node->fullId ? node->fullId->id : node->id;
 
-    // 1. ID_ASSIGNMENT: x = value
-    if (node->simpleExpr && !node->simpleExpr1) {
+    // 1. FIELD_ASSIGNMENT: obj.field = value
+    if (
+        node->simpleExpr
+        && node->simpleExpr->simpleExpr1
+        && node->simpleExpr->simpleExpr1->type == _EXPRESSION_FIELD_ACCESS
+    ) {
+        std::string fieldName = node->simpleExpr->simpleExpr1->identifier->name;
+        try {
+            DataType receiverType = node->simpleExpr->inferType(currentClass, currentMethod, currentScope);
+            DataType exprType = node->simpleExpr->simpleExpr1->simpleExpr->inferType(currentClass, currentMethod, currentScope);
+
+            if (receiverType.kind == DataType::Kind::Class) {
+                auto classIt = ctx().classes.find(receiverType.getClassName());
+                if (classIt != ctx().classes.end()) {
+                    ClassMetaInfo *receiverClass = classIt->second;
+                    auto fieldOpt = receiverClass->resolveField(fieldName, currentClass);
+
+                    if (fieldOpt.has_value()) {
+                        FieldMetaInfo *fieldInfo = fieldOpt.value();
+                        checkAssignment(fieldInfo, fieldName, exprType, line);
+                    } else {
+                        ErrorTable::addErrorToList(new SemanticError(
+                            SemanticError::UndefinedVar(line, fieldName)
+                        ));
+                    }
+                }
+            }
+        } catch (const SemanticError &err) {
+            ErrorTable::addErrorToList(new SemanticError(err));
+        }
+    }
+    // 2. ID_ASSIGNMENT: x = value
+    else if (node->simpleExpr && !node->simpleExpr1) {
+
         std::string varName = node->simpleExpr->simpleExpr1->identifier->name;
         try {
             DataType exprType = node->expr->inferType(currentClass, currentMethod, currentScope);
@@ -388,35 +420,8 @@ void TypeCheckVisitor::visitAssignment(AssignmentNode *node) {
                     checkAssignment(fieldInfo, varName, exprType, line);
                 } else {
                     ErrorTable::addErrorToList(new SemanticError(
-                        SemanticError::UndefinedVar(line, varName)
+                            SemanticError::UndefinedVar(line, varName)
                     ));
-                }
-            }
-        } catch (const SemanticError &err) {
-            ErrorTable::addErrorToList(new SemanticError(err));
-        }
-    }
-    // 2. FIELD_ASSIGNMENT: obj.field = value
-    else if (node->simpleExpr && node->fullId) {
-        std::string fieldName = node->fullId->name;
-        try {
-            DataType receiverType = node->simpleExpr->inferType(currentClass, currentMethod, currentScope);
-            DataType exprType = node->expr->inferType(currentClass, currentMethod, currentScope);
-
-            if (receiverType.kind == DataType::Kind::Class) {
-                auto classIt = ctx().classes.find(receiverType.className);
-                if (classIt != ctx().classes.end()) {
-                    ClassMetaInfo *receiverClass = classIt->second;
-                    auto fieldOpt = receiverClass->resolveField(fieldName, currentClass);
-
-                    if (fieldOpt.has_value()) {
-                        FieldMetaInfo *fieldInfo = fieldOpt.value();
-                        checkAssignment(fieldInfo, fieldName, exprType, line);
-                    } else {
-                        ErrorTable::addErrorToList(new SemanticError(
-                            SemanticError::UndefinedVar(line, fieldName)
-                        ));
-                    }
                 }
             }
         } catch (const SemanticError &err) {

@@ -104,6 +104,8 @@ uint16_t MethodCodeGenerator::getMaxLocals() const {
             for (auto& [scope, varInfo] : scopeMap) {
                 if (varInfo->number > maxIdx) {
                     maxIdx = varInfo->number;
+                } else if (varInfo->number == 0) {
+                    maxIdx++;
                 }
             }
         }
@@ -962,7 +964,25 @@ void MethodCodeGenerator::generateArrayCreation(SimpleExpr1Node* arrNode) {
 }
 
 void MethodCodeGenerator::generateAssignment(AssignmentNode* assign) {
-    if (assign->simpleExpr && !assign->simpleExpr1) {
+    if (
+        assign->simpleExpr
+        && assign->simpleExpr->simpleExpr1
+        && assign->simpleExpr->simpleExpr1->type == _EXPRESSION_FIELD_ACCESS
+    ) {
+        // Field assignment: obj.field = expr
+        // Генерируем только объект (получатель), без чтения поля
+        generateSimpleExpr(assign->simpleExpr->simpleExpr1->simpleExpr);
+        // Генерируем значение
+        generateExprNode(assign->expr);
+
+        std::string fieldName = assign->simpleExpr->simpleExpr1->identifier->name;
+        DataType receiverType = assign->simpleExpr->simpleExpr1->simpleExpr->inferType(currentClass, method, currentScope);
+        auto* receiverClass = ctx().classes[receiverType.getClassName()];
+        auto fieldOpt = receiverClass->resolveField(fieldName, currentClass, false);
+        auto* fieldRef = constantPool->addFieldRef(receiverClass, fieldOpt.value());
+        code.emit(Instruction::putfield, fieldRef->index);
+        code.adjustStack(-2); // убираем receiver и значение
+    } else if (assign->simpleExpr && !assign->simpleExpr1) {
         // Simple variable assignment: x = expr
         std::string name = assign->simpleExpr->simpleExpr1->identifier->name;
 
@@ -992,22 +1012,7 @@ void MethodCodeGenerator::generateAssignment(AssignmentNode* assign) {
             code.emit(Instruction::putfield, fieldRef->index);
             code.adjustStack(-2);
         }
-    } else if (assign->simpleExpr != nullptr) {
-        // Field assignment: obj.field = expr
-        generateSimpleExpr(assign->simpleExpr);  // receiver
-
-        generateExprNode(assign->expr);  // value
-
-        std::string fieldName = assign->fullId->name;
-        DataType receiverType = assign->simpleExpr->inferType(currentClass, method, currentScope);
-
-        auto* receiverClass = ctx().classes[receiverType.className];
-        auto fieldOpt = receiverClass->resolveField(fieldName, currentClass, false);
-
-        auto* fieldRef = constantPool->addFieldRef(receiverClass, fieldOpt.value());
-        code.emit(Instruction::putfield, fieldRef->index);
-        code.adjustStack(-2);
-    } else if (assign->simpleExpr1 != nullptr && assign->argumentExprs != nullptr) {
+    } else if (assign->simpleExpr1 && assign->argumentExprs) {
         // Array assignment: arr(index) = expr via RTL Array.update
         generateSimpleExpr1(assign->simpleExpr1);  // array
 
