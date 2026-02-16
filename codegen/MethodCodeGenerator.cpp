@@ -1243,6 +1243,10 @@ void MethodCodeGenerator::generateFor(EnumeratorsNode* enums, ExprNode* body) {
         "()Lrtl/Any;"
     );
     code.emit(Instruction::invokevirtual, nextMethodRef->index);
+    std::string targetTypeName = gen->simpleType->getTypeName();
+    auto realArrayType = ctx().classes[targetTypeName];
+    auto* classRef = constantPool->addClass(realArrayType->jvmName);
+    code.emit(Instruction::checkcast, classRef->index);
 
     // Store to loop variable
     std::string varName = gen->fullId->name;
