@@ -94,23 +94,22 @@ void MethodCodeGenerator::generatePrimaryConstructor() {
 }
 
 uint16_t MethodCodeGenerator::getMaxLocals() const {
-    // this (for non-static) + args + local vars
-    // Static methods (e.g., main) don't have 'this'
     bool isStatic = (method != nullptr && method->name == "main" && currentClass == ctx().mainClass);
-    uint16_t count = isStatic ? 0 : 1;
+    uint16_t maxIdx = isStatic ? 0 : 1;
 
     if (method != nullptr) {
-        for (auto* arg : method->args) {
-            count++;
-        }
+        maxIdx = std::max(maxIdx, (uint16_t)method->args.size());
 
-        // Count all local variables
         for (auto& [name, scopeMap] : method->localVars) {
-            count += scopeMap.size();
+            for (auto& [scope, varInfo] : scopeMap) {
+                if (varInfo->number > maxIdx) {
+                    maxIdx = varInfo->number;
+                }
+            }
         }
     }
 
-    return count;
+    return maxIdx + 1;
 }
 
 std::vector<uint8_t> MethodCodeGenerator::generateCodeAttribute() {
