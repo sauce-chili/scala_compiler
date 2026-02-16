@@ -1140,7 +1140,6 @@ void MethodCodeGenerator::generateWhile(ExprNode* cond, ExprNode* body) {
     code.emitBranch(Instruction::ifeq, loopEnd);
 
     generateExprNode(body);
-    code.emit(Instruction::pop);  // Discard body result
 
     code.emitBranch(Instruction::goto_, loopStart);
 
@@ -1153,7 +1152,6 @@ void MethodCodeGenerator::generateDoWhile(ExprNode* cond, ExprNode* body) {
     code.emitLabel(loopStart);
 
     generateExprNode(body);
-    code.emit(Instruction::pop);
 
     generateExprNode(cond);
 
