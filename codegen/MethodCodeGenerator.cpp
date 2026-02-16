@@ -37,7 +37,19 @@ void MethodCodeGenerator::generate() {
 
     // Add implicit return
     if (!method->body->lastIsReturnExpr()) {
-        code.emitReturn(method->returnType);
+        if (method->name == "main" && currentClass == ctx().mainClass) {
+            code.emitReturn(DataType::Kind::Null);
+        }
+        else if (method->returnType == DataType::Kind::Unit) {
+            SimpleExprNode* unitCreatingExpr = SimpleExprNode::createNewObjectNode(
+                IdNode::createId("Unit"),
+                nullptr
+            );
+            generateNewInstance(unitCreatingExpr);
+            code.emitReturn(DataType::Kind::Unit);
+        } else {
+            code.emitReturn(method->returnType);
+        }
     }
 
     code.resolveLabels();
@@ -1388,6 +1400,8 @@ void MethodCodeGenerator::invokeMethod(ClassMetaInfo* targetClass, MethodMetaInf
     int stackChange = -1;  // pops this
     stackChange -= targetMethod->args.size();  // pops args
     if (targetMethod->returnType.kind != DataType::Kind::Unit) {
+        stackChange += 1;  // pushes result
+    } else {
         stackChange += 1;  // pushes result
     }
     code.adjustStack(stackChange);

@@ -497,9 +497,9 @@ void BytecodeBuffer::emitReturn(const DataType& type) {
         case DataType::Kind::Class:
         case DataType::Kind::Array:
         case DataType::Kind::Any:
+        case DataType::Kind::Unit:
             emit(Instruction::areturn);
             break;
-        case DataType::Kind::Unit:
         case DataType::Kind::Undefined:
         case DataType::Kind::Null:
             emit(Instruction::return_);

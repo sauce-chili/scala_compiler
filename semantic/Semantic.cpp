@@ -21,6 +21,7 @@
 void normalizeInfixes(Node* node);
 void transformInfixes(Node* node);
 void transformLiterals(Node* node);
+void transformEmptyReturnToUnitReturn(Node* node);
 
 enum ConsoleClass {
     _PREDEF = 0,
@@ -46,6 +47,7 @@ void TopStatSeqNode::convertAst() {
         tsn->toFieldsFromPrimaryConstructor();
         tsn->initializeBaseConstructor();
         tsn->secondaryConstructorsToMethods();
+        transformEmptyReturnToUnitReturn(tsn);
         normalizeInfixes(tsn);
         transformInfixes(tsn);
         transformLiterals(tsn);
@@ -634,3 +636,33 @@ void transformLiterals(Node* node) {
     }
 }
 
+void transformEmptyReturnToUnitReturn(Node* node) {
+    if (!node) return;
+
+    if (auto* expr = dynamic_cast<ExprNode*>(node)) {
+        if (expr->type == _RETURN_EMPTY) {
+            SimpleExprNode* newUnit = SimpleExprNode::createNewObjectNode(
+                    IdNode::createId("Unit"),
+                    nullptr
+            );
+            newUnit->arguments = new ArgumentExprsNode();
+            expr->exprs->push_front(
+                    ExprNode::createInfix(
+                    InfixExprNode::createInfixFromPrefix(
+                    PrefixExprNode::createPrefixExprNode(
+                            newUnit,
+                            _NO_UNARY_OPERATOR
+                    )
+            )));
+
+            expr->type = _RETURN_EXPR;
+
+            return;
+        }
+    }
+
+    auto children = node->getChildren();
+    for (Node* child : children) {
+        transformEmptyReturnToUnitReturn(child);
+    }
+}
