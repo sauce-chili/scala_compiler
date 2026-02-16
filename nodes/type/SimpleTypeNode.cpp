@@ -50,3 +50,11 @@ list<Node *> SimpleTypeNode::getChildren() const {
     addChildIfNotNull(children, arrayElemType);
     return children;
 }
+
+string SimpleTypeNode::getTypeName() const {
+    if (!fullId) {
+        return "Array";
+    }
+
+    return fullId->name;
+}
