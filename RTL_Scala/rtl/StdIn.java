@@ -12,8 +12,7 @@ public final class StdIn extends Any {
 
     public StdIn() {}
 
-    /** Read a full line. Returns null on EOF. */
-    public java.lang.String readLine() {
+    public java.lang.String readConsoleLine() {
         try {
             return IN.readLine();
         } catch (IOException e) {
@@ -21,64 +20,52 @@ public final class StdIn extends Any {
         }
     }
 
-//     public rtl.String readLine() {
-//         java.lang.String s = readLine();
-//         if (s == null) throw new RuntimeException(new EOFException("Console has reached end of input"));
-//         return new String(s);
-//     }
+    /** Read a full line. Returns null on EOF. */
+    public rtl.String readLine() {
+        java.lang.String s = readConsoleLine();
+        if (s == null) throw new RuntimeException(new EOFException("Console has reached end of input"));
+        return new rtl.String(s);
+    }
 
     /** Read boolean from a line. Throws EOFException on EOF. */
-    public boolean readBoolean() {
-        java.lang.String s = readLine();
+    public rtl.Boolean readBoolean() {
+        java.lang.String s = readConsoleLine();
         if (s == null)
             throw new RuntimeException(new EOFException("Console has reached end of input"));
-
         java.lang.String lower = s.toLowerCase();
-        return lower.equals("true")
+        boolean readVal = lower.equals("true")
                 || lower.equals("t")
                 || lower.equals("yes")
                 || lower.equals("y");
+        return Boolean.valueOf(readVal);
     }
-
-//     public Boolean readBoolean() {
-//         return Boolean.valueOf(readBoolean());
-//     }
 
     /** Read a char from a line. Throws EOFException on EOF. */
-    public char readChar() {
-        java.lang.String s = readLine();
+    public rtl.Char readChar() {
+        java.lang.String s = readConsoleLine();
         if (s == null)
             throw new RuntimeException(new EOFException("Console has reached end of input"));
-        return s.charAt(0);
+        char readVal = s.charAt(0);
+        return new rtl.Char(readVal);
     }
-
-//     public Char readChar() {
-//         return new rtl.Char(readChar());
-//     }
 
     /** Read an int from a line. Throws EOFException on EOF. */
-    public int readInt() {
-        java.lang.String s = readLine();
+    public rtl.Int readInt() {
+        java.lang.String s = readConsoleLine();
         if (s == null)
             throw new RuntimeException(new EOFException("Console has reached end of input"));
-        return Integer.parseInt(s);
+        int readVal = Integer.parseInt(s);
+        return new rtl.Int(readVal);
     }
-
-//     public Int readInt() {
-//         return new rtl.Int(readInt());
-//     }
 
     /** Read a double from a line. Throws EOFException on EOF. */
-    public double readDouble() {
-        java.lang.String s = readLine();
+    public rtl.Double readDouble() {
+        java.lang.String s = readConsoleLine();
         if (s == null)
             throw new RuntimeException(new EOFException("Console has reached end of input"));
-        return java.lang.Double.parseDouble(s);
+        float readVal = java.lang.Float.parseFloat(s);
+        return new rtl.Double(readVal);
     }
-
-//     public Double readDouble() {
-//         return new rtl.Double(readDouble());
-//     }
 
     @Override
     public boolean equals(Object o) {

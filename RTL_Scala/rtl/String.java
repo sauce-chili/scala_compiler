@@ -32,7 +32,7 @@ public final class String extends rtl.Any {
     public Int toInt() { return new Int(java.lang.Integer.parseInt(this.value.trim())); }
 
     public Double toFloat() {
-        return new Double(java.lang.Double.parseDouble(this.value.trim()));
+        return new Double(java.lang.Float.parseFloat(this.value.trim()));
     }
 
     public Char toChar() {

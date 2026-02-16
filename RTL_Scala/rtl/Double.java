@@ -4,15 +4,15 @@ package rtl;
  * Обёртка для вещественного типа (double).
  */
 public final class Double extends Any {
-    private final double value;
+    private final float value;
 
-    public Double(double value) { this.value = value; }
+    public Double(float value) { this.value = value; }
 
     public Double(Double other) {
         this.value = other.value;
     }
 
-    public double doubleValue() { return value; }
+    public float doubleValue() { return value; }
 
     public Double add(Double other) { return new Double(this.value + other.value); }
     public Double $plus(Double other) { return new Double(this.value + other.value); }

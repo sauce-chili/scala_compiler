@@ -29,6 +29,7 @@ public final class Int extends Any {
         return new Int(this.value / other.value);
     }
 
+
     public Int mod(Int other) {
         if (other.value == 0) throw new ArithmeticException("Division by zero");
         return new Int(this.value % other.value);
@@ -54,7 +55,7 @@ public final class Int extends Any {
     public Boolean ne(Int other)          { return Boolean.valueOf(this.value != other.value); }
     public Boolean $bang$eq(Int other)    { return Boolean.valueOf(this.value != other.value); }
 
-    public Double toFloat() { return new Double((double) this.value); }
+    public Double toFloat() { return new Double((float) this.value); }
     public Char toChar() { return new Char((char) this.value); }
 
     public String toStringValue() {
