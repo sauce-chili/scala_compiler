@@ -261,18 +261,53 @@ void MethodCodeGenerator::generateInfixExpr(InfixExprNode* infix) {
     if (infix->left != nullptr && infix->right != nullptr && infix->fullId != nullptr) {
         std::string op = infix->fullId->name;
 
-        // Get types for operator selection
-        DataType leftType = infix->left->inferType(currentClass, method, currentScope);
-        DataType rightType = infix->right->inferType(currentClass, method, currentScope);
+        std::string labelId = std::to_string(reinterpret_cast<uintptr_t>(infix));
 
-        // Generate left operand
-        generateInfixExpr(infix->left);
+        if (op == "&&") {
+            std::string skipLabel = "and_skip_" + labelId;
 
-        // Generate right operand
-        generateInfixExpr(infix->right);
+            generateInfixExpr(infix->left);
 
-        // Generate operator via RTL
-        generateBinaryOp(op, leftType, rightType);
+            code.emit(Instruction::dup);
+            code.adjustStack(1);
+
+            code.emitBranch(Instruction::ifeq, skipLabel);
+            code.adjustStack(-1);
+
+            code.emit(Instruction::pop);
+            code.adjustStack(-1);
+
+            generateInfixExpr(infix->right);
+
+            code.emitLabel(skipLabel);
+
+        } else if (op == "||") {
+            std::string skipLabel = "or_skip_" + labelId;
+
+            generateInfixExpr(infix->left);
+
+            code.emit(Instruction::dup);
+            code.adjustStack(1);
+
+            code.emitBranch(Instruction::ifne, skipLabel);
+            code.adjustStack(-1);
+
+            code.emit(Instruction::pop);
+            code.adjustStack(-1);
+
+            generateInfixExpr(infix->right);
+
+            code.emitLabel(skipLabel);
+
+        } else {
+            // Обычные бинарные операции (жадное вычисление)
+            DataType leftType = infix->left->inferType(currentClass, method, currentScope);
+            DataType rightType = infix->right->inferType(currentClass, method, currentScope);
+
+            generateInfixExpr(infix->left);
+            generateInfixExpr(infix->right);
+            generateBinaryOp(op, leftType, rightType);
+        }
     }
 }
 
@@ -517,6 +552,45 @@ void MethodCodeGenerator::generateMethodCall(SimpleExpr1Node* call) {
         // receiver is 'this', but method resolved from parent class
     } else {
         throw std::runtime_error("Unsupported method call structure");
+    }
+
+    bool isAnd = (methodName == "&&" || methodName == "$amp$amp");
+    bool isOr  = (methodName == "||" || methodName == "$bar$bar");
+    if (isAnd || isOr) {
+        std::string labelId = std::to_string(reinterpret_cast<uintptr_t>(call));
+        std::string skipLabel = "sc_skip_" + labelId;
+
+        if (receiverExpr) {
+            generateSimpleExpr(receiverExpr);
+        } else {
+            code.emit(Instruction::aload_0);
+        }
+
+        code.emit(Instruction::dup);
+        code.adjustStack(1);
+
+        auto* unwrapMethod = constantPool->addMethodRef("rtl/Boolean", "booleanValue", "()Z");
+        code.emit(Instruction::invokevirtual, unwrapMethod->index);
+
+        if (isAnd) {
+            // Логика AND: Если лево == FALSE (0), пропускаем правую часть
+            code.emitBranch(Instruction::ifeq, skipLabel);
+        } else {
+            // Логика OR: Если лево == TRUE (1), пропускаем правую часть
+            code.emitBranch(Instruction::ifne, skipLabel);
+        }
+        code.adjustStack(-1);
+
+        code.emit(Instruction::pop);
+        code.adjustStack(-1);
+
+        if (call->argumentExprs && !call->argumentExprs->exprs->exprs->empty()) {
+            generateExprNode(call->argumentExprs->exprs->exprs->front());
+        }
+
+        code.emitLabel(skipLabel);
+
+        return;
     }
 
     auto localOpt = method->resolveLocal(methodName, currentScope);
