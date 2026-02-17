@@ -403,7 +403,11 @@ void TypeCheckVisitor::visitAssignment(AssignmentNode *node) {
         }
     }
     // 2. ID_ASSIGNMENT: x = value
-    else if (node->simpleExpr && !node->simpleExpr1) {
+    else if (node->simpleExpr
+    && node->simpleExpr->simpleExpr1
+    && !node->simpleExpr->simpleExpr1->argumentExprs
+    && !node->simpleExpr1
+    ) {
 
         std::string varName = node->simpleExpr->simpleExpr1->identifier->name;
         try {
@@ -429,16 +433,13 @@ void TypeCheckVisitor::visitAssignment(AssignmentNode *node) {
         }
     }
     // 3. ARRAY_ASSIGNMENT: arr(index) = value
-    else if (node->simpleExpr1 && node->argumentExprs) {
+    else if (node->simpleExpr
+             && node->simpleExpr->simpleExpr1
+             && node->simpleExpr->simpleExpr1->argumentExprs) {
         try {
-            DataType arrType = node->simpleExpr1->inferType(currentClass, currentMethod, currentScope);
+            DataType arrType = node->simpleExpr->simpleExpr1->inferType(currentClass, currentMethod, currentScope);
 
-            if (arrType.kind != DataType::Kind::Array) {
-                ErrorTable::addErrorToList(new SemanticError(
-                    SemanticError::ExprNotArray(line)
-                ));
-            } else {
-                auto argTypes = node->argumentExprs->getArgsTypes(currentClass, currentMethod, currentScope);
+                auto argTypes = node->simpleExpr->simpleExpr1->argumentExprs->getArgsTypes(currentClass, currentMethod, currentScope);
                 if (!argTypes.empty() && argTypes[0]->kind != DataType::Kind::Int) {
                     ErrorTable::addErrorToList(new SemanticError(
                         SemanticError::TypeMismatch(line, "Int", argTypes[0]->toString())
@@ -446,13 +447,10 @@ void TypeCheckVisitor::visitAssignment(AssignmentNode *node) {
                 }
 
                 DataType exprType = node->expr->inferType(currentClass, currentMethod, currentScope);
-                if (arrType.elementType) {
-                    checkAssignmentCompatibility(*arrType.elementType, exprType, line,
+                checkAssignmentCompatibility(arrType, exprType, line,
                                                  "Array element assignment");
-                }
 
                 for (auto *t: argTypes) delete t;
-            }
         } catch (const SemanticError &err) {
             ErrorTable::addErrorToList(new SemanticError(err));
         }

@@ -596,7 +596,9 @@ void MethodCodeGenerator::generateMethodCall(SimpleExpr1Node* call) {
     auto localOpt = method->resolveLocal(methodName, currentScope);
     auto fieldOpt = currentClass->resolveField(methodName, currentClass);
     if (!methodName.empty() && (localOpt.has_value() || fieldOpt.has_value())) {
-        generateArrayAccess(call, nullptr);
+        if (!call->expr) {
+            generateArrayAccess(call, nullptr);
+        }
         return;
     }
 
@@ -1052,7 +1054,11 @@ void MethodCodeGenerator::generateAssignment(AssignmentNode* assign) {
         auto* fieldRef = constantPool->addFieldRef(receiverClass, fieldOpt.value());
         code.emit(Instruction::putfield, fieldRef->index);
         code.adjustStack(-2); // убираем receiver и значение
-    } else if (assign->simpleExpr && !assign->simpleExpr1) {
+    } else if (assign->simpleExpr
+           &&  assign->simpleExpr->simpleExpr1
+           && !assign->simpleExpr->simpleExpr1->argumentExprs
+           && !assign->simpleExpr1) {
+
         // Simple variable assignment: x = expr
         std::string name = assign->simpleExpr->simpleExpr1->identifier->name;
 
@@ -1082,14 +1088,19 @@ void MethodCodeGenerator::generateAssignment(AssignmentNode* assign) {
             code.emit(Instruction::putfield, fieldRef->index);
             code.adjustStack(-2);
         }
-    } else if (assign->simpleExpr1 && assign->argumentExprs) {
+    } else if (assign->simpleExpr
+               && assign->simpleExpr->simpleExpr1
+               && assign->simpleExpr->simpleExpr1->argumentExprs) {
+        generateArrayAssignment(assign);
+        return;
+
         // Array assignment: arr(index) = expr via RTL Array.update
-        generateSimpleExpr1(assign->simpleExpr1);  // array
+        generateSimpleExpr1(assign->simpleExpr->simpleExpr1);  // array
 
         // Generate index
-        if (assign->argumentExprs->exprs && assign->argumentExprs->exprs->exprs &&
-            !assign->argumentExprs->exprs->exprs->empty()) {
-            generateExprNode(assign->argumentExprs->exprs->exprs->front());
+        if (assign->simpleExpr->simpleExpr1->argumentExprs->exprs && assign->simpleExpr->simpleExpr1->argumentExprs->exprs->exprs &&
+            !assign->simpleExpr->simpleExpr1->argumentExprs->exprs->exprs->empty()) {
+            generateExprNode(assign->simpleExpr->simpleExpr1->argumentExprs->exprs->exprs->front());
         }
 
         generateExprNode(assign->expr);  // value
@@ -1104,6 +1115,50 @@ void MethodCodeGenerator::generateAssignment(AssignmentNode* assign) {
         code.emit(Instruction::pop); // Array.update кладет на стек rtl.Unit, который нужно убрать для корректной обработки (он не несет смысловой нагрузки)
         code.adjustStack(-3 + 1); // +1 из-за pop
     }
+}
+
+void MethodCodeGenerator::generateArrayAssignment(AssignmentNode* assign) {
+    // 1. ЗАГРУЖАЕМ ТОЛЬКО ССЫЛКУ НА МАССИВ (БЕЗ apply)
+    std::string arrayName = assign->simpleExpr->simpleExpr1->simpleExpr1->identifier->name;
+
+    auto localOpt = method->resolveLocal(arrayName, currentScope);
+    if (localOpt.has_value()) {
+        MethodVarMetaInfo* var = localOpt.value();
+        code.emitLoad(var->dataType, localSlot(var->number));
+    } else {
+        auto fieldOpt = currentClass->resolveField(arrayName, currentClass);
+        if (fieldOpt.has_value()) {
+            code.emit(Instruction::aload_0); // this
+            auto* fieldRef = constantPool->addFieldRef(currentClass, fieldOpt.value());
+            code.emit(Instruction::getfield, fieldRef->index);
+        } else {
+            throw std::runtime_error("Unknown array identifier for assignment: " + arrayName);
+        }
+    }
+
+    // 2. ГЕНЕРИРУЕМ ИНДЕКС
+    if (assign->simpleExpr->simpleExpr1->argumentExprs->exprs &&
+        assign->simpleExpr->simpleExpr1->argumentExprs->exprs->exprs &&
+        !assign->simpleExpr->simpleExpr1->argumentExprs->exprs->exprs->empty()) {
+        generateExprNode(assign->simpleExpr->simpleExpr1->argumentExprs->exprs->exprs->front());
+    } else {
+        throw std::runtime_error("Array assignment missing index: " + arrayName);
+    }
+
+    // 3. ГЕНЕРИРУЕМ ПРИСВАИВАЕМОЕ ЗНАЧЕНИЕ (правую часть)
+    generateExprNode(assign->expr);
+
+    // 4. ВЫЗЫВАЕМ RTL Array.update(index, value)
+    auto* methodRef = constantPool->addMethodRef(
+            "rtl/Array",
+            "update",
+            "(Lrtl/Int;Lrtl/Any;)Lrtl/Unit;"
+    );
+    code.emit(Instruction::invokevirtual, methodRef->index);
+
+    // Array.update кладет на стек rtl.Unit, который нужно убрать
+    code.emit(Instruction::pop);
+    code.adjustStack(-3);
 }
 
 void MethodCodeGenerator::generateBlockStats(BlockStatsNode* block) {
