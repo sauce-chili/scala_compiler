@@ -573,21 +573,35 @@ void InfixExprNode::transformInfixOperationToMethodCall() {
     // debug("start " + to_string((iter++)));
 
     prefixExpr = new PrefixExprNode();
-    prefixExpr->type = left->prefixExpr ? left->prefixExpr->type : _NO_UNARY_OPERATOR;
+    prefixExpr->type = _NO_UNARY_OPERATOR;
 
     prefixExpr->simpleExpr = new SimpleExprNode();
     prefixExpr->simpleExpr->type = _SIMPLE_EXPR_1;
 
     prefixExpr->simpleExpr->simpleExpr1 = new SimpleExpr1Node();
     prefixExpr->simpleExpr->simpleExpr1->type = _METHOD_CALL;
-    prefixExpr->simpleExpr->simpleExpr1->simpleExpr1 = new SimpleExpr1Node();
-    prefixExpr->simpleExpr->simpleExpr1->simpleExpr1->simpleExpr = left->prefixExpr->simpleExpr;
-    prefixExpr->simpleExpr->simpleExpr1->simpleExpr1 = SimpleExpr1Node::createIdNode(fullId->copy());
-    prefixExpr->simpleExpr->simpleExpr1->simpleExpr1->type = _EXPRESSION_FIELD_ACCESS;
-    prefixExpr->simpleExpr->simpleExpr1->simpleExpr1->simpleExpr = new SimpleExprNode();
-    prefixExpr->simpleExpr->simpleExpr1->simpleExpr1->simpleExpr->type = _SIMPLE_EXPR_1;
-    prefixExpr->simpleExpr->simpleExpr1->simpleExpr1->simpleExpr->simpleExpr1 = new SimpleExpr1Node();
-    prefixExpr->simpleExpr->simpleExpr1->simpleExpr1->simpleExpr->simpleExpr1 = left->prefixExpr->simpleExpr->simpleExpr1;
+
+    // Выражение доступа
+    SimpleExpr1Node* accessExpr = left->prefixExpr->simpleExpr->simpleExpr1;
+
+    ExprNode* parenthizedAccessExpr = ExprNode::createInfix(
+            InfixExprNode::createInfixFromPrefix(
+                    PrefixExprNode::createPrefixExprNode(
+                            SimpleExprNode::createSimpleExpr1Node(
+                                    accessExpr
+                                    ),
+                            left->prefixExpr ? left->prefixExpr->type : _NO_UNARY_OPERATOR
+                            )
+                    )
+            );
+    SimpleExprNode* parenthizedExpr = SimpleExprNode::createSimpleExpr1Node(
+            SimpleExpr1Node::createParenthesizedExprNode(parenthizedAccessExpr)
+    );
+
+    prefixExpr->simpleExpr->simpleExpr1->simpleExpr1 = SimpleExpr1Node::createSimpleExprFieldAccessNode(
+            fullId->copy(),
+            parenthizedExpr
+    );
 
     ExprNode* argument = ExprNode::createInfix(right);
     ExprsNode* argumentAsList = new ExprsNode(argument);
