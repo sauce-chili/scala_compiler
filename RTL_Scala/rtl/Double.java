@@ -35,6 +35,53 @@ public final class Double extends Any {
     public Boolean ge(Double other) { return Boolean.valueOf(this.value >= other.value); }
     public Boolean $greater$eq(Double other) { return Boolean.valueOf(this.value >= other.value); }
 
+
+    // Int section -----------------------------------------------------------------------------------------------------
+
+    public Double add(Int other)    { return new Double(this.value + other.intValue()); }
+    public Double $plus(Int other)  { return new Double(this.value + other.intValue()); }
+    public Double sub(Int other)    { return new Double(this.value - other.intValue()); }
+    public Double $minus(Int other) { return new Double(this.value - other.intValue()); }
+    public Double mul(Int other)    { return new Double(this.value * other.intValue()); }
+    public Double $times(Int other) { return new Double(this.value * other.intValue()); }
+    public Double div(Int other) {
+        if (other.intValue() == 0.0) throw new ArithmeticException("Division by zero");
+        return new Double(this.value / other.intValue());
+    }
+    public Double $div(Int other) {
+        if (other.intValue() == 0.0) throw new ArithmeticException("Division by zero");
+        return new Double(this.value / other.intValue());
+    }
+
+    public Boolean lt(Int other)          { return Boolean.valueOf(this.value < other.intValue()); }
+    public Boolean $less(Int other)       { return Boolean.valueOf(this.value < other.intValue()); }
+    public Boolean le(Int other)          { return Boolean.valueOf(this.value <= other.intValue()); }
+    public Boolean $less$eq(Int other)    { return Boolean.valueOf(this.value <= other.intValue()); }
+    public Boolean gt(Int other)          { return Boolean.valueOf(this.value > other.intValue()); }
+    public Boolean $greater(Int other)    { return Boolean.valueOf(this.value > other.intValue()); }
+    public Boolean ge(Int other)          { return Boolean.valueOf(this.value >= other.intValue()); }
+    public Boolean $greater$eq(Int other) { return Boolean.valueOf(this.value >= other.intValue()); }
+    public Boolean eq(Int other)          { return Boolean.valueOf(this.value == other.intValue()); }
+    public Boolean $eq$eq(Int other)      { return Boolean.valueOf(this.value == other.intValue()); }
+    public Boolean ne(Int other)          { return Boolean.valueOf(this.value != other.intValue()); }
+    public Boolean $bang$eq(Int other)    { return Boolean.valueOf(this.value != other.intValue()); }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    public rtl.String $plus(rtl.String other) {
+        return new String(java.lang.Float.toString(this.value) + other.nativeValue());
+    }
+    public rtl.String concat(rtl.String other) {
+        return $plus(other);
+    }
+
+    public rtl.Double $plus(rtl.Char other) {
+        return other.concat(this);
+    }
+    public rtl.Double concat(rtl.Char other) {
+        return $plus(other);
+    }
+
     public Boolean eq(Double other) {
         return Boolean.valueOf(java.lang.Double.compare(this.value, other.value) == 0);
     }

@@ -16,6 +16,38 @@ public final class Char extends Any {
         return new String(java.lang.Character.toString(value));
     }
 
+    public rtl.String $plus(rtl.String other) {
+        return new rtl.String(java.lang.Character.toString(this.value) + other.nativeValue());
+    }
+
+    public rtl.String concat(rtl.String other) {
+        return $plus(other);
+    }
+
+    public rtl.Int $plus(rtl.Int other) {
+        if (other == null) {
+            throw new NullPointerException("other is null");
+        }
+        int result = (int) this.value + other.intValue();
+        return new rtl.Int(result);
+    }
+
+    public rtl.Double $plus(rtl.Double other) {
+        if (other == null) {
+            throw new NullPointerException("other is null");
+        }
+        float result = (float) this.value + other.doubleValue();
+        return new rtl.Double(result);
+    }
+
+    public rtl.Int concat(rtl.Int other) {
+        return $plus(other);
+    }
+
+    public rtl.Double concat(rtl.Double other) {
+        return $plus(other);
+    }
+
     @Override
     public boolean equals(Object o) {
         return o instanceof Char && ((Char) o).value == this.value;

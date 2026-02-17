@@ -25,6 +25,13 @@ const std::string BASE_SCALA_CLASS = "Any";
 
 MetaInfo::~MetaInfo() = default;
 
+static MethodMetaInfo* makeBinaryMethod(
+        ClassMetaInfo* rec,
+        const std::string& name,
+        DataType::Kind returnType,
+        DataType::Kind argType
+);
+
 optional<MethodVarMetaInfo *> MethodMetaInfo::resolveLocal(string varName, Scope *scope) {
     // ищем в локальных с учетом скоупа
     auto nameIt = localVars.find(varName);
@@ -870,6 +877,20 @@ RtlClassMetaInfo* RtlClassMetaInfo::initString() {
     toChar->args = vector<ArgMetaInfo*>();
     rec->methods[toChar->name].push_back(toChar);
 
+    MethodMetaInfo* plus = new MethodMetaInfo();
+    plus->classMetaInfo = rec;
+    plus->modifiers.modifiers.push_back(_PUBLIC);
+    plus->returnType = DataType::Kind::String;
+    plus->name = "+";
+    plus->jvmName = NameTransformer::encode(plus->name);
+    plus->args = vector<ArgMetaInfo*>();
+    ArgMetaInfo* plusArg = new ArgMetaInfo();
+    plusArg->name = "other";
+    plusArg->jvmName = NameTransformer::encode(plusArg->name);
+    plusArg->dataType = DataType::Kind::Any;
+    plus->args.push_back(plusArg);
+    rec->methods[plus->name].push_back(plus);
+
     MethodMetaInfo* equalsString = new MethodMetaInfo();
     equalsString->classMetaInfo = rec;
     equalsString->modifiers.modifiers.push_back(_PUBLIC);
@@ -1363,6 +1384,34 @@ RtlClassMetaInfo* RtlClassMetaInfo::initInteger() {
     unary_tilde->args = vector<ArgMetaInfo*>();
     rec->methods[unary_tilde->name].push_back(unary_tilde);
 
+    makeBinaryMethod(rec, "add", DataType::Kind::Double, DataType::Kind::Double);
+    makeBinaryMethod(rec, "+",   DataType::Kind::Double, DataType::Kind::Double);
+    makeBinaryMethod(rec, "sub", DataType::Kind::Double, DataType::Kind::Double);
+    makeBinaryMethod(rec, "-",   DataType::Kind::Double, DataType::Kind::Double);
+    makeBinaryMethod(rec, "mul", DataType::Kind::Double, DataType::Kind::Double);
+    makeBinaryMethod(rec, "*",   DataType::Kind::Double, DataType::Kind::Double);
+    makeBinaryMethod(rec, "div", DataType::Kind::Double, DataType::Kind::Double);
+    makeBinaryMethod(rec, "/",   DataType::Kind::Double, DataType::Kind::Double);
+
+    makeBinaryMethod(rec, "lt", DataType::Kind::Bool, DataType::Kind::Double);
+    makeBinaryMethod(rec, "<",  DataType::Kind::Bool, DataType::Kind::Double);
+    makeBinaryMethod(rec, "le", DataType::Kind::Bool, DataType::Kind::Double);
+    makeBinaryMethod(rec, "<=", DataType::Kind::Bool, DataType::Kind::Double);
+    makeBinaryMethod(rec, "gt", DataType::Kind::Bool, DataType::Kind::Double);
+    makeBinaryMethod(rec, ">",  DataType::Kind::Bool, DataType::Kind::Double);
+    makeBinaryMethod(rec, "ge", DataType::Kind::Bool, DataType::Kind::Double);
+    makeBinaryMethod(rec, ">=", DataType::Kind::Bool, DataType::Kind::Double);
+    makeBinaryMethod(rec, "eq", DataType::Kind::Bool, DataType::Kind::Double);
+    makeBinaryMethod(rec, "==", DataType::Kind::Bool, DataType::Kind::Double);
+    makeBinaryMethod(rec, "ne", DataType::Kind::Bool, DataType::Kind::Double);
+    makeBinaryMethod(rec, "!=", DataType::Kind::Bool, DataType::Kind::Double);
+
+    makeBinaryMethod(rec, "+", DataType::Kind::String, DataType::Kind::String);
+    makeBinaryMethod(rec, "concat", DataType::Kind::String, DataType::Kind::String);
+
+    makeBinaryMethod(rec, "+", DataType::Kind::Int, DataType::Kind::Char);
+    makeBinaryMethod(rec, "concat", DataType::Kind::Int, DataType::Kind::Char);
+
     return rec;
 }
 
@@ -1524,6 +1573,9 @@ RtlClassMetaInfo* RtlClassMetaInfo::initUnit() {
     toScalaString->args = vector<ArgMetaInfo*>();
     rec->methods[toScalaString->name].push_back(toScalaString);
 
+    makeBinaryMethod(rec, "+", DataType::Kind::String, DataType::Kind::String);
+    makeBinaryMethod(rec, "concat", DataType::Kind::String, DataType::Kind::String);
+
     return rec;
 }
 
@@ -1624,6 +1676,14 @@ RtlClassMetaInfo* RtlClassMetaInfo::initChar() {
     toScalaString->jvmName = NameTransformer::encode(toScalaString->name);
     toScalaString->args = vector<ArgMetaInfo*>();
     rec->methods[toScalaString->name].push_back(toScalaString);
+
+    makeBinaryMethod(rec, "+", DataType::Kind::String, DataType::Kind::String);
+    makeBinaryMethod(rec, "concat", DataType::Kind::String, DataType::Kind::String);
+
+    makeBinaryMethod(rec, "+", DataType::Kind::Int, DataType::Kind::Int);
+    makeBinaryMethod(rec, "concat", DataType::Kind::Int, DataType::Kind::Int);
+    makeBinaryMethod(rec, "+", DataType::Kind::Double, DataType::Kind::Double);
+    makeBinaryMethod(rec, "concat", DataType::Kind::Double, DataType::Kind::Double);
 
     return rec;
 }
@@ -2014,6 +2074,34 @@ RtlClassMetaInfo* RtlClassMetaInfo::initDouble() {
     unary_minus_d->args = vector<ArgMetaInfo*>();
     rec->methods[unary_minus_d->name].push_back(unary_minus_d);
 
+    makeBinaryMethod(rec, "add", DataType::Kind::Double, DataType::Kind::Int);
+    makeBinaryMethod(rec, "+",   DataType::Kind::Double, DataType::Kind::Int);
+    makeBinaryMethod(rec, "sub", DataType::Kind::Double, DataType::Kind::Int);
+    makeBinaryMethod(rec, "-",   DataType::Kind::Double, DataType::Kind::Int);
+    makeBinaryMethod(rec, "mul", DataType::Kind::Double, DataType::Kind::Int);
+    makeBinaryMethod(rec, "*",   DataType::Kind::Double, DataType::Kind::Int);
+    makeBinaryMethod(rec, "div", DataType::Kind::Double, DataType::Kind::Int);
+    makeBinaryMethod(rec, "/",   DataType::Kind::Double, DataType::Kind::Int);
+
+    makeBinaryMethod(rec, "lt", DataType::Kind::Bool, DataType::Kind::Int);
+    makeBinaryMethod(rec, "<",  DataType::Kind::Bool, DataType::Kind::Int);
+    makeBinaryMethod(rec, "le", DataType::Kind::Bool, DataType::Kind::Int);
+    makeBinaryMethod(rec, "<=", DataType::Kind::Bool, DataType::Kind::Int);
+    makeBinaryMethod(rec, "gt", DataType::Kind::Bool, DataType::Kind::Int);
+    makeBinaryMethod(rec, ">",  DataType::Kind::Bool, DataType::Kind::Int);
+    makeBinaryMethod(rec, "ge", DataType::Kind::Bool, DataType::Kind::Int);
+    makeBinaryMethod(rec, ">=", DataType::Kind::Bool, DataType::Kind::Int);
+    makeBinaryMethod(rec, "eq", DataType::Kind::Bool, DataType::Kind::Int);
+    makeBinaryMethod(rec, "==", DataType::Kind::Bool, DataType::Kind::Int);
+    makeBinaryMethod(rec, "ne", DataType::Kind::Bool, DataType::Kind::Int);
+    makeBinaryMethod(rec, "!=", DataType::Kind::Bool, DataType::Kind::Int);
+
+    makeBinaryMethod(rec, "+", DataType::Kind::String, DataType::Kind::String);
+    makeBinaryMethod(rec, "concat", DataType::Kind::String, DataType::Kind::String);
+
+    makeBinaryMethod(rec, "+", DataType::Kind::Double, DataType::Kind::Char);
+    makeBinaryMethod(rec, "concat", DataType::Kind::Double, DataType::Kind::Char);
+
     return rec;
 }
 
@@ -2235,6 +2323,9 @@ RtlClassMetaInfo* RtlClassMetaInfo::initBoolean() {
     unary_not->jvmName = NameTransformer::encode(unary_not->name);
     unary_not->args = vector<ArgMetaInfo*>();
     rec->methods[unary_not->name].push_back(unary_not);
+
+    makeBinaryMethod(rec, "+", DataType::Kind::String, DataType::Kind::String);
+    makeBinaryMethod(rec, "concat", DataType::Kind::String, DataType::Kind::String);
 
     return rec;
 }
@@ -2560,4 +2651,28 @@ RtlClassMetaInfo *RtlClassMetaInfo::initArray() {
     rec->methods[ofSize->name].push_back(ofSize);
 
     return rec;
+}
+
+static MethodMetaInfo* makeBinaryMethod(
+        ClassMetaInfo* rec,
+        const std::string& name,
+        DataType::Kind returnType,
+        DataType::Kind argType
+){
+    MethodMetaInfo* m = new MethodMetaInfo();
+    m->classMetaInfo = rec;
+    m->modifiers.modifiers.push_back(_PUBLIC);
+    m->returnType = returnType;
+    m->name = name;
+    m->jvmName = NameTransformer::encode(m->name);
+    m->args = std::vector<ArgMetaInfo*>();
+
+    ArgMetaInfo* arg = new ArgMetaInfo();
+    arg->name = "other";
+    arg->jvmName = NameTransformer::encode(arg->name);
+    arg->dataType = argType;
+
+    m->args.push_back(arg);
+    rec->methods[m->name].push_back(m);
+    return m;
 }

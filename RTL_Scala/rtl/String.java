@@ -41,6 +41,10 @@ public final class String extends rtl.Any {
         return new Char(this.value.charAt(0));
     }
 
+    public String $plus(Any other) {
+        return new String(this.value + other.toString());
+    }
+
     public Boolean equalsString(String other) {
         return Boolean.valueOf(this.value.equals(other.value));
     }

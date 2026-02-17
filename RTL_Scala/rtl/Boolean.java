@@ -33,6 +33,14 @@ public final class Boolean extends Any {
     public Boolean $bang()                 { return valueOf(!this.value); }
     public Boolean unary_$bang()           { return valueOf(!this.value); }
 
+    public rtl.String $plus(rtl.String other) {
+        return new String(java.lang.Boolean.toString(this.value) + other.nativeValue());
+    }
+
+    public rtl.String concat(rtl.String other) {
+        return $plus(other);
+    }
+
     @Override
     public boolean equals(Object o) {
         return (o instanceof Boolean) && ((Boolean)o).value == this.value;
