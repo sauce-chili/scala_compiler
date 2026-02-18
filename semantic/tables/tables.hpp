@@ -82,6 +82,7 @@ public:
     };
 
     VarMetaInfo() : isVal(true) {
+        value = nullptr;
     }
 
     std::string toString();
