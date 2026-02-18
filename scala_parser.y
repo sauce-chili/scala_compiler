@@ -205,7 +205,7 @@ infixExpr: prefixExpr { $$ = InfixExprNode::createInfixFromPrefix($1); }
 	 | infixExpr MUL_ASSIGNMENT nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, IdNode::createOperator("*="), $4); }
 	 | infixExpr DIV_ASSIGNMENT nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, IdNode::createOperator("/="), $4); }
 	 | infixExpr MOD_ASSIGNMENT nlo infixExpr   { $$ = InfixExprNode::createFromInfixes($1, IdNode::createOperator("%="), $4); }
-	 | infixExpr EQUAL nlo infixExpr            { $$ = InfixExprNode::createFromInfixes($1, IdNode::createOperator("="), $4); }
+	 | infixExpr EQUAL nlo infixExpr            { $$ = InfixExprNode::createFromInfixes($1, IdNode::createOperator("=="), $4); }
 	 | infixExpr NOT_EQUAL nlo infixExpr        { $$ = InfixExprNode::createFromInfixes($1, IdNode::createOperator("!="), $4); }
 	 | infixExpr GREATER_OR_EQUAL nlo infixExpr { $$ = InfixExprNode::createFromInfixes($1, IdNode::createOperator(">="), $4); }
 	 | infixExpr LESS_OR_EQUAL nlo infixExpr    { $$ = InfixExprNode::createFromInfixes($1, IdNode::createOperator("<="), $4); }
@@ -433,7 +433,7 @@ fullID: '+'              { $$ = IdNode::createOperator("+"); }
       | MUL_ASSIGNMENT   { $$ = IdNode::createOperator("*="); }
       | DIV_ASSIGNMENT   { $$ = IdNode::createOperator("/="); }
       | MOD_ASSIGNMENT   { $$ = IdNode::createOperator("%="); }
-      | EQUAL            { $$ = IdNode::createOperator("="); }
+      | EQUAL            { $$ = IdNode::createOperator("=="); }
       | NOT_EQUAL        { $$ = IdNode::createOperator("!="); }
       | GREATER_OR_EQUAL { $$ = IdNode::createOperator(">="); }
       | LESS_OR_EQUAL    { $$ = IdNode::createOperator("<="); }
