@@ -35,6 +35,18 @@ public final class Array extends rtl.Any {
         return Unit.INSTANCE;
     }
 
+    /** Возвращает новый массив, содержащий каждый step-й элемент. */
+    public Array by(Int step) {
+        int s = step.intValue();
+        if (s <= 0) throw new IllegalArgumentException("step must be positive");
+        int newSize = (elements.length + s - 1) / s;
+        Any[] result = new Any[newSize];
+        for (int i = 0, j = 0; i < elements.length; i += s, j++) {
+            result[j] = elements[i];
+        }
+        return new Array(result);
+    }
+
     @Override
     public String toScalaString() {
         StringBuilder sb = new StringBuilder();
