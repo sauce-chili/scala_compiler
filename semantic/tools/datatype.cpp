@@ -171,10 +171,7 @@ string DataType::toJvmDescriptor() const {
             else
                 return "L" + className + ";"; }
         case Kind::Array:
-            if (elementType) {
-                return "[" + elementType->toJvmDescriptor();
-            }
-            return "[Ljava/lang/Object;";
+            return "Lrtl/Array;";
         case Kind::Any:     return "Lrtl/Any;";
         case Kind::Null:    return "Ljava/lang/Object;";
         default:            return "V";

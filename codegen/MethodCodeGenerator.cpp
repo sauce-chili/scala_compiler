@@ -806,6 +806,17 @@ void MethodCodeGenerator::generateArrayAccess(SimpleExpr1Node *call, ArgumentExp
 
     auto* methodRef = constantPool->addMethodRef("rtl/Array", "apply", "(Lrtl/Int;)Lrtl/Any;");
     code.emit(Instruction::invokevirtual, methodRef->index);
+
+    // Narrow return type from rtl/Any to the actual element type.
+    // Required for JVM verifier: invokevirtual expects a subtype of the declaring class as receiver.
+    std::string elemDescriptor = elemType.toJvmDescriptor();
+    if (elemType.kind != DataType::Kind::Any &&
+        elemDescriptor.size() >= 3 &&
+        elemDescriptor.front() == 'L' && elemDescriptor.back() == ';') {
+        std::string elemJvmName = elemDescriptor.substr(1, elemDescriptor.size() - 2);
+        auto* classRef = constantPool->addClass(elemJvmName);
+        code.emit(Instruction::checkcast, classRef->index);
+    }
 }
 
 void MethodCodeGenerator::generateFieldAccess(SimpleExpr1Node* access) {
