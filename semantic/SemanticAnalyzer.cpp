@@ -235,7 +235,7 @@ static void checkFieldOverride(ClassMetaInfo* info, const std::string& name, Fie
             ));
         }
 
-        if (!field->isOverride() && !info->parent->isAbstract()) {
+        if (!field->isOverride()) {
             ErrorTable::addErrorToList(new SemanticError(
                 SemanticError::FieldRedefinition(0, name + " (missing 'override' modifier)")
             ));
