@@ -73,7 +73,29 @@ void MethodCodeGenerator::generateDefaultConstructor() {
 void MethodCodeGenerator::generatePrimaryConstructor() {
     code.emit(Instruction::aload_0);
     std::string superClass = currentClass->parent ? currentClass->parent->jvmName : "java/lang/Object";
-    auto* superCtorRef = constantPool->addMethodRef(superClass, "<init>", "()V");
+    string superConstrDescriptor = "";
+    if (currentClass->parent) {
+        auto classOfParentConstr = ctx().classes.find(currentClass->parent->name)->second;
+        auto *argumentsOfParentConstr = method->body->infixExpr->prefixExpr->simpleExpr->blockStats->blockStats->front()->expr->infixExpr->prefixExpr->simpleExpr->simpleExpr1->argumentExprs;
+        std::vector<DataType *> constrArgTypesInCall = argumentsOfParentConstr->getArgsTypes(currentClass, method,
+                                                                                            currentScope);
+        MethodMetaInfo *methodDef = classOfParentConstr->resolveMethod(CONSTRUCTOR_NAME, constrArgTypesInCall,
+                                                                      currentClass).value();
+        std::vector<DataType> realArgTypesOfConstr;
+        for (auto arg: methodDef->args) {
+            realArgTypesOfConstr.push_back(arg->dataType);
+        }
+        generateArgumentList(argumentsOfParentConstr);
+        superConstrDescriptor = "(";
+        for (auto dt : realArgTypesOfConstr) {
+            superConstrDescriptor += dt.toJvmDescriptor();
+        }
+        superConstrDescriptor += ")V";
+    } else {
+        superConstrDescriptor = "()V";
+    }
+
+    ConstantMethodRef* superCtorRef = constantPool->addMethodRef(superClass, "<init>", superConstrDescriptor);
     code.emit(Instruction::invokespecial, superCtorRef->index);
     code.adjustStack(-1);
 
