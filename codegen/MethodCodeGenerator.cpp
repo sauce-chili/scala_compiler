@@ -71,33 +71,31 @@ void MethodCodeGenerator::generateDefaultConstructor() {
 }
 
 void MethodCodeGenerator::generatePrimaryConstructor() {
-    // Call super constructor first
     code.emit(Instruction::aload_0);
     std::string superClass = currentClass->parent ? currentClass->parent->jvmName : "java/lang/Object";
-
-    // TODO: If parent has constructor with args, call that instead
-    auto* methodRef = constantPool->addMethodRef(superClass, "<init>", "()V");
-    code.emit(Instruction::invokespecial, methodRef->index);
+    auto* superCtorRef = constantPool->addMethodRef(superClass, "<init>", "()V");
+    code.emit(Instruction::invokespecial, superCtorRef->index);
     code.adjustStack(-1);
 
-    // Initialize fields from constructor parameters
-    // Fields that have initializers will be set
-    for (auto& [name, field] : currentClass->fields) {
-        if (field->value != nullptr) {
-            // this.field = value
-            code.emit(Instruction::aload_0);  // this
-            generateExprNode(field->value);
-
-            auto* fieldRef = constantPool->addFieldRef(currentClass, field);
-            code.emit(Instruction::putfield, fieldRef->index);
-            code.adjustStack(-2);  // pops this and value
+    if (method != nullptr && method->body != nullptr && method->isPrimaryConstructor) {
+        auto* exprs = method->body->infixExpr->prefixExpr->simpleExpr->blockStats->blockStats;
+        if (!exprs->empty()) {
+            // Предполагаем, что первое выражение в перчином конструкторе — вызов super()
+            exprs->pop_front();
         }
     }
 
-    // Generate constructor body for secondary constructors only.
-    // Primary constructors already have super.<init>() and field inits above;
-    // their body AST node contains a duplicate super call that must be skipped.
-    if (method != nullptr && method->body != nullptr && !method->isPrimaryConstructor) {
+    for (auto& [name, field] : currentClass->fields) {
+        if (field->value != nullptr) {
+            code.emit(Instruction::aload_0);
+            generateExprNode(field->value);
+            auto* fieldRef = constantPool->addFieldRef(currentClass, field);
+            code.emit(Instruction::putfield, fieldRef->index);
+            code.adjustStack(-2);
+        }
+    }
+
+    if (method != nullptr && method->body != nullptr) {
         generateExprNode(method->body);
     }
 
