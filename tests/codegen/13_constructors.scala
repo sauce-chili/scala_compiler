@@ -1,4 +1,10 @@
 // Test 13: Constructor overloading (primary + secondary)
+final class A {
+    def main(args: Array[String]): Unit = {
+        new ConstructorsTest().constructorsTest()
+    }
+}
+
 
 class Point(val x: Int, var y: Int) {
     // Secondary constructor: 1 arg
@@ -36,7 +42,7 @@ class Person(val name: String, var age: Int) {
 }
 
 final class ConstructorsTest {
-    def main(args: Array[String]): Unit = {
+    def constructorsTest(): Unit = {
         Predef.println("=== Constructors Test ===")
 
         // Point with primary constructor (2 args)

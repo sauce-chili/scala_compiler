@@ -83,12 +83,12 @@ final class FloatingPointTest {
             Predef.println(f1 + " <= " + f2)
         }
 
-        //if (f1 == f1) {
-        //    Predef.println("f1 == f1: true")
-        //}
+        if (f1 == f1) {
+            Predef.println("f1 == f1: true")
+        }
 
-        //if (f1 != f2) {
-        //    Predef.println("f1 != f2: true")
-        //}
+        if (f1 != f2) {
+            Predef.println("f1 != f2: true")
+        }
     }
 }
