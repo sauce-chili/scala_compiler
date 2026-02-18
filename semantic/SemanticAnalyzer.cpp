@@ -670,9 +670,13 @@ std::optional<std::string> SemanticAnalyzer::compile(
         return std::nullopt;
     }
 
-    // 3. Create output directory
+    // 3. Create output directory (clear it first if it exists)
     fs::path outPath(outputDir);
-    if (!fs::exists(outPath)) {
+    if (fs::exists(outPath)) {
+        for (auto& entry : fs::directory_iterator(outPath)) {
+            fs::remove_all(entry.path());
+        }
+    } else {
         fs::create_directories(outPath);
     }
 
