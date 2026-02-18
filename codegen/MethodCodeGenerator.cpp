@@ -134,10 +134,9 @@ uint16_t MethodCodeGenerator::getMaxLocals() const {
 
         for (auto& [name, scopeMap] : method->localVars) {
             for (auto& [scope, varInfo] : scopeMap) {
-                if (varInfo->number > maxIdx) {
-                    maxIdx = varInfo->number;
-                } else if (varInfo->number == 0) {
-                    maxIdx++;
+                uint16_t slot = localSlot(varInfo->number);
+                if (slot > maxIdx) {
+                                    maxIdx = slot;
                 }
             }
         }
@@ -1223,6 +1222,9 @@ void MethodCodeGenerator::generateBlockStats(BlockStatsNode* block) {
             generateExprNode(stat->expr);
             // Pop result if not last statement
             // (Simplified - in real impl, track if value is used)
+            if (stat->expr->type == _INFIX && !stat->expr->isBlockExpr()) {
+                code.emit(Instruction::pop);
+            }
         }
     }
 
@@ -1277,7 +1279,9 @@ void MethodCodeGenerator::generateIf(ExprNode* cond, ExprNode* body) {
     code.emitBranch(Instruction::ifeq, endLabel);
 
     generateExprNode(body);
-    code.emit(Instruction::pop);  // Discard result
+    if (body->type == _INFIX && !body->isBlockExpr()) {
+        code.emit(Instruction::pop);
+    }
 
     code.emitLabel(endLabel);
 }

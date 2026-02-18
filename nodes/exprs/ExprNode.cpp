@@ -263,6 +263,14 @@ bool ExprNode::isReturnExpr() const {
     return type == _RETURN_EMPTY || type == _RETURN_EXPR;
 }
 
+bool ExprNode::isBlockExpr() const {
+    if (type != _INFIX) return false;
+    return infixExpr
+        && infixExpr->prefixExpr
+        && infixExpr->prefixExpr->simpleExpr
+        && infixExpr->prefixExpr->simpleExpr->blockStats != nullptr;
+}
+
 bool ExprNode::lastIsReturnExpr() const {
     // Если тело это один expr
     if (isReturnExpr()) {

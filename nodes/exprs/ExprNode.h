@@ -48,6 +48,7 @@ public:
 
     bool isReturnExpr() const;
     bool lastIsReturnExpr() const;
+    bool isBlockExpr() const;
 
     string toDot() const override;
     string getDotLabel() const override;
