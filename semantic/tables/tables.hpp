@@ -304,6 +304,7 @@ public:
     bool isPrivate() const { return modifiers.hasModifier(_PRIVATE); }
     bool isProtected() const { return modifiers.hasModifier(_PROTECTED); }
     bool isFinal() const { return modifiers.hasModifier(_FINAL); }
+    bool isAbstract() const { return modifiers.hasModifier(_ABSTRACT); }
     bool isOverride() const { return modifiers.hasModifier(_OVERRIDE); }
 
     /**

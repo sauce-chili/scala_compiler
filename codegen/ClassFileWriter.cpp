@@ -436,7 +436,7 @@ uint16_t ClassFileWriter::getMethodAccessFlags(MethodMetaInfo* method) {
 std::vector<uint8_t> ClassFileWriter::generateCodeAttribute(MethodMetaInfo* method) {
     MethodCodeGenerator gen(method, classInfo, constantPool);
 
-    if (method->isPrimaryConstructor || method->name == "this") {
+    if (method->isPrimaryConstructor) {
         gen.generatePrimaryConstructor();
     } else {
         gen.generate();
