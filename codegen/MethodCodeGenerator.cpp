@@ -678,7 +678,7 @@ void MethodCodeGenerator::generateMethodCall(SimpleExpr1Node* call) {
 
     MethodMetaInfo* resolvedMethod = methodOpt.value();
 
-    if (isSuperCall) {
+    if (isSuperCall || methodName == CONSTRUCTOR_NAME) {
         auto* methodRef = constantPool->addMethodRef(receiverClass, resolvedMethod);
         code.emit(Instruction::invokespecial, methodRef->index);
     } else {
