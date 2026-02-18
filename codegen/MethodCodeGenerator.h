@@ -60,7 +60,6 @@ private:
     void generateNewInstance(SimpleExprNode* newExpr);
     void generateArrayCreation(SimpleExpr1Node* arrNode);
     void generateArrayAccess(SimpleExpr1Node* access, ArgumentExprsNode* index);
-    void generateArrayAssignment(AssignmentNode* assign);
 
     // Control flow
     void generateIfElse(ExprNode* cond, ExprNode* trueBranch, ExprNode* falseBranch);
