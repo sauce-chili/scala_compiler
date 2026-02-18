@@ -130,7 +130,7 @@ uint16_t MethodCodeGenerator::getMaxLocals() const {
     uint16_t maxIdx = isStatic ? 0 : 1;
 
     if (method != nullptr) {
-        maxIdx = std::max(maxIdx, (uint16_t)method->args.size());
+        maxIdx += std::max(maxIdx, (uint16_t)method->args.size());
 
         for (auto& [name, scopeMap] : method->localVars) {
             for (auto& [scope, varInfo] : scopeMap) {
