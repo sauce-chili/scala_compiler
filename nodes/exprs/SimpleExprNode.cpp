@@ -153,7 +153,7 @@ DataType SimpleExprNode::inferType(
                     }
 
                     auto argTypes = arguments->getArgsTypes(currentClass, currentMethod, currentScope, parentsConsider);
-                    auto constrOpt = classInfo->resolveMethod(className, argTypes, currentClass);
+                    auto constrOpt = classInfo->resolveMethod(CONSTRUCTOR_NAME, argTypes, currentClass);
 
                     if (!constrOpt.has_value() && !argTypes.empty()) {
                         std::string argsStr = "(";
