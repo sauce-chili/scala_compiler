@@ -2636,7 +2636,52 @@ RtlClassMetaInfo *RtlClassMetaInfo::initArray() {
     isInstanceOf->args.push_back(isInstanceOfArg);
     rec->methods[isInstanceOf->name].push_back(isInstanceOf);
 
-    MethodMetaInfo* ofSize = new MethodMetaInfo();
+    // to(end: Int): Array[Int] — создаёт массив [this, this+1, ..., end]
+    MethodMetaInfo *toM = new MethodMetaInfo();
+    toM->classMetaInfo = rec;
+    toM->modifiers.modifiers.push_back(_PUBLIC);
+    toM->returnType = DataType::makeArray(DataType::makeInt());
+    toM->name = "to";
+    toM->jvmName = NameTransformer::encode(toM->name);
+    toM->args = vector<ArgMetaInfo *>();
+    ArgMetaInfo *toArg = new ArgMetaInfo();
+    toArg->name = "end";
+    toArg->jvmName = NameTransformer::encode(toArg->name);
+    toArg->dataType = DataType::Kind::Int;
+    toM->args.push_back(toArg);
+    rec->methods[toM->name].push_back(toM);
+
+    // until(end: Int): Array[Int] — создаёт массив [this, this+1, ..., end-1]
+    MethodMetaInfo *untilM = new MethodMetaInfo();
+    untilM->classMetaInfo = rec;
+    untilM->modifiers.modifiers.push_back(_PUBLIC);
+    untilM->returnType = DataType::makeArray(DataType::makeInt());
+    untilM->name = "until";
+    untilM->jvmName = NameTransformer::encode(untilM->name);
+    untilM->args = vector<ArgMetaInfo *>();
+    ArgMetaInfo *untilArg = new ArgMetaInfo();
+    untilArg->name = "end";
+    untilArg->jvmName = NameTransformer::encode(untilArg->name);
+    untilArg->dataType = DataType::Kind::Int;
+    untilM->args.push_back(untilArg);
+    rec->methods[untilM->name].push_back(untilM);
+
+    // by(step: Int): Array — возвращает каждый step-й элемент массива
+    MethodMetaInfo *byM = new MethodMetaInfo();
+    byM->classMetaInfo = rec;
+    byM->modifiers.modifiers.push_back(_PUBLIC);
+    byM->returnType = DataType::makeArray(DataType(DataType::Kind::Any));
+    byM->name = "by";
+    byM->jvmName = NameTransformer::encode(byM->name);
+    byM->args = vector<ArgMetaInfo *>();
+    ArgMetaInfo *byArg = new ArgMetaInfo();
+    byArg->name = "step";
+    byArg->jvmName = NameTransformer::encode(byArg->name);
+    byArg->dataType = DataType::Kind::Int;
+    byM->args.push_back(byArg);
+    rec->methods[byM->name].push_back(byM);
+
+    MethodMetaInfo *ofSize = new MethodMetaInfo();
     ofSize->classMetaInfo = rec;
     ofSize->modifiers.modifiers.push_back(_PUBLIC);
     ofSize->returnType = DataType::Kind::Array;
