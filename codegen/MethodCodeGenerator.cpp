@@ -41,7 +41,8 @@ void MethodCodeGenerator::generate() {
         auto* bs = blockExpr->infixExpr->prefixExpr->simpleExpr->blockStats;
         if (!bs || !bs->blockStats || bs->blockStats->empty()) return false;
         BlockStatNode* last = bs->blockStats->back();
-        return last->expr && last->expr->type == _INFIX && !last->expr->isBlockExpr();
+        return last->expr && last->expr->type == _INFIX && !last->expr->isBlockExpr()
+               && !last->expr->isThisConstructorCall();
     };
 
     // Add implicit return
@@ -1243,7 +1244,8 @@ void MethodCodeGenerator::generateBlockStats(BlockStatsNode* block) {
             generateExprNode(stat->expr);
             // Pop intermediate _INFIX non-block statements only.
             // Last statement's value stays on stack as the block's return value.
-            if (!isLast && stat->expr->type == _INFIX && !stat->expr->isBlockExpr()) {
+            if (!isLast && stat->expr->type == _INFIX && !stat->expr->isBlockExpr()
+                    && !stat->expr->isThisConstructorCall()) {
                 code.emit(Instruction::pop);
             }
         }

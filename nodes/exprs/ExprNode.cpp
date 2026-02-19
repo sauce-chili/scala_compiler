@@ -2,6 +2,7 @@
 #include "../generator/EnumeratorsNode.h"
 #include "../exprs/InfixExprNode.h"
 #include "../exprs/AssignmentNode.h"
+#include "../exprs/SimpleExpr1Node.h"
 #include "semantic/SemanticContext.h"
 #include "semantic/tables/tables.hpp"
 #include "semantic/error/ErrorTable.h"
@@ -269,6 +270,20 @@ bool ExprNode::isBlockExpr() const {
         && infixExpr->prefixExpr
         && infixExpr->prefixExpr->simpleExpr
         && infixExpr->prefixExpr->simpleExpr->blockStats != nullptr;
+}
+
+bool ExprNode::isThisConstructorCall() const {
+    // Detects: this(args) — secondary constructor delegation.
+    // Emits invokespecial <init> (void), so leaves nothing on stack.
+    if (type != _INFIX) return false;
+    if (!infixExpr || !infixExpr->prefixExpr) return false;
+    auto* simpleExpr = infixExpr->prefixExpr->simpleExpr;
+    if (!simpleExpr || simpleExpr->type != _SIMPLE_EXPR_1) return false;
+    auto* call = simpleExpr->simpleExpr1;
+    if (!call || call->type != _METHOD_CALL) return false;
+    auto* receiver = call->simpleExpr1;
+    if (!receiver || receiver->type != _IDENTIFIER || !receiver->identifier) return false;
+    return receiver->identifier->name == CONSTRUCTOR_NAME;
 }
 
 bool ExprNode::lastIsReturnExpr() const {
