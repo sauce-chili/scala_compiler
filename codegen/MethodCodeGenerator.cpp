@@ -35,12 +35,29 @@ void MethodCodeGenerator::generate() {
     // Generate body
     generateExprNode(method->body);
 
+    // Helper: does the block body's last statement leave a value on the stack?
+    auto blockLastLeavesValue = [](ExprNode* blockExpr) -> bool {
+        if (!blockExpr->isBlockExpr()) return false;
+        auto* bs = blockExpr->infixExpr->prefixExpr->simpleExpr->blockStats;
+        if (!bs || !bs->blockStats || bs->blockStats->empty()) return false;
+        BlockStatNode* last = bs->blockStats->back();
+        return last->expr && last->expr->type == _INFIX && !last->expr->isBlockExpr();
+    };
+
     // Add implicit return
     if (!method->body->lastIsReturnExpr()) {
         if (method->name == "main" && currentClass == ctx().mainClass) {
+            // Pop value left by block's last statement (main returns void)
+            if (blockLastLeavesValue(method->body)) {
+                code.emit(Instruction::pop);
+            }
             code.emitReturn(DataType::Kind::Null);
         }
         else if (method->returnType == DataType::Kind::Unit) {
+            // Pop value left by block's last statement (if it produces one)
+            if (blockLastLeavesValue(method->body)) {
+                code.emit(Instruction::pop);
+            }
             SimpleExprNode* unitCreatingExpr = SimpleExprNode::createNewObjectNode(
                 IdNode::createId("Unit"),
                 nullptr
@@ -1200,8 +1217,11 @@ void MethodCodeGenerator::generateBlockStats(BlockStatsNode* block) {
         currentScope = block->blockScope;
     }
 
-    for (auto* stat : *block->blockStats) {
+    auto& stats = *block->blockStats;
+    for (auto it = stats.begin(); it != stats.end(); ++it) {
+        BlockStatNode* stat = *it;
         if (stat == nullptr) continue;
+        bool isLast = (std::next(it) == stats.end());
 
         // Handle variable definitions
         if (stat->varDefs != nullptr) {
@@ -1220,9 +1240,9 @@ void MethodCodeGenerator::generateBlockStats(BlockStatsNode* block) {
             }
         } else if (stat->expr != nullptr) {
             generateExprNode(stat->expr);
-            // Pop result if not last statement
-            // (Simplified - in real impl, track if value is used)
-            if (stat->expr->type == _INFIX && !stat->expr->isBlockExpr()) {
+            // Pop intermediate _INFIX non-block statements only.
+            // Last statement's value stays on stack as the block's return value.
+            if (!isLast && stat->expr->type == _INFIX && !stat->expr->isBlockExpr()) {
                 code.emit(Instruction::pop);
             }
         }
@@ -1278,8 +1298,18 @@ void MethodCodeGenerator::generateIf(ExprNode* cond, ExprNode* body) {
 
     code.emitBranch(Instruction::ifeq, endLabel);
 
+    auto blockLastLeavesValue = [](ExprNode* blockExpr) -> bool {
+        if (!blockExpr->isBlockExpr()) return false;
+        auto* bs = blockExpr->infixExpr->prefixExpr->simpleExpr->blockStats;
+        if (!bs || !bs->blockStats || bs->blockStats->empty()) return false;
+        BlockStatNode* last = bs->blockStats->back();
+        return last->expr && last->expr->type == _INFIX && !last->expr->isBlockExpr();
+    };
+
     generateExprNode(body);
     if (body->type == _INFIX && !body->isBlockExpr()) {
+        code.emit(Instruction::pop);
+    } else if (blockLastLeavesValue(body)) {
         code.emit(Instruction::pop);
     }
 
@@ -1304,7 +1334,20 @@ void MethodCodeGenerator::generateWhile(ExprNode* cond, ExprNode* body) {
 
     code.emitBranch(Instruction::ifeq, loopEnd);
 
+    auto blockLastLeavesValueW = [](ExprNode* blockExpr) -> bool {
+        if (!blockExpr->isBlockExpr()) return false;
+        auto* bs = blockExpr->infixExpr->prefixExpr->simpleExpr->blockStats;
+        if (!bs || !bs->blockStats || bs->blockStats->empty()) return false;
+        BlockStatNode* last = bs->blockStats->back();
+        return last->expr && last->expr->type == _INFIX && !last->expr->isBlockExpr();
+    };
+
     generateExprNode(body);
+    if (body->type == _INFIX && !body->isBlockExpr()) {
+        code.emit(Instruction::pop);
+    } else if (blockLastLeavesValueW(body)) {
+        code.emit(Instruction::pop);
+    }
 
     code.emitBranch(Instruction::goto_, loopStart);
 
@@ -1316,7 +1359,20 @@ void MethodCodeGenerator::generateDoWhile(ExprNode* cond, ExprNode* body) {
 
     code.emitLabel(loopStart);
 
+    auto blockLastLeavesValueDW = [](ExprNode* blockExpr) -> bool {
+        if (!blockExpr->isBlockExpr()) return false;
+        auto* bs = blockExpr->infixExpr->prefixExpr->simpleExpr->blockStats;
+        if (!bs || !bs->blockStats || bs->blockStats->empty()) return false;
+        BlockStatNode* last = bs->blockStats->back();
+        return last->expr && last->expr->type == _INFIX && !last->expr->isBlockExpr();
+    };
+
     generateExprNode(body);
+    if (body->type == _INFIX && !body->isBlockExpr()) {
+        code.emit(Instruction::pop);
+    } else if (blockLastLeavesValueDW(body)) {
+        code.emit(Instruction::pop);
+    }
 
     generateExprNode(cond);
 
@@ -1424,6 +1480,20 @@ void MethodCodeGenerator::generateFor(EnumeratorsNode* enums, ExprNode* body) {
 
     // Generate body
     generateExprNode(body);
+
+    // Pop value left by block's last statement (same logic as while/doWhile)
+    auto blockLastLeavesValueFor = [](ExprNode* blockExpr) -> bool {
+        if (!blockExpr->isBlockExpr()) return false;
+        auto* bs = blockExpr->infixExpr->prefixExpr->simpleExpr->blockStats;
+        if (!bs || !bs->blockStats || bs->blockStats->empty()) return false;
+        BlockStatNode* last = bs->blockStats->back();
+        return last->expr && last->expr->type == _INFIX && !last->expr->isBlockExpr();
+    };
+    if (body->type == _INFIX && !body->isBlockExpr()) {
+        code.emit(Instruction::pop);
+    } else if (blockLastLeavesValueFor(body)) {
+        code.emit(Instruction::pop);
+    }
 
     code.emitBranch(Instruction::goto_, loopStart);
 
