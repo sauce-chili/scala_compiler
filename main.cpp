@@ -181,7 +181,7 @@ int runCompile(TopStatSeqNode *root, bool runAfterCompile, bool analyzeOnly,
         std::cout << "--------------------------------------------------------------------------\n\n";
         std::string mainClassName = ctx().mainClass ? ctx().mainClass->name : "Main";
         std::string cmd =
-                "java -noverify -cp \"" + jarPath + ";" + rtlJarPath + "\" A";
+                "java -cp \"" + jarPath + ";" + rtlJarPath + "\" " + mainClassName;
         int exitCode = std::system(cmd.c_str());
         std::cout << "\n--------------------------------------------------------------------------";
         return exitCode;
