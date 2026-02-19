@@ -2,7 +2,7 @@
 
 final class A {
     def main(args: Array[String]): Unit = {
-        new RecursionTest().mains(args)
+        new RecursionTest().mains()
     }
 }
 
@@ -14,7 +14,7 @@ final class RecursionTest {
         return fibonacci(n - 1) + fibonacci(n - 2)
     }
 
-    def mains(args: Array[String]): Unit = {
+    def mains(): Unit = {
         Predef.println("=== Fibonacci Test ===")
 
         var n: Int = 0

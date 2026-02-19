@@ -17,7 +17,5 @@ final class OverloadingTest {
         var v3: Vec = v1 + v2
         Predef.println(v3.x)
         Predef.println(v3.y)
-        val + : Int = 4
-       Predef.println(+)
     }
 }

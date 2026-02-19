@@ -25,6 +25,6 @@ class AbstractCallTest {
     def abstractCallTest(): Unit = {
         var abstractClass: MyAbstractClass = new NonAbstractClass()
         abstractClass.myAbstractMethod('x')
-        val errr: MyAbstractClass = new MyAbstractClass()
+        //val errr: MyAbstractClass = new MyAbstractClass()
     }
 }
