@@ -10,21 +10,25 @@ final class FloatingPointTest {
     def floatingPointTest(): Unit = {
         Predef.println("=== Floating Point Test ===")
 
-        var f1: Double = 3.7
-        var f2: Double = -5.2
-        var i1: Int = 10
-        var i2: Int = -5
+        Predef.println("Введите f1: ")
+        var f1: Double = StdIn.readDouble()
+        Predef.println("\nВведите f2: ")
+        var f2: Double = StdIn.readDouble()
+        Predef.println("\nВведите i1: ")
+        var i1: Int = StdIn.readInt()
+        Predef.println("\nВведите i2: ")
+        var i2: Int = StdIn.readInt()
 
         // Sum
-        Predef.println("Sum:")
+        Predef.println("\nSum:")
         Predef.print(i1 + " + " + i2 + " = ")
         Predef.println(i1 + i2)
 
         Predef.print(i1 + " + " + f1 + " = ")
-        Predef.println(i1.toFloat() + f1)
+        Predef.println(i1 + f1)
 
         Predef.print(f1 + " + " + i1 + " = ")
-        Predef.println(f1 + i1.toFloat())
+        Predef.println(f1 + i1)
 
         Predef.print(f1 + " + " + f2 + " = ")
         Predef.println(f1 + f2)
@@ -36,10 +40,10 @@ final class FloatingPointTest {
         Predef.println(i1 - i2)
 
         Predef.print(i1 + " - " + f1 + " = ")
-        Predef.println(i1.toFloat() - f1)
+        Predef.println(i1 - f1)
 
         Predef.print(f1 + " - " + i1 + " = ")
-        Predef.println(f1 - i1.toFloat())
+        Predef.println(f1 - i1)
 
         Predef.print(f1 + " - " + f2 + " = ")
         Predef.println(f1 - f2)
@@ -51,10 +55,10 @@ final class FloatingPointTest {
         Predef.println(i1 * i2)
 
         Predef.print(i1 + " * " + f1 + " = ")
-        Predef.println(i1.toFloat() * f1)
+        Predef.println(i1 * f1)
 
         Predef.print(f1 + " * " + i1 + " = ")
-        Predef.println(f1 * i1.toFloat())
+        Predef.println(f1 * i1)
 
         Predef.print(f1 + " * " + f2 + " = ")
         Predef.println(f1 * f2)
@@ -66,10 +70,10 @@ final class FloatingPointTest {
         Predef.println(i1 / i2)
 
         Predef.print(i1 + " / " + f1 + " = ")
-        Predef.println(i1.toFloat() / f1)
+        Predef.println(i1 / f1)
 
         Predef.print(f1 + " / " + i1 + " = ")
-        Predef.println(f1 / i1.toFloat())
+        Predef.println(f1 / i1)
 
         Predef.print(f1 + " / " + f2 + " = ")
         Predef.println(f1 / f2)
