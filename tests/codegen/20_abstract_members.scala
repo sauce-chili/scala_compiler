@@ -18,12 +18,13 @@ class NonAbstractClass extends MyAbstractClass {
         5
     }
 
-    var abstractVar: Int = 4
+    override var abstractVar: Int = 4
 }
 
 class AbstractCallTest {
     def abstractCallTest(): Unit = {
         var abstractClass: MyAbstractClass = new NonAbstractClass()
         abstractClass.myAbstractMethod('x')
+        val errr: MyAbstractClass = new MyAbstractClass()
     }
 }

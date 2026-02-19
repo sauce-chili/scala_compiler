@@ -1,5 +1,11 @@
 // Test 15: Recursion(2).kt translation - Fibonacci
 
+final class A {
+    def main(args: Array[String]): Unit = {
+        new RecursionTest().mains(args)
+    }
+}
+
 final class RecursionTest {
 
     def fibonacci(n: Int): Int = {
@@ -8,7 +14,7 @@ final class RecursionTest {
         return fibonacci(n - 1) + fibonacci(n - 2)
     }
 
-    def main(args: Array[String]): Unit = {
+    def mains(args: Array[String]): Unit = {
         Predef.println("=== Fibonacci Test ===")
 
         var n: Int = 0

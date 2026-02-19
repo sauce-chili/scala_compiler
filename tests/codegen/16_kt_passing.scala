@@ -6,7 +6,7 @@ class Container {
 
     def printObject(): Unit = {
         Predef.print("Object number: ")
-        Predef.println(n.toString())
+        Predef.println(n)
         Predef.print("Object string: ")
         Predef.println(s)
     }
@@ -17,6 +17,8 @@ final class PassingTest {
     def modifyObject(c: Container, number: Int, text: String): Unit = {
         // Parameters number and text are val (immutable), can't reassign
         // But we can modify the object's fields
+        //number = 5
+        //text = "534"
         c.n = number
         c.s = text
     }
