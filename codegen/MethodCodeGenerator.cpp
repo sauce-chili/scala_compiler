@@ -361,17 +361,18 @@ void MethodCodeGenerator::generateSimpleExpr(SimpleExprNode* simpleExpr) {
                 // Get element type
                 DataType elemType = DataType::createFromNode(simpleExpr->simpleType);
 
-                // Generate size expression
+                // Generate size expression (produces rtl/Int on stack)
                 if (simpleExpr->arguments) {
                     generateArgumentList(simpleExpr->arguments);
                 }
 
-                // Create array via RTL Array.ofSize
-                std::string rtlArrayClass = "rtl/Array";
-                std::string elemDescriptor = elemType.toJvmDescriptor();
+                // Convert rtl/Int -> primitive int for Array.ofSize(I)
+                auto* intValueRef = constantPool->addMethodRef("rtl/Int", "intValue", "()I");
+                code.emit(Instruction::invokevirtual, intValueRef->index);
 
+                // Create array via RTL Array.ofSize
                 auto* methodRef = constantPool->addMethodRef(
-                    rtlArrayClass,
+                    "rtl/Array",
                     "ofSize",
                     "(I)Lrtl/Array;"
                 );
