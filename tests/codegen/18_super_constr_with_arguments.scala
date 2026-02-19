@@ -14,7 +14,7 @@ class Person(override val name: String, var age: Int) extends Creation(name) {
 
 final class ConstructorsTest {
     def constructorsTest(): Unit = {
-        var person: Person = new Person("Oleg", 67)
+        var person: Person = new Person("Gena", 67)
         Predef.println(person.name)
         Predef.println(person.age)
     }
