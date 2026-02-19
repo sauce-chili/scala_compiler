@@ -1,11 +1,5 @@
 // Test 14: BubbleSort with range generators
 final class A {
-    def main(args: Array[String]): Unit = {
-        new BubbleSort().bubbleSort()
-    }
-}
-
-final class BubbleSort {
 
     def bubbleSort(arr: Array[Int]): Unit = {
         for (i: Int <- 0 until (arr.length() - 1)) {
@@ -26,10 +20,16 @@ final class BubbleSort {
         }
     }
 
-    def bubbleSort(): Unit = {
+    def main(args: Array[String]): Unit = {
         Predef.println("=== Bubble Sort Test ===")
 
-        val array: Array[Int] = Array(64, 34, 25, 12, 22, 11, 90)
+        Predef.println("Размер: ")
+        val n: Int = StdIn.readInt()
+        val array: Array[Int] = new Array[Int](n)
+        for(i: Int <- 0 until n) {
+            Predef.println("Элемент: ")
+            array(i) = StdIn.readInt()
+        }
 
         Predef.println("Before:")
         printArray(array)
@@ -38,24 +38,5 @@ final class BubbleSort {
 
         Predef.println("\nAfter:")
         printArray(array)
-
-        Predef.println("\n--- Sort another array ---")
-        val arr2: Array[Int] = Array(5, 1, 4, 2, 8, 3, 7, 6)
-
-        Predef.print("Before: ")
-        for (x: Int <- arr2) {
-            Predef.print(x)
-            Predef.print(" ")
-        }
-        Predef.println()
-
-        bubbleSort(arr2)
-
-        Predef.print("After:  ")
-        for (x: Int <- arr2) {
-            Predef.print(x)
-            Predef.print(" ")
-        }
-        Predef.println()
     }
 }
