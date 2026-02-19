@@ -7,7 +7,7 @@
 #include <stdexcept>
 
 // JVM version for Java 8
-constexpr uint16_t JAVA_8_MAJOR = 52;
+constexpr uint16_t JAVA_8_MAJOR = 49;
 constexpr uint16_t JAVA_8_MINOR = 0;
 
 // Magic number
