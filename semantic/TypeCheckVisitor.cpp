@@ -477,7 +477,7 @@ void TypeCheckVisitor::visitForExpression(ExprNode *node) {
             }
             DataType* arrayElementType = iterableType.elementType;
             DataType generatorVarDeclaredType = DataType::createFromNode(node->enumerators->generator->simpleType);
-            if (!arrayElementType->isAssignableTo(generatorVarDeclaredType)) {
+            if (arrayElementType && !arrayElementType->isAssignableTo(generatorVarDeclaredType)) {
                 ErrorTable::addErrorToList(new SemanticError(
                         SemanticError::TypeMismatch(node->id, generatorVarDeclaredType.toString(), arrayElementType->toString())
                 ));

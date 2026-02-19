@@ -349,6 +349,20 @@ int ClassMetaInfo::subtypeDistance(const DataType* declared, const DataType* act
         return 1;
     }
 
+    // Примитивный RTL-тип и его класс-обёртка взаимозаменяемы.
+    // После transformLiterals литерал `1` становится `new Int(1)` с типом Class("Int"),
+    // но метод объявлен с параметром Kind::Int - они должны совпадать.
+    if (declared->isPrimitive() && actual->kind == DataType::Kind::Class
+        && actual->getClassName() == declared->getClassName()) {
+        return 0;
+    }
+
+    // Обратное: объявлен Class("Int"), передаётся примитив Kind::Int
+    if (actual->isPrimitive() && declared->kind == DataType::Kind::Class
+        && declared->getClassName() == actual->getClassName()) {
+        return 0;
+    }
+
     // Только для class-типов поднимаемся по parent
     if (actual->kind != DataType::Kind::Class || declared->kind != DataType::Kind::Class) {
         return -1;
@@ -1411,6 +1425,36 @@ RtlClassMetaInfo* RtlClassMetaInfo::initInteger() {
 
     makeBinaryMethod(rec, "+", DataType::Kind::Int, DataType::Kind::Char);
     makeBinaryMethod(rec, "concat", DataType::Kind::Int, DataType::Kind::Char);
+
+    // to(end: Int): Array[Int] — creates range [this, this+1, ..., end]
+    MethodMetaInfo *toM = new MethodMetaInfo();
+    toM->classMetaInfo = rec;
+    toM->modifiers.modifiers.push_back(_PUBLIC);
+    toM->returnType = DataType::makeArray(DataType::makeInt());
+    toM->name = "to";
+    toM->jvmName = NameTransformer::encode(toM->name);
+    toM->args = vector<ArgMetaInfo *>();
+    ArgMetaInfo *toArg = new ArgMetaInfo();
+    toArg->name = "end";
+    toArg->jvmName = NameTransformer::encode(toArg->name);
+    toArg->dataType = DataType::Kind::Int;
+    toM->args.push_back(toArg);
+    rec->methods[toM->name].push_back(toM);
+
+    // until(end: Int): Array[Int] — creates range [this, this+1, ..., end-1]
+    MethodMetaInfo *untilM = new MethodMetaInfo();
+    untilM->classMetaInfo = rec;
+    untilM->modifiers.modifiers.push_back(_PUBLIC);
+    untilM->returnType = DataType::makeArray(DataType::makeInt());
+    untilM->name = "until";
+    untilM->jvmName = NameTransformer::encode(untilM->name);
+    untilM->args = vector<ArgMetaInfo *>();
+    ArgMetaInfo *untilArg = new ArgMetaInfo();
+    untilArg->name = "end";
+    untilArg->jvmName = NameTransformer::encode(untilArg->name);
+    untilArg->dataType = DataType::Kind::Int;
+    untilM->args.push_back(untilArg);
+    rec->methods[untilM->name].push_back(untilM);
 
     return rec;
 }
@@ -2666,11 +2710,11 @@ RtlClassMetaInfo *RtlClassMetaInfo::initArray() {
     untilM->args.push_back(untilArg);
     rec->methods[untilM->name].push_back(untilM);
 
-    // by(step: Int): Array — возвращает каждый step-й элемент массива
+    // by(step: Int): Array[Int] — возвращает каждый step-й элемент массива
     MethodMetaInfo *byM = new MethodMetaInfo();
     byM->classMetaInfo = rec;
     byM->modifiers.modifiers.push_back(_PUBLIC);
-    byM->returnType = DataType::makeArray(DataType(DataType::Kind::Any));
+    byM->returnType = DataType::makeArray(DataType::makeInt());
     byM->name = "by";
     byM->jvmName = NameTransformer::encode(byM->name);
     byM->args = vector<ArgMetaInfo *>();

@@ -103,27 +103,23 @@ public final class Int extends Any {
     public Double toFloat() { return new Double((float) this.value); }
     public Char toChar() { return new Char((char) this.value); }
 
-    /** Создаёт массив [this, this+1, ..., end] (включительно). */
+    /** Создаёт массив [this, this+1, ..., end] включительно. Пустой если this > end. */
     public Array to(Int end) {
         int s = this.value;
         int e = end.intValue();
         int size = Math.max(0, e - s + 1);
         Any[] elems = new Any[size];
-        for (int i = 0; i < size; i++) {
-            elems[i] = new Int(s + i);
-        }
+        for (int i = 0; i < size; i++) elems[i] = new Int(s + i);
         return new Array(elems);
     }
 
-    /** Создаёт массив [this, this+1, ..., end-1] (не включая end). */
+    /** Создаёт массив [this, this+1, ..., end-1] не включая end. Пустой если this >= end. */
     public Array until(Int end) {
         int s = this.value;
         int e = end.intValue();
         int size = Math.max(0, e - s);
         Any[] elems = new Any[size];
-        for (int i = 0; i < size; i++) {
-            elems[i] = new Int(s + i);
-        }
+        for (int i = 0; i < size; i++) elems[i] = new Int(s + i);
         return new Array(elems);
     }
 

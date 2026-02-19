@@ -35,7 +35,7 @@ public final class Array extends rtl.Any {
         return Unit.INSTANCE;
     }
 
-    /** Возвращает новый массив, содержащий каждый step-й элемент. */
+    /** Возвращает каждый step-й элемент (step > 0). */
     public Array by(Int step) {
         int s = step.intValue();
         if (s <= 0) throw new IllegalArgumentException("step must be positive");
