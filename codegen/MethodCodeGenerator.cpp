@@ -103,7 +103,17 @@ void MethodCodeGenerator::generatePrimaryConstructor() {
         for (auto arg: methodDef->args) {
             realArgTypesOfConstr.push_back(arg->dataType);
         }
-        generateArgumentList(argumentsOfParentConstr);
+        // Generate arguments with widening coercions
+        if (argumentsOfParentConstr->exprs && argumentsOfParentConstr->exprs->exprs) {
+            size_t i = 0;
+            for (ExprNode* argExpr : *argumentsOfParentConstr->exprs->exprs) {
+                generateExprNode(argExpr);
+                if (i < realArgTypesOfConstr.size()) {
+                    emitWideningCoercionIfNeeded(argExpr, realArgTypesOfConstr[i]);
+                }
+                ++i;
+            }
+        }
         superConstrDescriptor = "(";
         for (auto dt : realArgTypesOfConstr) {
             superConstrDescriptor += dt.toJvmDescriptor();
@@ -129,6 +139,7 @@ void MethodCodeGenerator::generatePrimaryConstructor() {
         if (field->value != nullptr) {
             code.emit(Instruction::aload_0);
             generateExprNode(field->value);
+            emitWideningCoercionIfNeeded(field->value, field->dataType);
             auto* fieldRef = constantPool->addFieldRef(currentClass, field);
             code.emit(Instruction::putfield, fieldRef->index);
             code.adjustStack(-2);
@@ -659,16 +670,25 @@ void MethodCodeGenerator::generateMethodCall(SimpleExpr1Node* call) {
         }
     }
 
-    // Generate arguments
-    if (call->argumentExprs) {
-        generateArgumentList(call->argumentExprs);
-    }
-
     // Handle super constructor call: super(args) -> parent.<init>(args)
     if (isSuperConstructorCall) {
         if (currentClass->parent == nullptr) {
             for (auto* dt : argTypes) delete dt;
             throw std::runtime_error("Super constructor call in class without parent: " + currentClass->name);
+        }
+
+        // Resolve parent constructor to get declared param types for coercion
+        auto parentConstrOpt = currentClass->parent->resolveMethod(CONSTRUCTOR_NAME, argTypes, currentClass);
+
+        if (call->argumentExprs && call->argumentExprs->exprs && call->argumentExprs->exprs->exprs) {
+            size_t i = 0;
+            for (ExprNode* argExpr : *call->argumentExprs->exprs->exprs) {
+                generateExprNode(argExpr);
+                if (parentConstrOpt.has_value() && i < parentConstrOpt.value()->args.size()) {
+                    emitWideningCoercionIfNeeded(argExpr, parentConstrOpt.value()->args[i]->dataType);
+                }
+                ++i;
+            }
         }
 
         // Build descriptor for parent constructor
@@ -719,6 +739,18 @@ void MethodCodeGenerator::generateMethodCall(SimpleExpr1Node* call) {
     }
 
     MethodMetaInfo* resolvedMethod = methodOpt.value();
+
+    // Generate arguments with widening coercions based on resolved method's parameter types
+    if (call->argumentExprs && call->argumentExprs->exprs && call->argumentExprs->exprs->exprs) {
+        size_t i = 0;
+        for (ExprNode* argExpr : *call->argumentExprs->exprs->exprs) {
+            generateExprNode(argExpr);
+            if (i < resolvedMethod->args.size()) {
+                emitWideningCoercionIfNeeded(argExpr, resolvedMethod->args[i]->dataType);
+            }
+            ++i;
+        }
+    }
 
     if (isSuperCall || methodName == CONSTRUCTOR_NAME) {
         auto* methodRef = constantPool->addMethodRef(receiverClass, resolvedMethod);
@@ -971,14 +1003,23 @@ void MethodCodeGenerator::generateNewInstance(SimpleExprNode* newExpr) {
     // Generate constructor arguments
     std::vector<DataType> argTypes;
     if (newExpr->arguments) {
-        // TODO: Collect argument types
         auto classOfNewInstance = ctx().classes.find(className)->second;
         std::vector<DataType*> newInstanceArgTypes = newExpr->arguments->getArgsTypes(currentClass, method, currentScope);
-        MethodMetaInfo* methodDef = classOfNewInstance->resolveMethod(CONSTRUCTOR_NAME, newInstanceArgTypes, currentClass).value(); // TODO WARNING!!!
+        MethodMetaInfo* methodDef = classOfNewInstance->resolveMethod(CONSTRUCTOR_NAME, newInstanceArgTypes, currentClass).value();
         for (auto arg: methodDef->args) {
             argTypes.push_back(arg->dataType);
         }
-        generateArgumentList(newExpr->arguments);
+        // Generate each argument with widening coercion if needed
+        if (newExpr->arguments->exprs && newExpr->arguments->exprs->exprs) {
+            size_t i = 0;
+            for (ExprNode* argExpr : *newExpr->arguments->exprs->exprs) {
+                generateExprNode(argExpr);
+                if (i < argTypes.size()) {
+                    emitWideningCoercionIfNeeded(argExpr, argTypes[i]);
+                }
+                ++i;
+            }
+        }
     }
 
     // INVOKESPECIAL <init>
@@ -1100,6 +1141,7 @@ void MethodCodeGenerator::generateAssignment(AssignmentNode* assign) {
         DataType receiverType = assign->simpleExpr->simpleExpr1->simpleExpr->inferType(currentClass, method, currentScope);
         auto* receiverClass = ctx().classes[receiverType.getClassName()];
         auto fieldOpt = receiverClass->resolveField(fieldName, currentClass, false);
+        emitWideningCoercionIfNeeded(assign->expr, fieldOpt.value()->dataType);
         auto* fieldRef = constantPool->addFieldRef(receiverClass, fieldOpt.value());
         code.emit(Instruction::putfield, fieldRef->index);
         code.adjustStack(-2); // убираем receiver и значение
@@ -1118,6 +1160,7 @@ void MethodCodeGenerator::generateAssignment(AssignmentNode* assign) {
         auto localOpt = method->resolveLocal(name, currentScope);
         if (localOpt.has_value()) {
             MethodVarMetaInfo* var = localOpt.value();
+            emitWideningCoercionIfNeeded(assign->expr, var->dataType);
             code.emitStore(var->dataType, localSlot(var->number));
         } else {
             // Field assignment
@@ -1132,6 +1175,7 @@ void MethodCodeGenerator::generateAssignment(AssignmentNode* assign) {
             code.emit(Instruction::pop);  // discard generated value
             code.emit(Instruction::aload_0);  // this
             generateExprNode(assign->expr);  // value again
+            emitWideningCoercionIfNeeded(assign->expr, fieldOpt.value()->dataType);
 
             auto* fieldRef = constantPool->addFieldRef(currentClass, fieldOpt.value());
             code.emit(Instruction::putfield, fieldRef->index);
@@ -1237,6 +1281,7 @@ void MethodCodeGenerator::generateBlockStats(BlockStatsNode* block) {
                 auto localOpt = method->resolveLocal(varName, currentScope);
                 if (localOpt.has_value()) {
                     MethodVarMetaInfo* var = localOpt.value();
+                    emitWideningCoercionIfNeeded(varDefs->expr, var->dataType);
                     code.emitStore(var->dataType, localSlot(var->number));
                 }
             }
@@ -1719,4 +1764,15 @@ void MethodCodeGenerator::invokeConstructor(ClassMetaInfo* targetClass, const st
 
     throw std::runtime_error("No matching constructor found for " + targetClass->name +
                              " with " + std::to_string(argTypes.size()) + " arguments");
+}
+
+void MethodCodeGenerator::emitWideningCoercionIfNeeded(ExprNode* expr, const DataType& targetType) {
+    if (targetType.kind != DataType::Kind::Double) return;
+    DataType valueType = expr->inferType(currentClass, method, currentScope);
+    if (valueType.kind == DataType::Kind::Int) {
+        // Int -> Double widening: call rtl/Int.toFloat() which returns rtl/Double
+        auto* toFloatRef = constantPool->addMethodRef("rtl/Int", "toFloat", "()Lrtl/Double;");
+        code.emit(Instruction::invokevirtual, toFloatRef->index);
+        // net stack effect: 0 (pops rtl/Int, pushes rtl/Double)
+    }
 }

@@ -363,6 +363,19 @@ int ClassMetaInfo::subtypeDistance(const DataType* declared, const DataType* act
         return 0;
     }
 
+    // Расширяющее числовое приведение: Int → Double (как в Scala)
+    {
+        auto isInt = [](const DataType* t) {
+            return t->kind == DataType::Kind::Int ||
+                   (t->kind == DataType::Kind::Class && t->getClassName() == "Int");
+        };
+        auto isDouble = [](const DataType* t) {
+            return t->kind == DataType::Kind::Double ||
+                   (t->kind == DataType::Kind::Class && t->getClassName() == "Double");
+        };
+        if (isDouble(declared) && isInt(actual)) return 1;
+    }
+
     // Только для class-типов поднимаемся по parent
     if (actual->kind != DataType::Kind::Class || declared->kind != DataType::Kind::Class) {
         return -1;

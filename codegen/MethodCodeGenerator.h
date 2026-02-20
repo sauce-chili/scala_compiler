@@ -79,6 +79,8 @@ private:
                                const std::string& descriptor, bool isStatic);
     void boxToRtlDouble(ExprNode* expr);
     void unboxFromRtlDouble();
+    // Emit Int.toFloat() if expr type is Int but target type is Double (widening coercion)
+    void emitWideningCoercionIfNeeded(ExprNode* expr, const DataType& targetType);
 
     // Helpers
     bool isStaticMethod() const;
