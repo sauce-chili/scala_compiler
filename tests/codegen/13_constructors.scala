@@ -7,11 +7,18 @@ final class A {
 
 
 class Point(val x: Int, var y: Int) {
+    var r: Double = 0.0
     // Secondary constructor: 1 arg
     def this(x: Int) = this(x, 0)
 
     // Secondary constructor: no args
     def this() = this(0, 0)
+
+    def this(x: Int,r: Double) = {
+        this()
+        Predef.println("Polar")
+        this.r = r
+    }
 
     def distSquared(): Int = x * x + y * y
 
@@ -20,6 +27,8 @@ class Point(val x: Int, var y: Int) {
         Predef.print(x)
         Predef.print(", ")
         Predef.print(y)
+        Predef.print(", ")
+        Predef.print(r)
         Predef.println(")")
     }
 }
@@ -58,7 +67,7 @@ final class ConstructorsTest {
         p2.printPoint()
 
         // Point with secondary constructor (no args)
-        val p3: Point = new Point()
+        val p3: Point = new Point(4,2.3)
         Predef.print("p3: ")
         p3.printPoint()
 
